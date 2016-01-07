@@ -1,0 +1,38 @@
+{  
+  "name":"Quick Look",
+  "tasks" : [ 
+      { 
+       "name": " task1 ", 
+       "steps" : [ 
+          { 
+            "name" : " step1",
+            "checked" : "True",
+            "source" : "module1",
+            "configuration" : [  { "parameter":"", "value":"" } ] 
+          }
+         ] 
+       },
+      { 
+       "name": " task2 ", 
+       "steps" : [ 
+          { 
+            "name" : " step2",
+            "checked" : "True",
+            "source" : "module2 ",
+            "configuration" : [  { "parameter":"p1", "value":"0" } ] 
+          },
+          {  
+            "name":" step3",
+            "checked" : "Flase",
+            "source":"module3",
+            "requires": [ {"step" : "step2" } ]  
+          },
+          {  
+            "name":"step4",
+            "checked" : "True",
+            "source":"module4"
+          }      
+        ]
+      }
+]
+}
