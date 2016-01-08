@@ -2,7 +2,7 @@ import ConfigParser
 
 Config = ConfigParser.ConfigParser()
 
-Config.read("qlf.cfg")
+Config.read("config/qlf.cfg")
 
 sections = Config.sections()
 
