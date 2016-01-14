@@ -9,9 +9,18 @@ Developement of the Quick Look Framework for DESI
 Dependencies:
 
 python-daemon
-python-yaml
+pyyaml
 
-To install the dependencies, the appropriate package manager must be used:
+To install the dependencies, it's highly reccomended to use pip:
 
-$ sudo apt-get install python-yaml    (Debian based distributions)
-$ sudo yum install python-yaml        (Red-Hat based distributions)
+$ sudo apt-get install python-pip (Debian-based distributions)
+or
+$ sudo yum install python-pip (Red-Hat based distributions)
+
+then:
+
+$ sudo pip install python-daemon
+$ sudo pip install pyyaml
+
+
+
