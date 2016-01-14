@@ -9,3 +9,4 @@ Developement of the Quick Look Framework for DESI
 Dependencies:
 
 python-daemon
+pyyaml
