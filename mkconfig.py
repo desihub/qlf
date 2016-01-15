@@ -20,7 +20,7 @@ for item in data["tasks"]:
                 outputfile = item3["default"]
         step["kwargs"] = config
         steps.append(step)
-    root["PipeLine"].append({"StepName":item["name"],"Steps":steps,"OutputFile":outputfile})
+    root["PipeLine"].append({"StepName":item["name"],"Modules":steps,"OutputFile":outputfile})
 
 print root
 with open("config/ql.yaml","w") as fp:

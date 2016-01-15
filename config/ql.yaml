@@ -1,7 +1,5 @@
 PipeLine:
-- OutputFile: step1.pkl
-  StepName: Preprocessing-Bias Subtraction
-  Steps:
+- Modules:
   - ModuleName: ProcAlgs
     Name: Bias Subtraction
     kwargs: {BiasImage: '%%BiasImage'}
@@ -11,9 +9,9 @@ PipeLine:
   - ModuleName: MonAlgs
     Name: Count Pixels
     kwargs: {Width: '3.0'}
-- OutputFile: step2.pkl
-  StepName: Preprocessing-Dark Subtraction
-  Steps:
+  OutputFile: step1.pkl
+  StepName: Preprocessing-Bias Subtraction
+- Modules:
   - ModuleName: ProcAlgs
     Name: Dark Subtraction
     kwargs: {DarkImage: '%%DarkImage'}
@@ -23,9 +21,9 @@ PipeLine:
   - ModuleName: MonAlgs
     Name: Count Pixels
     kwargs: {Width: '3.0'}
-- OutputFile: step3.pkl
-  StepName: Preprocessing-Pixel Flattening
-  Steps:
+  OutputFile: step2.pkl
+  StepName: Preprocessing-Dark Subtraction
+- Modules:
   - ModuleName: ProcAlgs
     Name: Pixel Flattening
     kwargs: {PixelFlat: '%%PixelFlat'}
@@ -35,9 +33,9 @@ PipeLine:
   - ModuleName: MonAlgs
     Name: Count Pixels
     kwargs: {Width: '3.0'}
-- OutputFile: step4.pkl
-  StepName: Boxcar Extration
-  Steps:
+  OutputFile: step3.pkl
+  StepName: Preprocessing-Pixel Flattening
+- Modules:
   - ModuleName: ProcAlgs
     Name: Boxcar Extraction
     kwargs: {Band: r, BoxWidth: '2.5', DeltaW: '0.5', FiberMap: '%%FiberMap', PSFFile: '%%PSFFile',
@@ -48,3 +46,5 @@ PipeLine:
   - ModuleName: MonAlgs
     Name: Calculate Signal-to-Noise ratio
     kwargs: {}
+  OutputFile: step4.pkl
+  StepName: Boxcar Extration
