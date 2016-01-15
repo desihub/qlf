@@ -1,4 +1,5 @@
 import ConfigParser
+import os
 
 Config = ConfigParser.ConfigParser()
 
@@ -6,17 +7,24 @@ Config.read("config/qlf.cfg")
 
 sections = Config.sections()
 
-dict = {}
+dic = {}
 
 for section in sections:
     options = Config.options(section)
     for option in options:
         try:
-            dict[option] = Config.get(section, option)
-            if dict[option] == -1:
+            dic[option] = Config.get(section, option)
+            if dic[option] == -1:
                 DebugPrint("skip: %s" % option)
         except:
             print("exception on %s!" % option)
-            dict[option] = None
+            dic[option] = None
 
-print dict
+print "Config file contents: ", dic
+
+if "datadir" in Config.options("namespace"):
+    path = Config.get("namespace","datadir")
+
+fullpath = os.path.join(path,"config")
+
+print "The full path to the config folder is: ", fullpath
