@@ -14,10 +14,13 @@ for item in data["tasks"]:
         step["Name"] = item2["name"]
         config = {} 
         for item3 in item2["configuration"]:
-            config[item3["label"]] = item3["default"]
+            if item3["label"] != "OutputFile":
+                config[item3["label"]] = item3["default"]
+            else:
+                outputfile = item3["default"]
         step["kwargs"] = config
         steps.append(step)
-    root["PipeLine"].append({"StepName":item["name"],"Steps":steps})
+    root["PipeLine"].append({"StepName":item["name"],"Steps":steps,"OutputFile":outputfile})
 
 print root
 with open("config/ql.yaml","w") as fp:
