@@ -22,7 +22,7 @@ for section in sections:
 
 print "Config file contents: ", dic
 
-if "datadir" in Config.options("namespace"):
+if Config.has_option("namespace","datadir"):
     path = Config.get("namespace","datadir")
 
 fullpath = os.path.join(path,"config")
