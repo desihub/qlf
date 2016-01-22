@@ -3,5 +3,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class DatabaseConfig(AppConfig):
-    name = 'database'
+class QaConfig(AppConfig):
+    name = 'qa'
