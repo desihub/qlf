@@ -22,7 +22,7 @@ Install postgresql94-server (it installs postgresql94 as dependency):
 
 $ sudo yum install postgresql94-server
 
-python-pip requires epel to work:
+We also need python-pip, which requires epel repository to be able to install:
 
 $ sudo yum install epel-release
 
@@ -32,25 +32,27 @@ It's a good practice to upgrade pip:
 
 $ sudo pip install –-upgrade pip
 
+We then need these packages to be able to run the code: 
+
 $ sudo pip install python-daemon
 
 $ sudo pip install pyyaml
 
 $ sudo pip install django
 
-The install procedure psycopg2 using python-pip seems to return an error, so we use yum instead:
+The install procedure psycopg2 using python-pip seems to return an error, so we use yum to install it instead:
 
 $ sudo yum install python-psycopg2
 
-Initialize the database:
+Now we are able to initialize the postgres database:
 
 $ sudo /usr/pgsql-9.4/bin/postgresql94-setup initdb
 
-Make it enabled by default on the OS by running this command:
+Make postgres enabled by default on the OS by running this command:
 
 $ sudo chkconfig postgresql-9.4 on
 
-Then start the service:
+Then start the postgres service:
 
 $ sudo systemctl enable postgresql-9.4.service
 
@@ -60,15 +62,19 @@ Create the user develdba with password dbadevel (after pressing enter, the conso
 
 $ sudo -u postgres createuser -d -R –P develdba
 
+Now we create the code database:
+
 $ sudo -u postgres createdb -O develdba qa
+
+The permissions of the user develdba to access the qa database must be set with the following commands:
 
 $ sudo -u postgres psql
 
-Run the query on the psql console:
+Then run the query on the psql console:
 
 postgres=# GRANT ALL PRIVILEGES ON DATABASE qa TO develdba;
 
-Go to the folder where the project will be cloned (here we assume ~/):
+Go to the folder where the project will be cloned (here we assume the user's home directory, i.e.: ~/):
 
 $ cd ~/
 
@@ -86,7 +92,7 @@ Then restart the service:
 
 $ sudo systemctl restart postgresql-9.4.service
 
-Then go to the folder where the qlf project is cloned (here we assume ~/):
+Then go to the django root folder 'qlf', inside the folder where the qlf project is cloned (here we assume ~/qlf/qlf):
 
 $ cd ~/qlf/qlf
 
