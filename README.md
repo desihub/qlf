@@ -60,7 +60,7 @@ $ sudo systemctl start postgresql-9.4.service
 
 Create the user develdba with password dbadevel (after pressing enter, the console prompts to type the password):
 
-$ sudo -u postgres createuser -d -R –P develdba
+$ sudo -u postgres createuser -d -R -P develdba
 
 Now we create the code database:
 
@@ -84,9 +84,13 @@ $ git clone https://github.com/linea-it/qlf
 
 $ sudo vim /var/lib/pgsql/9.4/data/pg_hba.conf 
 
-append the following line to pg_hba.conf:
+append the following line
 
-host all develdba 127.0.0.1/32 md5
+host    all             develdba        127.0.0.1/32            md5
+
+BEFORE THE LINE:
+
+host    all             all             127.0.0.1/32            ident
 
 Then restart the service:
 
