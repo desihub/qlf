@@ -34,11 +34,11 @@ BEFORE THE LINE:
 
 host    all             all             127.0.0.1/32            ident
 
-Now we are need to initialize the postgres database:
+Now we need to initialize the postgres database:
 
 $ sudo postgresql-setup initdb
 
-Make postgres enabled by default on the OS by running this command:
+Make postgresql enabled by default on the OS by running this command:
 
 $ sudo chkconfig postgresql on
 
