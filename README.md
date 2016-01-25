@@ -10,21 +10,15 @@ Install procedure:
 
 This tutorial applies to Red Hat 7-based Linux distributions (CentOS 7, etc.). To run on Debian based distributions, the procedure is practically similar, but using apt-get instead of yum.
 
-First, install git (if not already installed):
-
-$ sudo yum install git
-
-Install the mirror definitions to postgresql94:
+First, install the mirror definitions to postgresql94:
 
 $ sudo yum localinstall http://yum.postgresql.org/9.4/redhat/rhel-6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
 
-Install postgresql94-server (it installs postgresql94 as dependency):
+Install postgresql94-server, git (to clone the repository), and epel-release (to install python-pip):
 
-$ sudo yum install postgresql94-server
+$ sudo yum install postgresql94-server git epel-release
 
-We also need python-pip, which requires epel repository to be able to install:
-
-$ sudo yum install epel-release
+Now that we have epel, we're able to install python-pip:
 
 $ sudo yum install python-pip
 
@@ -40,7 +34,7 @@ $ sudo pip install pyyaml
 
 $ sudo pip install django
 
-The install procedure psycopg2 using python-pip seems to return an error, so we use yum to install it instead:
+Using pip to install psycopg2 seems to return an error, so we use yum to install it instead:
 
 $ sudo yum install python-psycopg2
 
@@ -74,13 +68,7 @@ Then run the query on the psql console:
 
 postgres=# GRANT ALL PRIVILEGES ON DATABASE qa TO develdba;
 
-Go to the folder where the project will be cloned (here we assume the user's home directory, i.e.: ~/):
-
-$ cd ~/
-
-Then clone the repository:
-
-$ git clone https://github.com/linea-it/qlf
+Open pg_hba.conf with yout favorite editor (as root). Here we use vim:
 
 $ sudo vim /var/lib/pgsql/9.4/data/pg_hba.conf 
 
@@ -96,12 +84,18 @@ Then restart the service:
 
 $ sudo systemctl restart postgresql-9.4.service
 
-Then go to the django root folder 'qlf', inside the folder where the qlf project is cloned (here we assume ~/qlf/qlf):
+Go to the folder where the project will be cloned (here we assume the user's home directory, i.e.: ~/):
+
+$ cd ~/
+
+Then clone the repository:
+
+$ git clone https://github.com/linea-it/qlf
+
+Then go to the django root folder 'qlf'. it is located inside the folder where the qlf project is cloned (we assume ~/qlf/qlf):
 
 $ cd ~/qlf/qlf
 
-Now we create the tables using the following command:
+Finally, we create the tables using the following command:
 
 $ python manage.py migrate
-
-
