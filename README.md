@@ -22,9 +22,9 @@ We then need these packages to be able to run the code:
 
 $ sudo pip install python-daemon pyyaml django psycopg2
 
-Now we're going to configure postgresql. Open pg_hba.conf with yout favorite editor (as root). Here we use vim:
+Now we're going to configure postgresql. Open pg_hba.conf with yout favorite editor (as root). Here we use gedit:
 
-$ sudo vim /var/lib/pgsql/data/pg_hba.conf 
+$ sudo gedit /var/lib/pgsql/data/pg_hba.conf 
 
 append the following line:
 
@@ -34,15 +34,15 @@ BEFORE THE LINE:
 
 host    all             all             127.0.0.1/32            ident
 
-Now we need to initialize the postgres database:
+Now we need to initialize the database:
 
 $ sudo postgresql-setup initdb
 
-Make postgresql enabled by default on the OS by running this command:
+Make postgresql enabled on the OS startup by running this command:
 
 $ sudo chkconfig postgresql on
 
-Then start the postgres service:
+Then start the postgresql service:
 
 $ sudo systemctl enable postgresql.service
 
@@ -69,6 +69,8 @@ Go to the folder where the project will be cloned (here we assume the user's hom
 
 $ cd ~/ && git clone https://github.com/linea-it/qlf
 
-Finally, we create the tables using the following command:
+Finally, if everything worked out correctly, we can create the tables on the database by using the following command:
 
 $ python ~/qlf/qlf/manage.py migrate
+
+
