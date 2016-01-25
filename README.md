@@ -63,6 +63,7 @@ $ sudo -u postgres psql
 Then run the query on the psql console (the second line is needed to exit from the psql console):
 
 postgres=# GRANT ALL PRIVILEGES ON DATABASE qa TO develdba;
+
 postgres=# \q
 
 Go to the folder where the project will be cloned (here we assume the user's home directory, i.e.: ~/). Then clone the repository:
