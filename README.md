@@ -16,11 +16,15 @@ $ sudo yum install gcc postgresql-server git epel-release postgresql-devel pytho
 
 Now that we have epel, we're able to install and update python-pip:
 
-$ sudo yum install python-pip && sudo pip install –-upgrade pip
+$ sudo yum install python-pip && sudo pip install --upgrade pip
 
 We then need these packages to be able to run the code: 
 
 $ sudo pip install python-daemon pyyaml django psycopg2
+
+Now we need to initialize the postgresql database:
+
+$ sudo postgresql-setup initdb
 
 Now we're going to configure postgresql. Open pg_hba.conf with yout favorite editor (as root). Here we use gedit:
 
@@ -33,10 +37,6 @@ host    all             develdba        127.0.0.1/32            md5
 BEFORE THE LINE:
 
 host    all             all             127.0.0.1/32            ident
-
-Now we need to initialize the database:
-
-$ sudo postgresql-setup initdb
 
 Make postgresql enabled on the OS startup by running this command:
 
