@@ -1,5 +1,0 @@
-How to run QLF daemon:
-
-On 'scripts' folder, run:
-
-$./qlf-daemon.py start
