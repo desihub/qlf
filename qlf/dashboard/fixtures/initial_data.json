@@ -1,0 +1,11 @@
+[
+  {
+    "model": "dashboard.metric",
+    "pk": "SNR",
+    "fields": {
+        "description": "Median SNR averaged over each amplifier.",
+        "units": "",
+        "threshold": 10
+    }
+  }
+]
