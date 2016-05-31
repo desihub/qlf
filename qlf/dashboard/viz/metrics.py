@@ -31,7 +31,10 @@ def make_time_series_plot(metric):
 
     taptool.callback = OpenURL(url="www.example.com")
 
-    plot.yaxis.axis_label = data['metric'] + '(' + data['units'] + ')'
+    if data['units']:
+        plot.yaxis.axis_label = data['metric'] + '(' + data['units'] + ')'
+    else:
+        plot.yaxis.axis_label = data['metric']
 
     legends.append((data['metric'], [line]))
 

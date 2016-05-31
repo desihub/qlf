@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 api_router = DefaultRouter()
-api_router.register(r'jobs', views.JobViewSet)
+api_router.register(r'job', views.JobViewSet)
 api_router.register(r'metric', views.MetricViewSet)
 
 urlpatterns = [

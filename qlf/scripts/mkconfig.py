@@ -1,7 +1,7 @@
 import json
 import yaml
 
-with open('config/ql.json', 'r') as fp:
+with open('../config/ql.json', 'r') as fp:
     data = json.load(fp)
 
 root = {"PipeLine":[]}
@@ -22,6 +22,5 @@ for item in data["tasks"]:
         steps.append(step)
     root["PipeLine"].append({"StepName":item["name"],"Modules":steps,"OutputFile":outputfile})
 
-print root
-with open("config/ql.yaml","w") as fp:
+with open("../config/ql.yaml","w") as fp:
     yaml.safe_dump(root,fp)

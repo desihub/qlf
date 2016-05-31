@@ -50,7 +50,7 @@ master_doc = 'index'
 # General information about the project.
 project = 'Quick Look'
 copyright = '2016, LIneA/DESI'
-author = 'Angelo Fausti and Luiz Nicolaci da Costa (LIneA)'
+author = 'Angelo Fausti, Alisson Lanot, Luiz Nicolaci da Costa'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

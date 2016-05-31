@@ -4,7 +4,7 @@ Quick Look Framework
 .. toctree::
    :maxdepth: 2
 
-Angelo Fausti, Luiz N. da Costa
+Angelo Fausti, Alisson Lanot, Luiz N. da Costa
 
 .. note::
     Work in progress.
@@ -15,10 +15,10 @@ Introduction
 Quick Look Framework (QLF) is designed monitor QA outputs from the DESI Quick Look pipeline and provide
 feedback to observers about the quality of the data in real-time.
 
-In development mode, QLF runs locally and emulates the Data Online System (DOS) environment to get the input files and
+In development mode, QLF runs locally emulating the Data Online System (DOS) environment to get the input files and
 metadata required to run the QL pipeline.
 
-See the `README <http://example.com/>`_ for instructions on how to clone the repository, install the software dependencies and start the QLF demo.
+See the `README <https://github.com/linea-it/qlf/blob/master/README.md>`_ for instructions on how to clone the repository, install the software dependencies and start the QLF demo.
 
 System Design
 ^^^^^^^^^^^^^
@@ -57,7 +57,7 @@ QLF v0.1
 This section describes QLF v0.1 implementation.
 
 The selected technologies prioritize the use of Python
-as the main development language, and a mature framework like Django to make the system easy to extend.
+as the main development language, and a mature framework like Django making the system easy to extend for DESI developers.
 The web dashboard uses `Django <https://www.djangoproject.com/>`_ and the `Bokeh <http://bokeh.pydata.org/en/latest/>`_ python plotting library to create interactive visualizations in the browser.
 
 
@@ -74,13 +74,14 @@ The QLF database keeps information about the QA outputs as well as the pipeline 
        Figure 2. QLF v0.1 database, showing ``Job``, ``Metric`` and associated ``Measurement`` tables.
 
 
-QA outputs are generically referred as *metrics* here and are registered in the ``Metric`` table, they have ``name``, ``description``, ``condition``
+QA outputs are generically referred as *metrics* here, and are registered in the ``Metric`` table. A metric has ``name``, ``description``, ``condition``
 and a ``threshold`` that can be used to trigger alerts.
 
-In QLF v0.1 this table store just summary information (e.g. median SNR per ccd). We plan to extend the schema in QLF v0.3 to support
-individual and aggregated measurements (e.g. SNR of each fiber associated to a given CCD and Spetrograph as well as median SNR per CCD or Spectrograph) adding the ``Spectrograph``, ``Ccd`` and ``Fiber`` tables in the schema.
+In QLF v0.1,  this table stores just summary information (e.g. median SNR per ccd). We plan to extend the schema in QLF v0.3 to support
+individual and aggregated measurements adding the ``Spectrograph``, ``Ccd`` and ``Fiber`` tables in the schema (e.g. SNR of each fiber
+associated to a given CCD and Spetrograph as well as median SNR per CCD or Spectrograph)
 
-Each execution of the pipeline is called a *job* and has a ``start`` and ``end`` times and a ``status``.
+Each execution of the pipeline is called a *job* and has ``start``, ``end`` time and a ``status``.
 
 In the current schema, each job can perform *N* measurements and each measurement is associated to a metric.
 
@@ -114,13 +115,16 @@ A typical call to the QLF API looks like:
     >>> response.status_code
     201
 
+.. note::
+   In development mode the API can be reached at http://localhost:8000/dashboard/api with user=nobody and password=nobody
+
 
 Visualization
 -------------
 
-In QLF v0.1, we integrated Django and the Bokeh python library. We demonstrate this integration with a single view
-that lists QA outputs registered in the QLF database (e.g Median SNR) and presents and interactive time series plot
-showing the values measured by each execution of the QL pipeline (in QLF v0.1 a constant value of 1.0)
+In QLF v0.1, we integrated Django and the Bokeh python library, and demonstrate this integration with a dashboard
+that lists QA outputs registered in the QLF database (e.g Median SNR) and present an interactive time series plot
+showing the values measured by each execution of the QL pipeline (in QLF v0.1 this is a constant value)
 
 A screenshot of the dashboard interface is shown below:
 
@@ -129,7 +133,7 @@ A screenshot of the dashboard interface is shown below:
        :target: _static/dashboard.png
        :alt: QLF v0.1 dashboard
 
-       Figure 2. QLF v0.1 dashboard, listing QA Ouptus and a time series plot.
+       Figure 2. QLF v0.1 dashboard, listing QA Outputs and a time series plot.
 
 
 References

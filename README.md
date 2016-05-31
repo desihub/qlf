@@ -38,8 +38,10 @@ The dashboard will run on http://localhost:8000
 
 ## Compile the QLF documentation
 ```
+  $ cd qlf
+  $ source env/bin/activate
   $ cd docs
   $ make html
 ```
 
-you can open the documentation locally at ```qlf/docs/_build/html/index.html```
+open the documentation at ```qlf/docs/_build/html/index.html```

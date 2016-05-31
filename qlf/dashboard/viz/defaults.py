@@ -23,7 +23,7 @@ def init_time_series_plot(hover):
     plot.add_tools(hover)
     plot.x_range.follow = "end"
     plot.x_range.range_padding = 0
-    plot.xaxis.axis_label = "Date"
+    plot.xaxis.axis_label = "Time"
     plot.xaxis.major_label_orientation = pi/4
     plot.xaxis.formatter = DatetimeTickFormatter(formats=dict(
         hours=["%d %B"],
