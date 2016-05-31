@@ -2,6 +2,8 @@
 
 Development of the Quick Look Framework (QLF) for DESI
 
+http://quick-look-framework.readthedocs.io
+
 ## Cloning the project
 
 ```
