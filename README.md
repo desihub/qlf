@@ -27,6 +27,9 @@ the first time you will be asked to set a database password for your user.
 Open another terminal and start the Bokeh server:
 
 ```
+  $ cd ..
+  $ source env/bin/activate
+  $ cd qlf
   $ ./bokeh.sh
 ```
 
@@ -39,3 +42,4 @@ The dashboard will run on http://localhost:8000
   $ make html
 ```
 
+you can open the documentation locally at ```qlf/docs/_build/html/index.html```
