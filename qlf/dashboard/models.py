@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
-from .bokeh_utils import update_bokeh_sessions
 
 
 class Job(models.Model):
@@ -9,7 +7,7 @@ class Job(models.Model):
     STATUS_FAILED = 1
 
     name = models.CharField(max_length=32, blank=False,
-                               help_text='Name of the Jenkins job')
+                            help_text='Name of the Jenkins job')
     date = models.DateTimeField(auto_now=True,
                                 help_text='Datetime when job was registered')
     status = models.SmallIntegerField(default=STATUS_OK,
@@ -33,6 +31,7 @@ class Metric(models.Model):
     def __str__(self):
         return str(self.name)
 
+
 class Measurement(models.Model):
     """Measurement of a metric by a job"""
     metric = models.ForeignKey(Metric, null=False)
@@ -41,20 +40,6 @@ class Measurement(models.Model):
 
     def __float__(self):
         return str(self.value)
-
-    def save(self, *args, **kwargs):
-        super(Measurement, self).save(*args, **kwargs)
-        # When a new measurement is saved, update all the data
-        # for the bokeh sessions.
-        # Improvements:
-        # - Only update metrics affected by this data
-        # (only get affected Sessions)
-        update_bokeh_sessions(UserSession.objects.all())
-
-
-class UserSession(models.Model):
-    user = models.ForeignKey(User, null=False)
-    bokehSessionId = models.CharField(max_length=64)
 
 
 def get_time_series_data(metric):

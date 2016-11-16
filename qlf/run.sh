@@ -38,7 +38,7 @@ echo "Remember to start the bokeh server in another terminal..."
 sleep 1
 
 # Start QLF daemon
-python bin/qlf.py &
+# python bin/qlf.py &
 
 # Start QLF web application
 python manage.py runserver

@@ -1,9 +1,8 @@
 from django.views.generic import ListView
 from rest_framework import authentication, permissions, viewsets
-from .viz.metrics import make_time_series_plot
-from .bokeh_utils import get_bokeh_script
 from .models import Job, Metric
 from .serializers import JobSerializer, MetricSerializer
+from bokeh.embed import autoload_server
 
 
 class DefaultsMixin(object):
@@ -45,22 +44,8 @@ class MetricView(ListView):
     template_name = 'dashboard/index.html'
 
     def get_context_data(self, **kwargs):
-
         context = super(MetricView, self).get_context_data(**kwargs)
-        selected_metric = self.kwargs['pk']
-
-
-        if selected_metric:
-
-            # TODO: get string from metric description
-            context['selected_metric'] = "Median %s averaged over each amplifier." %selected_metric
-        else:
-            context['selected_metric'] = "Select a QA Output for display..."
-
-        plot = make_time_series_plot(selected_metric)
-
-        bokeh_script = get_bokeh_script(plot=plot)
-
-        context.update(metric_script=bokeh_script)
-
+        bokeh_script = autoload_server(None, app_path="/metrics",
+                                       url='default')
+        context.update(bokeh_script=bokeh_script)
         return context
