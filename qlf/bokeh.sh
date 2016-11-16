@@ -1,3 +1,3 @@
 #!/bin/sh
 
-bokeh serve --log-level=info --host=localhost:5006 --host=localhost:8000
+bokeh serve --allow-websocket-origin=localhost:8000 dashboard/viz/metrics.py

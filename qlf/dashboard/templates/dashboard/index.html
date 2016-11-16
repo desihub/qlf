@@ -4,44 +4,12 @@
 
 {% block content %}
 
-<div class="jumbotron">
-    <div class="container">
-        <h2>QL Dashboard<h4>
-        <h2><small>Tracking QA metrics from the QL pipeline</small></h2>
+<div class="container">
+    <div class="row">
     </div>
+    <div class="panel-body plot">{{ bokeh_script|safe }}</div>
 </div>
 
-<div class="container">
-
-    <div class="row">
-        <div class="col-xs-2">
-          <ul class="nav nav-pills nav-stacked">
-              <li role="presentation"><h4>QA Metrics</h4></li>
-              <hr>
-              {% for module in object_list %}
-                <li role="presentation" >
-                    <a href="{% url "module-list" pk=module.name %}" data-toggle="tooltip"  data-placement="left" title="{{ module.description }}" >{{ module|upper }}</a>
-                </li>
-              {% endfor %}
-              <hr>
-
-          </ul>
-        </div>
-        <div class="col-xs-10">
-
-            <div class="panel panel-default">
-                <div class="panel-heading">{{ selected_metric }}</div>
-            </div>
-            <ul class="nav nav-tabs">
-                <li role="presentation"><a href="">Summary</a></li>
-                <li role="presentation"><a href="">Logs</a></li>
-            </ul>
-            <div class="panel panel-default">
-                <div class="panel-body plot">{{ metric_script|safe }}</div>
-            </div>
-
-        </div>
-   </div>
 
 {% endblock content %}
 
