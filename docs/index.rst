@@ -50,8 +50,9 @@ Implements the interface with DOS (or DOS test environment) to access the input 
 for the required input files from DOS (or DOS test environment) so that the exposures can be transferred to QLF local disk.
 We assume a exposure is a single FITS file with 30 HDUs (one per camera).
 
-NOTE: specify similar methods for calibration files (fiber flat, psf boot, ect), telemetry data, fibermap and ETC data.
-They also can be obtained from opsDB using ``DOSlib``.
+
+.. note::
+    specify similar methods for calibration files (fiber flat, psf boot, ect), telemetry data, fibermap and ETC data. They also can be obtained from opsDB using ``DOSlib``.
 
 
 QL Framework
