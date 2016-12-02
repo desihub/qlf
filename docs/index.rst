@@ -4,7 +4,7 @@ Quick Look Framework
 .. toctree::
    :maxdepth: 2
 
-Angelo Fausti, Alisson Lanot, Luiz N. da Costa
+Angelo Fausti, Robson Goncalves, Luiz N. da Costa
 
 .. note::
     Work in progress.
@@ -19,7 +19,7 @@ In development mode, QLF runs locally and emulates the Data Online System (DOS) 
 metadata required to run the QL pipeline.
 
 See the `README <https://github.com/linea-it/qlf/blob/master/README.md>`_ for instructions on how to clone the repository,
-install the software dependencies and start the QLF demo.
+install the software dependencies and start QLF in development mode.
 
 System Design
 ^^^^^^^^^^^^^
@@ -34,69 +34,83 @@ The main components of QLF are described below
        Figure 1. QLF system components.
 
 
- - **DOS Test Environment**: Emulates DOS environment for integration tests during development;
- - **DOS Monitor**: implements the interface with DOS (or DOS test environment) to access the input files
-   and metadata required to run the QL pipeline;
- - **QLF App**: orchestrates the execution of the QL pipeline, prepare input data and configuration, launches the QL pipeline and store relevant information in the QLF database for display in the dashoard;
- - **QL pipeline**: implemented independently of the QLF, QL pipeline communicates with the QLF framework
-   through the QLF API;
- - **Dashboard**: web pages for display the QA metrics.
+DOS Test Environment
+--------------------
+
+Emulates the acquisition of new exposures for integration tests during development.
 
 
-TODO: include description of the dataflow
+DOS Monitor
+-----------
+
+Implements the interface with DOS (or DOS test environment) to access the input files and metadata required to run the QL pipeline.
+
+``DOSlib`` API will provide methods to query the opsDB, for example ``DOSlib.get_last_expid()`` returns information about the last observed exposure such as ``expid``, ``obsdate`` and
+``flavor`` and ``DOSlib.get_files(expid)`` can be used to transfer the required input files from DOS (or from the DOS test environment)
+to QLF local disk:
+
+ - Exposure (a FITS file with 30 HDUs one per camera)
+ - Calibration files (Fiber flat, PSF Boot, etc)
+
+NOTE: Exposure metadata, telemetry data, fibermap and ETC data will also be obtained from opsDB using ``DOSlib``.
 
 
-Implementation phases
-^^^^^^^^^^^^^^^^^^^^^
-
- - **QLF v0.1**: demonstration of QLF technology stack and main concepts. In this initial version QLF produces a scalar metric (e.g. Median SNR), stores this value and job information in the database and display the result in a web page.
- - **QLF v0.2**: improvements in the QLF interface to include configuration, monitor and control the pipeline execution
- - **QLF v0.3**: first integration with QL pipeline, using simulated data and processing one ccd, still display aggregated metrics but includes a first implementation of the DOS Test Environment.
- - **QLF v0.4**: support individual and aggregated metrics, implement single CCD display
- - **QLF V0.5**: ...
-
-QLF v0.1
-^^^^^^^^
-
-This section describes QLF v0.1 implementation.
-
-The selected technologies prioritize the use of Python
-as the main development language, and a mature framework like Django making the system easy to extend for DESI developers.
-The web dashboard uses `Django <https://www.djangoproject.com/>`_ and the `Bokeh <http://bokeh.pydata.org/en/latest/>`_ python plotting library to create interactive visualizations in the browser.
-
-
-QLF database
+QL Framework
 ------------
 
-The QLF database keeps information about the QA metrics and pipeline execution.
+Orchestrates the execution of the QL pipeline and store relevant QA results in the database for visualization.
+
+The QLF database keeps information about the execution, and QA measurements associated with a given camera and
+exposure.
 
     .. figure:: _static/qlfdb.png
        :name: qlfdb
        :target: _static/qlfdb.png
-       :alt: QLF v0.1 database
+       :alt: QLF v0.2 database
 
-       Figure 2. QLF v0.1 database, showing ``Job``, ``Metric`` and associated ``Measurement`` tables.
-
-
-QA metrics are registered in the ``Metric`` table. A metric has ``name``, ``description``, ``condition``
-and a ``threshold`` that can be used to trigger alerts.
-
-In QLF v0.1,  this table stores just **summary information** (e.g. median SNR per ccd). We plan to extend the schema in QLF v0.4 to support
-individual and aggregated measurements adding the ``Spectrograph``, ``Ccd`` and ``Fiber`` tables in the schema (e.g. SNR of each fiber
-associated to a given CCD and spectrograph as well as median SNR per CCD or Spectrograph)
-
-Each execution of the pipeline is registered in the ``Job`` table and has ``start``, ``end`` time and a ``status``.
-
-In the current schema, each job can perform *N* measurements and each measurement is associated to a metric.
+       Figure 2. Schema of the QLF v0.2 database
 
 
-The Execution framework
------------------------
+QA metrics are pre-loaded into the ``QAMetric`` table as part of the database initialization. A QA metric has just ``name``, ``description``, and ``unit``.
 
-In QLF v0.1, the execution framework is simply a daemon that launches an executable code (a placeholder for the actual QL pipeline).
-The output of this code is registered into the QLF database through the QLF API.
+1. Call ``DOSlib.get_last_expid()``
 
-A typical call to the QLF API looks like:
+2. If last observed ``expid`` > last processed ``expid``; then call ``QLF.register(exposure)``. The exposure registration inserts just the ``expid``, ``obsdate`` and ``flavor`` in the ``Exposure`` table.
+
+NOTE: we want to register all exposures regardless of the ``flavor``, this information is useful for night statistics but only `object` exposures will be
+processed
+
+3. If ``flavor`` is `object`; then call ``DOSlib.get_files(expid)``
+
+4. Ingest exposure metadata (available in the FITS header at this point)
+
+NOTE: can be done in item 2 too, depending whether we want metadata for non `object` exposures or not.
+
+5. Split the exposure and fiberflat files in individual FITS files (one for each camera) and call ``QLF.register(camera)`` which fills the ``Camera`` table.
+
+NOTE: other inputs are needed (e.g fibermap, PSF boot, etc)
+
+5. Generate the QL configuration (one file for each camera) based on the current saved configuration
+
+NOTE: The QL configuration can be changed on-the-fly via the interface
+
+7. Execute 30 instances of the QL pipeline (one for each camera) in parallel
+
+8. During the execution of each instance, each processing step makes an HTTP post to fill the ``Measurement`` table with the corresponding QA output, associated with the current exposure and camera (async)
+
+NOTE: we need the QA results as soon as they are produced in order to monitor the execution in real-time; we can't wait the end of the pipeline
+execution in order to ingest the results. The partial results of each step for each camera must be
+available immediately for visualization. For each exposure that means about 10 QAs x 30 cameras HTTP requests, which should be fine.
+
+Discuss failure recovery.
+
+9. Go back to 1.
+
+NOTE: For dark time the exposure time (900s) > than the processing time, but for bright time the exposure time
+will be shorter than the processing time. Note that the above algorithm works for both, we always process the most recent
+exposure.
+
+A typical HTTP POST in the QLF API looks like:
 
 .. code-block:: python
 
@@ -106,12 +120,14 @@ A typical call to the QLF API looks like:
     200
     >>> api = response.json()
     >>> job = {
-                 "name": "test",
+                 "id": 1,
+                 "expid": 0,
+                 "camera": "r0",
                  "status": 0,
                  "measurements": [
                      {
                          "metric": "SNR",
-                         "value": 1.0
+                         "value": <JSON object of the QA output>
                      }
                  ]
                }
@@ -119,28 +135,52 @@ A typical call to the QLF API looks like:
     >>> response.status_code
     201
 
-the QLF daemon is implemented in `bin/qlf.py <https://github.com/linea-it/qlf/blob/master/qlf/bin/qlf.py>`_. In v0.1 it
-sends a constant *SNR=1.0* each 10s to the QLF API.
 
-.. note::
-   In development mode the API can be reached at http://localhost:8000/dashboard/api with user=nobody and password=nobody
+QL pipeline
+-----------
+
+Implemented independently, it is launched by QLF. QL pipeline communicates back with the QLF framework via HTTP POST.
+
+The processing steps and associated QAs are listed below:
+
+1. Preprocessing:
+
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-countpix-CAMERA-EXPID.rst
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-getbias-CAMERA-EXPID.rst
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-getrms-CAMERA-EXPID.rst
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-xwsigma-CAMERA-EXPID.rst
+
+2. Extraction: desispec.boxcar.py
+
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-countbins-CAMERA-EXPID.rst
+
+
+3. Fiber Flattening: desispec.quickfiberflat.py
+
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-integ-CAMERA-EXPID.rst
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-skycont-CAMERA-EXPID.rst
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-skypeak-CAMERA-EXPID.rst
+
+4. Sky Subtraction: desispec.quicksky.py
+
+ - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-snr-CAMERA-EXPID.rs
 
 
 Visualization
 -------------
 
-For QLF v0.1 we integrated the Django framework and the Bokeh python library. In order to demonstrate this integration we implemented a dashboard that lists QA metrics registered in the QLF database (e.g Median SNR) and present an interactive time series plot
-showing the values measured by each execution of the QL pipeline. Once QLF is integrated with the QL pipeline and we have single CCD processing in place we plan
-to extend the dashboard based on requirements from the collaboration.
+Web pages for display the QA metrics.
 
-A screenshot of the current dashboard interface is shown below:
 
-    .. figure:: _static/dashboard.png
-       :name: dashboard
-       :target: _static/dashboard.png
-       :alt: QLF v0.1 dashboard
+Implementation phases
+^^^^^^^^^^^^^^^^^^^^^
 
-       Figure 2. QLF v0.1 dashboard, listing QA netrics and a time series plot.
+ - **QLF v0.1**: demonstration of QLF technology stack and main concepts. In this initial version QLF produces a scalar metric (e.g. Median SNR), stores this value in the database and display the result in a web page. The selected technologies prioritize the use of Python as the main development language, and a mature framework like Django. The web dashboard uses `Django <https://www.djangoproject.com/>`_ and the `Bokeh <http://bokeh.pydata.org/en/latest/>`_ python plotting library to create interactive visualizations in the browser.
+
+ - **QLF v0.2**: improvements in the QLF interface to control the pipeline execution and display the execution log; new database schema including ``Exposure`` and ``Camera`` tables; ingestion of QA outputs as JSON blobs in the ``Measurements`` table. Include at least an example of interactive plot  (e.g SNR vs. mag)
+
+ - **QLF V0.3**: ...
+
 
 
 References
