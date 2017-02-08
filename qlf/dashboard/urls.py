@@ -13,7 +13,4 @@ api_router.register(r'metric', views.MetricViewSet)
 urlpatterns = [
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
-    url(r'^dashboard/api/token/', obtain_auth_token, name='api-token'),
-    url(r'^(?P<pk>[a-zA-Z0-9]*$)', views.MetricView.as_view(),
-        name='metric-list'),
 ]

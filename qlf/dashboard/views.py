@@ -38,14 +38,3 @@ class MetricViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Metric.objects.order_by('name')
     serializer_class = MetricSerializer
 
-
-class MetricView(ListView):
-    model = Metric
-    template_name = 'dashboard/index.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(MetricView, self).get_context_data(**kwargs)
-        bokeh_script = autoload_server(None, app_path="/metrics",
-                                       url='default')
-        context.update(bokeh_script=bokeh_script)
-        return context

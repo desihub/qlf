@@ -18,24 +18,24 @@ http://quick-look-framework.readthedocs.io
   $ pip install -r requirements.txt
 ```
 
-## Run QLF demo in development mode
+## Run QLF in development mode
 ```
   $ cd qlf
   $ ./run.sh
 ```
-
 the first time you will be asked to set a database password for your user.
+
+The dashboard API will run on http://localhost:8000/dashboard/api
 
 Open another terminal and start the Bokeh server:
 
 ```
-  $ cd ..
-  $ source env/bin/activate
   $ cd qlf
+  $ source env/bin/activate
+  $ cd viz
   $ ./bokeh.sh
 ```
-
-The dashboard will run on http://localhost:8000
+The bokeh apps will run on http://localhost:5006
 
 
 ## Compile the QLF documentation

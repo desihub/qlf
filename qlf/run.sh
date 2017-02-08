@@ -31,7 +31,7 @@ then
 fi
 
 # Load initial data
-python manage.py loaddata metric
+python manage.py loaddata qametrics
 
 echo "Remember to start the bokeh server in another terminal..."
 
@@ -40,7 +40,7 @@ sleep 1
 # Start QLF daemon
 # python bin/qlf.py &
 
-# Start QLF web application
+# Start QLF REST API
 python manage.py runserver
 
 
