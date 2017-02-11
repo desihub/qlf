@@ -1,7 +1,14 @@
-from django.views.generic import ListView
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
+
+from django.views.decorators.csrf import ensure_csrf_cookie
+
+import json
+
 from rest_framework import authentication, permissions, viewsets
 from .models import Job, Metric
 from .serializers import JobSerializer, MetricSerializer
+
 from bokeh.embed import autoload_server
 
 
@@ -38,3 +45,6 @@ class MetricViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Metric.objects.order_by('name')
     serializer_class = MetricSerializer
 
+@ensure_csrf_cookie
+def index(request):
+    return render_to_response('index.html')

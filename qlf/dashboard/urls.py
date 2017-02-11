@@ -13,4 +13,5 @@ api_router.register(r'metric', views.MetricViewSet)
 urlpatterns = [
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
+    url(r'^$', views.index, name='index')
 ]
