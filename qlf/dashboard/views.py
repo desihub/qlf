@@ -7,10 +7,10 @@ import json
 
 from rest_framework import authentication, permissions, viewsets
 from .models import Job, Metric
-from .serializers import JobSerializer, MetricSerializer
+from .serializers import JobSerializer, MetricSerializer, BokehSerializer
 
 from bokeh.embed import autoload_server
-
+from django.http import JsonResponse
 
 class DefaultsMixin(object):
     """
@@ -44,6 +44,13 @@ class MetricViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Metric.objects.order_by('name')
     serializer_class = MetricSerializer
+
+class BokehViewSet(viewsets.ModelViewSet):
+    """API endpoint for listing and creating metrics"""
+
+    model = Metric
+    queryset = Metric.objects.order_by('name')
+    serializer_class = BokehSerializer
 
 @ensure_csrf_cookie
 def index(request):

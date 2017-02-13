@@ -9,6 +9,7 @@ admin.site.site_header = 'QLF Admin'
 api_router = DefaultRouter()
 api_router.register(r'job', views.JobViewSet)
 api_router.register(r'metric', views.MetricViewSet)
+api_router.register(r'bokeh', views.BokehViewSet)
 
 urlpatterns = [
     url(r'^dashboard/admin', include(admin.site.urls)),

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from .models import Job, Metric, Measurement
 from django.db import transaction
-
+from bokeh.embed import autoload_server
 
 class MetricSerializer(serializers.ModelSerializer):
 
@@ -18,6 +18,22 @@ class MetricSerializer(serializers.ModelSerializer):
         return {
             'self': reverse('metric-detail', kwargs={'pk': obj.pk},
                             request=request),
+         }
+
+class BokehSerializer(serializers.ModelSerializer):
+
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Metric
+    def get_links(self, obj):
+        request = self.context['request']
+        bokeh_script = autoload_server(None, app_path="/metrics",
+                                       url='default')
+        return {
+            'self': bokeh_script,
+            'src' : bokeh_script.split()[1].split('"')[1],
+            'id'  : bokeh_script.split()[2].split('"')[1]
          }
 
 
