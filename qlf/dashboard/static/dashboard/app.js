@@ -3,7 +3,7 @@ Ext.onReady(function() {
 
   //-------------- container with bokeh ---------------
   var panelBokeh = {
-        title: 'QA',
+        title: '<p class="text">QA</p>',
         iconCls: 'x-fa fa-line-chart',
         height: 1024,
         items:[{
@@ -315,7 +315,7 @@ Ext.onReady(function() {
 
 
     var configurationPanel = {
-        title: 'Configuration',
+        title: '<p class="text">Configuration</p>',
         iconCls: 'x-fa fa-cog',
         width: 500,
         margin: '10 10 10 10',
@@ -393,22 +393,48 @@ Ext.onReady(function() {
     
 
   //--------------- configuration panel ----------------
-
+  var height = window.innerHeight
+  //height += - 70 
   //-------------- MAIN PANEL ---------------
   var mainPanel = Ext.create('Ext.tab.Panel', {
-    titleRotation: 0,
+    height: height,
+    autoWidth: true,
+    tabPosition: 'left',
+    tabBarHeaderPosition: 2,
+    headerPosition: 'left',
+    titleRotation:0,
     tabRotation: 0,
-    title: 'Quick Look',
-    iconCls: 'x-fa fa-th-list',
+    tabBar: {
+        border: false
+    },
+
+    defaults: {
+        textAlign: 'left',
+        bodyPadding: 15
+    },
+    
+    header: {
+        iconCls: 'x-fa fa-th-list', 
+        layout: {
+            align: 'stretchmax'
+        },
+        title: {
+            text: '<p class="text2">Quick Look</p>',
+            margin: '20 0 40 0',
+            flex: 0,
+            
+        },
+
+    },
     items: [{
-        title: 'Home',
+        title: '<p class="text">Home</p>',
         iconCls: 'x-fa fa-home',
         //listeners: {
         //    afterrender: 'teste'
         //}
     },configurationPanel,
     {
-        title: 'Monitor',
+        title: '<p class="text">Monitor</p>',
         iconCls: 'x-fa fa-desktop',
         // xtype: 'ccd'
     },
