@@ -400,9 +400,9 @@ Ext.onReady(function() {
     height: height,
     autoWidth: true,
     tabPosition: 'left',
-    tabBarHeaderPosition: 2,
+    //tabBarHeaderPosition: 0,
     headerPosition: 'left',
-    titleRotation:0,
+    titleRotation:1,
     tabRotation: 0,
     tabBar: {
         border: false
@@ -419,9 +419,9 @@ Ext.onReady(function() {
             align: 'stretchmax'
         },
         title: {
-            text: '<p class="text2">Quick Look</p>',
-            margin: '20 0 40 0',
-            flex: 0,
+            text: '<b>Quick Look</b>',
+            // margin: '20 0 40 0',
+            //flex: 0,
             
         },
 
