@@ -1,60 +1,74 @@
 from django.db import models
-
+from json_field import JSONField
 
 class Job(models.Model):
     """Job information"""
+
     STATUS_OK = 0
     STATUS_FAILED = 1
 
-    name = models.CharField(max_length=32, blank=False,
-                            help_text='Name of the Jenkins job')
+    name = models.CharField(max_length=45, default='Quick Look',
+                            help_text='Name of the job.')
     date = models.DateTimeField(auto_now=True,
-                                help_text='Datetime when job was registered')
+                                help_text='Datetime when the job was registered.')
     status = models.SmallIntegerField(default=STATUS_OK,
                                       help_text='Job status, 0=OK, 1=Failed')
-
-    def get_jobs(self):
-        pass
-
-    def __str__(self):
-        return str(self.name)
-
-
-class Metric(models.Model):
-    """QA module information"""
-    name = models.CharField(max_length=16, primary_key=True)
-    description = models.TextField()
-    units = models.CharField(max_length=16)
-    condition = models.CharField(max_length=2, blank=False, default='<')
-    threshold = models.FloatField(null=False)
+    configuration = JSONField(decoder=None, help_text='Configuration used.')
+    version = models.CharField(max_length=16, help_text='Version of the pipeline')
 
     def __str__(self):
         return str(self.name)
 
 
-class Measurement(models.Model):
-    """Measurement of a metric by a job"""
-    metric = models.ForeignKey(Metric, null=False)
-    job = models.ForeignKey(Job, null=False, related_name='measurements')
-    value = models.FloatField(blank=False)
+class Exposure(models.Model):
+    """Exposure information"""
 
-    def __float__(self):
-        return str(self.value)
+    # TODO: make null=False when exposure data is available
+
+    job = models.ForeignKey(Job, related_name='job')
+    expid = models.CharField(max_length=8, unique=True,
+                                 help_text='Exposure number')
+    telra = models.FloatField(blank=True, null=True,
+                              help_text='Central RA of the exposure')
+    teldec = models.FloatField(blank=True, null=True,
+                               help_text='Central Dec of the exposure')
+    tile = models.IntegerField(blank=True, null=True,
+                                 help_text='Tile ID')
+    dateobs = models.DateTimeField(blank=True, null=True,
+                                   help_text='Date of observation')
+    flavor = models.CharField(max_length=45, default='Object',
+                              help_text='Type of observation')
+    night = models.CharField(max_length=45, blank=True,
+                             help_text='Night ID')
+    airmass = models.FloatField(blank=True, null=True,
+                                help_text='Airmass')
+    exptime = models.FloatField(blank=True, null=True,
+                                help_text='Exposure time')
 
 
-def get_time_series_data(metric):
+class Camera(models.Model):
+    """Camera information"""
+    camera = models.CharField(max_length=2,
+                              help_text='Camera ID', primary_key=True)
+    exposure = models.ForeignKey(Exposure)
+    spectrograph = models.CharField(max_length=1,
+                                     help_text='Spectrograph ID')
+    arm = models.CharField(max_length=1,
+                           help_text='Arm ID')
 
-    m = Measurement.objects.filter(metric=metric)
+    def __str__(self):
+        return str(self.camera)
 
-    if m:
-        units = m[0].metric.units
-    else:
-        units = ""
 
-    return {
-            'id': [x.job.pk for x in m],
-            'metric': metric,
-            'dates': [x.job.date for x in m],
-            'values': [x.value for x in m],
-            'units':  units,
-           }
+class QA(models.Model):
+    """QA information"""
+    camera = models.ForeignKey(Camera)
+    name = models.CharField(max_length=45, help_text='QA name')
+    description = models.TextField(help_text='QA Description')
+    paname = models.CharField(max_length=45, help_text='Associate PA name')
+    value = JSONField(decoder=None, help_text='JSON structure with the QA result')
+
+    def __str__(self):
+        return str(self.name)
+
+

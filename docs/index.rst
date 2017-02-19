@@ -12,7 +12,7 @@ Angelo Fausti, Robson Goncalves, Luiz N. da Costa
 Introduction
 ^^^^^^^^^^^^
 
-Quick Look Framework (QLF) is designed display QA metrics from the DESI Quick Look pipeline and provide
+Quick Look Framework (QLF) is designed to display QA results from the DESI Quick Look pipeline and provide
 feedback to observers about the quality of the data in real-time.
 
 In development mode, QLF runs locally and emulates the Data Online System (DOS) environment to get the input files and
@@ -149,7 +149,7 @@ A typical HTTP POST to the QLF API looks like:
 QL pipeline
 -----------
 
-Implemented independently. It is launched by QLF. QL pipeline communicates back with QLF via HTTP POST.
+Implemented independently by the It is launched by QLF. QL pipeline communicates back with QLF via HTTP POST.
 
 The processing steps and associated QAs are listed below:
 
@@ -179,19 +179,32 @@ The processing steps and associated QAs are listed below:
 Visualization
 -------------
 
-Web pages for display the QA metrics.
+Mock up of the interfaces.
 
 
-Implementation phases
-^^^^^^^^^^^^^^^^^^^^^
 
- - **QLF v0.1**: demonstration of QLF technology stack and main concepts. In this initial version QLF produces a scalar metric (e.g. Median SNR), stores this value in the database and display the result in a web page. The selected technologies prioritize the use of Python as the main development language, and a mature framework like Django. The web dashboard uses `Django <https://www.djangoproject.com/>`_ and the `Bokeh <http://bokeh.pydata.org/en/latest/>`_ python plotting library to create interactive visualizations in the browser.
+Schedule
+^^^^^^^^
 
- - **QLF v0.2**: improvements in the QLF interface to control the pipeline execution and display the execution log; new database schema including ``Exposure`` and ``Camera`` tables; ingestion of QA outputs as JSON blobs in the ``Measurements`` table. Include at least an example of interactive plot  (e.g SNR vs. mag)
+The gantt chart below shows QLF milestones according to the SOW. "light blue" corresponds to the ICS
+milestone (WBS 1.7.10), "dark blue" to the Survey QA Interface milestones (WBS 1.8.3.8) and "yellow"
+correspond to testing/feedback from the DESI collaboration.
 
- - **QLF V0.3**: ...
+During QLF development, subtasks in each milestone will be detailed.
 
+.. raw:: html
 
+    <IFRAME WIDTH=1000 HEIGHT=700 FRAMEBORDER=0 SRC="https://app.smartsheet.com/b/publish?EQBCT=3a74696141d64da795cf3d8923142558"></IFRAME>
+
+Overview of the functionalities to be implemented in each milestone, intermediate versions are planned.
+
+ - Demonstrator (v0.1): demonstration of QLF technology stack and main concepts. In this initial version QLF produces a scalar metric (e.g. median SNR), stores its value in the database and display the result in a web page. The selected technologies prioritize the use of Python as the main development language. The application uses `Django <https://www.djangoproject.com/>`_ and the `Bokeh <http://bokeh.pydata.org/en/latest/>`_ python plotting library to create interactive visualizations in the browser.
+
+ - Early QLF (v0.2): QLF interface to control the pipeline execution and display the execution logs; new database schema including ``Exposure`` and ``Camera`` tables; ingestion of QA outputs as JSON blobs in the ``QA`` table. Include at least one example of interactive plot  (e.g SNR vs. mag)
+
+ - Intermediate QLF (v0.5): Add more QA plots. Configuration interface. DOS emulator. Moniroting Interface. Start thinking about processing the 30 CCDs. Preparation for the first mock observing tests.
+
+ - Production QLF (v1.0): Production ready, second round of mock observing tests.
 
 References
 ==========

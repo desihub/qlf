@@ -1,13 +1,9 @@
 #!/bin/bash
 
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+
 # Run QLF in development mode, create db if it does not exist
 # start QLF web application and QLF daemon
-
-if [ "$DJANGO_SETTINGS_MODULE" = "qlf.settings.production" ];
-then
-    echo "Do not use this script in production mode."
-    exit 1
-fi
 
 # Test user for the development db
 export TEST_USER=nobody
@@ -15,7 +11,7 @@ export TEST_USER_EMAIL=${TEST_USER}@example.com
 export TEST_USER_PASSWD=nobody
 
 # Initialize the development database for the first time
-DEVDB="db.sqlite3"
+DEVDB="../db.sqlite3"
 
 if [ ! -f $DEVDB ];
 then
@@ -29,9 +25,6 @@ then
     python manage.py createsuperuser --username $TEST_USER --email $TEST_USER_EMAIL
 
 fi
-
-# Load initial data
-python manage.py loaddata qametrics
 
 echo "Remember to start the bokeh server in another terminal..."
 

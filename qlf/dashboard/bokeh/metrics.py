@@ -1,10 +1,10 @@
 from bokeh.io import curdoc
-from bokeh.models import ColumnDataSource, HoverTool
-
-from bokeh.models.widgets import Select, Div, Slider
 from bokeh.layouts import row, widgetbox, column, gridplot
+from bokeh.models import ColumnDataSource, HoverTool
+from bokeh.models.widgets import Select, Slider
+
+from bin.service import get_plot_data
 from defaults import init_xy_plot
-from service import get_plot_data
 
 
 class Metrics(object):
@@ -14,9 +14,6 @@ class Metrics(object):
 
     def __init__(self):
 
-        # app title
-        self.title = Div(text=self.make_title("Spectral signal-to-noise", ""))
-        # data store values consumed by the app
         self.data = {}
 
         # the column data sources store values displayed by bokeh plots
@@ -71,8 +68,7 @@ class Metrics(object):
 
         self.make_snr_plots()
 
-        self.layout = column(widgetbox(self.title, width=500),
-                             widgetbox(self.slider, width=1000),
+        self.layout = column(widgetbox(self.slider, width=1000),
                              row(widgetbox(arm, width=150),
                                  widgetbox(spectrograph, width=150)),
                              self.plot)

@@ -1,16 +1,11 @@
-from django.http import HttpResponse
 from django.shortcuts import render_to_response
-
 from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework import authentication, permissions, viewsets, response
 
-import json
-
-from rest_framework import authentication, permissions, viewsets
-from .models import Job, Metric
-from .serializers import JobSerializer, MetricSerializer, BokehSerializer
-
+from .models import Job, Exposure, Camera, QA
+from .serializers import JobSerializer, ExposureSerializer, CameraSerializer, QASerializer
 from bokeh.embed import autoload_server
-from django.http import JsonResponse
+
 
 class DefaultsMixin(object):
     """
@@ -24,7 +19,7 @@ class DefaultsMixin(object):
     )
 
     permission_classes = (
-        permissions.IsAuthenticated,
+        permissions.IsAuthenticatedOrReadOnly,
     )
 
     paginate_by = 25
@@ -33,24 +28,41 @@ class DefaultsMixin(object):
 
 
 class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for listing and creating jobs"""
+    """API endpoint for listing jobs"""
 
-    queryset = Job.objects.order_by('name')
+    queryset = Job.objects.order_by('date')
     serializer_class = JobSerializer
 
 
-class MetricViewSet(DefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for listing and creating metrics"""
+class QAViewSet(DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing QA metrics"""
 
-    queryset = Metric.objects.order_by('name')
-    serializer_class = MetricSerializer
+    queryset = QA.objects.order_by('name')
+    serializer_class = QASerializer
 
-class BokehViewSet(viewsets.ModelViewSet):
-    """API endpoint for listing and creating metrics"""
+class ExposureViewSet(DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing exposures"""
 
-    model = Metric
-    queryset = Metric.objects.order_by('name')
-    serializer_class = BokehSerializer
+    queryset = Exposure.objects.order_by('expid')
+    serializer_class = ExposureSerializer
+
+class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing cameras"""
+
+    queryset = Camera.objects.order_by('camera')
+    serializer_class = CameraSerializer
+
+
+class BokehAppsViewSet(DefaultsMixin, viewsets.ViewSet):
+    """API endpoint for listing bokeh apps"""
+
+    def list(self, request):
+        bokeh_script = autoload_server(None, app_path="/metrics",
+                                       url='default')
+        return response.Response({
+            'src': bokeh_script.split()[1].split('"')[1],
+            'id': bokeh_script.split()[2].split('"')[1]
+        })
 
 @ensure_csrf_cookie
 def index(request):

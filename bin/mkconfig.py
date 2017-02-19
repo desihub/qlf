@@ -1,7 +1,7 @@
 import json
 import yaml
 
-with open('../config/ql.json', 'r') as fp:
+with open('../qlf/static/ql.json', 'r') as fp:
     data = json.load(fp)
 
 root = {"PipeLine":[]}
