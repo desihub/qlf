@@ -11,7 +11,7 @@ export TEST_USER_EMAIL=${TEST_USER}@example.com
 export TEST_USER_PASSWD=nobody
 
 # Initialize the development database for the first time
-DEVDB="../db.sqlite3"
+DEVDB="db.sqlite3"
 
 if [ ! -f $DEVDB ];
 then
