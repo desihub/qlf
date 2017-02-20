@@ -13,10 +13,10 @@ QLF_API_URL = os.environ.get('QLF_API_URL',
 
 
 # get the data
-data = get_data(qa_name='SNR')
+data = get_data(name='SNR')
 
 if data.empty:
-    raise ValueError("No data to display. See {}/qa".format(QLF_API_URL))
+    raise ValueError("No data to display, resquest from {}/qa".format(QLF_API_URL))
 
 # create the bokeh column data sources
 elg = ColumnDataSource(data={'x': data.ELG_SNR_MAG[1],

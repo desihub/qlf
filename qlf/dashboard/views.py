@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import ensure_csrf_cookie
-from rest_framework import authentication, permissions, viewsets, response
+from rest_framework import authentication, permissions, viewsets, response, filters
 
 from .models import Job, Exposure, Camera, QA
 from .serializers import JobSerializer, ExposureSerializer, CameraSerializer, QASerializer
@@ -26,6 +26,13 @@ class DefaultsMixin(object):
     paginate_by_param = 'page_size'
     max_paginate_by = 100
 
+    # list of available filter_backends, will enable these for all ViewSets
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    )
+
 
 class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""
@@ -35,10 +42,11 @@ class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
 
 class QAViewSet(DefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for listing QA metrics"""
+    """API endpoint for listing QA results"""
 
     queryset = QA.objects.order_by('name')
     serializer_class = QASerializer
+    filter_fields = ('name',)
 
 class ExposureViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing exposures"""

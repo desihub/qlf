@@ -9,15 +9,14 @@ QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
 
 
-def get_data(qa_name=None):
+def get_data(name=None):
     """
     Returns a panda dataframe so that we can access the QA data arrays for each expid,
     e.g. data.loc[expid].MEDIAN_SNR
     """
     api = requests.get(QLF_API_URL).json()
 
-    # TODO: get info from all exposures and filter by qa_name
-    r = requests.get(api['qa']).json()
+    r = requests.get(api['qa'], params={'name': name}).json()
 
     data = None
 
