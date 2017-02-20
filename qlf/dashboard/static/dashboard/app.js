@@ -9,11 +9,12 @@ Ext.onReady(function() {
 
         items:[{
         xtype: 'panel',        
-        width: 650,
+        autoScroll: true,
+        width: '100%',
             items:[{
                 html: '<h2>Spectral signal-to-noise</h2><h3>Calculation of the spectral signal-to-noise  after sky subtraction.</h3>',
                 buttonAlign: 'right',
-                margin: '10 0 0 0',
+                margin: '10 10 10 10',
                 buttons: [{
                      xtype: 'button',
                      formBind: true,
@@ -418,7 +419,7 @@ Ext.onReady(function() {
 
   function setBokeh(el){
     Ext.Ajax.request({
-      url: '/dashboard/api/bokeh/',
+      url: '/dashboard/api/qa-snr/',
       success: function(response){
         var obj = Ext.decode(response.responseText);
         console.log(obj)

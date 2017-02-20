@@ -10,7 +10,7 @@ api_router.register(r'job', views.JobViewSet)
 api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
 api_router.register(r'camera', views.CameraViewSet)
-api_router.register(r'bokeh', views.BokehAppsViewSet, base_name='bokeh')
+api_router.register(r'qa-snr', views.QaSnrAppViewSet, base_name='qa-snr')
 
 urlpatterns = [
     url(r'^dashboard/admin', include(admin.site.urls)),

@@ -53,11 +53,11 @@ class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = CameraSerializer
 
 
-class BokehAppsViewSet(DefaultsMixin, viewsets.ViewSet):
+class QaSnrAppViewSet(DefaultsMixin, viewsets.ViewSet):
     """API endpoint for listing bokeh apps"""
 
     def list(self, request):
-        bokeh_script = autoload_server(None, app_path="/metrics",
+        bokeh_script = autoload_server(None, app_path="/qa-snr",
                                        url='default')
         return response.Response({
             'src': bokeh_script.split()[1].split('"')[1],
