@@ -1,7 +1,9 @@
-from django.views.generic import ListView
-from rest_framework import authentication, permissions, viewsets
-from .models import Job, Metric
-from .serializers import JobSerializer, MetricSerializer
+from django.shortcuts import render_to_response
+from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework import authentication, permissions, viewsets, response, filters
+
+from .models import Job, Exposure, Camera, QA
+from .serializers import JobSerializer, ExposureSerializer, CameraSerializer, QASerializer
 from bokeh.embed import autoload_server
 
 
@@ -17,35 +19,59 @@ class DefaultsMixin(object):
     )
 
     permission_classes = (
-        permissions.IsAuthenticated,
+        permissions.IsAuthenticatedOrReadOnly,
     )
 
     paginate_by = 25
     paginate_by_param = 'page_size'
     max_paginate_by = 100
 
+    # list of available filter_backends, will enable these for all ViewSets
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    )
+
 
 class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for listing and creating jobs"""
+    """API endpoint for listing jobs"""
 
-    queryset = Job.objects.order_by('name')
+    queryset = Job.objects.order_by('date')
     serializer_class = JobSerializer
 
 
-class MetricViewSet(DefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for listing and creating metrics"""
+class QAViewSet(DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing QA results"""
 
-    queryset = Metric.objects.order_by('name')
-    serializer_class = MetricSerializer
+    queryset = QA.objects.order_by('name')
+    serializer_class = QASerializer
+    filter_fields = ('name',)
+
+class ExposureViewSet(DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing exposures"""
+
+    queryset = Exposure.objects.order_by('expid')
+    serializer_class = ExposureSerializer
+
+class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing cameras"""
+
+    queryset = Camera.objects.order_by('camera')
+    serializer_class = CameraSerializer
 
 
-class MetricView(ListView):
-    model = Metric
-    template_name = 'dashboard/index.html'
+class QaSnrAppViewSet(DefaultsMixin, viewsets.ViewSet):
+    """API endpoint for listing bokeh apps"""
 
-    def get_context_data(self, **kwargs):
-        context = super(MetricView, self).get_context_data(**kwargs)
-        bokeh_script = autoload_server(None, app_path="/metrics",
+    def list(self, request):
+        bokeh_script = autoload_server(None, app_path="/qa-snr",
                                        url='default')
-        context.update(bokeh_script=bokeh_script)
-        return context
+        return response.Response({
+            'src': bokeh_script.split()[1].split('"')[1],
+            'id': bokeh_script.split()[2].split('"')[1]
+        })
+
+@ensure_csrf_cookie
+def index(request):
+    return render_to_response('index.html')

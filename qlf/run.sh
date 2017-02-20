@@ -1,13 +1,9 @@
 #!/bin/bash
 
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+
 # Run QLF in development mode, create db if it does not exist
 # start QLF web application and QLF daemon
-
-if [ "$DJANGO_SETTINGS_MODULE" = "qlf.settings.production" ];
-then
-    echo "Do not use this script in production mode."
-    exit 1
-fi
 
 # Test user for the development db
 export TEST_USER=nobody
@@ -30,9 +26,6 @@ then
 
 fi
 
-# Load initial data
-python manage.py loaddata metric
-
 echo "Remember to start the bokeh server in another terminal..."
 
 sleep 1
@@ -40,7 +33,7 @@ sleep 1
 # Start QLF daemon
 # python bin/qlf.py &
 
-# Start QLF web application
+# Start QLF REST API
 python manage.py runserver
 
 

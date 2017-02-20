@@ -1,49 +1,34 @@
-# QLF
+## QLF
 
-Development of the Quick Look Framework (QLF) for DESI
+### Quick Look Framework (QLF) for DESI
 
-http://quick-look-framework.readthedocs.io
+See development documentation at http://quick-look-framework.readthedocs.io
 
-## Cloning the project
+### Run QLF in development mode
 
-```
-  $ git clone https://github.com/linea-it/qlf.git
-```
-
-## Create a virtualenv and install software dependencies
-```
-  $ cd qlf
-  $ virtualenv env -p python3
-  $ source env/bin/activate
-  $ pip install -r requirements.txt
-```
-
-## Run QLF demo in development mode
-```
-  $ cd qlf
-  $ ./run.sh
-```
-
-the first time you will be asked to set a database password for your user.
-
-Open another terminal and start the Bokeh server:
+1. Clone the project, create a virtualenv and install dependencies
 
 ```
-  $ cd ..
-  $ source env/bin/activate
-  $ cd qlf
-  $ ./bokeh.sh
+  git clone https://github.com/linea-it/qlf.git
+  cd qlf
+  virtualenv env -p python3
+  source env/bin/activate
+  pip install -r requirements.txt
 ```
 
-The dashboard will run on http://localhost:8000
-
-
-## Compile the QLF documentation
+2. Start the django app
 ```
-  $ cd qlf
-  $ source env/bin/activate
-  $ cd docs
-  $ make html
+  cd qlf
+  ./run.sh
 ```
 
-open the documentation at ```qlf/docs/_build/html/index.html```
+3. Open another terminal and start the bokeh server:
+```
+  cd qlf
+  source env/bin/activate
+  cd qlf
+  ./bokeh.sh
+```
+
+QLF will run on `http://localhost:8000`
+
