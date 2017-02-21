@@ -107,9 +107,9 @@ QLF database
 The QA results associated with a given camera, exposure as well as QL execution information
 are store in the QLF database.
 
-    .. figure:: _static/qlfdb.png
-       :name: qlfdb
-       :target: _static/qlfdb.png
+    .. figure:: _static/qlfdb_v02.png
+       :name: qlfdb_v02
+       :target: _static/qlfdb_v02.png
        :alt: QLF v0.2 database
 
        Figure 2. Schema of the QLF v0.2 database
