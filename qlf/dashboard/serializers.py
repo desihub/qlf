@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from .models import Job, Exposure, Camera, QA
+from .models import Job, Exposure, Camera, QA, Process, Configuration
 
 
 class QASerializer(serializers.ModelSerializer):
@@ -9,7 +9,7 @@ class QASerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QA
-        fields = ('name', 'description', 'paname', 'value', 'links')
+        fields = ('name', 'description', 'paname', 'metric', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
@@ -18,14 +18,13 @@ class QASerializer(serializers.ModelSerializer):
                             request=request),
          }
 
-
 class JobSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
-        fields = ('name', 'date', 'status', 'configuration', 'links')
+        fields = ('name', 'start', 'end', 'status', 'version', 'logname', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
@@ -34,6 +33,20 @@ class JobSerializer(serializers.ModelSerializer):
                             request=request),
         }
 
+class ProcessSerializer(serializers.ModelSerializer):
+
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Process
+        fields = ('pipeline_name', 'start', 'end', 'status', 'version', 'process_dir', 'links')
+
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('process-detail', kwargs={'pk': obj.pk},
+                            request=request),
+        }
 
 class ExposureSerializer(serializers.ModelSerializer):
 
@@ -65,5 +78,19 @@ class CameraSerializer(serializers.ModelSerializer):
                             request=request),
          }
 
+class ConfigurationSerializer(serializers.ModelSerializer):
+
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Configuration
+        fields = ('configuration', 'creation_date', 'links')
+
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('configuration-detail', kwargs={'pk': obj.pk},
+                            request=request),
+         }
 
 
