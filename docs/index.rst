@@ -303,24 +303,28 @@ QL installation
 2. Create a conda environment for DESI and install dependencies
 
 .. code:: bash
+
     conda create --name desi --yes python=3.5 numpy scipy astropy pyyaml requests ipython h5py scikit-learn matplotlib
     source activate desi #Activate DESI environment
 
 3. Some dependencies must be installed with pip
 
 .. code:: bash
+
     pip install fitsio
     pip install speclite
 
 4. Create the project directory
 
 .. code:: bash
+
     export DESI_PRODUCT_ROOT=$HOME/Projects/desi
     mkdir -p $DESI_PRODUCT_ROOT
 
 5. Clone the repositories and set specific versions for the QL pipeline
 
 .. code:: bash
+
     cd $DESI_PRODUCT_ROOT
     git clone https://github.com/desihub/desispec.git
     cd desispec/
@@ -334,12 +338,13 @@ QL installation
     export PATH=$DESI_PRODUCT_ROOT/desiutil/bin:$PATH
     export PYTHONPATH=$DESI_PRODUCT_ROOT/desiutil/py:$PYTHONPATH
 
-
 .. note::
+
     Once installed you need the following commands to setup the environment (if you open a new terminal)
     you might put this on a file called setup.sh
 
 .. code:: bash
+
     cat setup.sh
 
     source deactivate
@@ -356,6 +361,7 @@ QL installation
 6. Download some test data
 
 .. code:: bash
+
     cd $DESI_PRODUCT_ROOT
     mkdir -p test/data/00000000
     cd test/data/00000000
@@ -372,6 +378,7 @@ QL installation
 7. Apply this patch to make QL run with Python 3
 
 .. code:: bash
+
     $ git diff py/desispec/quicklook/quicklook.py
     diff --git a/py/desispec/quicklook/quicklook.py b/py/desispec/quicklook/quicklook.py
     index c06780d..685f836 100755
@@ -439,6 +446,7 @@ QL installation
 8. Run the pipeline
 
 .. code:: bash
+
     desi_quicklook -c test/data/00000000/config-r0-00000000.yaml
 
 Schedule
