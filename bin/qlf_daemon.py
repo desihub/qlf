@@ -1,18 +1,24 @@
 import sys
 import time
+import configparser
+import os
 
-from qlf_daemon.qlf_ingest import post
-
+from dos_monitor import DOSlib
+from qlf_pipeline import QLFPipeline
 
 class QLFApp():
 
-    def mkconfig(self):
-        # TODO: Generate the QL configuration file
-        pass
-
     def run(self):
 
+        doslib = DOSlib()
+        exposure = doslib.get_exposure("20160816", "00000010")
+
+        qlp = QLFPipeline(exposure)
+        qlp.start_process()
+
+        """
         print("Starting QLF daemon...")
+
         while True:
             # TODO: Call the QL pipeline here
             try:
@@ -23,6 +29,7 @@ class QLFApp():
             except:
                 print('QLF is not responding, please restart.')
                 sys.exit(1)
+        """
 
 if __name__ == "__main__":
 

@@ -1,18 +1,6 @@
 from django.db import models
 from json_field import JSONField
 
-class Camera(models.Model):
-    """Camera information"""
-    camera = models.CharField(max_length=2,
-                              help_text='Camera ID', primary_key=True)
-    spectrograph = models.CharField(max_length=1,
-                                     help_text='Spectrograph ID')
-    arm = models.CharField(max_length=1,
-                           help_text='Arm ID')
-
-    def __str__(self):
-        return str(self.camera)
-
 class Exposure(models.Model):
     """Exposure information"""
 
@@ -37,13 +25,6 @@ class Exposure(models.Model):
     exptime = models.FloatField(blank=True, null=True,
                                 help_text='Exposure time')
 
-class Configuration(models.Model):
-    """Configuration information"""
-
-    configuration = JSONField(decoder=None, help_text='Configuration used.')
-    creation_date = models.DateTimeField(auto_now=True,
-                                help_text='Datetime when the configuration was created')
-
 class Process(models.Model):
     """Process information"""
 
@@ -63,10 +44,26 @@ class Process(models.Model):
     status = models.SmallIntegerField(default=STATUS_OK,
                                       help_text='Process status, 0=OK, 1=Failed')
     exposure = models.ForeignKey(Exposure)
-    configuration = models.ForeignKey(Configuration)
+
+class Configuration(models.Model):
+    """Configuration information"""
+
+    configuration = JSONField(decoder=None, help_text='Configuration used.')
+    creation_date = models.DateTimeField(auto_now=True,
+                                help_text='Datetime when the configuration was created')
+    process = models.ForeignKey(Process)
+
+class Camera(models.Model):
+    """Camera information"""
+    camera = models.CharField(max_length=2,
+                              help_text='Camera ID', primary_key=True)
+    spectrograph = models.CharField(max_length=1,
+                                     help_text='Spectrograph ID')
+    arm = models.CharField(max_length=1,
+                           help_text='Arm ID')
 
     def __str__(self):
-        return str(self.pipeline_name)
+        return str(self.camera)
 
 class Job(models.Model):
     """Job information"""
