@@ -4,6 +4,7 @@ import argparse
 import yaml
 import json
 import numpy
+import requests
 from django.core.wsgi import get_wsgi_application
 
 QLF_API_URL = os.environ.get(
@@ -29,24 +30,36 @@ from dashboard.models import (
 class QLFIngest(object):
     """ """
 
-    def insert_exposure(self, expid):
+    # def __init__(self):
+    #     """ """
+    #
+    #     self.session = requests.Session()
+    #     self.session.headers['Content-Type'] = 'application/json'
+    #     self.session.auth = HTTPBasicAuth('nobody', 'nobody')
+    #     self.baseurl = QLF_API_URL
+
+    def insert_exposure(self, expid, night):
         """ """
 
         # Check if expid is already registered
         if not Exposure.objects.filter(expid=expid):
-            exposure = Exposure(expid=expid)
+            exposure = Exposure(expid=expid, night=night)
             exposure.save()
             print("Registered exposure {}".format(expid))
 
         # Save Process for this exposure
         return Exposure.objects.get(expid=expid)
 
-    def insert_process(self, expid):
+    def insert_process(self, expid, night, pipeline_name):
         """ """
 
-        exposure = self.insert_exposure(expid)
+        exposure = self.insert_exposure(expid, night)
 
-        process = Process(exposure_id=exposure.expid)
+        process = Process(
+            exposure_id=exposure.expid,
+            pipeline_name=pipeline_name
+        )
+
         process.save()
 
         return process
@@ -54,6 +67,7 @@ class QLFIngest(object):
     def insert_config(self, process_id):
         """ """
 
+        #TODO: get configuration coming of interface
         # Make sure there is a configuration to refer to
         if not Configuration.objects.all():
             config_file = open('../qlf/static/ql.json', 'r')
@@ -203,6 +217,9 @@ class QLFIngest(object):
                 data[key] = data[key].tolist()
         return data
 
+    def close(self):
+        """ Finalize session """
+        self.session.close()
 
 if __name__=='__main__':
 

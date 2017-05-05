@@ -30,6 +30,8 @@ class DOSlib():
         psfboot = self.get_psfboot_file(night)
         psfboot = psfboot.pop()
         camera = psfboot.split('-')[-1].split('.')[0]
+        config = self.get_config_file(night, exposure, camera)
+        config = config.pop()
 
         return {
             "night": night,
@@ -38,7 +40,8 @@ class DOSlib():
             "path": path,
             "raw_files": raw_files,
             "psfboot": psfboot,
-            "fiberflat": fiberflat
+            "fiberflat": fiberflat,
+            "config": config
         }
 
     def get_raw_files(self, night, exposure):
@@ -65,5 +68,15 @@ class DOSlib():
         path = os.path.join(self.datadir, night)
 
         pattern = "(psfboot).*"
+        regex = re.compile(pattern)
+        return [f for f in os.listdir(path) if regex.search(f)]
+
+    def get_config_file(self, night, exposure, camera):
+        """ """
+
+        path = os.path.join(self.datadir, night)
+
+        pattern = "((config)-%s-[0]+%i)" % (camera, int(exposure))
+
         regex = re.compile(pattern)
         return [f for f in os.listdir(path) if regex.search(f)]
