@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import requests
+from furl import furl
 from bokeh.plotting import Figure
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
@@ -88,6 +89,33 @@ def init_xy_plot(hover):
     plot.add_tools(hover)
 
     return plot
+
+
+def get_url_args(curdoc, defaults=None):
+    """Return url args recovered from django_full_path cookie in
+    the bokeh request header.
+    If url args are not provided, default values can be used
+    instead
+    """
+    args = {}
+    if defaults:
+        for key in defaults:
+            args[key] = defaults[key]
+
+    r = curdoc().session_context.request
+
+    if r:
+        if 'django_full_path' in r.cookies:
+            django_full_path = r.cookies['django_full_path'].value
+            tmp = furl(django_full_path).args
+            for key in tmp:
+                args[key] = tmp[key]
+
+            # the bokeh app name is the second segment of the url path
+            args['bokeh_app'] = furl(django_full_path).path.segments[1]
+
+    return args
+
 
 
 if __name__ == '__main__':

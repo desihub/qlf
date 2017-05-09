@@ -5,12 +5,14 @@ from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
 
-from dashboard.bokeh.helper import get_data, get_exposure_info, get_camera_info, init_xy_plot
+from dashboard.bokeh.helper import get_data, get_exposure_info, get_camera_info, \
+    init_xy_plot, get_url_args
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
 
-
+# Get url query args
+args = get_url_args(curdoc, defaults={'expid': '00000000'})
 
 # get the data
 data = get_data(name='SNR')
