@@ -10,6 +10,8 @@
 
         {% if "exposures" in bokeh_app %}
             <h1>Exposures</h1>
+        {% elif "monitor" in bokeh_app %}
+            <h1>Monitor</h1>
         {% else %}
             <a class="btn btn-default"
                href="/dashboard/exposures/"
