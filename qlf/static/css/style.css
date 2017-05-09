@@ -35,6 +35,10 @@ body {
   display: none;
 }
 
+.btn {
+    padding: 5px;
+}
+
 @media (min-width: 768px) {
   .sidebar {
     position: fixed;
@@ -44,6 +48,7 @@ body {
     z-index: 1000;
     display: block;
     padding: 20px;
+    font-size: 18px;
     overflow-x: hidden;
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
     background-color: #f5f5f5;
