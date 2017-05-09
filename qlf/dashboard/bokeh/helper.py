@@ -1,9 +1,7 @@
-
 import os
 import pandas as pd
 import requests
 from bokeh.plotting import Figure
-
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
@@ -24,6 +22,30 @@ def get_data(name=None):
         value = eval(r['results'][0]['value'])
         data = pd.DataFrame.from_dict(value, orient='index').transpose()
 
+    return data
+
+def get_camera_by_exposure(expid):
+    r = list()
+    api = requests.get(QLF_API_URL).json()
+    data = requests.get(api['camera']).json()['results']
+    for i in data:
+        if i['exposure'] == expid:
+            r.append(i)
+    return r
+
+def get_all_exposure():
+    api = requests.get(QLF_API_URL).json()
+    data = requests.get(api['exposure']).json()['results']
+    return data
+
+def get_all_camera():
+    api = requests.get(QLF_API_URL).json()
+    data = requests.get(api['camera']).json()['results']
+    return data
+
+def get_all_qa():
+    api = requests.get(QLF_API_URL).json()
+    data = requests.get(api['qa']).json()['results']
     return data
 
 
@@ -72,4 +94,3 @@ if __name__ == '__main__':
 
     data = get_data()
     print(data.info())
-
