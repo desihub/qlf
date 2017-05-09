@@ -17,6 +17,10 @@ expid = 1
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
+ 
+# AF: Column datasource to configure the labels
+
+# AF: TODO: this could be a dict
 
 source = ColumnDataSource(data=dict(height=[0.9, 1.8, 2.7, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
                                     weight=[-0.9, -0.9, -0.9, -0.15, 0.85, 1.85, 2.85, 3.85, 4.85, 5.85, 6.85, 7.85,
@@ -28,9 +32,13 @@ hover = HoverTool(
     ]
 )
 
+# AF: Fix plot range to display the grid
+
 p = figure(x_range=(-2, 11), y_range=(0.5, 3.9), tools=[hover, 'tap'])
 
 labels = LabelSet(x='weight', y='height', text='names', x_offset=5, y_offset=5, source=source, render_mode='canvas')
+
+# AF: Move this to theme.yaml which define the plot style
 p.xaxis.visible = False
 p.yaxis.visible = False
 p.xgrid.grid_line_color = None
@@ -43,6 +51,10 @@ for i in range(10):
     color_listr.append('#A9A9A9')
     color_listz.append('#A9A9A9')
     color_listg.append('#A9A9A9')
+
+# AF: the only thing that changes is the y coord in each datasource
+# start with an empty datasource and populate the properties of each camera
+# based on the QA results available in the database for that exposure.
 
 sourcer = ColumnDataSource(data=dict(
     x=list(range(10)),
@@ -74,6 +86,8 @@ sourcez = ColumnDataSource(data=dict(
     exposure=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     camera=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ))
+
+
 exp = get_all_exposure()
 cam = get_camera_by_exposure(expid)
 sourcecam = ColumnDataSource(data=dict(
@@ -106,15 +120,25 @@ for i in cam:
         sourcez.data['exposure'][pos] = i['exposure']
         sourcer.data['camera'][pos] = i['camera']
 
+# AF: x,y should be static and placed outside the datasource
+        
 p.square('x', 'y', color='color', name='name', size=50, source=sourcer)
 p.square('x', 'y', color='color', name='name', size=50, source=sourceg)
 p.square('x', 'y', color='color', name='name', size=50, source=sourcez)
 
+
+# AF: for some reason redefine expid to int
+
 for i in exp:
     i['expid'] = int(i['expid'])
+
+# AF: ?
 exp_info = [d for d in exp if d['expid'] in [expid]][0]
+
 flavor = exp_info['flavor']
+
 title = Div(text='<h3>Exposure ID %s, flavor: %s</h3>' % (expid, flavor))
+
 board = Div(text='''
     <div
         style="border-radius:
@@ -140,8 +164,14 @@ board = Div(text='''
 
 buttonp = Button(label="<< Previous")
 buttonn = Button(label="Next >>")
+
+# AF: Should route to django instead
+
 url = "http://localhost:5006/qa-snr?exposure=@exposure&arm=@arm&spectrograph=@spectrograph"
 taptool = p.select(type=TapTool)
+
+# AF: Is there another way to add link to hover tooltips?
+
 taptool.callback = OpenURL(url=url)
 # sourceurl = ColumnDataSource(data=dict(
 #     url = [url]
@@ -152,17 +182,24 @@ taptool.callback = OpenURL(url=url)
 #     window.open(url, "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=500,height=500");
 #     """)
 
+
+# AF: Radio group for QA's
+
 list_qa = list()
 qa = get_all_qa()
+
 for i in qa:
     list_qa.append(i['display_name'])
 radio = RadioGroup(labels=list_qa, active=len(list_qa) - 1, inline=False, width=100)
 
 space = Div(text='<h3></h3>', width=60)
 
+# AF: Define app Layout in one command ?
+
 curdoc().add_root(row(space, buttonp, title, buttonn))
 curdoc().add_root(row(gridplot([[p]], toolbar_location="right", plot_width=1000), column(radio, board)))
 
+# AF: Avoid code duplication in these callbacks
 
 def callback(sourcez, sourcer, sourceg, title, sourcecam, exp_list):
     global cam
@@ -308,6 +345,7 @@ def callbackp(sourcez, sourcer, sourceg, title, sourcecam, exp_list):
          ('pr')
     """)
 
+# AF: Call update function (python) to update the page content based on the button.on_click() method
 
 exp = get_all_exposure()
 exp_list = list()
