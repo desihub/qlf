@@ -11,7 +11,10 @@ class QLFApp():
     def run(self):
 
         doslib = DOSlib()
-        exposure = doslib.get_exposure("20160816", "00000010")
+
+        exposure = doslib.get_exposure("20170428", 11)
+
+        print(exposure)
 
         qlp = QLFPipeline(exposure)
         qlp.start_process()
