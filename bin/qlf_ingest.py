@@ -85,15 +85,15 @@ class QLFIngest(object):
 
         return Configuration.objects.latest('pk')
 
-    def insert_camera(self, camera_obj):
+    def insert_camera(self, camera):
         """ """
 
         # Check if camera is already registered
-        if not Camera.objects.filter(camera=camera_obj['camera']):
+        if not Camera.objects.filter(camera=camera):
             camera_obj = Camera(
-                camera=camera_obj['camera'],
-                arm=camera_obj['arm'],
-                spectrograph=camera_obj['spectrograph']
+                camera=camera,
+                arm=camera[0],
+                spectrograph=camera[-1]
             )
             camera_obj.save()
             print("Registered camera {}".format(camera_obj))
@@ -101,22 +101,45 @@ class QLFIngest(object):
         # Save Job for this camera
         return Camera.objects.get(camera=camera)
 
-    def insert_job(self, job_obj):
+    def insert_job(self, process_id, camera, start, logname, version='1.0'):
         """ """
 
-        job_name = job_obj['name']
+        camera = self.insert_camera(camera)
 
-        # Check if Job with name is already registered
-        if not Job.objects.filter(name=job_name):
-            job = Job(
-                process_id=job_obj['process_id'],
-                camera_id=job_obj['camera'],
-                name=job_name
-            )
-            job.save()
+        job = Job(
+            process_id=process_id,
+            camera_id=camera,
+            start=start,
+            logname=logname,
+            version=version
+        )
+        job.save()
 
-        # Save QA Results for this job
-        job = Job.objects.get(name=job_name)
+        return job
+
+    def update_process(self, process_id, end, status):
+        """ """
+
+        process = Process.objects.filter(id=process_id).update(
+            end=end,
+            status=status
+        )
+
+        print("UPDATE PROCESS: %s" % process)
+
+        return process
+
+    def update_job(self, job_id, end, status):
+        """ """
+
+        job = Job.objects.filter(id=job_id).update(
+            end=end,
+            status=status
+        )
+
+        print("UPDATE JOB: %s" % job)
+
+        return job
 
     def insert_qa(self, qa_obj, force=False):
         """ Insert or update qa table """

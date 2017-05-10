@@ -70,6 +70,7 @@ class Job(models.Model):
 
     STATUS_OK = 0
     STATUS_FAILED = 1
+    STATUS_RUNNING = 2
 
     name = models.CharField(max_length=45, default='Quick Look',
                             help_text='Name of the job.')
@@ -77,12 +78,12 @@ class Job(models.Model):
                                 help_text='Datetime when the job was started')
     end = models.DateTimeField(blank=True, null=True,
                                help_text='Datetime when the job was finished.')
-    status = models.SmallIntegerField(default=STATUS_OK,
-                                      help_text='Job status, 0=OK, 1=Failed')
-    version = models.CharField(max_length=16, help_text='Version of the pipeline')
+    status = models.SmallIntegerField(default=STATUS_RUNNING,
+                                      help_text='Job status, 0=OK, 1=Failed, 2=Running')
+    version = models.CharField(max_length=16, null=True, help_text='Version of the pipeline')
     camera = models.ForeignKey(Camera)
     process = models.ForeignKey(Process)
-    logname = models.CharField(max_length=45,
+    logname = models.CharField(max_length=45, null=True,
                             help_text='Name of the log file.')
 
     def __str__(self):
