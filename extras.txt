@@ -1,0 +1,7 @@
+# Extra packages required by the Quick Look Framework
+# $ source activate quicklook  (load quicklook environment, see requirements.txt)
+# $ pip install -r extras.txt
+
+django-json-field==0.5.7
+speclite==0.5
+fitsio==0.9.10
