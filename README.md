@@ -2,7 +2,7 @@
 
 See development documentation at http://quick-look-framework.readthedocs.io
 
-### Run DESI QLF locally
+### Install DESI QLF locally
 
 1. Install the Quick Look Framework (first time installation)
 
@@ -45,7 +45,7 @@ See development documentation at http://quick-look-framework.readthedocs.io
     done
     ```
     
-    At this point the QL pipeline should be available in your terminal
+    At this point the DESI Quick Look pipeline should be available in your terminal
     
     ```
     desi_quicklook --help
@@ -77,7 +77,7 @@ See development documentation at http://quick-look-framework.readthedocs.io
     ./bokeh.sh
     ```
     
-Quick Look web application should be available at `http://localhost:8000`
+Quick Look web application runs at `http://localhost:8000`
 
 
 6. Start the Quick Look daemon
