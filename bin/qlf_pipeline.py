@@ -3,24 +3,23 @@ import os
 import logging
 import subprocess
 import datetime
-import pickle
-from multiprocessing import Process
+import glob
+import yaml
+from multiprocessing import Process, Manager
 from qlf_ingest import QLFIngest
 
 
 class QLFPipeline(object):
-    """ Class responsible for managing pipeline execution """
+    """ Class responsible for managing Quick Look pipeline execution """
 
     def __init__(self, data):
-        """ """
-
         # gets project main directory
-        project_path = os.getenv('QLF_PROJECT')
-
-        self.pipeline_name = 'Quick Look'
+        project_path = os.getenv('QLF_ROOT')
 
         self.cfg = configparser.ConfigParser()
         self.cfg.read('%s/config/qlf.cfg' % project_path)
+
+        self.pipeline_name = 'Quick Look'
 
         logname = self.cfg.get("main", "pipeline_log")
         logging.basicConfig(filename=logname, level=logging.DEBUG)
@@ -61,29 +60,64 @@ class QLFPipeline(object):
             self.pipeline_name
         )
 
+        # TODO: ingest used configuration
+        self.register.insert_config(process.id)
+
         self.logger.info('process ID: %i' % process.id)
         self.logger.info('start: %s' % process.start)
         self.data['start'] = process.start
 
-        # TODO: ingest used configuration
-        self.register.insert_config(process.id)
-
         procs = list()
 
+        return_cameras = Manager().list()
+
         for camera in self.data.get('cameras'):
-            proc = Process(target=self.execute, args=(camera, process.id))
+            camera['start'] = str(datetime.datetime.now())
+
+            logname = os.path.join(
+                self.data.get('output_dir'),
+                "run-%s.log" % camera.get('name')
+            )
+
+            camera['logname'] = logname
+
+            job = self.register.insert_job(
+                process_id=process.id,
+                camera=camera.get('name'),
+                start=camera.get('start'),
+                logname=camera.get('logname')
+            )
+
+            camera['job_id'] = job.id
+
+            proc = Process(target=self.execute, args=(camera, return_cameras,))
             procs.append(proc)
             proc.start()
 
         for proc in procs:
-            proc.join()
-
-        print(procs)
+            ret = proc.join()
 
         self.data['end'] = str(datetime.datetime.now())
+        self.logger.info('end: %s' % self.data.get('end'))
+        self.logger.info("process completed")
 
-        # TODO: calculate status
-        status = 1
+        self.logger.info('begin results ingestion...')
+
+        # TODO: refactor?
+        camera_failed = 0
+
+        self.data['cameras'] = return_cameras
+
+        for camera in self.data.get('cameras'):
+            self.update_job(camera)
+
+            if not camera.get('status') == 0:
+                camera_failed += 1
+
+        status = 0
+
+        if camera_failed > 0:
+            status = 1
 
         process = self.register.update_process(
             process_id=process.id,
@@ -91,34 +125,10 @@ class QLFPipeline(object):
             status=status
         )
 
-        # exp_pckl = '%s.pickle' % self.data.get('expid')
-        # full_path_pckl = os.path.join(self.scratchdir, exp_pckl)
-        #
-        # with open(full_path_pckl, 'wb') as f:
-        #     pickle.dump(self.data, f, pickle.HIGHEST_PROTOCOL)
-        #
-        # self.ingest(full_path_pckl)
+        self.logger.info("results ingestion completed")
 
-        print(self.data)
-
-    def execute(self, camera, process_id):
-        """ Execute QL Pipeline """
-
-        camera['start'] = str(datetime.datetime.now())
-
-        logname = os.path.join(
-            self.data.get('output_dir'),
-            "run-%s.log" % camera.get('name')
-        )
-
-        camera['logname'] = logname
-
-        job = self.register.insert_job(
-            process_id=process_id,
-            camera=camera.get('name'),
-            start=camera.get('start'),
-            logname=camera.get('logname')
-        )
+    def execute(self, camera, return_cameras):
+        """ Execute QL Pipeline by camera """
 
         cmd = (
             'desi_quicklook -n {night} -c {camera} -e {exposure} '
@@ -135,12 +145,26 @@ class QLFPipeline(object):
             'specprod_dir': self.specprod_dir
         })
 
-        print(cmd)
+        self.logger.info(
+            "starting job %i with night %s,camera %s and exposure %s... " % (
+            camera.get('job_id'),
+            self.data.get('night'),
+            camera.get('name'),
+            self.data.get('expid')
+        ))
 
-        logfile = open(os.path.join(self.specprod_dir, logname), 'wb')
+        logfile = open(os.path.join(
+            self.specprod_dir,
+            camera.get('logname')
+        ), 'wb')
+
+        cwd = os.path.join(
+            self.specprod_dir,
+            self.data.get('output_dir')
+        )
 
         with subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, shell=True) as process:
+                stderr=subprocess.PIPE, shell=True, cwd=cwd) as process:
             logfile.write(process.stdout.read())
             logfile.write(process.stderr.read())
             retcode = process.wait()
@@ -160,23 +184,42 @@ class QLFPipeline(object):
             )
             self.logger.error(msg)
 
-        job = self.register.update_job(
-            job_id=job.id,
+        return_cameras.append(camera)
+        self.logger.info("done job %i" % camera.get('job_id'))
+
+    def update_job(self, camera):
+        """ Update job and ingest QA results """
+
+        self.register.update_job(
+            job_id=camera.get('job_id'),
             end=camera.get('end'),
             status=camera.get('status')
         )
 
-        return retcode
+        output_path = os.path.join(
+            self.specprod_dir,
+            self.data.get('output_dir'),
+            'ql-*-%s-%s.yaml' % (
+                camera.get('name'),
+                str(self.data.get('expid')).zfill(8)
+            )
+        )
 
-    def ingest(self):
-        """ Prepare data to ingest """
+        for product in glob.glob(output_path):
+            try:
+                qa = yaml.load(open(product, 'r'))
 
-        print(self.data)
+                name = os.path.basename(product)
+                paname = qa['PANAME']
+                metrics = qa['METRICS']
 
-    def finish(self):
-        """ Finish pipeline """
-        # TODO
-        pass
+                self.logger.info("registering the product: %s" % name)
+                self.register.insert_qa(name, paname, metrics, camera.get('job_id'))
+            except Exception as error:
+                self.logger.error("error registering product: %s" % product)
+                self.logger.error(str(error))
+
+        self.logger.info("product registration has been completed.")
 
 if __name__ == "__main__":
     exposure = {

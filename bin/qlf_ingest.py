@@ -1,10 +1,11 @@
 import os
 import sys
-import argparse
 import yaml
 import json
 import numpy
-import requests
+# import requests
+# import argparse
+
 from django.core.wsgi import get_wsgi_application
 
 QLF_API_URL = os.environ.get(
@@ -28,7 +29,7 @@ from dashboard.models import (
 
 
 class QLFIngest(object):
-    """ """
+    """ Class responsable by results ingestion from Quick Look pipeline. """
 
     # def __init__(self):
     #     """ """
@@ -39,7 +40,7 @@ class QLFIngest(object):
     #     self.baseurl = QLF_API_URL
 
     def insert_exposure(self, expid, night):
-        """ """
+        """ Inserts and gets exposure and night if necessary. """
 
         # Check if expid is already registered
         if not Exposure.objects.filter(expid=expid):
@@ -51,7 +52,7 @@ class QLFIngest(object):
         return Exposure.objects.get(expid=expid)
 
     def insert_process(self, expid, night, pipeline_name):
-        """ """
+        """ Inserts initial data in process table. """
 
         exposure = self.insert_exposure(expid, night)
 
@@ -65,7 +66,7 @@ class QLFIngest(object):
         return process
 
     def insert_config(self, process_id):
-        """ """
+        """ Inserts used configuration. """
 
         #TODO: get configuration coming of interface
         # Make sure there is a configuration to refer to
@@ -86,7 +87,7 @@ class QLFIngest(object):
         return Configuration.objects.latest('pk')
 
     def insert_camera(self, camera):
-        """ """
+        """ Inserts used camera. """
 
         # Check if camera is already registered
         if not Camera.objects.filter(camera=camera):
@@ -102,7 +103,7 @@ class QLFIngest(object):
         return Camera.objects.get(camera=camera)
 
     def insert_job(self, process_id, camera, start, logname, version='1.0'):
-        """ """
+        """ Insert job and camera if necessary. """
 
         camera = self.insert_camera(camera)
 
@@ -118,171 +119,160 @@ class QLFIngest(object):
         return job
 
     def update_process(self, process_id, end, status):
-        """ """
+        """ Updates process with execution results. """
 
         process = Process.objects.filter(id=process_id).update(
             end=end,
             status=status
         )
 
-        print("UPDATE PROCESS: %s" % process)
-
         return process
 
     def update_job(self, job_id, end, status):
-        """ """
+        """ Updates job with execution results. """
 
         job = Job.objects.filter(id=job_id).update(
             end=end,
             status=status
         )
 
-        print("UPDATE JOB: %s" % job)
-
         return job
 
-    def insert_qa(self, qa_obj, force=False):
-        """ Insert or update qa table """
+    def insert_qa(self, name, paname, metrics, job_id, force=False):
+        """ Inserts or updates qa table """
 
-        name = qa_obj['name']
-        expid = qa_obj['expid']
-        camera = qa_obj['camera']
+        metrics = self.jsonify(metrics)
 
         if not QA.objects.filter(name=name):
             # Register for QA results for the first time
             qa = QA(
                 name=name,
-                description=qa_obj['description'],
-                paname=qa_obj['paname'],
-                metric=qa_obj['metric'],
-                job_id=qa_obj['job_id']
+                description='',
+                paname=paname,
+                metric=metrics,
+                job_id=job_id
             )
             qa.save()
-            print("Saved {} results for exposure={} and camera={}".format(
-                name, expid, camera
-            ))
+            print("Save {} results".format(name))
             print("See {}".format(QLF_API_URL))
         elif force:
             # Overwrite QA results
             QA.objects.filter(name=name).update(
-                job_id=qa_obj['job_id'],
-                description=qa_obj['description'],
-                paname=qa_obj['paname'],
-                metric=qa_obj['metric']
+                job_id=job_id,
+                description='',
+                paname=paname,
+                metric=metrics
             )
-            print("Overwritten {} results for exposure={} and camera={}".format(
-                name, expid, camera
-            ))
+            print("Overwritten {} results".format(name))
+            print("See {}".format(QLF_API_URL))
         else:
             print(
-                "{} results for exposure={} and camera={} already "
-                "registered. Use --force to overwrite.".format(
-                    name, expid, camera
-            ))
-
-    def post(self, name, job_name, results, force=False):
-
-        if name not in results:
-            print('{} metric not found in {}'.format(name, results))
-
-        qa = results[name]
-
-        try:
-            expid = qa['EXPID']
-            arm = qa['ARM']
-            spectrograph = qa['SPECTROGRAPH']
-            paname = qa['PANAME']
-            value = self.jsonify(qa['VALUE'])
-        except:
-            print(
-                "Fatal: unexpected format for QA file. "
-                "Looking for 'EXPID', 'ARM', 'SPECTROGRAPH', "
-                "'PANAME' and 'VALUE' keys."
+                "{} results already registered. "
+                "Use --force to overwrite.".format(name)
             )
-            sys.exit(1)
-
-
-        camera_name = arm + str(spectrograph)
-
-        camera = self.insert_camera({
-            'camera': camera_name,
-            'arm': arm,
-            'spectrograph': spectrograph
-        })
-
-        process = self.insert_process(expid)
-
-        configuration = self.insert_config(process.id)
-
-        job = self.insert_job({
-            'name': job_name,
-            'process_id': process.id,
-            'camera_id': camera
-        })
-
-        qa_obj = {
-            'name': name,
-            'description': '',
-            'paname': paname,
-            'metric': value,
-            'job_id': job.id,
-            'camera': camera,
-            'expid': expid
-        }
-
-        self.insert_qa(qa_obj, force)
 
     def jsonify(self, data):
-        ''' Make a dictionary with numpy arrays JSON serializable'''
+        """ Make a dictionary with numpy arrays JSON serializable """
 
         for key in data:
             if type(data[key]) == numpy.ndarray:
                 data[key] = data[key].tolist()
         return data
 
-    def close(self):
-        """ Finalize session """
-        self.session.close()
+    # def post(self, name, job_name, results, force=False):
+    #
+    #     if name not in results:
+    #         print('{} metric not found in {}'.format(name, results))
+    #
+    #     qa = results[name]
+    #
+    #     try:
+    #         expid = qa['EXPID']
+    #         arm = qa['ARM']
+    #         spectrograph = qa['SPECTROGRAPH']
+    #         paname = qa['PANAME']
+    #         value = self.jsonify(qa['VALUE'])
+    #     except:
+    #         print(
+    #             "Fatal: unexpected format for QA file. "
+    #             "Looking for 'EXPID', 'ARM', 'SPECTROGRAPH', "
+    #             "'PANAME' and 'VALUE' keys."
+    #         )
+    #         sys.exit(1)
+    #
+    #
+    #     camera_name = arm + str(spectrograph)
+    #
+    #     camera = self.insert_camera({
+    #         'camera': camera_name,
+    #         'arm': arm,
+    #         'spectrograph': spectrograph
+    #     })
+    #
+    #     process = self.insert_process(expid)
+    #
+    #     configuration = self.insert_config(process.id)
+    #
+    #     job = self.insert_job({
+    #         'name': job_name,
+    #         'process_id': process.id,
+    #         'camera_id': camera
+    #     })
+    #
+    #     qa_obj = {
+    #         'name': name,
+    #         'description': '',
+    #         'paname': paname,
+    #         'metric': value,
+    #         'job_id': job.id,
+    #         'camera': camera,
+    #         'expid': expid
+    #     }
+    #
+    #     self.insert_qa(qa_obj, force)
 
-if __name__=='__main__':
+    # def close(self):
+    #     """ Finalize session """
+    #     self.session.close()
 
-    parser = argparse.ArgumentParser(
-        description="""Upload QA metrics produced by the Quick Look pipeline to QLF database.
-This script is meant to be run from the command line or imported by Quick Look. """,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    parser.add_argument(
-            '--file',
-            dest='file',
-            required=True,
-            help='Path to QA file produced by Quick Look')
-
-    parser.add_argument(
-            '--qa-name',
-            dest='qa_name',
-            required=True,
-            help='Name of the QA metric to be ingested'
-    )
-
-    parser.add_argument(
-            '--force',
-            default=False,
-            action='store_true',
-            help='Overwrite QA results for a given metric'
-    )
-
-    qa_name = parser.parse_args().qa_name
-
-    file = parser.parse_args().file
-
-    job_name = os.path.basename(file)
-
-    results = yaml.load(open(file, 'r'))
-
-    force = parser.parse_args().force
-
-    qlfi = QLFIngest()
-
-    qlfi.post(qa_name, job_name, results, force)
-
+# if __name__=='__main__':
+#
+#     parser = argparse.ArgumentParser(
+#         description="""Upload QA metrics produced by the Quick Look pipeline to QLF database.
+# This script is meant to be run from the command line or imported by Quick Look. """,
+#         formatter_class=argparse.RawDescriptionHelpFormatter)
+#
+#     parser.add_argument(
+#             '--file',
+#             dest='file',
+#             required=True,
+#             help='Path to QA file produced by Quick Look')
+#
+#     parser.add_argument(
+#             '--qa-name',
+#             dest='qa_name',
+#             required=True,
+#             help='Name of the QA metric to be ingested'
+#     )
+#
+#     parser.add_argument(
+#             '--force',
+#             default=False,
+#             action='store_true',
+#             help='Overwrite QA results for a given metric'
+#     )
+#
+#     qa_name = parser.parse_args().qa_name
+#
+#     file = parser.parse_args().file
+#
+#     job_name = os.path.basename(file)
+#
+#     results = yaml.load(open(file, 'r'))
+#
+#     force = parser.parse_args().force
+#
+#     qlfi = QLFIngest()
+#
+#     qlfi.post(qa_name, job_name, results, force)
 
