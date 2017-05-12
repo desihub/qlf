@@ -292,6 +292,162 @@ The processing steps and associated QAs are listed below:
 
  - https://github.com/desihub/desidatamodel/blob/master/doc/QUICKLOOK/qa-snr-CAMERA-EXPID.rs
 
+QL installation
+---------------
+
+1. Install Miniconda
+
+ - from https://conda.io/docs/install/quick.html
+
+
+2. Create a conda environment for DESI and install dependencies
+
+.. code:: bash
+
+    conda create --name desi --yes python=3.5 numpy scipy astropy pyyaml requests ipython h5py scikit-learn matplotlib
+    source activate desi #Activate DESI environment
+
+3. Some dependencies must be installed with pip
+
+.. code:: bash
+
+    pip install fitsio
+    pip install speclite
+
+4. Create the project directory
+
+.. code:: bash
+
+    export DESI_PRODUCT_ROOT=$HOME/Projects/desi
+    mkdir -p $DESI_PRODUCT_ROOT
+
+5. Clone the repositories and set specific versions for the QL pipeline
+
+.. code:: bash
+
+    cd $DESI_PRODUCT_ROOT
+    git clone https://github.com/desihub/desispec.git
+    cd desispec/
+    git checkout tags/0.11.0
+    export PATH=$DESI_PRODUCT_ROOT/desispec/bin:$PATH
+    export PYTHONPATH=$DESI_PRODUCT_ROOT/desispec/py:$PYTHONPATH
+    cd $DESI_PRODUCT_ROOT
+    git clone https://github.com/desihub/desiutil.git
+    cd desiutil/
+    git checkout tags/1.9.1
+    export PATH=$DESI_PRODUCT_ROOT/desiutil/bin:$PATH
+    export PYTHONPATH=$DESI_PRODUCT_ROOT/desiutil/py:$PYTHONPATH
+
+.. note::
+
+    Once installed you need the following commands to setup the environment (if you open a new terminal)
+    you might put this on a file called setup.sh
+
+.. code:: bash
+
+    cat setup.sh
+
+    source deactivate
+    source activate desi
+    export DESI_PRODUCT_ROOT=$HOME/Projects/desi
+    cd $DESI_PRODUCT_ROOT
+
+    for package in desispec desiutil; do
+        echo "Setting $package..."
+        export PATH=$DESI_PRODUCT_ROOT/$package/bin:$PATH
+        export PYTHONPATH=$DESI_PRODUCT_ROOT/$package/py:$PYTHONPATH
+    done
+
+6. Download some test data
+
+.. code:: bash
+
+    cd $DESI_PRODUCT_ROOT
+    mkdir -p test/data/00000000
+    cd test/data/00000000
+    wget -c http://portal.nersc.gov/project/desi/users/govinda/20160816/00000000/config-r0-00000000.yaml
+    wget -c http://portal.nersc.gov/project/desi/users/govinda/20160816/00000000/desi-00000000.fits.fz
+    wget -c http://portal.nersc.gov/project/desi/users/govinda/20160816/00000000/fiberflat-r0-00000001.fits
+    wget -c http://portal.nersc.gov/project/desi/users/govinda/20160816/00000000/fibermap-00000000.fits
+    wget -c http://portal.nersc.gov/project/desi/users/govinda/20160816/00000000/psfboot-r0.fits
+    cd -
+    sed -i "s|/project/projectdirs/desi/www/users/govinda/20160816|$(pwd)/test/data|" test/data/00000000/config-r0-00000000.yaml
+
+
+
+7. Apply this patch to make QL run with Python 3
+
+.. code:: bash
+
+    $ git diff py/desispec/quicklook/quicklook.py
+    diff --git a/py/desispec/quicklook/quicklook.py b/py/desispec/quicklook/quicklook.py
+    index c06780d..685f836 100755
+
+    --- a/py/desispec/quicklook/quicklook.py
+    +++ b/py/desispec/quicklook/quicklook.py
+
+    @@ -3,7 +3,7 @@
+     from __future__ import absolute_import, division, print_function
+
+     import sys,os,time,signal
+    -import threading,string
+    +import threading
+     import subprocess
+     import importlib
+     import yaml
+    @@ -164,7 +164,7 @@ def testconfig(outfilename="qlconfig.yaml"):
+               }
+
+         if "yaml" in outfilename:
+    -        yaml.dump(conf,open(outfilename,"wb"))
+    +        yaml.dump(conf,open(outfilename,"w"))
+         else:
+             log.warning("Only yaml defined. Use yaml format in the output config file")
+             sys.exit(0)
+    @@ -181,16 +181,16 @@ def get_chan_spec_exp(inpname,camera=None):
+         if basename == "":
+             print("can't parse input file name")
+             sys.exit("can't parse input file name %s"%inpname)
+    -    brk=string.split(inpname,'-')
+    -    if len(brk)!=3: #- for raw files
+    +    brk=inpname.split('-')
+    +    if len(brk)!=3: #- for raw files
+             if camera is None:
+                 raise IOError("Must give camera for raw file")
+             else:
+    -            expid=int(string.replace(brk[1],".fits.fz",""))
+    +            expid=int(brk[1].replace(".fits.fz",""))
+
+         elif len(brk)==3: #- for pix,frame etc. files
+             camera=brk[1]
+    -        expid=int(string.replace(brk[2],".fits",""))
+    +        expid=int(brk[2].replace(".fits",""))
+         chan=camera[0]
+         spectrograph=int(camera[1:])
+         return (chan,spectrograph,expid)
+    @@ -270,7 +270,7 @@ def runpipeline(pl,convdict,conf):
+
+                     if qa.name=="RESIDUAL":
+                         res=qa(oldinp,inp[1],**qargs)
+
+                     else:
+                         if isinstance(inp,tuple):
+                             res=qa(inp[0],**qargs)
+    @@ -285,7 +285,7 @@ def runpipeline(pl,convdict,conf):
+                 except Exception as e:
+                     log.warning("Failed to run QA %s error was %s"%(qa.name,e))
+             if len(qaresult):
+    -            yaml.dump(qaresult,open(paconf[s]["OutputFile"],"wb"))
+    +            yaml.dump(qaresult,open(paconf[s]["OutputFile"],"w"))
+                 hb.stop("Step %s finished. Output is in %s "%(paconf[s]["StepName"],paconf[s]["OutputFile"]))
+             else:
+                 hb.stop("Step %s finished."%(paconf[s]["StepName"]))
+
+8. Run the pipeline
+
+.. code:: bash
+
+    desi_quicklook -c test/data/00000000/config-r0-00000000.yaml
 
 Schedule
 ^^^^^^^^
