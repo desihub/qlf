@@ -1,20 +1,23 @@
 # import sys
 # import time
-# import configparser
 # import os
+# import configparser
 
-from dos_monitor import DOSlib
+from dos_monitor import DOSmonitor
 from qlf_pipeline import QLFPipeline
 
 class QLFApp():
 
     def run(self):
 
-        doslib = DOSlib()
         # TODO: make daemon
-        exposure = doslib.get_exposure("20170428", 11)
-        qlp = QLFPipeline(exposure)
-        qlp.start_process()
+        dosmonitor = DOSmonitor()
+        night = dosmonitor.get_last_night()
+        exposures = dosmonitor.get_exposures_by_night(night)
+
+        for exposure in exposures:
+            qlp = QLFPipeline(exposure)
+            qlp.start_process()
 
         # print("Starting QLF daemon...")
         #

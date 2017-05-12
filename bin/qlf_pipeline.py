@@ -41,7 +41,7 @@ class QLFPipeline(object):
         output_dir = os.path.join(
             'exposures',
             self.data.get('night'),
-            str(self.data.get('expid')).zfill(8)
+            self.data.get('zfill')
         )
 
         output_full_dir = os.path.join(self.specprod_dir, output_dir)
@@ -201,7 +201,7 @@ class QLFPipeline(object):
             self.data.get('output_dir'),
             'ql-*-%s-%s.yaml' % (
                 camera.get('name'),
-                str(self.data.get('expid')).zfill(8)
+                self.data.get('zfill')
             )
         )
 
@@ -224,19 +224,20 @@ class QLFPipeline(object):
 if __name__ == "__main__":
     exposure = {
         'night': '20170428',
-        'expid': 11,
-        'raw_dir': '/home/singulani/raw_data/20170428',
+        'expid': '3',
+        'zfill': '00000003',
+        'raw_dir': '/home/singulani/raw_data',
         'cameras': [
-            {
-                'psfboot': '/home/singulani/raw_data/20170428/psfboot-r2.fits',
-                'name': 'r2',
-                'fiberflat': '/home/singulani/raw_data/20170428/fiberflat-r2-00000011.fits'
-            },
-            {
-                'psfboot': '/home/singulani/raw_data/20170428/psfboot-r3.fits',
-                'name': 'r3',
-                'fiberflat': '/home/singulani/raw_data/20170428/fiberflat-r3-00000011.fits'
-            }
+          {
+            'name': 'r8',
+            'psfboot': '/home/singulani/raw_data/20170428/psfboot-r8.fits',
+            'fiberflat': '/home/singulani/raw_data/20170428/fiberflat-r8-00000003.fits'
+          },
+          {
+            'name': 'r9',
+            'psfboot': '/home/singulani/raw_data/20170428/psfboot-r9.fits',
+            'fiberflat': '/home/singulani/raw_data/20170428/fiberflat-r9-00000003.fits'
+          }
         ]
     }
 

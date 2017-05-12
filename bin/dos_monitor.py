@@ -3,7 +3,7 @@ import re
 import os
 
 
-class DOSlib(object):
+class DOSmonitor(object):
 
     def __init__(self):
         project_path = os.getenv('QLF_ROOT')
@@ -13,10 +13,31 @@ class DOSlib(object):
 
         self.datadir = os.path.normpath(self.cfg.get(
             'namespace',
-            'datadir'
+            'rawdir'
         ))
 
         self.cameras = self.get_cameras()
+
+    def get_last_night(self):
+        """ Gets last night """
+
+        return self.cfg.get("data", "night")
+
+    def get_exposures_by_night(self, night):
+        """ Gets exposures by night """
+
+        exposures_list = list()
+
+        exposures = self.cfg.get("data", "exposures").split(',')
+
+        for expid in exposures:
+            try:
+                exposure = self.get_exposure(night, expid)
+                exposures_list.append(exposure)
+            except Exception as error:
+                print(error)
+
+        return exposures_list
 
     def get_cameras(self):
         """ Gets all cameras from configuration file. """
@@ -58,6 +79,7 @@ class DOSlib(object):
         return {
             "night": night,
             "expid": exposure,
+            "zfill": str(exposure).zfill(8),
             "raw_dir": self.datadir,
             "cameras": camera_list
         }
@@ -90,3 +112,10 @@ class DOSlib(object):
                 return os.path.join(path, f)
 
         raise OSError(2, 'psfboot not found', pattern)
+
+if __name__ == "__main__":
+
+    dosmonitor = DOSmonitor()
+    night = dosmonitor.get_last_night()
+    exposures = dosmonitor.get_exposures_by_night(night)
+    print(exposures)

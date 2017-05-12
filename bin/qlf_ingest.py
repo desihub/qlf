@@ -3,7 +3,6 @@ import sys
 import yaml
 import json
 import numpy
-# import requests
 # import argparse
 
 from django.core.wsgi import get_wsgi_application
@@ -30,14 +29,6 @@ from dashboard.models import (
 
 class QLFIngest(object):
     """ Class responsable by results ingestion from Quick Look pipeline. """
-
-    # def __init__(self):
-    #     """ """
-    #
-    #     self.session = requests.Session()
-    #     self.session.headers['Content-Type'] = 'application/json'
-    #     self.session.auth = HTTPBasicAuth('nobody', 'nobody')
-    #     self.baseurl = QLF_API_URL
 
     def insert_exposure(self, expid, night):
         """ Inserts and gets exposure and night if necessary. """
@@ -230,10 +221,6 @@ class QLFIngest(object):
     #     }
     #
     #     self.insert_qa(qa_obj, force)
-
-    # def close(self):
-    #     """ Finalize session """
-    #     self.session.close()
 
 # if __name__=='__main__':
 #
