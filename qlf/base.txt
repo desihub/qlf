@@ -1,0 +1,106 @@
+Setting desispec...
+Setting desiutil...
+INFO:cosmics.py:154:reject_cosmic_rays_ala_sdss: starting with nsig=6.0 cfudge=3.0 c2fudge=0.8
+INFO:cosmics.py:159:reject_cosmic_rays_ala_sdss: first pass: 0 pixels rejected
+INFO:cosmics.py:205:reject_cosmic_rays_ala_sdss: end : 0 pixels rejected
+2017-05-05 11:48:33,731 QuickLook INFO : Reading Configuration
+2017-05-05 11:48:33,767 QuickLook INFO : Reading input file /home/singulani/Projects/desi/test/data/20160816/desi-00000010.fits.fz
+2017-05-05 11:48:33,868 QuickLook INFO : Reading fiberMap file /home/singulani/Projects/desi/test/data/20160816/fibermap-00000000.fits
+2017-05-05 11:48:33,968 QuickLook INFO : Reading FiberFlat /home/singulani/Projects/desi/test/data/20160816/fiberflat-r0-00000001.fits
+2017-05-05 11:48:34,169 QuickLook INFO : Finished reading all static files
+2017-05-05 11:48:34,204 QuickLook INFO : Starting to run step Initializing
+2017-05-05 11:48:34,204 QuickLook INFO : Running Ready
+2017-05-05 11:48:34,305 QuickLook INFO : Running BIAS_OVERSCAN
+2017-05-05 11:48:35,615 QuickLook INFO : Output QA fig qafig-biasoverscan-r0-00000010.pdf
+2017-05-05 11:48:35,620 QuickLook INFO : Step Initializing finished. Output is in qa-initial-online-r0-00000010.yaml 
+2017-05-05 11:48:35,620 QuickLook INFO : Starting to run step Preprocessing
+2017-05-05 11:48:35,620 QuickLook INFO : Running Preproc
+2017-05-05 11:48:36,160 DESI INFO : starting with nsig=6.0 cfudge=3.0 c2fudge=0.8
+2017-05-05 11:48:38,573 DESI INFO : first pass: 0 pixels rejected
+2017-05-05 11:48:38,744 DESI INFO : end : 0 pixels rejected
+2017-05-05 11:48:40,625 QuickLook INFO : Running Preproc
+2017-05-05 11:48:44,835 QuickLook INFO : Wrote intermediate file pix-r0-00000010.fits after Preproc
+2017-05-05 11:48:44,879 QuickLook INFO : Running RMS
+2017-05-05 11:48:45,326 QuickLook INFO : Output QA fig qafig-rms-r0-00000010.pdf
+2017-05-05 11:48:45,382 QuickLook INFO : Running COUNTPIX
+2017-05-05 11:48:46,331 QuickLook INFO : Output QA fig qafig-countpix-r0-00000010.pdf
+2017-05-05 11:48:46,389 QuickLook INFO : Running XWSIGMA
+2017-05-05 11:48:51,383 QuickLook INFO : Running XWSIGMA
+2017-05-05 11:48:56,387 QuickLook INFO : Running XWSIGMA
+2017-05-05 11:49:01,404 QuickLook INFO : Running XWSIGMA
+2017-05-05 11:49:05,214 QuickLook INFO : Output QA fig qafig-xwsigma-r0-00000010.pdf
+2017-05-05 11:49:05,264 QuickLook INFO : Step Preprocessing finished. Output is in qa-preproc-r0-00000010.yaml 
+2017-05-05 11:49:05,264 QuickLook INFO : Starting to run step Boxcar Extration
+2017-05-05 11:49:05,264 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:10,273 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:15,328 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:20,277 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:25,332 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:30,281 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:35,337 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:40,286 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:45,341 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:50,356 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:49:55,357 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:00,314 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:05,346 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:10,358 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:15,275 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:20,275 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:25,296 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:30,292 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:35,300 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:40,332 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:45,348 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:50,317 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:50:55,285 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:51:00,273 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:51:05,322 QuickLook INFO : Running Boxcar Extraction
+2017-05-05 11:55:23,733 QuickLook INFO : Wrote intermediate file frame-r0-00000010.fits after Boxcar Extraction
+2017-05-05 11:55:23,733 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:55:28,746 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:55:33,813 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:55:38,774 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:55:43,784 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:55:48,784 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:55:53,780 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:55:58,788 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:03,766 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:08,800 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:13,812 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:18,827 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:23,745 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:28,741 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:33,761 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:38,765 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:43,786 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:48,805 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:53,817 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:56:58,824 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:57:03,831 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:57:08,737 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:57:13,744 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:57:18,751 QuickLook INFO : Running COUNTBINS
+2017-05-05 11:57:23,757 QuickLook INFO : Running COUNTBINS
+2017-05-05 12:04:08,402 QuickLook INFO : Output QA fig qafig-countbins-r0-00000010.pdf
+2017-05-05 12:04:08,447 QuickLook INFO : Step Boxcar Extration finished. Output is in qa-extract-r0-00000010.yaml 
+2017-05-05 12:04:08,447 QuickLook INFO : Starting to run step Apply Fiberflat
+2017-05-05 12:04:08,447 QuickLook INFO : Running Apply Fiberflat
+2017-05-05 12:04:10,792 QuickLook INFO : Wrote intermediate file fframe-r0-00000010.fits after Apply Fiberflat
+2017-05-05 12:04:10,807 QuickLook INFO : Running SKYCONT
+2017-05-05 12:04:11,352 QuickLook INFO : Output QA fig qafig-skycont-r0-00000010.pdf
+2017-05-05 12:04:11,367 QuickLook INFO : Running SKYPEAK
+2017-05-05 12:04:11,368 QuickLook WARNING : Failed to run QA SKYPEAK error was slice indices must be integers or None or have an __index__ method
+2017-05-05 12:04:11,468 QuickLook INFO : Step Apply Fiberflat finished. Output is in qa-apfiberflat-r0-00000010.yaml 
+2017-05-05 12:04:11,468 QuickLook INFO : Starting to run step Sky Subtraction
+2017-05-05 12:04:11,468 QuickLook INFO : Running Sky Subtraction
+2017-05-05 12:04:11,469 QuickLook INFO : No sky file given. Computing sky first
+2017-05-05 12:04:13,710 QuickLook INFO : Wrote intermediate file sframe-r0-00000010.fits after Sky Subtraction
+2017-05-05 12:04:13,719 QuickLook INFO : Running INTEG
+2017-05-05 12:04:13,748 QuickLook WARNING : Failed to run QA INTEG error was unorderable types: tuple() >= int()
+2017-05-05 12:04:13,819 QuickLook INFO : Running SNR
+2017-05-05 12:04:14,315 QuickLook INFO : Skipping HTTP post...
+2017-05-05 12:04:16,074 QuickLook INFO : Output QA fig qafig-snr-r0-00000010.pdf
+2017-05-05 12:04:16,238 QuickLook INFO : Step Sky Subtraction finished. Output is in qa-snr-r0-00000010.yaml 
+2017-05-05 12:04:16,238 QuickLook INFO : Pipeline processing finished. Serializing result
+2017-05-05 12:04:18,545 QuickLook INFO : Pipeline completed. Final result is in lastframe-r0-00000000.fits
