@@ -38,6 +38,20 @@ class QLFPipeline(object):
         self.logger.info('night: %s' % self.data.get('night'))
         self.logger.info('exposure: %s' % str(self.data.get('expid')))
 
+        # create process in database to obtain the process_id
+        process = self.register.insert_process(
+            self.data.get('expid'),
+            self.data.get('night'),
+            self.pipeline_name
+        )
+
+        # TODO: ingest used configuration
+        self.register.insert_config(process.id)
+
+        self.logger.info('process ID: %i' % process.id)
+        self.logger.info('start: %s' % process.start)
+        self.data['start'] = process.start
+
         output_dir = os.path.join(
             'exposures',
             self.data.get('night'),
@@ -52,20 +66,6 @@ class QLFPipeline(object):
         self.logger.info('output dir: %s' % output_dir)
 
         self.data['output_dir'] = output_dir
-
-        # create process in database to obtain the process_id
-        process = self.register.insert_process(
-            self.data.get('expid'),
-            self.data.get('night'),
-            self.pipeline_name
-        )
-
-        # TODO: ingest used configuration
-        self.register.insert_config(process.id)
-
-        self.logger.info('process ID: %i' % process.id)
-        self.logger.info('start: %s' % process.start)
-        self.data['start'] = process.start
 
         procs = list()
 
@@ -220,6 +220,13 @@ class QLFPipeline(object):
                 self.logger.error(str(error))
 
         self.logger.info("product registration has been completed.")
+
+    def was_processed(self):
+        """ Returns [<Process object>] if expid was processed else returns [] """
+
+        expid = self.data.get('expid')
+        return self.register.get_expid_in_process(expid)
+
 
 if __name__ == "__main__":
     exposure = {

@@ -17,6 +17,14 @@ class QLFApp():
 
         for exposure in exposures:
             qlp = QLFPipeline(exposure)
+
+            if qlp.was_processed():
+                print(
+                    "The exposure %s has already "
+                    "been processed." % exposure.get("expid")
+                )
+                continue
+
             qlp.start_process()
 
         # print("Starting QLF daemon...")

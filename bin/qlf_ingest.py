@@ -162,6 +162,11 @@ class QLFIngest(object):
                 "Use --force to overwrite.".format(name)
             )
 
+    def get_expid_in_process(self, expid):
+        """ gets process object by expid """
+
+        return Process.objects.filter(exposure_id=expid)
+
     def jsonify(self, data):
         """ Make a dictionary with numpy arrays JSON serializable """
 
