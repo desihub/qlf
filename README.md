@@ -71,9 +71,9 @@ See development documentation at http://quick-look-framework.readthedocs.io
     Update the qlf.cfg file with local paths for the input data, log files, etc.
     ```
     
-    NOTE: in development mode, QLF will process the data specified in the `qlf.cfg`. Each time you run QLF a fresh database is created and the results of the processing are ingested. 
+    NOTE: in development mode, QLF will process the data specified in the `qlf.cfg`. Each time you run QLF a fresh database is created and the processing results are ingested at the end. 
 
-6. Start the QLF application (start from here if you have done the previous steps at least once)
+6. Start the QLF application 
 
     ```
     source ~/miniconda3/bin/activate
@@ -82,5 +82,7 @@ See development documentation at http://quick-look-framework.readthedocs.io
     ./run.sh
     ```
     
-    NOTE: the log file for the QLF execution is configured at `qlf.cfg`, you can follow the progress of data processing from there, monitor the processes running wih `ps ux` or using the Monitor in the Quick Look web application. The Quick Look web application runs at `http://localhost:8000`
+    NOTE: the log file for the QLF execution is specified at `qlf.cfg`, you can follow the progress of data processing from there, or monitor the processes running wih `ps ux` or use the Monitor interface in the Quick Look web application. The Quick Look web application runs at `http://localhost:8000`
+
+    NOTE: Make sure you don't have old QLF processes running when you start the QLF application.
 
