@@ -1,10 +1,11 @@
-import configparser
 import os
+import sys
 import logging
 import subprocess
 import datetime
 import glob
 import yaml
+import configparser
 from multiprocessing import Process, Manager
 from qlf_ingest import QLFIngest
 
@@ -14,18 +15,22 @@ class QLFPipeline(object):
 
     def __init__(self, data):
         # gets project main directory
-        project_path = os.getenv('QLF_ROOT')
-
+        qlf_root = os.getenv('QLF_ROOT')
         self.cfg = configparser.ConfigParser()
-        self.cfg.read('%s/config/qlf.cfg' % project_path)
+        try:
+            self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+            logfile = self.cfg.get("main", "logfile")
+            loglevel = self.cfg.get("main", "loglevel")
+            self.scratch = self.cfg.get('namespace', 'scratch')
+        except:
+            print("Config file not found %s/qlf/config/qlf.cfg" % qlf_root)
+            sys.exit(1)
 
         self.pipeline_name = 'Quick Look'
 
-        logname = self.cfg.get("main", "pipeline_log")
-        logging.basicConfig(filename=logname, level=logging.DEBUG)
-        self.logger = logging.getLogger("%s Pipeline" % self.pipeline_name)
+        logging.basicConfig(filename=logfile, level=eval("logging.%s"%loglevel))
 
-        self.specprod_dir = self.cfg.get('namespace', 'specprod_dir')
+        self.logger = logging.getLogger("%s Pipeline" % self.pipeline_name)
 
         self.register = QLFIngest()
 
@@ -34,11 +39,11 @@ class QLFPipeline(object):
     def start_process(self):
         """ Start pipeline """
 
-        self.logger.info('starting pipeline ...')
-        self.logger.info('night: %s' % self.data.get('night'))
-        self.logger.info('exposure: %s' % str(self.data.get('expid')))
+        self.logger.info('Starting %s ...' % self.pipeline_name)
+        self.logger.info('Night: %s' % self.data.get('night'))
+        self.logger.info('Exposure: %s' % str(self.data.get('expid')))
 
-        # create process in database to obtain the process_id
+        # create process in database and obtain the process id
         process = self.register.insert_process(
             self.data.get('expid'),
             self.data.get('night'),
@@ -48,8 +53,9 @@ class QLFPipeline(object):
         # TODO: ingest used configuration
         self.register.insert_config(process.id)
 
-        self.logger.info('process ID: %i' % process.id)
-        self.logger.info('start: %s' % process.start)
+        self.logger.info('Process ID: %i' % process.id)
+        self.logger.info('Start: %s' % process.start)
+
         self.data['start'] = process.start
 
         output_dir = os.path.join(
@@ -58,12 +64,13 @@ class QLFPipeline(object):
             self.data.get('zfill')
         )
 
-        output_full_dir = os.path.join(self.specprod_dir, output_dir)
+        output_full_dir = os.path.join(self.scratch, output_dir)
 
+        # Make sure output dir is created
         if not os.path.isdir(output_full_dir):
             os.makedirs(output_full_dir)
 
-        self.logger.info('output dir: %s' % output_dir)
+        self.logger.info('Output dir: %s' % output_dir)
 
         self.data['output_dir'] = output_dir
 
@@ -99,9 +106,9 @@ class QLFPipeline(object):
 
         self.data['end'] = str(datetime.datetime.now())
         self.logger.info('end: %s' % self.data.get('end'))
-        self.logger.info("process completed")
+        self.logger.info("Process complete.")
 
-        self.logger.info('begin results ingestion...')
+        self.logger.info('Begin ingestion of results...')
 
         # TODO: refactor?
         camera_failed = 0
@@ -125,7 +132,7 @@ class QLFPipeline(object):
             status=status
         )
 
-        self.logger.info("results ingestion completed")
+        self.logger.info("Ingestion complete.")
 
     def execute(self, camera, return_cameras):
         """ Execute QL Pipeline by camera """
@@ -133,7 +140,7 @@ class QLFPipeline(object):
         cmd = (
             'desi_quicklook -n {night} -c {camera} -e {exposure} '
             '-f dark --psfboot {psfboot} --fiberflat {fiberflat} '
-            '--rawdata_dir {raw_dir} --specprod_dir {specprod_dir} '
+            '--rawdata_dir {data_dir} --specprod_dir {scratch} '
             '--save qlconfig-{camera}-{exposure}'
         ).format(**{
             'night': self.data.get('night'),
@@ -141,25 +148,24 @@ class QLFPipeline(object):
             'camera': camera.get('name'),
             'psfboot': camera.get('psfboot'),
             'fiberflat': camera.get('fiberflat'),
-            'raw_dir': self.data.get('raw_dir'),
-            'specprod_dir': self.specprod_dir
+            'data_dir': self.data.get('data_dir'),
+            'scratch': self.scratch
         })
 
         self.logger.info(
-            "starting job %i with night %s,camera %s and exposure %s... " % (
+            "Starting job %i on exposure %s and camera %s... " % (
             camera.get('job_id'),
-            self.data.get('night'),
-            camera.get('name'),
-            self.data.get('expid')
+            self.data.get('expid'),
+            camera.get('name')
         ))
 
-        logfile = open(os.path.join(
-            self.specprod_dir,
+        logname = open(os.path.join(
+            self.scratch,
             camera.get('logname')
         ), 'wb')
 
         cwd = os.path.join(
-            self.specprod_dir,
+            self.scratch,
             self.data.get('output_dir')
         )
 
@@ -183,8 +189,8 @@ class QLFPipeline(object):
         if retcode < 0:
             camera['status'] = 1
             msg = (
-                "job with camera %s and exposure %s "
-                "was terminated by signal: %i "
+                "Job on exposure %s and camera %s "
+                "finished with code %i "
             ) % (
                 camera.get('name'),
                 self.data.get('expid'),
@@ -205,7 +211,7 @@ class QLFPipeline(object):
         )
 
         output_path = os.path.join(
-            self.specprod_dir,
+            self.scratch,
             self.data.get('output_dir'),
             'ql-*-%s-%s.yaml' % (
                 camera.get('name'),
@@ -221,13 +227,13 @@ class QLFPipeline(object):
                 paname = qa['PANAME']
                 metrics = qa['METRICS']
 
-                self.logger.info("registering the product: %s" % name)
+                self.logger.info("Ingesting %s" % name)
                 self.register.insert_qa(name, paname, metrics, camera.get('job_id'))
             except Exception as error:
-                self.logger.error("error registering product: %s" % product)
+                self.logger.error("Error ingesting %s" % name)
                 self.logger.error(str(error))
 
-        self.logger.info("product registration has been completed.")
+        self.logger.info("Finished ingestion of pipeline results.")
 
     def was_processed(self):
         """ Returns [<Process object>] if expid was processed else returns [] """
@@ -241,7 +247,7 @@ if __name__ == "__main__":
         'night': '20170428',
         'expid': '3',
         'zfill': '00000003',
-        'raw_dir': '/home/singulani/raw_data',
+        'data_dir': '/home/singulani/raw_data',
         'cameras': [
           {
             'name': 'r8',

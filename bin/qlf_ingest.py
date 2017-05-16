@@ -3,14 +3,6 @@ import sys
 import yaml
 import json
 import numpy
-# import argparse
-
-from django.core.wsgi import get_wsgi_application
-
-QLF_API_URL = os.environ.get(
-    'QLF_API_URL',
-    'http://localhost:8000/dashboard/api'
-)
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +12,8 @@ sys.path.append(os.path.join(BASE_DIR, "qlf"))
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 
-application = get_wsgi_application()
+import django
+django.setup()
 
 from dashboard.models import (
     Job, Exposure, Camera, QA, Process, Configuration
@@ -144,8 +137,6 @@ class QLFIngest(object):
                 job_id=job_id
             )
             qa.save()
-            print("Save {} results".format(name))
-            print("See {}".format(QLF_API_URL))
         elif force:
             # Overwrite QA results
             QA.objects.filter(name=name).update(
@@ -154,8 +145,6 @@ class QLFIngest(object):
                 paname=paname,
                 metric=metrics
             )
-            print("Overwritten {} results".format(name))
-            print("See {}".format(QLF_API_URL))
         else:
             print(
                 "{} results already registered. "
@@ -175,57 +164,11 @@ class QLFIngest(object):
                 data[key] = data[key].tolist()
         return data
 
-    # def post(self, name, job_name, results, force=False):
-    #
-    #     if name not in results:
-    #         print('{} metric not found in {}'.format(name, results))
-    #
-    #     qa = results[name]
-    #
-    #     try:
-    #         expid = qa['EXPID']
-    #         arm = qa['ARM']
-    #         spectrograph = qa['SPECTROGRAPH']
-    #         paname = qa['PANAME']
-    #         value = self.jsonify(qa['VALUE'])
-    #     except:
-    #         print(
-    #             "Fatal: unexpected format for QA file. "
-    #             "Looking for 'EXPID', 'ARM', 'SPECTROGRAPH', "
-    #             "'PANAME' and 'VALUE' keys."
-    #         )
-    #         sys.exit(1)
-    #
-    #
-    #     camera_name = arm + str(spectrograph)
-    #
-    #     camera = self.insert_camera({
-    #         'camera': camera_name,
-    #         'arm': arm,
-    #         'spectrograph': spectrograph
-    #     })
-    #
-    #     process = self.insert_process(expid)
-    #
-    #     configuration = self.insert_config(process.id)
-    #
-    #     job = self.insert_job({
-    #         'name': job_name,
-    #         'process_id': process.id,
-    #         'camera_id': camera
-    #     })
-    #
-    #     qa_obj = {
-    #         'name': name,
-    #         'description': '',
-    #         'paname': paname,
-    #         'metric': value,
-    #         'job_id': job.id,
-    #         'camera': camera,
-    #         'expid': expid
-    #     }
-    #
-    #     self.insert_qa(qa_obj, force)
+if __name__=='__main__':
+    qlf = QLFIngest()
+ 
+
+# TODO: implement command line interface for qlf_ingest.py
 
 # if __name__=='__main__':
 #

@@ -1,0 +1,27 @@
+[main]
+emulate_dos=True
+
+# Log level, e.g. DEBUG, INFO, WARNING or ERROR
+loglevel=INFO
+
+# Log file name, e.g. /home/user/qlf.log
+logfile=
+
+[data]
+# Which data to process?
+night=20170428
+
+exposures=3,4
+
+# r,b,z
+arm=r
+
+# 0,1,2,3,4,5,6,7,8,9
+spectrograph=8,9
+
+[namespace]
+# Data directory, e.g. /home/user/data
+datadir=
+
+# Processing output, e.g. /home/user/scratch
+scratch=
