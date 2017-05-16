@@ -59,39 +59,24 @@ See development documentation at http://quick-look-framework.readthedocs.io
     wget -c ...
 
     ```
- 
+5. Update qlf.cfg file
 
-5. Start the QLF application (start from here if you have done the previous steps at least once)
+    ```
+    cd $QLF_ROOT/qlf/config
+    cp qlf.cfg.template qlf.cfg
+    
+    Update the qlf.cfg file with your local configuration.
+    ```
+
+6. Start the QLF application (start from here if you have done the previous steps at least once)
 
     ```
     source ~/miniconda3/bin/activate
-    source activate quicklook 
-    
     export QLF_ROOT=$HOME/quicklook
-    
-    for package in desispec desiutil; do
-        echo "Setting $package..."
-        export PATH=$QLF_ROOT/$package/bin:$PATH
-        export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
-    done
-    
     cd $QLF_ROOT/qlf/qlf
     ./run.sh
     ```
-    
-    Open another terminal and start the bokeh server:
-    
-    ```
-    source activate quicklook 
-    cd $QLF_ROOT/qlf/qlf
-    ./bokeh.sh
-    ```
+
     
 Quick Look web application runs at `http://localhost:8000`
-
-
-6. Start the Quick Look daemon
-
-
-    <put command to start Quick Look daemon here>
 
