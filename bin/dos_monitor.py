@@ -12,15 +12,12 @@ class DOSmonitor(object):
         self.cfg = configparser.ConfigParser()
         try:
             self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
-        except:
-            print("Config file not found %s/qlf/config/qlf.cfg" % qlf_root)
+            self.datadir = os.path.normpath(self.cfg.get('namespace', 'datadir'))
+        except Exception as error:
+            print(error)
+            print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
             sys.exit(1)
-
-        self.datadir = os.path.normpath(self.cfg.get(
-            'namespace',
-            'datadir'
-        ))
-
+        
         self.cameras = self.get_cameras()
 
     def get_last_night(self):

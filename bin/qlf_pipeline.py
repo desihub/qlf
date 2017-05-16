@@ -19,20 +19,18 @@ class QLFPipeline(object):
         self.cfg = configparser.ConfigParser()
         try:
             self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+            logfile = self.cfg.get("main", "logfile")
+            loglevel = self.cfg.get("main", "loglevel")
+            self.scratch = self.cfg.get('namespace', 'scratch')
         except:
             print("Config file not found %s/qlf/config/qlf.cfg" % qlf_root)
             sys.exit(1)
 
         self.pipeline_name = 'Quick Look'
 
-        logfile = self.cfg.get("main", "logfile")
-        loglevel = self.cfg.get("main", "loglevel")
-
         logging.basicConfig(filename=logfile, level=eval("logging.%s"%loglevel))
 
         self.logger = logging.getLogger("%s Pipeline" % self.pipeline_name)
-
-        self.scratch = self.cfg.get('namespace', 'scratch')
 
         self.register = QLFIngest()
 
@@ -83,18 +81,18 @@ class QLFPipeline(object):
         for camera in self.data.get('cameras'):
             camera['start'] = str(datetime.datetime.now())
 
-            logfile = os.path.join(
+            logname = os.path.join(
                 self.data.get('output_dir'),
                 "run-%s.log" % camera.get('name')
             )
 
-            camera['logfile'] = logfile
+            camera['logname'] = logname
 
             job = self.register.insert_job(
                 process_id=process.id,
                 camera=camera.get('name'),
                 start=camera.get('start'),
-                logfile=camera.get('logfile')
+                logname=camera.get('logname')
             )
 
             camera['job_id'] = job.id
@@ -161,9 +159,9 @@ class QLFPipeline(object):
             camera.get('name')
         ))
 
-        logfile = open(os.path.join(
+        logname = open(os.path.join(
             self.scratch,
-            camera.get('logfile')
+            camera.get('logname')
         ), 'wb')
 
         cwd = os.path.join(
@@ -173,8 +171,8 @@ class QLFPipeline(object):
 
         with subprocess.Popen(cmd, stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE, shell=True, cwd=cwd) as process:
-            logfile.write(process.stdout.read())
-            logfile.write(process.stderr.read())
+            logname.write(process.stdout.read())
+            logname.write(process.stderr.read())
             retcode = process.wait()
 
         camera['end'] = str(datetime.datetime.now())

@@ -19,7 +19,7 @@ class QLFApp():
                 )
                 continue
 
-            qlp.start_process()
+            ql.start_process()
 
 if __name__ == "__main__":
 

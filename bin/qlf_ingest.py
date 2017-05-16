@@ -3,10 +3,6 @@ import sys
 import yaml
 import json
 import numpy
-# import argparse
-
-from django.core.wsgi import get_wsgi_application
-
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -15,6 +11,9 @@ BASE_DIR = os.path.dirname(
 sys.path.append(os.path.join(BASE_DIR, "qlf"))
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
+
+import django
+django.setup()
 
 from dashboard.models import (
     Job, Exposure, Camera, QA, Process, Configuration
@@ -165,6 +164,9 @@ class QLFIngest(object):
                 data[key] = data[key].tolist()
         return data
 
+if __name__=='__main__':
+    qlf = QLFIngest()
+ 
 
 # TODO: implement command line interface for qlf_ingest.py
 
