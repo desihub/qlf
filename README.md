@@ -61,10 +61,20 @@ See development documentation at http://quick-look-framework.readthedocs.io
     ```
  
 
-5. Start the web application
+5. Start the QLF application (start from here if you have done the previous steps at least once)
 
     ```
+    source ~/miniconda3/bin/activate
     source activate quicklook 
+    
+    export QLF_ROOT=$HOME/quicklook
+    
+    for package in desispec desiutil; do
+        echo "Setting $package..."
+        export PATH=$QLF_ROOT/$package/bin:$PATH
+        export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
+    done
+    
     cd $QLF_ROOT/qlf/qlf
     ./run.sh
     ```
