@@ -13,6 +13,9 @@ then
 fi
 echo "Setting DESI Quick Look environment..."
 
+source deactivate
+source activate quicklook
+
 for package in desispec desiutil; do
 	echo "Setting $package..."
 	export PATH=$QLF_ROOT/$package/bin:$PATH
