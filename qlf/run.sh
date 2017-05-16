@@ -1,10 +1,25 @@
 #!/bin/bash
 
-export PYTHONPATH=$PYTHONPATH:$(pwd)
-
 # Run QLF in development mode, create db if it does not exist
 # start QLF web applicationi, Bokeh server and the QLF daemon
 
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+
+if [ "$QLF_ROOT" == "" ];
+then
+	echo "Set QLF_ROOT environment variable first. Example:"
+	echo "export QLF_ROOT=$HOME/quicklook"
+	exit 1
+fi
+echo "Setting DESI Quick Look environment..."
+
+for package in desispec desiutil; do
+	echo "Setting $package..."
+	export PATH=$QLF_ROOT/$package/bin:$PATH
+	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
+done
+
+echo "Initializing QLF database..."
 # Test user for the development db
 export TEST_USER=nobody
 export TEST_USER_EMAIL=${TEST_USER}@example.com
@@ -12,7 +27,6 @@ export TEST_USER_PASSWD=nobody
 
 # Initialize the development database 
 DEVDB="db.sqlite3"
-
 if [ -f $DEVDB ];
 then
     rm $DEVDB
