@@ -1,19 +1,24 @@
+import os
+import sys
 import configparser
 import re
-import os
 
 
 class DOSmonitor(object):
 
     def __init__(self):
-        project_path = os.getenv('QLF_ROOT')
 
+        qlf_root = os.getenv('QLF_ROOT')
         self.cfg = configparser.ConfigParser()
-        self.cfg.read('%s/config/qlf.cfg' % project_path)
+        try:
+            self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+        except:
+            print("Config file not found %s/qlf/config/qlf.cfg" % qlf_root)
+            sys.exit(1)
 
         self.datadir = os.path.normpath(self.cfg.get(
             'namespace',
-            'rawdir'
+            'datadir'
         ))
 
         self.cameras = self.get_cameras()
@@ -36,14 +41,15 @@ class DOSmonitor(object):
                 exposures_list.append(exposure)
             except Exception as error:
                 print(error)
+                sys.exit(1)
 
         return exposures_list
 
     def get_cameras(self):
         """ Gets all cameras from configuration file. """
 
-        arms = self.cfg.get('cameras', 'arm').split(',')
-        spectrographs = self.cfg.get('cameras', 'spectrograph').split(',')
+        arms = self.cfg.get('data', 'arm').split(',')
+        spectrographs = self.cfg.get('data', 'spectrograph').split(',')
 
         cameras = list()
 
@@ -80,7 +86,7 @@ class DOSmonitor(object):
             "night": night,
             "expid": exposure,
             "zfill": str(exposure).zfill(8),
-            "raw_dir": self.datadir,
+            "data_dir": self.datadir,
             "cameras": camera_list
         }
 
@@ -115,7 +121,7 @@ class DOSmonitor(object):
 
 if __name__ == "__main__":
 
-    dosmonitor = DOSmonitor()
-    night = dosmonitor.get_last_night()
-    exposures = dosmonitor.get_exposures_by_night(night)
+    dos_monitor = DOSmonitor()
+    night = dos_monitor.get_last_night()
+    exposures = dos_monitor.get_exposures_by_night(night)
     print(exposures)
