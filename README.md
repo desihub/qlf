@@ -20,7 +20,7 @@ See development documentation at http://quick-look-framework.readthedocs.io
     source ~/miniconda3/bin/activate
     ```
     
-    Note: miniconda3 can be installed from https://conda.io/docs/install/quick.html
+    NOTE: miniconda3 can be installed from https://conda.io/docs/install/quick.html
    
     ```
     conda config --add channels conda-forge
