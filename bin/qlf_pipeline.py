@@ -175,9 +175,17 @@ class QLFPipeline(object):
 
         with subprocess.Popen(cmd, stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE, shell=True, cwd=cwd) as process:
-            logname.write(process.stdout.read())
-            logname.write(process.stderr.read())
+            for line in iter(process.stdout.readline, bytes()):
+                logfile.write(line)
+                logfile.flush()
+
+            for line in iter(process.stderr.readline, bytes()):
+                logfile.write(line)
+                logfile.flush()
+
             retcode = process.wait()
+
+        logfile.close()
 
         camera['end'] = str(datetime.datetime.now())
         camera['status'] = 0
