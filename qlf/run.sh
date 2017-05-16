@@ -3,40 +3,34 @@
 export PYTHONPATH=$PYTHONPATH:$(pwd)
 
 # Run QLF in development mode, create db if it does not exist
-# start QLF web application and QLF daemon
+# start QLF web applicationi, Bokeh server and the QLF daemon
 
 # Test user for the development db
 export TEST_USER=nobody
 export TEST_USER_EMAIL=${TEST_USER}@example.com
 export TEST_USER_PASSWD=nobody
 
-# Initialize the development database for the first time
+# Initialize the development database 
 DEVDB="db.sqlite3"
 
-if [ ! -f $DEVDB ];
+if [ -f $DEVDB ];
 then
-    # Create the development database
-    python manage.py makemigrations
-    python manage.py migrate
-
-    # Create superuser for Django admin interface
-    # The password created here is used to access de admin interface and the browsable API
-    echo "For development use password: $TEST_USER_PASSWD"
-    python manage.py createsuperuser --username $TEST_USER --email $TEST_USER_EMAIL
-
+    rm $DEVDB
 fi
+python -Wi manage.py migrate
 
-echo "Remember to start the bokeh server in another terminal..."
+# Create django superuser 
+# The password created here is used to access de admin interface and the browsable API
+echo
+echo "For development you might use a password like: $TEST_USER_PASSWD"
+echo
 
-sleep 1
+python -Wi manage.py createsuperuser --username $TEST_USER --email $TEST_USER_EMAIL
 
-# Start QLF daemon
-# python bin/qlf.py &
-
-# Start QLF REST API
-python manage.py runserver
-
-
-
-
-
+echo "Starting QLF..." 
+# QLF web application
+python -Wi manage.py runserver &
+# Bokeh server
+bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qa-snr & 
+# QLF daemon
+python -Wi ../bin/qlf_daemon.py 
