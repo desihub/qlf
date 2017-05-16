@@ -14,7 +14,7 @@ class QLFPipeline(object):
     """ Class responsible for managing Quick Look pipeline execution """
 
     def __init__(self, data):
-        # gets project main directory
+        # Project main directory
         qlf_root = os.getenv('QLF_ROOT')
         self.cfg = configparser.ConfigParser()
         try:
@@ -22,15 +22,16 @@ class QLFPipeline(object):
             logfile = self.cfg.get("main", "logfile")
             loglevel = self.cfg.get("main", "loglevel")
             self.scratch = self.cfg.get('namespace', 'scratch')
-        except:
-            print("Config file not found %s/qlf/config/qlf.cfg" % qlf_root)
+        except Exception as error:
+            print(error)
+            print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
             sys.exit(1)
 
         self.pipeline_name = 'Quick Look'
 
         logging.basicConfig(filename=logfile, level=eval("logging.%s"%loglevel))
 
-        self.logger = logging.getLogger("%s Pipeline" % self.pipeline_name)
+        self.logger = logging.getLogger("QLF")
 
         self.register = QLFIngest()
 
@@ -39,7 +40,7 @@ class QLFPipeline(object):
     def start_process(self):
         """ Start pipeline """
 
-        self.logger.info('Starting %s ...' % self.pipeline_name)
+        self.logger.info('Started %s ...' % self.pipeline_name)
         self.logger.info('Night: %s' % self.data.get('night'))
         self.logger.info('Exposure: %s' % str(self.data.get('expid')))
 
@@ -50,7 +51,8 @@ class QLFPipeline(object):
             self.pipeline_name
         )
 
-        # TODO: ingest used configuration
+        # TODO: ingest configuration file used, this should be done by
+	# process
         self.register.insert_config(process.id)
 
         self.logger.info('Process ID: %i' % process.id)
@@ -88,6 +90,8 @@ class QLFPipeline(object):
 
             camera['logname'] = logname
 
+            self.logger.info('Output log for camera %s: %s' %(camera.get('name'), camera.get('logname')))
+            
             job = self.register.insert_job(
                 process_id=process.id,
                 camera=camera.get('name'),
@@ -153,10 +157,10 @@ class QLFPipeline(object):
         })
 
         self.logger.info(
-            "Starting job %i on exposure %s and camera %s... " % (
+            "Started job %i to process camera %s on exposure %s ... " % (
             camera.get('job_id'),
-            self.data.get('expid'),
-            camera.get('name')
+            camera.get('name'),
+            self.data.get('expid')
         ))
 
         logname = open(os.path.join(
