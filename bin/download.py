@@ -8,12 +8,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--url",
     default="http://portal.nersc.gov/project/desi/users/govinda/20160816/",
-    help="url of the exposures repository")
+    help="URL of the data repository")
 
 parser.add_argument(
     "--output_dir",
     default=None,
-    help="directory that will contain the exposures")
+    help="Download directory")
 
 parser.add_argument("--cut_dirs", default="5")
 
@@ -25,7 +25,7 @@ cmd = (
     "&& rm robots.txt"
 ) % (args.cut_dirs, args.url)
 
-print('executing: %s' % cmd)
+print('Executing: %s' % cmd)
 
 process = subprocess.Popen(cmd, shell=True, cwd=args.output_dir)
 process.wait()
