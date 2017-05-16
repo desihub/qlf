@@ -20,7 +20,7 @@ See development documentation at http://quick-look-framework.readthedocs.io
     source ~/miniconda3/bin/activate
     ```
     
-    Note: miniconda3 can be installed from https://conda.io/docs/install/quick.html
+    NOTE: miniconda3 can be installed from https://conda.io/docs/install/quick.html
    
     ```
     conda config --add channels conda-forge
@@ -33,7 +33,6 @@ See development documentation at http://quick-look-framework.readthedocs.io
 3. Install the DESI Quick Look pipeline (first time installation)
 
     ```
-   
     cd $QLF_ROOT
     git clone https://github.com/desihub/desispec.git
     git clone https://github.com/desihub/desiutil.git
@@ -51,24 +50,30 @@ See development documentation at http://quick-look-framework.readthedocs.io
     desi_quicklook --help
     ```
 
-4. Download some test data
+4. Get some test data
 
     ```
     export DESI_SPECTRO_DATA=$HOME/data
+    mkdir -p $DESI_SPECTRO_DATA
     cd $DESI_SPECTRO_DATA
-    wget -c ...
-
     ```
-5. Update qlf.cfg file
+    
+    NOTE: use your preferred method to copy files here, Quick Look pipeline expects the files as specified in the DESI datamodel.
+    
+    NOTE: on desidev server, you migth copy a night of data from `/home/angelofausti/data/20170428.tgz`
+
+5. Update the `qlf.cfg` file
 
     ```
     cd $QLF_ROOT/qlf/config
     cp qlf.cfg.template qlf.cfg
     
-    Update the qlf.cfg file with your local configuration.
+    Update the qlf.cfg file with local paths for the input data, log files, etc.
     ```
+    
+    NOTE: in development mode, QLF will process the data specified in the `qlf.cfg`. Each time you run QLF a fresh database is created and the processing results are ingested at the end. 
 
-6. Start the QLF application (start from here if you have done the previous steps at least once)
+6. Start the QLF application 
 
     ```
     source ~/miniconda3/bin/activate
@@ -76,7 +81,8 @@ See development documentation at http://quick-look-framework.readthedocs.io
     cd $QLF_ROOT/qlf/qlf
     ./run.sh
     ```
-
     
-Quick Look web application runs at `http://localhost:8000`
+    NOTE: the log file for the QLF execution is specified at `qlf.cfg`, you can follow the progress of data processing from there, or monitor the processes running wih `ps ux` or use the Monitor interface in the Quick Look web application. The Quick Look web application runs at `http://localhost:8000`
+
+    NOTE: Make sure you don't have old QLF processes running when you start the QLF application.
 
