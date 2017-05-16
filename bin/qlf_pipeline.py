@@ -17,7 +17,7 @@ class QLFPipeline(object):
         project_path = os.getenv('QLF_ROOT')
 
         self.cfg = configparser.ConfigParser()
-        self.cfg.read('%s/config/qlf.cfg' % project_path)
+        self.cfg.read('%s/qlf/config/qlf.cfg' % project_path)
 
         self.pipeline_name = 'Quick Look'
 
