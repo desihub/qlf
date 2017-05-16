@@ -2,8 +2,12 @@ from django.shortcuts import render_to_response
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import authentication, permissions, viewsets, response, filters
 
-from .models import Job, Exposure, Camera, QA
-from .serializers import JobSerializer, ExposureSerializer, CameraSerializer, QASerializer
+from .models import Job, Exposure, Camera, QA, Process, Configuration
+from .serializers import (
+    JobSerializer, ExposureSerializer, CameraSerializer,
+    QASerializer, ProcessSerializer, ConfigurationSerializer
+)
+
 from bokeh.embed import autoload_server
 
 
@@ -33,13 +37,23 @@ class DefaultsMixin(object):
         filters.OrderingFilter,
     )
 
-
 class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""
 
-    queryset = Job.objects.order_by('date')
+    queryset = Job.objects.order_by('start')
     serializer_class = JobSerializer
 
+class ProcessViewSet(DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing processes"""
+
+    queryset = Process.objects.order_by('start')
+    serializer_class = ProcessSerializer
+
+class ConfigurationViewSet(DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing configurations"""
+
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
 
 class QAViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing QA results"""
@@ -59,7 +73,6 @@ class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
-
 
 class QaSnrAppViewSet(DefaultsMixin, viewsets.ViewSet):
     """API endpoint for listing bokeh apps"""

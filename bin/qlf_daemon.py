@@ -1,28 +1,25 @@
-import sys
-import time
-
-from qlf_daemon.qlf_ingest import post
-
+from dos_monitor import DOSmonitor
+from qlf_pipeline import QLFPipeline
 
 class QLFApp():
 
-    def mkconfig(self):
-        # TODO: Generate the QL configuration file
-        pass
-
     def run(self):
 
-        print("Starting QLF daemon...")
-        while True:
-            # TODO: Call the QL pipeline here
-            try:
-                # Send QA results to the QLF database
-                # For now read test data each 10s
-                time.sleep(10)
-                post('../test/data/qa-snr-r0-00000000.yaml')
-            except:
-                print('QLF is not responding, please restart.')
-                sys.exit(1)
+        dos_monitor = DOSmonitor()
+        night = dos_monitor.get_last_night()
+        exposures = dos_monitor.get_exposures_by_night(night)
+
+        for exposure in exposures:
+            ql = QLFPipeline(exposure)
+
+            if ql.was_processed():
+                print(
+                    "Exposure %s has already "
+                    "been processed, skipping..." % exposure.get("expid")
+                )
+                continue
+
+            ql.start_process()
 
 if __name__ == "__main__":
 

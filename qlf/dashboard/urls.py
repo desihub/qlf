@@ -7,6 +7,8 @@ admin.site.site_header = 'QLF Admin'
 
 api_router = DefaultRouter()
 api_router.register(r'job', views.JobViewSet)
+api_router.register(r'process', views.ProcessViewSet)
+api_router.register(r'configuration', views.ConfigurationViewSet)
 api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
 api_router.register(r'camera', views.CameraViewSet)

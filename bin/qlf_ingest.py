@@ -1,11 +1,9 @@
 import os
 import sys
-import argparse
 import yaml
+import json
 import numpy
 
-QLF_API_URL = os.environ.get('QLF_API_URL',
-                             'http://localhost:8000/dashboard/api')
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
 )
@@ -14,108 +12,202 @@ sys.path.append(os.path.join(BASE_DIR, "qlf"))
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 
-from dashboard.models import Job, Exposure, Camera, QA
+import django
+django.setup()
 
-def jsonify(data):
-    ''' Make a dictionary with numpy arrays JSON serializable'''
-    for key in data:
-        if type(data[key]) == numpy.ndarray:
-            data[key] = data[key].tolist()
-    return data
-
-def post(name, results, force=False):
-
-    if name not in results:
-        print('{} metric not found in {}'.format(name, results))
-
-    qa = results[name]
-
-    try:
-        expid = qa['EXPID']
-        arm = qa['ARM']
-        spectrograph = qa['SPECTROGRAPH']
-        paname = qa['PANAME']
-        value = jsonify(qa['VALUE'])
-    except:
-        print("Fatal: unexpected format for QA file. Looking for 'EXPID', "
-              "'ARM', 'SPECTROGRAPH', 'PANAME' and 'VALUE' keys.")
-        sys.exit(1)
-
-    # Make sure there is a job to refer to
-    if not Job.objects.all():
-        Job.objects.create()
-
-    # Check if expid is already registered
-    if not Exposure.objects.filter(expid=expid):
-        job = Job.objects.latest('pk')
-        exposure = Exposure(job=job, expid=expid)
-        exposure.save()
-        print("Registered exposure {}".format(expid))
-
-    camera = arm + str(spectrograph)
-
-    # Check if camera is already registered
-    if not Camera.objects.filter(camera=camera):
-        exposure = Exposure.objects.filter(expid=expid)[0]
-        camera = Camera(camera=camera, exposure=exposure,
-                        arm=arm, spectrograph=spectrograph)
-        camera.save()
-        print("Registered camera {}".format(camera))
-
-    # Save QA results for this exposure and camera`
-    camera = Camera.objects.filter(camera=camera)[0]
-
-    if not QA.objects.filter(name=name):
-        # Register for QA results for the first time
-        qa = QA(camera=camera, name=name, description='', paname=paname, value=value)
-        qa.save()
-        print("Saved {} results for exposure={} and camera={}".format(name, expid, camera))
-        print("See {}".format(QLF_API_URL))
-    elif QA.objects.filter(name=name) and force:
-        # Overwrite QA results
-        QA.objects.filter(name=name).update(camera=camera, description='',
-                                            paname=paname, value=value)
-        print("Overwritten {} results for exposure={} and camera={}".format(name, expid, camera))
-    else:
-        print("{} results for exposure={} and camera={} already "
-              "registered. Use --force to overwrite.".format(name, expid, camera))
+from dashboard.models import (
+    Job, Exposure, Camera, QA, Process, Configuration
+)
 
 
+class QLFIngest(object):
+    """ Class responsable by results ingestion from Quick Look pipeline. """
+
+    def insert_exposure(self, expid, night):
+        """ Inserts and gets exposure and night if necessary. """
+
+        # Check if expid is already registered
+        if not Exposure.objects.filter(expid=expid):
+            exposure = Exposure(expid=expid, night=night)
+            exposure.save()
+            print("Registered exposure {}".format(expid))
+
+        # Save Process for this exposure
+        return Exposure.objects.get(expid=expid)
+
+    def insert_process(self, expid, night, pipeline_name):
+        """ Inserts initial data in process table. """
+
+        exposure = self.insert_exposure(expid, night)
+
+        process = Process(
+            exposure_id=exposure.expid,
+            pipeline_name=pipeline_name
+        )
+
+        process.save()
+
+        return process
+
+    def insert_config(self, process_id):
+        """ Inserts used configuration. """
+
+        #TODO: get configuration coming of interface
+        # Make sure there is a configuration to refer to
+        if not Configuration.objects.all():
+            config_file = open('../qlf/static/ql.json', 'r')
+            config_str = config_file.read()
+            config_file.close()
+
+            config_json = self.jsonify(json.loads(config_str))
+
+            configuration = Configuration(
+                configuration=config_json,
+                process_id=process_id
+            )
+
+            configuration.save()
+
+        return Configuration.objects.latest('pk')
+
+    def insert_camera(self, camera):
+        """ Inserts used camera. """
+
+        # Check if camera is already registered
+        if not Camera.objects.filter(camera=camera):
+            camera_obj = Camera(
+                camera=camera,
+                arm=camera[0],
+                spectrograph=camera[-1]
+            )
+            camera_obj.save()
+            print("Registered camera {}".format(camera_obj))
+
+        # Save Job for this camera
+        return Camera.objects.get(camera=camera)
+
+    def insert_job(self, process_id, camera, start, logname, version='1.0'):
+        """ Insert job and camera if necessary. """
+
+        camera = self.insert_camera(camera)
+
+        job = Job(
+            process_id=process_id,
+            camera_id=camera,
+            start=start,
+            logname=logname,
+            version=version
+        )
+        job.save()
+
+        return job
+
+    def update_process(self, process_id, end, status):
+        """ Updates process with execution results. """
+
+        process = Process.objects.filter(id=process_id).update(
+            end=end,
+            status=status
+        )
+
+        return process
+
+    def update_job(self, job_id, end, status):
+        """ Updates job with execution results. """
+
+        job = Job.objects.filter(id=job_id).update(
+            end=end,
+            status=status
+        )
+
+        return job
+
+    def insert_qa(self, name, paname, metrics, job_id, force=False):
+        """ Inserts or updates qa table """
+
+        metrics = self.jsonify(metrics)
+
+        if not QA.objects.filter(name=name):
+            # Register for QA results for the first time
+            qa = QA(
+                name=name,
+                description='',
+                paname=paname,
+                metric=metrics,
+                job_id=job_id
+            )
+            qa.save()
+        elif force:
+            # Overwrite QA results
+            QA.objects.filter(name=name).update(
+                job_id=job_id,
+                description='',
+                paname=paname,
+                metric=metrics
+            )
+        else:
+            print(
+                "{} results already registered. "
+                "Use --force to overwrite.".format(name)
+            )
+
+    def get_expid_in_process(self, expid):
+        """ gets process object by expid """
+
+        return Process.objects.filter(exposure_id=expid)
+
+    def jsonify(self, data):
+        """ Make a dictionary with numpy arrays JSON serializable """
+
+        for key in data:
+            if type(data[key]) == numpy.ndarray:
+                data[key] = data[key].tolist()
+        return data
 
 if __name__=='__main__':
+    qlf = QLFIngest()
+ 
 
-    parser = argparse.ArgumentParser(
-        description="""Upload QA metrics produced by the Quick Look pipeline to QLF database.
-This script is meant to be run from the command line or imported by Quick Look. """,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+# TODO: implement command line interface for qlf_ingest.py
 
-    parser.add_argument(
-            '--file',
-            dest='file',
-            required=True,
-            help='Path to QA file produced by Quick Look')
-
-    parser.add_argument(
-            '--qa-name',
-            dest='qa_name',
-            required=True,
-            help='Name of the QA metric to be ingested'
-    )
-
-    parser.add_argument(
-            '--force',
-            default=False,
-            action='store_true',
-            help='Overwrite QA results for a given metric'
-    )
-
-    qa_name = parser.parse_args().qa_name
-
-    file = parser.parse_args().file
-    results = yaml.load(open(file, 'r'))
-
-    force = parser.parse_args().force
-
-    post(qa_name, results, force)
-
+# if __name__=='__main__':
+#
+#     parser = argparse.ArgumentParser(
+#         description="""Upload QA metrics produced by the Quick Look pipeline to QLF database.
+# This script is meant to be run from the command line or imported by Quick Look. """,
+#         formatter_class=argparse.RawDescriptionHelpFormatter)
+#
+#     parser.add_argument(
+#             '--file',
+#             dest='file',
+#             required=True,
+#             help='Path to QA file produced by Quick Look')
+#
+#     parser.add_argument(
+#             '--qa-name',
+#             dest='qa_name',
+#             required=True,
+#             help='Name of the QA metric to be ingested'
+#     )
+#
+#     parser.add_argument(
+#             '--force',
+#             default=False,
+#             action='store_true',
+#             help='Overwrite QA results for a given metric'
+#     )
+#
+#     qa_name = parser.parse_args().qa_name
+#
+#     file = parser.parse_args().file
+#
+#     job_name = os.path.basename(file)
+#
+#     results = yaml.load(open(file, 'r'))
+#
+#     force = parser.parse_args().force
+#
+#     qlfi = QLFIngest()
+#
+#     qlfi.post(qa_name, job_name, results, force)
 
