@@ -84,7 +84,7 @@ def update(t):
                 elif 'Preprocessing' in line:
                     cameras['stage' + cam].text = 'Preprocessing'
                     break
-                else:
+                elif 'Initializing' in line:
                     cameras['stage' + cam].text = 'Initializing'
                     break
 
