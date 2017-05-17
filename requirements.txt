@@ -24,6 +24,4 @@ pandas=0.20.1
 requests=2.13.0
 sphinx=1.5.4
 flake8=3.3.0
-
-
-
+furl==0.5.7
