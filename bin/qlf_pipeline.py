@@ -53,7 +53,7 @@ class QLFPipeline(object):
 
         # TODO: ingest configuration file used, this should be done by
 	# process
-        self.register.insert_config(process.id)
+        # self.register.insert_config(process.id)
 
         self.logger.info('Process ID: %i' % process.id)
         self.logger.info('Start: %s' % process.start)
@@ -157,10 +157,10 @@ class QLFPipeline(object):
         })
 
         self.logger.info(
-            "Started job %i to process camera %s on exposure %s ... " % (
+            "Started job %i on exposure %s and camera %s ... " % (
             camera.get('job_id'),
-            camera.get('name'),
-            self.data.get('expid')
+            self.data.get('expid'),
+            camera.get('name')
         ))
 
         logname = open(os.path.join(
@@ -203,7 +203,7 @@ class QLFPipeline(object):
             self.logger.error(msg)
 
         return_cameras.append(camera)
-        self.logger.info("done job %i" % camera.get('job_id'))
+        self.logger.info("Finished job %i" % camera.get('job_id'))
 
     def update_job(self, camera):
         """ Update job and ingest QA results """

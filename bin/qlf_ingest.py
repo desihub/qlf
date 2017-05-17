@@ -30,7 +30,6 @@ class QLFIngest(object):
         if not Exposure.objects.filter(expid=expid):
             exposure = Exposure(expid=expid, night=night)
             exposure.save()
-            print("Registered exposure {}".format(expid))
 
         # Save Process for this exposure
         return Exposure.objects.get(expid=expid)
@@ -81,7 +80,6 @@ class QLFIngest(object):
                 spectrograph=camera[-1]
             )
             camera_obj.save()
-            print("Registered camera {}".format(camera_obj))
 
         # Save Job for this camera
         return Camera.objects.get(camera=camera)

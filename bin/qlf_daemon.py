@@ -11,14 +11,6 @@ class QLFApp():
 
         for exposure in exposures:
             ql = QLFPipeline(exposure)
-
-            if ql.was_processed():
-                print(
-                    "Exposure %s has already "
-                    "been processed, skipping..." % exposure.get("expid")
-                )
-                continue
-
             ql.start_process()
 
 if __name__ == "__main__":
