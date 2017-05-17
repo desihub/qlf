@@ -48,6 +48,6 @@ echo "Starting QLF..."
 # QLF web application
 python -Wi manage.py runserver &
 # Bokeh server
-bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qa-snr & 
+bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures & 
 # QLF daemon
 python -Wi ../bin/qlf_daemon.py 
