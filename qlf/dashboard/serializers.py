@@ -21,10 +21,15 @@ class QASerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
+    process = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
-        fields = ('name', 'start', 'end', 'status', 'version', 'logname', 'links')
+        fields = ('name', 'start', 'end', 'status', 'version', 'logname', 'process', 'links')
+
+    def get_process(self, obj):
+        return obj.process.pk
+
 
     def get_links(self, obj):
         request = self.context['request']
@@ -32,6 +37,33 @@ class JobSerializer(serializers.ModelSerializer):
             'self': reverse('job-detail', kwargs={'pk': obj.pk},
                             request=request),
         }
+
+class MonitorSerializer(serializers.ModelSerializer):
+
+    links = serializers.SerializerMethodField()
+    process = serializers.SerializerMethodField()
+    exposure = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Job
+        fields = ('process', 'exposure', 'logname', 'links')
+
+    def get_exposure(self, obj):
+
+        return obj.process.exposure_id
+
+    def get_process(self, obj):
+
+        return obj.process.pk
+
+
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('job-detail', kwargs={'pk': obj.pk},
+                            request=request),
+        }
+
 
 class ProcessSerializer(serializers.ModelSerializer):
 
@@ -54,7 +86,7 @@ class ExposureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exposure
-        fields = ('expid', 'flavor', 'links')
+        fields = ('expid', 'flavor', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
