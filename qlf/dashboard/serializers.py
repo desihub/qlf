@@ -25,7 +25,7 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('name', 'start', 'end', 'status', 'version', 'logname', 'process', 'links')
+        fields = ('name', 'start', 'end', 'status', 'version', 'logname', 'camera', 'process', 'links')
 
     def get_process(self, obj):
         return obj.process.pk
@@ -37,6 +37,21 @@ class JobSerializer(serializers.ModelSerializer):
             'self': reverse('job-detail', kwargs={'pk': obj.pk},
                             request=request),
         }
+
+class ProcessJobsSerializer(serializers.ModelSerializer):
+
+    # jobs = serializers.SlugRelatedField(
+    #     many=True,
+    #     read_only=True,
+    #     slug_field='logname'
+    # )
+
+    jobs = JobSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Process
+        fields = ('id', 'exposure', 'jobs')
+
 
 class MonitorSerializer(serializers.ModelSerializer):
 

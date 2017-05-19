@@ -4,7 +4,7 @@ from rest_framework import authentication, permissions, viewsets, response, filt
 from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
-    QASerializer, ProcessSerializer, ConfigurationSerializer, MonitorSerializer
+    QASerializer, ProcessSerializer, ConfigurationSerializer, MonitorSerializer, ProcessJobsSerializer
 )
 
 from django.conf import settings
@@ -45,11 +45,9 @@ class MonitorViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""
 
     last_process = Process.objects.latest('pk')
+    queryset = Process.objects.filter(id=last_process.id)
 
-    queryset = Job.objects.filter(process_id = last_process.id)
-
-    serializer_class = MonitorSerializer
-
+    serializer_class = ProcessJobsSerializer
 
 
 class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):

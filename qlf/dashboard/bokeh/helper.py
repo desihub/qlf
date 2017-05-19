@@ -49,6 +49,13 @@ def get_all_qa():
     data = requests.get(api['qa']).json()['results']
     return data
 
+def get_last_process():
+    """
+    Returns last process 
+    """
+
+    api = requests.get(QLF_API_URL).json()
+    return requests.get(api['monitor']).json()['results']
 
 def get_exposure_info():
     """
@@ -56,6 +63,7 @@ def get_exposure_info():
     """
 
     api = requests.get(QLF_API_URL).json()
+    data = requests.get(api['qa']).json()['results']
 
     # TODO: filter exposures by flavor?
     r = requests.get(api['exposure']).json()
