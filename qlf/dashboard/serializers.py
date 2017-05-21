@@ -40,37 +40,11 @@ class JobSerializer(serializers.ModelSerializer):
 
 class ProcessJobsSerializer(serializers.ModelSerializer):
 
-    # jobs = serializers.SlugRelatedField(
-    #     many=True,
-    #     read_only=True,
-    #     slug_field='logname'
-    # )
-
     jobs = JobSerializer(many=True, read_only=True)
 
     class Meta:
         model = Process
         fields = ('id', 'exposure', 'jobs')
-
-
-class MonitorSerializer(serializers.ModelSerializer):
-
-    links = serializers.SerializerMethodField()
-    process = serializers.SerializerMethodField()
-    exposure = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Job
-        fields = ('process', 'exposure', 'logname', 'links')
-
-    def get_exposure(self, obj):
-
-        return obj.process.exposure_id
-
-    def get_process(self, obj):
-
-        return obj.process.pk
-
 
     def get_links(self, obj):
         request = self.context['request']

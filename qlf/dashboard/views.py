@@ -1,17 +1,17 @@
 from django.shortcuts import render_to_response
-from rest_framework import authentication, permissions, viewsets, response, filters
+from rest_framework import authentication, permissions, viewsets, filters
 
 from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
-    QASerializer, ProcessSerializer, ConfigurationSerializer, MonitorSerializer, ProcessJobsSerializer
+    QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer
 )
 
 from django.conf import settings
 
 from bokeh.embed import autoload_server
 from django.template import loader
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 
 class DefaultsMixin(object):
@@ -44,9 +44,15 @@ class DefaultsMixin(object):
 class MonitorViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""
 
-    last_process = Process.objects.latest('pk')
-    queryset = Process.objects.filter(id=last_process.id)
+    try:
+        last_process = Process.objects.latest('pk').id
+    except Process.DoesNotExist as error:
+        print("No Process: ", error)
+        last_process = None
 
+    print("Process: ", last_process)
+
+    queryset = Process.objects.filter(id=last_process)
     serializer_class = ProcessJobsSerializer
 
 

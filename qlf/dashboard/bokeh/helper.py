@@ -55,7 +55,11 @@ def get_last_process():
     """
 
     api = requests.get(QLF_API_URL).json()
-    return requests.get(api['monitor']).json()['results']
+    data = requests.get(api['monitor']).json()
+    if data:
+        return data
+    else:
+        return None
 
 def get_exposure_info():
     """
