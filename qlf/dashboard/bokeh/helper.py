@@ -26,32 +26,44 @@ def get_data(name=None):
     return data
 
 def get_camera_by_exposure(expid):
-    r = list()
+    processesList = list()
+    cameraList = list()
+    cameraReturn = list()
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['camera']).json()['results']
-    for i in data:
-        if i['exposure'] == expid:
-            r.append(i)
-    return r
+    processes = requests.get(api['process']).json()
+
+    for process in processes:
+        if process['exposure'] == expid:
+            for process_job in process['jobs']:
+                processesList.append(process_job['process'])
+    jobs = requests.get(api['job']).json()
+    for job in jobs:
+        if job['process'] in processesList:
+            cameraList.append(job['camera'])
+    cameras = requests.get(api['camera']).json()
+    for camera in cameras:
+        if camera['camera'] in cameraList:
+            cameraReturn.append(camera)
+    return cameraReturn
 
 def get_all_exposure():
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['exposure']).json()['results']
+    data = requests.get(api['exposure']).json()
     return data
 
 def get_all_camera():
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['camera']).json()['results']
+    data = requests.get(api['camera']).json()
     return data
 
 def get_all_qa():
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['qa']).json()['results']
+    data = requests.get(api['qa']).json()
     return data
 
 def get_last_process():
     """
-    Returns last process 
+    Returns last process
     """
 
     api = requests.get(QLF_API_URL).json()

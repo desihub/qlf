@@ -25,11 +25,9 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('name', 'start', 'end', 'status', 'version', 'logname', 'camera', 'process', 'links')
-
+        fields = ('pk', 'name', 'start', 'end', 'status', 'version', 'logname', 'links', 'process', 'camera')        
     def get_process(self, obj):
         return obj.process.pk
-
 
     def get_links(self, obj):
         request = self.context['request']
@@ -60,7 +58,7 @@ class ProcessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Process
-        fields = ('pipeline_name', 'start', 'end', 'status', 'version', 'process_dir', 'links')
+        fields = ('pk', 'pipeline_name', 'start', 'end', 'status', 'version', 'process_dir', 'exposure', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
