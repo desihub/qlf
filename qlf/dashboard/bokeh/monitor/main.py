@@ -16,16 +16,7 @@ except Exception as error:
     print(error)
     print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
 
-process = get_last_process()
-
-PROCESS = {}
-PROCESSID = 0
-EXPOSURE = 0
-
-if process:
-    PROCESS = process.pop()
-    PROCESSID = PROCESS.get("id")
-    EXPOSURE = PROCESS.get("exposure")
+PROCESS = dict()
 
 bars = list()
 label_name = list()
@@ -52,15 +43,14 @@ for num in range(30):
         cameras['stager' + str(num - 10)] = Label(x=50, y=num - .3, text='Initializing ',
                                                   background_fill_color='white', background_fill_alpha=0.7)
         label_name.append('r' + str(num - 10))
-    elif 'g9' not in label_name:
-        cameras['g' + str(num - 20)] = Label(x=-6.5, y=num - .3, text='g' + str(num - 20))
+    elif 'b9' not in label_name:
+        cameras['b' + str(num - 20)] = Label(x=-6.5, y=num - .3, text='b' + str(num - 20))
         cameras['stageg' + str(num - 20)] = Label(x=50, y=num - .3, text='Initializing ', render_mode='css',
                                                   background_fill_color='white', background_fill_alpha=0.7)
-        label_name.append('g' + str(num - 20))
+        label_name.append('b' + str(num - 20))
 
-title = "Process ID: %i ~ Exposure ID: %i" % (PROCESSID, EXPOSURE)
+plot = figure(height=900, x_range=(-9, 120))
 
-plot = figure(title=title, height=900, x_range=(-9, 120))
 for cam in cameras:
     plot.add_layout(cameras[cam])
 
@@ -72,7 +62,6 @@ sourceBar = ColumnDataSource(dict(y=[0], right=[0], height=[0], color=['#0000FF'
 plot.hbar(y='y', right='right', height='height', color='color', source=sourceBar)
 curdoc().add_root(plot)
 
-
 @count()
 def update(t):
     barsRight = list()
@@ -80,17 +69,30 @@ def update(t):
     for num in range(30):
         barsRight.append(0)
 
-    # process = get_last_process().pop()
-    #
-    # if process.get('id') != PROCESSID or process.get('exposure') != EXPOSURE:
-    #     PROCESSID = process.get('id')
-    #     EXPOSURE = process.get('exposure')
-    #     plot.title = "Process ID: %i ~ Exposure ID: %i" % (PROCESSID, EXPOSURE)
+    proc_finished = False
+
+    global PROCESS
+
+    process = get_last_process()
+
+    if process:
+        process = process.pop()
+
+        if PROCESS.get("id") != process.get("id"):
+            proc_finished = True
+
+        PROCESS = process
+        exp_id = PROCESS.get("exposure")
+        proc_id = PROCESS.get("id")
+        plot.title.text = "Process ID: %i ~ Exposure ID: %i" % (proc_id, exp_id)
+
+    print('Process: %s' % PROCESS)
 
     # AF: loop over cameras
     for cam in cameras:
         if cam[:5] != 'stage':
             log = list()
+
             try:
                 cameralog = '../test/log/' + cam + '.log'
                 for item in PROCESS.get("jobs", list()):
@@ -101,12 +103,13 @@ def update(t):
                 arq = open(cameralog, 'r')
                 log = arq.readlines()
             except Exception as e:
-                e
+                print(e)
+
             if cam[:1] == 'z':
                 barsRight[int(cam[1:])] = len(log)
             if cam[:1] == 'r':
                 barsRight[int(cam[1:]) - 20] = len(log)
-            if cam[:1] == 'g':
+            if cam[:1] == 'b':
                 barsRight[int(cam[1:]) - 10] = len(log)
 
             # AF: currrent line
@@ -114,21 +117,23 @@ def update(t):
             for line in log[::-1]:
                 if 'Pipeline completed' in line:
                     cameras['stage' + cam].text = 'Pipeline completed'
+                    if proc_finished:
+                        cameras['stage' + cam].text = 'Initializing'
                     break
-                elif 'Sky Subtraction' in line:
+                elif 'SkySub_QL' in line:
                     cameras['stage' + cam].text = 'Sky Subtraction'
                     break
-                elif 'Boxcar Extraction' in line:
+                elif 'BoxcarExtract' in line:
                     cameras['stage' + cam].text = 'Boxcar Extraction'
                     break
-                elif 'Preprocessing' in line:
+                elif 'Preproc' in line:
                     cameras['stage' + cam].text = 'Preprocessing'
                     break
-                elif 'Initializing' in line:
+                elif 'Initialize' in line:
                     cameras['stage' + cam].text = 'Initializing'
                     break
 
     new_datat = dict(y=bars, right=barsRight, height=barsHeight, color=listColor)
     sourceBar.stream(new_datat, 30)
 
-curdoc().add_periodic_callback(update, 100)
+curdoc().add_periodic_callback(update, 800)
