@@ -31,19 +31,19 @@ def get_camera_by_exposure(expid):
     cameraReturn = list()
     api = requests.get(QLF_API_URL).json()
     processes = requests.get(api['process']).json()
+
     for process in processes:
         if process['exposure'] == expid:
-            processesList.append(process['pk'])
+            for process_job in process['jobs']:
+                processesList.append(process_job['process'])
     jobs = requests.get(api['job']).json()
     for job in jobs:
         if job['process'] in processesList:
             cameraList.append(job['camera'])
     cameras = requests.get(api['camera']).json()
-
     for camera in cameras:
         if camera['camera'] in cameraList:
             cameraReturn.append(camera)
-
     return cameraReturn
 
 def get_all_exposure():
@@ -61,6 +61,17 @@ def get_all_qa():
     data = requests.get(api['qa']).json()
     return data
 
+def get_last_process():
+    """
+    Returns last process 
+    """
+
+    api = requests.get(QLF_API_URL).json()
+    data = requests.get(api['monitor']).json()
+    if data:
+        return data
+    else:
+        return None
 
 def get_exposure_info():
     """
@@ -68,6 +79,7 @@ def get_exposure_info():
     """
 
     api = requests.get(QLF_API_URL).json()
+    data = requests.get(api['qa']).json()['results']
 
     # TODO: filter exposures by flavor?
     r = requests.get(api['exposure']).json()

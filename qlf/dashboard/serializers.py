@@ -25,8 +25,7 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('pk', 'name', 'start', 'end', 'status', 'version', 'logname', 'links', 'process', 'camera')
-
+        fields = ('pk', 'name', 'start', 'end', 'status', 'version', 'logname', 'links', 'process', 'camera')        
     def get_process(self, obj):
         return obj.process.pk
 
@@ -37,24 +36,13 @@ class JobSerializer(serializers.ModelSerializer):
                             request=request),
         }
 
-class MonitorSerializer(serializers.ModelSerializer):
+class ProcessJobsSerializer(serializers.ModelSerializer):
 
-    links = serializers.SerializerMethodField()
-    process = serializers.SerializerMethodField()
-    exposure = serializers.SerializerMethodField()
+    jobs = JobSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Job
-        fields = ('process', 'exposure', 'logname', 'links')
-
-    def get_exposure(self, obj):
-
-        return obj.process.exposure_id
-
-    def get_process(self, obj):
-
-        return obj.process.pk
-
+        model = Process
+        fields = ('id', 'exposure', 'jobs')
 
     def get_links(self, obj):
         request = self.context['request']

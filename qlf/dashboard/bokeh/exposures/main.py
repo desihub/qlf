@@ -62,22 +62,23 @@ source = ColumnDataSource(data=dict(
     exposure=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     camera=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ))
-def update(expid):
+exposurePos = 0
+def update(btn):
     # based on the QA results available in the database for that exposure.
+    global exposurePos
     exposure_list = list()
     exposures = get_all_exposure()
     for exposure in exposures:
         exposure_list.append(exposure['expid'])
 
+    if exposurePos > 0 and btn == 'prev':
+        exposurePos -= 1
 
-
+    if exposurePos < len(exposure_list) -1 and btn == 'next':
+        exposurePos += 1
+    expid = int(exposure_list[exposurePos])
     cam = get_camera_by_exposure(expid)
-    sourcecam = ColumnDataSource(data=dict(
-        cam=cam,
-        exp_list=list()
-    ))
-    flavor = 0
-
+    title.text = '<h3>Exposure ID %s, flavor: %s</h3>' % (expid, flavor)
     # AF: the only thing that changes is the y coord in each datasource
     new_data = data=dict(
         x=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -119,6 +120,7 @@ def update(expid):
 
         source.stream(new_data,30)
 
+
 p.square('x', 'y', color='color', name='name', size=50, source=source)
 
 exp_info = dict()
@@ -127,7 +129,7 @@ exp_info['teldec'] = None
 exp_info['airmass'] = None
 exp_info['exptime'] = None
 flavor = 'object'
-title = Div(text='<h3>Exposure ID %s, flavor: %s</h3>' % (4, flavor))
+title = Div(text='<h3>Exposure ID %s, flavor: %s</h3>' % (0, flavor))
 
 board = Div(text='''
     <div
@@ -155,7 +157,8 @@ board = Div(text='''
 buttonp = Button(label="<< Previous")  # , callback=callback)
 buttonn = Button(label="Next >>")  # , callback=callbackn)
 
-buttonn.on_click(update)
+buttonn.on_click(partial(update, btn='next'))
+buttonp.on_click(partial(update, btn='prev'))
 
 
 
@@ -175,7 +178,6 @@ for i in qa:
     aux_list.append(i['paname'])
 for i in set(aux_list):
     list_qa.append(i)
-print(list_qa)
 radio = RadioGroup(labels=list_qa, active=len(list_qa) - 1, inline=False, width=100)
 space = Div(text='<h3></h3>', width=60)
 

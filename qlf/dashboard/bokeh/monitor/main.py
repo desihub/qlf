@@ -1,6 +1,31 @@
 from bokeh.plotting import figure, output_file, curdoc
 from bokeh.models import ColumnDataSource, LabelSet, Label
 from bokeh.driving import count
+import configparser
+import os
+
+from dashboard.bokeh.helper import get_last_process
+
+qlf_root = os.getenv('QLF_ROOT')
+cfg = configparser.ConfigParser()
+
+try:
+    cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    scratch = cfg.get('namespace', 'scratch')
+except Exception as error:
+    print(error)
+    print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+
+process = get_last_process()
+
+PROCESS = {}
+PROCESSID = 0
+EXPOSURE = 0
+
+if process:
+    PROCESS = process.pop()
+    PROCESSID = PROCESS.get("id")
+    EXPOSURE = PROCESS.get("exposure")
 
 bars = list()
 label_name = list()
@@ -33,7 +58,9 @@ for num in range(30):
                                                   background_fill_color='white', background_fill_alpha=0.7)
         label_name.append('g' + str(num - 20))
 
-plot = figure(height=900, x_range=(-9, 120))
+title = "Process ID: %i ~ Exposure ID: %i" % (PROCESSID, EXPOSURE)
+
+plot = figure(title=title, height=900, x_range=(-9, 120))
 for cam in cameras:
     plot.add_layout(cameras[cam])
 
@@ -53,12 +80,25 @@ def update(t):
     for num in range(30):
         barsRight.append(0)
 
-    # AF: loop over camerass
+    # process = get_last_process().pop()
+    #
+    # if process.get('id') != PROCESSID or process.get('exposure') != EXPOSURE:
+    #     PROCESSID = process.get('id')
+    #     EXPOSURE = process.get('exposure')
+    #     plot.title = "Process ID: %i ~ Exposure ID: %i" % (PROCESSID, EXPOSURE)
+
+    # AF: loop over cameras
     for cam in cameras:
         if cam[:5] != 'stage':
             log = list()
             try:
-                arq = open('../test/log/' + cam + '.log', 'r')
+                cameralog = '../test/log/' + cam + '.log'
+                for item in PROCESS.get("jobs", list()):
+                    if cam == item.get("camera"):
+                        cameralog = os.path.join(scratch, item.get('logname'))
+                        break
+                # arq = open('../test/log/' + cam + '.log', 'r')
+                arq = open(cameralog, 'r')
                 log = arq.readlines()
             except Exception as e:
                 e
@@ -88,11 +128,7 @@ def update(t):
                     cameras['stage' + cam].text = 'Initializing'
                     break
 
-
-
-
     new_datat = dict(y=bars, right=barsRight, height=barsHeight, color=listColor)
     sourceBar.stream(new_datat, 30)
-
 
 curdoc().add_periodic_callback(update, 100)
