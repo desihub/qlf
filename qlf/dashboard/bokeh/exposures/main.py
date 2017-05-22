@@ -155,7 +155,7 @@ board = Div(text='''
 buttonp = Button(label="<< Previous")  # , callback=callback)
 buttonn = Button(label="Next >>")  # , callback=callbackn)
 
-buttonn.on_click(partial(update, expid=4))
+buttonn.on_click(update)
 
 
 
