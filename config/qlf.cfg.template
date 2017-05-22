@@ -1,5 +1,16 @@
 [main]
+# Always True if you are running QLF in development
+# mode
 emulate_dos=True
+
+# Exptime is used only if emulate_dos=True, it sets
+# the time interval between exposures to emulate the
+# DOS environment
+
+# If 0 then process the next exposure imediately after the 
+# previous exposure is done 
+exptime=0 
+
 
 # Log level, e.g. DEBUG, INFO, WARNING or ERROR
 loglevel=INFO
