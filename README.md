@@ -57,7 +57,7 @@ See development documentation at http://quick-look-framework.readthedocs.io
     mkdir -p $DESI_SPECTRO_DATA
     cd $DESI_SPECTRO_DATA
     
-    # Test data for local run of Quick Look, exposures 3,4 and cameras r0,b0
+    # Test data for local run of Quick Look, night 20170428, exposures 3,4 and cameras r0,b0
     http://portal.nersc.gov/project/desi/data/quicklook/
     ```
     
@@ -85,5 +85,5 @@ See development documentation at http://quick-look-framework.readthedocs.io
     
     NOTE: the log file for the QLF execution is specified at `qlf.cfg`, you can follow the progress of data processing from there, or monitor the processes running wih `ps ux` or use the Monitor interface in the Quick Look web application. The Quick Look web application runs at `http://localhost:8000`
 
-    NOTE: Make sure you don't have old QLF processes running when you start the QLF application.
+    NOTE: Make sure you don't have old QLF processes running when you start the QLF application, process management will improve in the next versions.
 
