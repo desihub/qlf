@@ -56,11 +56,12 @@ See development documentation at http://quick-look-framework.readthedocs.io
     export DESI_SPECTRO_DATA=$HOME/data
     mkdir -p $DESI_SPECTRO_DATA
     cd $DESI_SPECTRO_DATA
+    
+    # Test data for local run of Quick Look, exposures 3,4 and cameras r0,b0
+    http://portal.nersc.gov/project/desi/data/quicklook/
     ```
     
-    NOTE: use your preferred method to copy files here, Quick Look pipeline expects the files as specified in the DESI datamodel.
-    
-    NOTE: on desidev server, you migth copy a night of data from `/home/angelofausti/data/20170428.tgz`
+    NOTE: on desidev server, you migth copy ~1 night of data from `/home/angelofausti/data/20170428.tgz`
 
 5. Update the `qlf.cfg` file
 
