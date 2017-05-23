@@ -44,12 +44,12 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
         model = Process
         fields = ('id', 'exposure', 'jobs')
 
-    def get_links(self, obj):
-        request = self.context['request']
-        return {
-            'self': reverse('job-detail', kwargs={'pk': obj.pk},
-                            request=request),
-        }
+    # def get_links(self, obj):
+    #     request = self.context['request']
+    #     return {
+    #         'self': reverse('job-detail', kwargs={'pk': obj.pk},
+    #                         request=request),
+    #     }
 
 
 class ProcessSerializer(serializers.ModelSerializer):

@@ -41,18 +41,21 @@ class DefaultsMixin(object):
     )
 
 
-class MonitorViewSet(DefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for listing jobs"""
+class LastProcessViewSet(viewsets.ModelViewSet):
+    """API endpoint for listing last process"""
 
-    try:
-        last_process = Process.objects.latest('pk').id
-    except Process.DoesNotExist as error:
-        print("No Process: ", error)
-        last_process = None
 
-    print("Process: ", last_process)
+    def get_queryset(self):
+        try:
+            last_process = Process.objects.latest('pk').id
+        except Process.DoesNotExist as error:
+            print("No Process: ", error)
+            last_process = None
 
-    queryset = Process.objects.filter(id=last_process)
+        print("Process: ", last_process)
+
+        return Process.objects.filter(id=last_process)
+
     serializer_class = ProcessJobsSerializer
 
 
@@ -66,6 +69,8 @@ class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
 class ProcessViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processes"""
+
+    print('OOoOOoOOOOoooO')
 
     queryset = Process.objects.order_by('start')
     serializer_class = ProcessSerializer

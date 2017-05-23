@@ -66,15 +66,11 @@ def get_all_qa():
 
 def get_last_process():
     """
-    Returns last process 
+    Returns last process
     """
 
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['monitor']).json()
-    if data:
-        return data
-    else:
-        return None
+    return requests.get(api['last_process']).json()
 
 def get_exposure_info():
     """
