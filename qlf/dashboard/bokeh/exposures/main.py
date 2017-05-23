@@ -23,10 +23,11 @@ QLF_API_URL = os.environ.get('QLF_API_URL',
 sourcelabel = ColumnDataSource(data=dict(height=[0.9, 1.8, 2.7, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
                                     weight=[-0.9, -0.9, -0.9, -0.15, 0.85, 1.85, 2.85, 3.85, 4.85, 5.85, 6.85, 7.85,
                                             8.85],
-                                    names=['z', 'r', 'g', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']))
+                                    names=['z', 'r', 'b', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']))
 hover = HoverTool(
     tooltips=[
-        ("Camera", "(@camera)"),
+        ("Camera", "@camera"),
+        ("SNR", "")
     ]
 )
 
@@ -78,7 +79,7 @@ def update(btn):
         exposurePos += 1
     expid = int(exposure_list[exposurePos])
     cam = get_camera_by_exposure(expid)
-    title.text = '<h3>Exposure ID %s, flavor: %s</h3>' % (expid, flavor)
+    title.text = '<h3>Exposure ID %s (%s)</h3>' % (expid, flavor)
     # AF: the only thing that changes is the y coord in each datasource
     new_data = data=dict(
         x=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -100,7 +101,7 @@ def update(btn):
             new_data['exposure'][pos] = expid
             new_data['camera'][pos] = i['camera']
 
-        if i['arm'] == 'g':
+        if i['arm'] == 'b':
             pos = int(i['spectrograph'])
             new_data['color'][pos] = '#32CD32'
             new_data['y'][pos] = 3
@@ -129,7 +130,7 @@ exp_info['teldec'] = None
 exp_info['airmass'] = None
 exp_info['exptime'] = None
 flavor = 'object'
-title = Div(text='<h3>Exposure ID %s, flavor: %s</h3>' % (0, flavor))
+title = Div(text='<h3>Exposure ID %s (%s)</h3>' % (0, flavor))
 
 board = Div(text='''
     <div
@@ -160,28 +161,23 @@ buttonn = Button(label="Next >>")  # , callback=callbackn)
 buttonn.on_click(partial(update, btn='next'))
 buttonp.on_click(partial(update, btn='prev'))
 
-
+update('next')
 
 
 # AF: Should route to django instead
-url = "http://localhost:5006/qasnr?exposure=@exposure&arm=@arm&spectrograph=@spectrograph"
+url = "http://localhost:8000/dashboard/qasnr?exposure=@exposure&arm=@arm&spectrograph=@spectrograph"
 taptool = p.select(type=TapTool)
 
 # AF: Is there another way to add link to hover tooltips?
 taptool.callback = OpenURL(url=url)
 
 # AF: Radio group for QA's
-list_qa = list()
-qa = get_all_qa()
-aux_list = list()
-for i in qa:
-    aux_list.append(i['paname'])
-for i in set(aux_list):
-    list_qa.append(i)
-radio = RadioGroup(labels=list_qa, active=len(list_qa) - 1, inline=False, width=100)
-space = Div(text='<h3></h3>', width=60)
+radio = RadioGroup(labels=['COUNTPIX', 'GETBIAS', 'GETRMS', 'XWSIGMA', 'COUNTBINS', 'INTEG', 'SKYCOUNT', 'SKYPEAK', 'SNR'],
+                   active=8, inline=False, width=50)
 
 # AF: Define app Layout in one command ?
-curdoc().add_root(row(space, buttonp, title, buttonn))
-curdoc().add_root(row(gridplot([[p]], toolbar_location="right", plot_width=1000), column(radio, board)))
+
+curdoc().add_root(row(buttonp, title, buttonn))
+
+curdoc().add_root(row(widgetbox(radio, width=160), gridplot([[p]], toolbar_location=None, plot_width=800)))
 curdoc().title = "Exposures"

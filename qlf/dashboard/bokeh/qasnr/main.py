@@ -12,10 +12,10 @@ QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
 
 # Get url query args
-args = get_url_args(curdoc, defaults={'expid': '00000000'})
+args = get_url_args(curdoc, defaults={'expid': '3'})
 
 # get the data
-data = get_data(name='SNR')
+data = get_data(name='ql-snr-z0-00000003.yaml')
 
 if data.empty:
     raise ValueError("No data to display, resquest from {}/qa".format(QLF_API_URL))

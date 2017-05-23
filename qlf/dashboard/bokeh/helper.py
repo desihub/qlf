@@ -1,4 +1,5 @@
 import os
+
 import pandas as pd
 import requests
 from furl import furl
@@ -19,9 +20,11 @@ def get_data(name=None):
 
     data = None
 
-    if len(r['results']) > 0:
-        value = eval(r['results'][0]['value'])
-        data = pd.DataFrame.from_dict(value, orient='index').transpose()
+    metric = r[0]['metric'].replace('inf','0')
+
+    metric = eval(metric)
+
+    data = pd.DataFrame.from_dict(metric, orient='index').transpose()
 
     return data
 
@@ -79,12 +82,11 @@ def get_exposure_info():
     """
 
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['qa']).json()['results']
 
     # TODO: filter exposures by flavor?
     r = requests.get(api['exposure']).json()
-    expid = [int(e['expid']) for e in r['results']]
-    flavor = [e['flavor'] for e in r['results']]
+    expid = [int(e['expid']) for e in r]
+    flavor = [e['flavor'] for e in r]
 
     return {'expid': expid, 'flavor': flavor}
 
@@ -98,9 +100,9 @@ def get_camera_info():
 
     r = requests.get(api['camera']).json()
 
-    camera = [c['camera'] for c in r['results']]
-    arm = [c['arm'] for c in r['results']]
-    spectrograph = [c['spectrograph'] for c in r['results']]
+    camera = [c['camera'] for c in r]
+    arm = [c['arm'] for c in r]
+    spectrograph = [c['spectrograph'] for c in r]
 
     return {'camera': camera, 'arm': arm, 'spectrograph': spectrograph}
 

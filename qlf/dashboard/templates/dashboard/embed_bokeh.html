@@ -4,12 +4,10 @@
 {% block content %}
 
 <div class="container">
-    <div class="page-header">
 
         <!-- TODO: improve this -->
 
         {% if "exposures" in bokeh_app %}
-            <h1>Exposures</h1>
         {% elif "nightsum" in bokeh_app %}
             <h1>Night Summary</h1>
         {% elif "monitor" in bokeh_app %}
@@ -19,7 +17,6 @@
                href="/dashboard/exposures/"
                role="button">Back</a>
         {% endif %}
-    </div>
 
     <div class="container">
             {{ bokeh_script|safe }}
