@@ -30,11 +30,12 @@ class DOSmonitor(object):
 
         exposures_list = list()
 
+        calib = self.cfg.get("data", "calib")
         exposures = self.cfg.get("data", "exposures").split(',')
 
         for expid in exposures:
             try:
-                exposure = self.get_exposure(night, expid)
+                exposure = self.get_exposure(night, expid, calib)
                 exposures_list.append(exposure)
             except Exception as error:
                 print(error)
@@ -59,14 +60,14 @@ class DOSmonitor(object):
 
         return cameras
 
-    def get_exposure(self, night, exposure):
+    def get_exposure(self, night, exposure, calib):
         """ Gets all data of a determinate exposure. """
 
         camera_list = list()
 
         for camera in self.cameras:
             try:
-                fiberflat = self.get_fiberflat_file(night, exposure, camera)
+                fiberflat = self.get_fiberflat_file(night, calib, camera)
                 psfboot = self.get_psfboot_file(night, camera)
             except Exception as error:
                 print(error)
@@ -87,13 +88,13 @@ class DOSmonitor(object):
             "cameras": camera_list
         }
 
-    def get_fiberflat_file(self, night, exposure, camera):
+    def get_fiberflat_file(self, night, calib, camera):
         """ Gets the fiberflat file by camera """
 
         path = os.path.join(self.datadir, night)
-        exposure = str(exposure).zfill(8)
+        calib = str(calib).zfill(8)
 
-        pattern = "(fiberflat-%s-%s.fits)" % (camera, exposure)
+        pattern = "(fiberflat-%s-%s.fits)" % (camera, calib)
         regex = re.compile(pattern)
 
         for f in os.listdir(path):
