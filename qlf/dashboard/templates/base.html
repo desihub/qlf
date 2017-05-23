@@ -16,6 +16,7 @@
 <!-- Collapsing navigation bar -->
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
+
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                 <span class="icon-bar"></span>
@@ -24,12 +25,23 @@
             </button>
             <a class="navbar-brand" href="/"><b>DESI Quick Look</b></a>
         </div>
+
+
         <div class="navbar-collapse collapse" id="navbar">
+
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/dashboard/api/">API </a></li>
                 <li><a href="/">Help</a></li>
             </ul>
+            {% if "monitor" in bokeh_app %}
+                <button class="btn btn-success navbar-btn">START</button>
+                <button class="btn btn-danger navbar-btn">STOP</button>
+                <button class="btn btn-warning navbar-btn">RESET</button>
+                <p class="nav navbar-nav navbar-text">Status: Idle/Running</p>
+                <p class="nav navbar-nav navbar-text">Disk space: 0 G</p>
+            {% endif %}
         </div>
+
     </div>
 </nav>
 <div class="container-fluid">
