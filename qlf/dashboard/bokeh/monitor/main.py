@@ -59,6 +59,7 @@ plot.xaxis.visible = False
 plot.yaxis.visible = False
 
 sourceBar = ColumnDataSource(dict(y=[0], right=[0], height=[0], color=['#0000FF']))
+
 plot.hbar(y='y', right='right', height='height', color='color', source=sourceBar)
 curdoc().add_root(plot)
 
@@ -83,25 +84,26 @@ def update(t):
 
         PROCESS = process
         exp_id = PROCESS.get("exposure")
-        proc_id = PROCESS.get("id")
-        plot.title.text = "Process ID: %i ~ Exposure ID: %i" % (proc_id, exp_id)
+        plot.title.text = "Exposure ID: %i" % (exp_id)
 
     print('Process: %s' % PROCESS)
 
     # AF: loop over cameras
     for cam in cameras:
         if cam[:5] != 'stage':
-            log = list()
+
+            cameralog = None
+            log = str()
 
             try:
-                cameralog = '../test/log/' + cam + '.log'
                 for item in PROCESS.get("jobs", list()):
                     if cam == item.get("camera"):
                         cameralog = os.path.join(scratch, item.get('logname'))
                         break
-                # arq = open('../test/log/' + cam + '.log', 'r')
-                arq = open(cameralog, 'r')
-                log = arq.readlines()
+                if cameralog:
+                    arq = open(cameralog, 'r')
+                    log = arq.readlines()
+
             except Exception as e:
                 print(e)
 
