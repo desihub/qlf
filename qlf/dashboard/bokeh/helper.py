@@ -34,19 +34,19 @@ def get_camera_by_exposure(expid):
     cameraReturn = list()
     api = requests.get(QLF_API_URL).json()
     processes = requests.get(api['process']).json()
-
     for process in processes:
         if process['exposure'] == expid:
-            for process_job in process['jobs']:
-                processesList.append(process_job['process'])
+            processesList.append(process['pk'])
     jobs = requests.get(api['job']).json()
     for job in jobs:
         if job['process'] in processesList:
             cameraList.append(job['camera'])
     cameras = requests.get(api['camera']).json()
+
     for camera in cameras:
         if camera['camera'] in cameraList:
             cameraReturn.append(camera)
+
     return cameraReturn
 
 def get_all_exposure():
