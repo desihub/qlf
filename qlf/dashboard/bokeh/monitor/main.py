@@ -1,10 +1,13 @@
 from bokeh.plotting import figure, output_file, curdoc
 from bokeh.models import ColumnDataSource, LabelSet, Label
 from bokeh.driving import count
+from dashboard.bokeh.helper import get_last_process
+
 import configparser
 import os
+import logging
 
-from dashboard.bokeh.helper import get_last_process
+logger = logging.getLogger(__name__)
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -13,8 +16,8 @@ try:
     cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
     scratch = cfg.get('namespace', 'scratch')
 except Exception as error:
-    print(error)
-    print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+    logger.error(error)
+    logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
 
 PROCESS = dict()
 
@@ -84,9 +87,9 @@ def update(t):
 
         PROCESS = process
         exp_id = PROCESS.get("exposure")
-        plot.title.text = "Exposure ID: %i" % (exp_id)
+        plot.title.text = "Exposure ID: %i" % exp_id
 
-    print('Process: %s' % PROCESS)
+    # logger.info("Process: %s" % PROCESS)
 
     # AF: loop over cameras
     for cam in cameras:
@@ -105,7 +108,7 @@ def update(t):
                     log = arq.readlines()
 
             except Exception as e:
-                print(e)
+                logger.warn(e)
 
             if cam[:1] == 'z':
                 barsRight[int(cam[1:])] = len(log)
@@ -115,12 +118,9 @@ def update(t):
                 barsRight[int(cam[1:]) - 10] = len(log)
 
             # AF: currrent line
-
             for line in log[::-1]:
                 if 'Pipeline completed' in line:
                     cameras['stage' + cam].text = 'Pipeline completed'
-                    if proc_finished:
-                        cameras['stage' + cam].text = 'Initializing'
                     break
                 elif 'SkySub_QL' in line:
                     cameras['stage' + cam].text = 'Sky Subtraction'
@@ -138,4 +138,4 @@ def update(t):
     new_datat = dict(y=bars, right=barsRight, height=barsHeight, color=listColor)
     sourceBar.stream(new_datat, 30)
 
-curdoc().add_periodic_callback(update, 800)
+curdoc().add_periodic_callback(update, 300)

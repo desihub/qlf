@@ -25,15 +25,16 @@ export TEST_USER=nobody
 export TEST_USER_EMAIL=${TEST_USER}@example.com
 export TEST_USER_PASSWD=nobody
 
-# Initialize the development database 
+# Initialize the development database
 DEVDB="db.sqlite3"
 if [ -f $DEVDB ];
 then
     rm $DEVDB
 fi
+
 python -Wi manage.py migrate
 
-# Create django superuser 
+# Create django superuser
 # The password created here is used to access de admin interface and the browsable API
 echo
 echo "For development you might use a password like: $TEST_USER_PASSWD"
@@ -41,10 +42,46 @@ echo
 
 python -Wi manage.py createsuperuser --username $TEST_USER --email $TEST_USER_EMAIL
 
-echo "Starting QLF..." 
+echo "Starting QLF..."
+
+LOGDIR="$QLF_ROOT/logs"
+
+if [ ! -d $LOGDIR ]; then
+    mkdir $LOGDIR
+fi
+
+# from https://unix.stackexchange.com/a/124148
+list_descendants ()
+{
+  local children=$(ps -o pid= --ppid "$1")
+
+  for pid in $children
+  do
+    list_descendants "$pid"
+  done
+
+  echo "$children"
+}
+
 # QLF web application
-python -Wi manage.py runserver &
+if [ -f $LOGDIR/runserver.pid ]; then
+    RUNSERVER_PID=`cat $LOGDIR/runserver.pid`
+    ps uxwww | grep $RUNSERVER_PID | egrep -v grep &> /dev/null
+    if ! test $? -ne 0; then kill $(list_descendants $RUNSERVER_PID); fi;
+fi
+
+nohup python -Wi manage.py runserver &> $LOGDIR/runserver.log &
+echo $! > $LOGDIR/runserver.pid
+
 # Bokeh server
-bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures & 
+if [ -f $LOGDIR/bokeh.pid ]; then
+    BOKEH_PID=`cat $LOGDIR/bokeh.pid`
+    ps uxwww | grep $BOKEH_PID | egrep -v grep &> /dev/null
+    if ! test $? -ne 0; then kill $(list_descendants $BOKEH_PID); fi;
+fi
+
+nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures &> $LOGDIR/bokeh.log &
+echo $! > $LOGDIR/bokeh.pid
+
 # QLF daemon
-python -Wi ../bin/qlf_daemon.py 
+python -Wi ../bin/qlf_daemon.py

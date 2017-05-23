@@ -18,16 +18,14 @@ class QASerializer(serializers.ModelSerializer):
                             request=request),
          }
 
+
 class JobSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
-    process = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
         fields = ('pk', 'name', 'start', 'end', 'status', 'version', 'logname', 'links', 'process', 'camera')        
-    def get_process(self, obj):
-        return obj.process.pk
 
     def get_links(self, obj):
         request = self.context['request']
@@ -36,6 +34,7 @@ class JobSerializer(serializers.ModelSerializer):
                             request=request),
         }
 
+
 class ProcessJobsSerializer(serializers.ModelSerializer):
 
     jobs = JobSerializer(many=True, read_only=True)
@@ -43,13 +42,6 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Process
         fields = ('id', 'exposure', 'jobs')
-
-    # def get_links(self, obj):
-    #     request = self.context['request']
-    #     return {
-    #         'self': reverse('job-detail', kwargs={'pk': obj.pk},
-    #                         request=request),
-    #     }
 
 
 class ProcessSerializer(serializers.ModelSerializer):
@@ -67,6 +59,7 @@ class ProcessSerializer(serializers.ModelSerializer):
                             request=request),
         }
 
+
 class ExposureSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
@@ -81,6 +74,7 @@ class ExposureSerializer(serializers.ModelSerializer):
             'self': reverse('exposure-detail', kwargs={'pk': obj.pk},
                             request=request),
          }
+
 
 class CameraSerializer(serializers.ModelSerializer):
 
@@ -97,6 +91,7 @@ class CameraSerializer(serializers.ModelSerializer):
                             request=request),
          }
 
+
 class ConfigurationSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
@@ -111,5 +106,3 @@ class ConfigurationSerializer(serializers.ModelSerializer):
             'self': reverse('configuration-detail', kwargs={'pk': obj.pk},
                             request=request),
          }
-
-

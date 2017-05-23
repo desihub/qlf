@@ -11,8 +11,11 @@ from django.conf import settings
 
 from bokeh.embed import autoload_server
 from django.template import loader
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class DefaultsMixin(object):
     """
@@ -44,15 +47,12 @@ class DefaultsMixin(object):
 class LastProcessViewSet(viewsets.ModelViewSet):
     """API endpoint for listing last process"""
 
-
     def get_queryset(self):
         try:
             last_process = Process.objects.latest('pk').id
         except Process.DoesNotExist as error:
-            print("No Process: ", error)
+            logger.debug(error)
             last_process = None
-
-        print("Process: ", last_process)
 
         return Process.objects.filter(id=last_process)
 
@@ -70,16 +70,16 @@ class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
 class ProcessViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processes"""
 
-    print('OOoOOoOOOOoooO')
-
     queryset = Process.objects.order_by('start')
     serializer_class = ProcessSerializer
+
 
 class ConfigurationViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing configurations"""
 
     queryset = Configuration.objects.order_by('creation_date')
     serializer_class = ConfigurationSerializer
+
 
 class QAViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing QA results"""
@@ -102,8 +102,10 @@ class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
 
+
 def index(request):
     return render_to_response('dashboard/index.html')
+
 
 def embed_bokeh(request, bokeh_app):
     """Render the requested app from the bokeh server"""
