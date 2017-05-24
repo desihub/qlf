@@ -82,7 +82,7 @@ class Job(models.Model):
                                       help_text='Job status, 0=OK, 1=Failed, 2=Running')
     version = models.CharField(max_length=16, null=True, help_text='Version of the pipeline')
     camera = models.ForeignKey(Camera)
-    process = models.ForeignKey(Process)
+    process = models.ForeignKey(Process, related_name='jobs', on_delete=models.CASCADE)
     logname = models.CharField(max_length=45, null=True,
                             help_text='Name of the log file.')
 

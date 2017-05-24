@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load cache %}
+
+{% block content %}
+
+<div class="container">
+
+        <!-- TODO: improve this -->
+
+        {% if "exposures" in bokeh_app %}
+        {% elif "nightsum" in bokeh_app %}
+            <h1>Night Summary</h1>
+        {% elif "monitor" in bokeh_app %}
+        {% else %}
+            <a class="btn btn-default"
+               href="/dashboard/exposures/"
+               role="button">Back</a>
+        {% endif %}
+
+    <div class="container">
+            {{ bokeh_script|safe }}
+    </div>
+
+</div>
+
+{% endblock content %}

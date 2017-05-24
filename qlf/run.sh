@@ -13,9 +13,6 @@ then
 fi
 echo "Setting DESI Quick Look environment..."
 
-source deactivate
-source activate quicklook
-
 for package in desispec desiutil; do
 	echo "Setting $package..."
 	export PATH=$QLF_ROOT/$package/bin:$PATH
@@ -28,15 +25,16 @@ export TEST_USER=nobody
 export TEST_USER_EMAIL=${TEST_USER}@example.com
 export TEST_USER_PASSWD=nobody
 
-# Initialize the development database 
+# Initialize the development database
 DEVDB="db.sqlite3"
 if [ -f $DEVDB ];
 then
     rm $DEVDB
 fi
+
 python -Wi manage.py migrate
 
-# Create django superuser 
+# Create django superuser
 # The password created here is used to access de admin interface and the browsable API
 echo
 echo "For development you might use a password like: $TEST_USER_PASSWD"
@@ -44,10 +42,26 @@ echo
 
 python -Wi manage.py createsuperuser --username $TEST_USER --email $TEST_USER_EMAIL
 
-echo "Starting QLF..." 
-# QLF web application
-python -Wi manage.py runserver &
-# Bokeh server
-bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qa-snr & 
+LOGDIR="$QLF_ROOT/logs"
+
+if [ ! -d $LOGDIR ]; then
+    mkdir $LOGDIR
+fi
+
+# Start QLF web application
+
+if [ -f $LOGDIR/run.pgid ]; then
+    RUN_PGID=`cat $LOGDIR/run.pgid`
+    ps opgid | grep $RUN_PGID > /dev/null && echo "QLF is running, terminating..."; kill -- -$RUN_PGID > /dev/null
+fi
+
+# Start the servers and save the PGID, django and bokeh share the same PGID
+
+echo "Starting QLF..."
+nohup python -Wi manage.py runserver &> $LOGDIR/runserver.log & echo $(ps opgid= $!) > $LOGDIR/run.pgid
+nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures &> $LOGDIR/bokeh.log & 
+
+echo "QLF is running at http://localhost:8000"
+
 # QLF daemon
-python -Wi ../bin/qlf_daemon.py 
+python -Wi ../bin/qlf_daemon.py

@@ -18,13 +18,14 @@ class QASerializer(serializers.ModelSerializer):
                             request=request),
          }
 
+
 class JobSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
-        fields = ('name', 'start', 'end', 'status', 'version', 'logname', 'links')
+        fields = ('pk', 'name', 'start', 'end', 'status', 'version', 'logname', 'links', 'process', 'camera')        
 
     def get_links(self, obj):
         request = self.context['request']
@@ -33,13 +34,23 @@ class JobSerializer(serializers.ModelSerializer):
                             request=request),
         }
 
+
+class ProcessJobsSerializer(serializers.ModelSerializer):
+
+    jobs = JobSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Process
+        fields = ('id', 'exposure', 'jobs')
+
+
 class ProcessSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
 
     class Meta:
         model = Process
-        fields = ('pipeline_name', 'start', 'end', 'status', 'version', 'process_dir', 'links')
+        fields = ('pk', 'pipeline_name', 'start', 'end', 'status', 'version', 'process_dir', 'exposure', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
@@ -48,13 +59,14 @@ class ProcessSerializer(serializers.ModelSerializer):
                             request=request),
         }
 
+
 class ExposureSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
 
     class Meta:
         model = Exposure
-        fields = ('expid', 'flavor', 'links')
+        fields = ('expid', 'flavor', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
@@ -62,6 +74,7 @@ class ExposureSerializer(serializers.ModelSerializer):
             'self': reverse('exposure-detail', kwargs={'pk': obj.pk},
                             request=request),
          }
+
 
 class CameraSerializer(serializers.ModelSerializer):
 
@@ -78,6 +91,7 @@ class CameraSerializer(serializers.ModelSerializer):
                             request=request),
          }
 
+
 class ConfigurationSerializer(serializers.ModelSerializer):
 
     links = serializers.SerializerMethodField()
@@ -92,5 +106,3 @@ class ConfigurationSerializer(serializers.ModelSerializer):
             'self': reverse('configuration-detail', kwargs={'pk': obj.pk},
                             request=request),
          }
-
-

@@ -1,5 +1,16 @@
 [main]
+# Always True if you are running QLF in development
+# mode
 emulate_dos=True
+
+# Exptime is used only if emulate_dos=True, it sets
+# the time interval between exposures to emulate the
+# DOS environment
+
+# If 0 then process the next exposure imediately after the 
+# previous exposure is done 
+exptime=0 
+
 
 # Log level, e.g. DEBUG, INFO, WARNING or ERROR
 loglevel=INFO
@@ -8,16 +19,20 @@ loglevel=INFO
 logfile=
 
 [data]
-# Which data to process?
+# Which night to process?
 night=20170428
 
+# calibration exposure id
+calib=0
+
+# exposure ids
 exposures=3,4
 
-# r,b,z
-arm=r
+# b,r,z
+arm=b,r
 
 # 0,1,2,3,4,5,6,7,8,9
-spectrograph=8,9
+spectrograph=0
 
 [namespace]
 # Data directory, e.g. /home/user/data

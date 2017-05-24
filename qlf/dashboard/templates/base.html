@@ -1,0 +1,83 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,
+    maximum-scale=1.0, user-scalable=0">
+    <title>QLF</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+<!-- Collapsing navigation bar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"><b>DESI Quick Look</b></a>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar">
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/dashboard/api/"><b>API</b> </a></li>
+                <li><a href="/"><b>Help</b></a></li>
+            </ul>
+            {% if "monitor" in bokeh_app %}
+
+            <ul class="nav navbar-nav navbar-left">
+                <button class="btn btn-success navbar-btn"><i class="fa fa-play"></i><b> START</b></button>
+                <button class="btn btn-danger navbar-btn"><i class="fa fa-stop"></i><b> STOP</b></button>
+                <button class="btn btn-warning navbar-btn"><i class="fa fa-refresh"></i><b> RESET</b></button>
+                <p class="nav navbar-nav navbar-text pull-left"><b> STATUS: --</b></p>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <p class="nav navbar-nav navbar-text"><b>Disk space: --</b></p>
+            </ul>
+            {% endif %}
+        </div>
+
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar menu -->
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="/dashboard/exposures/"><i class="fa fa-th fa-lg"></i> Exposures</a></li>
+                <li><a href="/dashboard/nightsum/"><i class="fa fa-line-chart fa-lg"></i> Night Summary</a></li>
+                <li><a href="/dashboard/monitor/"><i class="fa fa-cogs fa-lg"></i> Pipeline</a></li>
+            </ul>
+            <ul class="nav nav-sidebar">
+                <li><a href="/dashboard/api/"> API</a></li>
+                <li><a href="/"> Help</a></li>
+            </ul>
+        </div>
+        <!-- Page main content -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% block content %}
+            {% endblock %}
+            <footer>
+                <hr>
+                <div class="container" >
+                    <p>&copy; Copyright {% now 'Y' %}, LIneA/DESI</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- Keep at the end of the document, so that pages load faster -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/jquery.site.js' %}"></script>
+</body>
+</html>
