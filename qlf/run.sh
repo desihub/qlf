@@ -42,26 +42,21 @@ echo
 
 python -Wi manage.py createsuperuser --username $TEST_USER --email $TEST_USER_EMAIL
 
-LOGDIR="$QLF_ROOT/logs"
-
-if [ ! -d $LOGDIR ]; then
-    mkdir $LOGDIR
-fi
-
 # Start QLF web application
 
-if [ -f $LOGDIR/run.pgid ]; then
-    RUN_PGID=`cat $LOGDIR/run.pgid`
+if [ -f $QLF_ROOT/run.pgid ]; then
+    RUN_PGID=`cat $QLF_ROOT/run.pgid`
     ps opgid | grep $RUN_PGID > /dev/null && echo "QLF is running, terminating..."; kill -- -$RUN_PGID > /dev/null
 fi
 
 # Start the servers and save the PGID, django and bokeh share the same PGID
 
 echo "Starting QLF..."
-nohup python -Wi manage.py runserver &> $LOGDIR/runserver.log & echo $(ps opgid= $!) > $LOGDIR/run.pgid
-nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures &> $LOGDIR/bokeh.log & 
+nohup python -Wi manage.py runserver &> $QLF_ROOT/runserver.log & echo $(ps opgid= $!) > $QLF_ROOT/run.pgid
+nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures &> $QLF_ROOT/bokeh.log & 
 
-echo "QLF is running at http://localhost:8000"
+echo "QLF web application is available at http://localhost:8000"
+echo "QLF is processing, watch qlf.log"
 
 # QLF daemon
 python -Wi ../bin/qlf_daemon.py
