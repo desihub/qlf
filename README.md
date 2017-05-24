@@ -36,54 +36,55 @@ See development documentation at http://quick-look-framework.readthedocs.io
     cd $QLF_ROOT
     git clone https://github.com/desihub/desispec.git
     git clone https://github.com/desihub/desiutil.git
+    ```
   
+    Test if DESI Quick Look pipeline is available (optional)
+    ```
     for package in desispec desiutil; do
         echo "Setting $package..."
         export PATH=$QLF_ROOT/$package/bin:$PATH
         export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
     done
-    ```
     
-    At this point the DESI Quick Look pipeline should be available in your terminal
-    
-    ```
     desi_quicklook --help
     ```
 
-4. Get some test data
+4. Get test data (first time installation)
 
     ```
     export DESI_SPECTRO_DATA=$HOME/data
     mkdir -p $DESI_SPECTRO_DATA
     cd $DESI_SPECTRO_DATA
     
-    # Test data for local run of Quick Look, night 20170428, exposures 3,4 and cameras r0,b0
-    http://portal.nersc.gov/project/desi/data/quicklook/
+    # Test data for local run of Quick Look, night 20170428, exposures 3,4 and all cameras
+    wget -c http://portal.nersc.gov/project/desi/data/quicklook/20170428_small.tar.gz
     ```
     
     NOTE: on desidev server, you migth copy ~1 night of data from `/home/angelofausti/data/20170428.tgz`
 
-5. Update the `qlf.cfg` file
+5. Configure QLF 
 
     ```
     cd $QLF_ROOT/qlf/config
+    
+    # Configuration template
     cp qlf.cfg.template qlf.cfg
     
     Update the qlf.cfg file with local paths for the input data, log files, etc.
     ```
     
-    NOTE: in development mode, QLF will process the data specified in the `qlf.cfg`. Each time you run QLF a fresh database is created and the processing results are ingested at the end. 
+    NOTE: in development mode, QLF will process the data specified in the `qlf.cfg`. Each time you run QLF a fresh database is created and the results are ingested at the end of the processing of each exposure. 
 
-6. Start the QLF application 
+6. Start QLF  
 
     ```
     source ~/miniconda3/bin/activate
+    source activate quicklook
     export QLF_ROOT=$HOME/quicklook
     cd $QLF_ROOT/qlf/qlf
     ./run.sh
     ```
     
-    NOTE: the log file for the QLF execution is specified at `qlf.cfg`, you can follow the progress of data processing from there, or monitor the processes running wih `ps ux` or use the Monitor interface in the Quick Look web application. The Quick Look web application runs at `http://localhost:8000`
-
-    NOTE: Make sure you don't have old QLF processes running when you start the QLF application, process management will improve in the next versions.
+    NOTE: you can follow the progress of data processing from `qlf.log` or from the web application.
+    
 
