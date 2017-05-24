@@ -72,7 +72,7 @@ def get_last_process():
     api = requests.get(QLF_API_URL).json()
     return requests.get(api['last_process']).json()
 
-def get_exposure_info():
+def get_exposures():
     """
     Returns the list of registered exposures
     """
@@ -87,7 +87,7 @@ def get_exposure_info():
     return {'expid': expid, 'flavor': flavor}
 
 
-def get_camera_info():
+def get_cameras():
     """
     Returns the list of registered cameras
     """
@@ -96,11 +96,7 @@ def get_camera_info():
 
     r = requests.get(api['camera']).json()
 
-    camera = [c['camera'] for c in r]
-    arm = [c['arm'] for c in r]
-    spectrograph = [c['spectrograph'] for c in r]
-
-    return {'camera': camera, 'arm': arm, 'spectrograph': spectrograph}
+    return r
 
 
 def init_xy_plot(hover):
