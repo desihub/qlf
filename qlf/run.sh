@@ -63,4 +63,4 @@ echo "QLF web application is available at http://localhost:8000"
 echo "QLF daemon started Quick Look, watch qlf.log..."
 
 # Start QLF daemon
-python -Wi ../bin/qlf_daemon.py
+python -Wi ../bin/qlf_daemon.py &

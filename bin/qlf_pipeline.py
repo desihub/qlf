@@ -51,8 +51,7 @@ class QLFPipeline(object):
             self.pipeline_name
         )
 
-        # TODO: ingest configuration file used, this should be done by
-	# process
+        # TODO: ingest configuration file used, this should be done by process
         # self.register.insert_config(process.id)
 
         self.logger.info('Process ID: %i' % process.id)
@@ -173,8 +172,8 @@ class QLFPipeline(object):
             self.data.get('output_dir')
         )
 
-        with subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, shell=True, cwd=cwd) as process:
+        with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              shell=True, cwd=cwd) as process:
             for line in iter(process.stdout.readline, bytes()):
                 logname.write(line)
                 logname.flush()

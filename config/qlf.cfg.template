@@ -48,3 +48,9 @@ datadir=
 # Processing output, e.g. $QLF_ROOT/outputs or some other local (fast) scratch area
 # Note: this directory is created by QLF if it does not exist.
 scratch=
+
+[daemon]
+# server (IP or localhost)
+nameserver=qlf.daemon
+host=
+port=

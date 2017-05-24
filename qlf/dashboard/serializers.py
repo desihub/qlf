@@ -66,7 +66,7 @@ class ExposureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exposure
-        fields = ('expid', 'flavor', 'links',)
+        fields = ('expid', 'flavor', 'night', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']

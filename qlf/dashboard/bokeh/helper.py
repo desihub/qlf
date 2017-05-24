@@ -72,6 +72,18 @@ def get_last_process():
     api = requests.get(QLF_API_URL).json()
     return requests.get(api['last_process']).json()
 
+# TODO: improve function
+def get_last_exposures_by_night():
+    """ Returns last processed exposure by night """
+
+    api = requests.get(QLF_API_URL).json()
+    exposures = requests.get(api['exposure']).json()
+
+    if not exposures:
+        return {}
+
+    return exposures[-1]
+
 def get_exposures():
     """
     Returns the list of registered exposures
