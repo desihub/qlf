@@ -6,7 +6,8 @@ from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer
 )
-
+import Pyro4
+from django.http import HttpResponseRedirect
 from django.conf import settings
 
 from bokeh.embed import autoload_server
@@ -102,6 +103,23 @@ class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
 
+def start(request):
+    uri = "PYRO:qlf.daemon@localhost:56005"
+    qlf = Pyro4.Proxy(uri)
+    qlf.start()
+    return HttpResponseRedirect('dashboard/monitor')
+
+def stop(request):
+    uri = "PYRO:qlf.daemon@localhost:56005"
+    qlf = Pyro4.Proxy(uri)
+    qlf.stop()
+    return HttpResponseRedirect('dashboard/monitor')
+
+def restart(request):
+    uri = "PYRO:qlf.daemon@localhost:56005"
+    qlf = Pyro4.Proxy(uri)
+    qlf.restart()
+    return HttpResponseRedirect('dashboard/monitor')
 
 def index(request):
     return render_to_response('dashboard/index.html')

@@ -16,6 +16,9 @@ api_router.register(r'camera', views.CameraViewSet)
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^start', views.start, name='start'),
+    url(r'^stop', views.stop, name='stop'),
+    url(r'^restart', views.restart, name='restart'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
     url(r'^dashboard/(?P<bokeh_app>\w+)/$', views.embed_bokeh,
