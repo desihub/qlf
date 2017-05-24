@@ -42,46 +42,25 @@ echo
 
 python -Wi manage.py createsuperuser --username $TEST_USER --email $TEST_USER_EMAIL
 
-echo "Starting QLF..."
-
 LOGDIR="$QLF_ROOT/logs"
 
 if [ ! -d $LOGDIR ]; then
     mkdir $LOGDIR
 fi
 
-# from https://unix.stackexchange.com/a/124148
-list_descendants ()
-{
-  local children=$(ps -o pid= --ppid "$1")
+# Start QLF web application
 
-  for pid in $children
-  do
-    list_descendants "$pid"
-  done
-
-  echo "$children"
-}
-
-# QLF web application
-if [ -f $LOGDIR/runserver.pid ]; then
-    RUNSERVER_PID=`cat $LOGDIR/runserver.pid`
-    ps uxwww | grep $RUNSERVER_PID | egrep -v grep &> /dev/null
-    if ! test $? -ne 0; then kill $(list_descendants $RUNSERVER_PID); fi;
+if [ -f $LOGDIR/run.pgid ]; then
+    RUN_PGID=`cat $LOGDIR/run.pgid`
+    ps opgid | grep $RUN_PGID > /dev/null && echo "Restarting QLF..."; kill -- -$RUN_PGID > /dev/null
 fi
 
-nohup python -Wi manage.py runserver &> $LOGDIR/runserver.log &
-echo $! > $LOGDIR/runserver.pid
+# Start the servers and save the PGID, django and bokeh share the same PGID
 
-# Bokeh server
-if [ -f $LOGDIR/bokeh.pid ]; then
-    BOKEH_PID=`cat $LOGDIR/bokeh.pid`
-    ps uxwww | grep $BOKEH_PID | egrep -v grep &> /dev/null
-    if ! test $? -ne 0; then kill $(list_descendants $BOKEH_PID); fi;
-fi
+nohup python -Wi manage.py runserver &> $LOGDIR/runserver.log & echo $(ps opgid= $!) > $LOGDIR/run.pgid
+nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures &> $LOGDIR/bokeh.log & 
 
-nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures &> $LOGDIR/bokeh.log &
-echo $! > $LOGDIR/bokeh.pid
+echo "QLF is running at http://localhost:8000"
 
 # QLF daemon
-python -Wi ../bin/qlf_daemon.py
+#python -Wi ../bin/qlf_daemon.py
