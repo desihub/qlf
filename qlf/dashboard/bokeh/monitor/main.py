@@ -38,28 +38,27 @@ for num in range(30):
 
     if 'z9' not in label_name:
         cameras['z' + str(num)] = Label(x=-6.5, y=num - .3, text='z' + str(num))
-        cameras['stagez' + str(num)] = Label(x=50, y=num - .3, text='Initializing ', background_fill_color='white',
-                                             background_fill_alpha=0.7)
+        #cameras['stagez' + str(num)] = Label(x=50, y=num - .3, text='Initializing ', background_fill_color='white',
+        #                                     background_fill_alpha=0.7)
         label_name.append('z' + str(num))
     elif 'r9' not in label_name:
         cameras['r' + str(num - 10)] = Label(x=-6.5, y=num - .3, text='r' + str(num - 10))
-        cameras['stager' + str(num - 10)] = Label(x=50, y=num - .3, text='Initializing ',
-                                                  background_fill_color='white', background_fill_alpha=0.7)
+        #cameras['stager' + str(num - 10)] = Label(x=50, y=num - .3, text='Initializing ',
+        #                                          background_fill_color='white', background_fill_alpha=0.7)
         label_name.append('r' + str(num - 10))
     elif 'b9' not in label_name:
         cameras['b' + str(num - 20)] = Label(x=-6.5, y=num - .3, text='b' + str(num - 20))
-        cameras['stageg' + str(num - 20)] = Label(x=50, y=num - .3, text='Initializing ', render_mode='css',
-                                                  background_fill_color='white', background_fill_alpha=0.7)
+        #cameras['stageg' + str(num - 20)] = Label(x=50, y=num - .3, text='Initializing ', render_mode='css',
+        #                                          background_fill_color='white', background_fill_alpha=0.7)
         label_name.append('b' + str(num - 20))
 
 plot = figure(height=900, x_range=(-9, 120))
+plot.logo = None
+plot.toolbar_location = None
+
 
 for cam in cameras:
     plot.add_layout(cameras[cam])
-
-# AF: Move plot style configuration to theme.yaml
-plot.xaxis.visible = False
-plot.yaxis.visible = False
 
 sourceBar = ColumnDataSource(dict(y=[0], right=[0], height=[0], color=['#0000FF']))
 
@@ -118,22 +117,22 @@ def update(t):
                 barsRight[int(cam[1:]) - 10] = len(log)
 
             # AF: currrent line
-            for line in log[::-1]:
-                if 'Pipeline completed' in line:
-                    cameras['stage' + cam].text = 'Pipeline completed'
-                    break
-                elif 'SkySub_QL' in line:
-                    cameras['stage' + cam].text = 'Sky Subtraction'
-                    break
-                elif 'BoxcarExtract' in line:
-                    cameras['stage' + cam].text = 'Boxcar Extraction'
-                    break
-                elif 'Preproc' in line:
-                    cameras['stage' + cam].text = 'Preprocessing'
-                    break
-                elif 'Initialize' in line:
-                    cameras['stage' + cam].text = 'Initializing'
-                    break
+            #for line in log[::-1]:
+            #    if 'Pipeline completed' in line:
+            #        cameras['stage' + cam].text = 'Pipeline completed'
+            #        break
+            #    elif 'SkySub_QL' in line:
+            #        cameras['stage' + cam].text = 'Sky Subtraction'
+            #        break
+            #    elif 'BoxcarExtract' in line:
+            #        cameras['stage' + cam].text = 'Boxcar Extraction'
+            #        break
+            #    elif 'Preproc' in line:
+            #        cameras['stage' + cam].text = 'Preprocessing'
+            #        break
+            #    elif 'Initialize' in line:
+            #        cameras['stage' + cam].text = 'Initializing'
+            #        break
 
     new_datat = dict(y=bars, right=barsRight, height=barsHeight, color=listColor)
     sourceBar.stream(new_datat, 30)
