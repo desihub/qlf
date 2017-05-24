@@ -52,15 +52,16 @@ fi
 
 if [ -f $LOGDIR/run.pgid ]; then
     RUN_PGID=`cat $LOGDIR/run.pgid`
-    ps opgid | grep $RUN_PGID > /dev/null && echo "Restarting QLF..."; kill -- -$RUN_PGID > /dev/null
+    ps opgid | grep $RUN_PGID > /dev/null && echo "QLF is running, terminating..."; kill -- -$RUN_PGID > /dev/null
 fi
 
 # Start the servers and save the PGID, django and bokeh share the same PGID
 
+echo "Starting QLF..."
 nohup python -Wi manage.py runserver &> $LOGDIR/runserver.log & echo $(ps opgid= $!) > $LOGDIR/run.pgid
 nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures &> $LOGDIR/bokeh.log & 
 
 echo "QLF is running at http://localhost:8000"
 
 # QLF daemon
-#python -Wi ../bin/qlf_daemon.py
+python -Wi ../bin/qlf_daemon.py
