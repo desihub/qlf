@@ -15,28 +15,33 @@ exptime=0
 # Log level, e.g. DEBUG, INFO, WARNING or ERROR
 loglevel=INFO
 
-# Log file name, e.g. /home/user/qlf.log
+# Log file name, e.g. $QLF_ROOT/qlf.log
 logfile=
 
 [data]
 # Which night to process?
 night=20170428
 
-# calibration exposure id
-calib=0
+# calibration exposure id, e.g. fiberflat-b0-00000001.fits
+calib=1
 
-# exposure ids
+# exposure ids, e.g. desi-00000003.fits.fz, desi-00000004.fits.fz
 exposures=3,4
 
+# Note: for a local installation of QLF we don't recommend processing all
+# the 30 cameras in parallel, unless you have a multicore machine, test at your
+# own risk
+
 # b,r,z
-arm=b,r
+arms=b,r,z
 
 # 0,1,2,3,4,5,6,7,8,9
-spectrograph=0
+spectrographs=0,1
 
 [namespace]
-# Data directory, e.g. /home/user/data
+# Data directory, e.g. $QLF_ROOT/data
 datadir=
 
-# Processing output, e.g. /home/user/scratch
+# Processing output, e.g. $QLF_ROOT/outputs or some other local (fast) scratch area
+# Note: this directory is created by QLF if it does not exist.
 scratch=

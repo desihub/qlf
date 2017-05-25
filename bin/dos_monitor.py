@@ -46,8 +46,8 @@ class DOSmonitor(object):
     def get_cameras(self):
         """ Gets all cameras from configuration file. """
 
-        arms = self.cfg.get('data', 'arm').split(',')
-        spectrographs = self.cfg.get('data', 'spectrograph').split(',')
+        arms = self.cfg.get('data', 'arms').split(',')
+        spectrographs = self.cfg.get('data', 'spectrographs').split(',')
 
         cameras = list()
 
