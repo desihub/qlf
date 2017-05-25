@@ -8,39 +8,28 @@ import Pyro4
 import configparser
 import sys
 import os
+import logging
 
+qlf_root = os.getenv('QLF_ROOT')
+cfg = configparser.ConfigParser()
 
-@Pyro4.expose
-@Pyro4.behavior(instance_mode="single")
-class QLFDaemon(object):
-    def __init__(self):
-        self.run = QLFRun()
+try:
+    cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    logfile = cfg.get("main", "logfile")
+    loglevel = cfg.get("main", "loglevel")
+except Exception as error:
+    print(error)
+    print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+    sys.exit(1)
 
-    def start(self):
-        if self.run.is_alive():
-            message = "Monitor is already initialized (pid: %i)." % self.run.pid
-        else:
-            self.run = QLFRun()
-            self.run.start()
-            message = "Starting pid %i..." % self.run.pid
+logging.basicConfig(
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    filename=logfile,
+    level=eval("logging.%s" % loglevel)
+)
 
-        print(message)
-
-    def stop(self):
-        if self.run.is_alive():
-            message = "Stop pid %i" % self.run.pid
-            self.run.shutdown()
-        else:
-            message = "Monitor is not initialized."
-
-        print(message)
-
-    def restart(self):
-        self.stop()
-        print("Restarting...")
-        sleep(5)
-        self.start()
-
+logger = logging.getLogger(__name__)
 
 class QLFRun(Process):
 
@@ -56,7 +45,7 @@ class QLFRun(Process):
             night = self.dos_monitor.get_last_night()
 
             if night == self.last_night:
-                print("The night %s has already been processed" % night)
+                logger.info("The night %s has already been processed" % night)
                 sleep(5)
                 continue
 
@@ -64,33 +53,57 @@ class QLFRun(Process):
 
             for exposure in exposures:
                 if self.exit.is_set():
-                    print('Execution stopped')
+                    logger.info('Execution stopped')
                     break
 
                 ql = QLFPipeline(exposure)
                 ql.start_process()
-                print('Executing expid %s...' % exposure.get('expid'))
+                logger.info('Executing expid %s...' % exposure.get('expid'))
 
             self.last_night = night
 
-        print("Bye!")
+        logger.info("Bye!")
 
     def shutdown(self):
         self.exit.set()
 
+
+@Pyro4.expose
+@Pyro4.behavior(instance_mode="single")
+class QLFDaemon(object):
+    def __init__(self):
+        self.run = QLFRun()
+
+    def start(self):
+        if self.run.is_alive():
+            logger.info("Monitor is already initialized (pid: %i)." % self.run.pid)
+        else:
+            self.run = QLFRun()
+            self.run.start()
+            logger.info("Starting pid %i..." % self.run.pid)
+
+    def stop(self):
+        if self.run.is_alive():
+            logger.info("Stop pid %i" % self.run.pid)
+            self.run.shutdown()
+        else:
+            logger.info("Monitor is not initialized.")
+
+    def restart(self):
+        self.stop()
+        logger.info("Restarting...")
+        sleep(5)
+        self.start()
+
+
 def main():
 
-    qlf_root = os.getenv('QLF_ROOT')
-    cfg = configparser.ConfigParser()
-
     try:
-        cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
         nameserver = cfg.get("daemon", "nameserver")
         host = cfg.get("daemon", "host")
         port = int(cfg.get("daemon", "port"))
-    except Exception as error:
-        print(error)
-        print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+    except Exception as err:
+        logger.error(err)
         sys.exit(1)
 
     Pyro4.Daemon.serveSimple(

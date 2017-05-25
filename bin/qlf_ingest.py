@@ -34,13 +34,14 @@ class QLFIngest(object):
         # Save Process for this exposure
         return Exposure.objects.get(expid=expid)
 
-    def insert_process(self, expid, night, pipeline_name):
+    def insert_process(self, expid, night, start, pipeline_name):
         """ Inserts initial data in process table. """
 
         exposure = self.insert_exposure(expid, night)
 
         process = Process(
             exposure_id=exposure.expid,
+            start=start,
             pipeline_name=pipeline_name
         )
 

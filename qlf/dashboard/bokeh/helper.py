@@ -77,7 +77,7 @@ def get_last_exposures_by_night():
     """ Returns last processed exposure by night """
 
     api = requests.get(QLF_API_URL).json()
-    exposures = requests.get(api['exposure']).json()
+    exposures = requests.get(api['exposure'] + '?ordering=night').json()
 
     if not exposures:
         return {}
