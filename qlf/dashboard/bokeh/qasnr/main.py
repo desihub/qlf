@@ -5,7 +5,7 @@ from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
 
-from dashboard.bokeh.helper import get_data, get_exposure_info, get_camera_info, \
+from dashboard.bokeh.helper import get_data, get_exposures, \
     init_xy_plot, get_url_args
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
@@ -25,9 +25,13 @@ elg = ColumnDataSource(data={'x': data.ELG_SNR_MAG[1],
                              'y': data.ELG_SNR_MAG[0],
                              'fiber_id': data.ELG_FIBERID.dropna().tolist()})
 
+# TODO: RA, Dec coordinates should come from the QA outputs
+
 lrg = ColumnDataSource(data={'x': data.LRG_SNR_MAG[1],
                              'y': data.LRG_SNR_MAG[0],
-                             'fiber_id': data.LRG_FIBERID.dropna().tolist()})
+                             'fiber_id': data.LRG_FIBERID.dropna().tolist(),
+                             'ra': ["181.2035"] * len(data.LRG_SNR_MAG[1]),
+                             'dec': ["-2.7371"] * len(data.LRG_SNR_MAG[1])})
 
 qso = ColumnDataSource(data={'x': data.QSO_SNR_MAG[1],
                              'y': data.QSO_SNR_MAG[0],
@@ -40,24 +44,24 @@ star = ColumnDataSource(data={'x': data.STAR_SNR_MAG[1],
 # make the app layout
 
 # configure bokeh widgets
-exposure = get_exposure_info()
+exposure = get_exposures()
 slider = Slider(start=exposure['expid'][0], end=exposure['expid'][-1], value=exposure['expid'][0], step=1,
                              title="Exposure ID")
 
 # we can filter by spectrograph
-camera = get_camera_info()
 spectrograph = Select(title="Spectrograph:",
-                      value=camera['spectrograph'][0],
-                      options=camera['spectrograph'],
+                      value='0',
+                      options=['0','1','2','3','4','5','6','7','8','9'],
                       width=100)
 
 # and arm
 arm = Select(title="Arm:",
-             value=camera['arm'][0],
-             options=camera['arm'],
+             value='b',
+             options=['b','r','z'],
              width=100)
 
 # here we make the plots
+
 hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
                             ("Value", "@y")])
 
@@ -70,8 +74,11 @@ elg_plot.xaxis.axis_label = "DECAM_R"
 elg_plot.yaxis.axis_label = "SNR"
 elg_plot.title.text = "ELG"
 
-hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
-                            ("Value", "@y")])
+hover = HoverTool(tooltips=[("SNR", "@y"),
+                            ("DECAM_R", "@x"),
+                            ("Fiber ID", "@fiber_id"),
+                            ("RA", "@ra"),
+                            ("Dec", "@dec")])
 
 lrg_plot = init_xy_plot(hover=hover)
 
@@ -112,7 +119,6 @@ layout = column(widgetbox(slider, width=1000),
                 row(widgetbox(arm, width=150),
                     widgetbox(spectrograph, width=150)),
                 plot)
-
 
 curdoc().add_root(layout)
 curdoc().title = "SNR"
