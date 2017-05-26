@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export QLF_PROJECT=$(pwd)
+
 # Run QLF in development mode, create db if it does not exist
 # start QLF web applicationi, Bokeh server and the QLF daemon
 
@@ -12,13 +14,14 @@ then
 	exit 1
 fi
 
-
 if [ "$(conda info -e | grep "*" | cut -d " " -f1)" != "quicklook" ];
 then
     echo "Set quicklook conda environment first. In a default QLF installation, you should run:"
     echo "source ~/miniconda3/bin/activate quicklook"
     exit 1
 fi
+
+cd $QLF_PROJECT
 
 echo "Initializing QLF database..."
 # Test user for the development db
@@ -34,7 +37,6 @@ then
 fi
 
 python -Wi manage.py migrate > /dev/null
-
 python -Wi manage.py createsuperuser --noinput --username $TEST_USER --email $TEST_USER_EMAIL
 
 # Start QLF web application
@@ -47,7 +49,6 @@ fi
 # Start django and bokeh servers and save the process group id
 
 echo "Starting QLF..."
-
 echo "Setting DESI Quick Look environment..."
 
 for package in desispec desiutil; do

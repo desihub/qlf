@@ -39,7 +39,7 @@ class QLFPipeline(object):
         logger.info('Night: %s' % self.data.get('night'))
         logger.info('Exposure: %s' % str(self.data.get('expid')))
 
-        self.data['start'] = datetime.datetime.now()
+        self.data['start'] = datetime.datetime.now().replace(microsecond=0)
 
         # create process in database and obtain the process id
         process = self.register.insert_process(
@@ -53,7 +53,7 @@ class QLFPipeline(object):
         # self.register.insert_config(process.id)
 
         logger.info('Process ID: %i' % process.id)
-        logger.info('Start: %s' % process.start)
+        logger.info('Start: %s' % self.data.get('start'))
 
         output_dir = os.path.join(
             'exposures',
@@ -76,7 +76,9 @@ class QLFPipeline(object):
         return_cameras = Manager().list()
 
         for camera in self.data.get('cameras'):
-            camera['start'] = datetime.datetime.now()
+            camera['start'] = datetime.datetime.now().replace(
+                microsecond=0
+            )
 
             logname = os.path.join(
                 self.data.get('output_dir'),
@@ -85,7 +87,9 @@ class QLFPipeline(object):
 
             camera['logname'] = logname
 
-            logger.info('Output log for camera %s: %s' %(camera.get('name'), camera.get('logname')))
+            logger.info('Output log for camera %s: %s' % (
+                camera.get('name'), camera.get('logname')
+            ))
             
             job = self.register.insert_job(
                 process_id=process.id,
@@ -103,14 +107,17 @@ class QLFPipeline(object):
         for proc in procs:
             proc.join()
 
-        self.data['end'] = datetime.datetime.now()
+        self.data['end'] = datetime.datetime.now().replace(microsecond=0)
         logger.info('end: %s' % self.data.get('end'))
 
-        self.data['duration'] = self.data.get('end') - self.data.get('start')
+        self.data['duration'] = str(
+            self.data.get('end') - self.data.get('start')
+        )
+
         logger.info("Process complete in %s." % self.data.get('duration'))
 
         logger.info('Begin ingestion of results...')
-        start_ingestion = datetime.datetime.now()
+        start_ingestion = datetime.datetime.now().replace(microsecond=0)
 
         # TODO: refactor?
         camera_failed = 0
@@ -134,7 +141,10 @@ class QLFPipeline(object):
             status=status
         )
 
-        duration_ingestion = datetime.datetime.now() - start_ingestion
+        duration_ingestion = str(
+            datetime.datetime.now().replace(microsecond=0) - start_ingestion
+        )
+
         logger.info("Ingestion complete in %s." % duration_ingestion)
 
     def execute(self, camera, return_cameras):
@@ -186,9 +196,11 @@ class QLFPipeline(object):
 
         logname.close()
 
-        camera['end'] = datetime.datetime.now()
+        camera['end'] = datetime.datetime.now().replace(microsecond=0)
         camera['status'] = 0
-        camera['duration'] = camera.get('end') - camera.get('start')
+        camera['duration'] = str(
+            camera.get('end') - camera.get('start')
+        )
 
         if retcode < 0:
             camera['status'] = 1
@@ -238,9 +250,8 @@ class QLFPipeline(object):
 
                 logger.info("Ingesting %s" % name)
                 self.register.insert_qa(name, paname, metrics, camera.get('job_id'))
-            except Exception as error:
-                logger.error("Error ingesting %s" % name)
-                logger.error(str(error))
+            except Exception:
+                logger.error("Error ingesting %s" % name, exc_info=True)
 
         logger.info("Finished ingestion of pipeline results.")
 
