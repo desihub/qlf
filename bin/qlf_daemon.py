@@ -75,6 +75,8 @@ class QLFDaemon(object):
         self.run = QLFRun()
 
     def start(self):
+        self.run.exit = Event()
+
         if self.run.is_alive():
             logger.info("Monitor is already initialized (pid: %i)." % self.run.pid)
         else:
@@ -95,13 +97,21 @@ class QLFDaemon(object):
         sleep(5)
         self.start()
 
+    def get_status(self):
+        status = True
+
+        if self.run.exit.is_set():
+            status = False
+
+        logger.info("Running? {}".format(status))
+        return status
+
 
 def main():
-
     try:
-        nameserver = cfg.get("daemon", "nameserver")
-        host = cfg.get("daemon", "host")
-        port = int(cfg.get("daemon", "port"))
+        nameserver = os.environ.get('QLF_DAEMON_NS', 'qlf.daemon')
+        host = os.environ.get('QLF_DAEMON_HOST', 'localhost')
+        port = int(os.environ.get('QLF_DAEMON_PORT', '56005'))
     except Exception as err:
         logger.error(err)
         sys.exit(1)
