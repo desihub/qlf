@@ -52,10 +52,9 @@ for num in range(30):
         #                                          background_fill_color='white', background_fill_alpha=0.7)
         label_name.append('b' + str(num - 20))
 
-plot = figure(height=900, x_range=(-9, 120))
+plot = figure(height=700, x_range=(-9, 120))
 plot.logo = None
 plot.toolbar_location = None
-
 
 for cam in cameras:
     plot.add_layout(cameras[cam])
@@ -88,9 +87,6 @@ def update(t):
         exp_id = PROCESS.get("exposure")
         plot.title.text = "Exposure ID: %i" % exp_id
 
-    # logger.info("Process: %s" % PROCESS)
-
-    # AF: loop over cameras
     for cam in cameras:
         if cam[:5] != 'stage':
 
@@ -116,7 +112,8 @@ def update(t):
             if cam[:1] == 'b':
                 barsRight[int(cam[1:]) - 10] = len(log)
 
-            # AF: currrent line
+            # AF: This is not working properly
+
             #for line in log[::-1]:
             #    if 'Pipeline completed' in line:
             #        cameras['stage' + cam].text = 'Pipeline completed'
