@@ -1,8 +1,9 @@
 from dos_monitor import DOSmonitor
 from qlf_pipeline import QLFPipeline
+from qlf_models import QLFModels
 from time import sleep
 from multiprocessing import Process, Event
-from dashboard.bokeh.helper import get_last_exposures_by_night
+# from dashboard.bokeh.helper import get_last_exposures_by_night
 
 import Pyro4
 import configparser
@@ -37,10 +38,17 @@ class QLFRun(Process):
         Process.__init__(self)
         self.exit = Event()
         self.dos_monitor = DOSmonitor()
+        self.last_night = str()
+
         # TODO: get last night from db (improve)
-        self.last_night = get_last_exposures_by_night().get('night', '')
+        models = QLFModels()
+        exposure = models.get_last_exposure()
+
+        if exposure:
+            self.last_night = exposure.night
 
     def run(self):
+        self.clear()
         while not self.exit.is_set():
             night = self.dos_monitor.get_last_night()
 
@@ -64,6 +72,9 @@ class QLFRun(Process):
 
         logger.info("Bye!")
 
+    def clear(self):
+        self.exit.clear()
+
     def shutdown(self):
         self.exit.set()
 
@@ -72,12 +83,11 @@ class QLFRun(Process):
 @Pyro4.behavior(instance_mode="single")
 class QLFDaemon(object):
     def __init__(self):
-        self.run = QLFRun()
+        self.run = False
 
     def start(self):
-        self.run.exit = Event()
-
-        if self.run.is_alive():
+        if self.run and self.run.is_alive():
+            self.run.clear()
             logger.info("Monitor is already initialized (pid: %i)." % self.run.pid)
         else:
             self.run = QLFRun()
@@ -85,7 +95,7 @@ class QLFDaemon(object):
             logger.info("Starting pid %i..." % self.run.pid)
 
     def stop(self):
-        if self.run.is_alive():
+        if self.run and self.run.is_alive():
             logger.info("Stop pid %i" % self.run.pid)
             self.run.shutdown()
         else:
@@ -98,10 +108,10 @@ class QLFDaemon(object):
         self.start()
 
     def get_status(self):
-        status = True
+        status = False
 
-        if self.run.exit.is_set():
-            status = False
+        if self.run and not self.run.exit.is_set():
+            status = True
 
         logger.info("Running? {}".format(status))
         return status

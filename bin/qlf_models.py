@@ -1,8 +1,9 @@
 import os
 import sys
-import yaml
+# import yaml
 import json
 import numpy
+import django
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -12,7 +13,6 @@ sys.path.append(os.path.join(BASE_DIR, "qlf"))
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 
-import django
 django.setup()
 
 from dashboard.models import (
@@ -20,8 +20,8 @@ from dashboard.models import (
 )
 
 
-class QLFIngest(object):
-    """ Class responsable by results ingestion from Quick Look pipeline. """
+class QLFModels(object):
+    """ Class responsible by manage the database models from Quick Look pipeline. """
 
     def insert_exposure(self, expid, night):
         """ Inserts and gets exposure and night if necessary. """
@@ -52,7 +52,7 @@ class QLFIngest(object):
     def insert_config(self, process_id):
         """ Inserts used configuration. """
 
-        #TODO: get configuration coming of interface
+        # TODO: get configuration coming of interface
         # Make sure there is a configuration to refer to
         if not Configuration.objects.all():
             config_file = open('../qlf/static/ql.json', 'r')
@@ -155,20 +155,31 @@ class QLFIngest(object):
 
         return Process.objects.filter(exposure_id=expid)
 
-    def jsonify(self, data):
+    def get_last_exposure(self):
+        """ gets last processed exposures """
+
+        try:
+            exposure = Exposure.objects.latest('pk')
+        except:
+            exposure = None
+
+        return exposure
+
+    @staticmethod
+    def jsonify(data):
         """ Make a dictionary with numpy arrays JSON serializable """
 
         for key in data:
             if type(data[key]) == numpy.ndarray:
                 data[key] = data[key].tolist()
+
         return data
 
+
 if __name__=='__main__':
-    qlf = QLFIngest()
- 
+    qlf = QLFModels()
 
-# TODO: implement command line interface for qlf_ingest.py
-
+# TODO: implement command line interface for qlf_models.py
 # if __name__=='__main__':
 #
 #     parser = argparse.ArgumentParser(
@@ -209,4 +220,3 @@ if __name__=='__main__':
 #     qlfi = QLFIngest()
 #
 #     qlfi.post(qa_name, job_name, results, force)
-

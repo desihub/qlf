@@ -7,7 +7,7 @@ import glob
 import yaml
 import configparser
 from multiprocessing import Process, Manager
-from qlf_ingest import QLFIngest
+from qlf_models import QLFModels
 
 # Project main directory
 qlf_root = os.getenv('QLF_ROOT')
@@ -29,7 +29,7 @@ class QLFPipeline(object):
 
     def __init__(self, data):
         self.pipeline_name = 'Quick Look'
-        self.register = QLFIngest()
+        self.models = QLFModels()
         self.data = data
 
     def start_process(self):
@@ -42,7 +42,7 @@ class QLFPipeline(object):
         self.data['start'] = datetime.datetime.now().replace(microsecond=0)
 
         # create process in database and obtain the process id
-        process = self.register.insert_process(
+        process = self.models.insert_process(
             self.data.get('expid'),
             self.data.get('night'),
             self.data.get('start'),
@@ -50,7 +50,7 @@ class QLFPipeline(object):
         )
 
         # TODO: ingest configuration file used, this should be done by process
-        # self.register.insert_config(process.id)
+        # self.models.insert_config(process.id)
 
         logger.info('Process ID: %i' % process.id)
         logger.info('Start: %s' % self.data.get('start'))
@@ -91,7 +91,7 @@ class QLFPipeline(object):
                 camera.get('name'), camera.get('logname')
             ))
             
-            job = self.register.insert_job(
+            job = self.models.insert_job(
                 process_id=process.id,
                 camera=camera.get('name'),
                 start=camera.get('start'),
@@ -135,7 +135,7 @@ class QLFPipeline(object):
         if camera_failed > 0:
             status = 1
 
-        self.register.update_process(
+        self.models.update_process(
             process_id=process.id,
             end=self.data.get('end'),
             status=status
@@ -225,7 +225,7 @@ class QLFPipeline(object):
     def update_job(self, camera):
         """ Update job and ingest QA results """
 
-        self.register.update_job(
+        self.models.update_job(
             job_id=camera.get('job_id'),
             end=camera.get('end'),
             status=camera.get('status')
@@ -249,7 +249,7 @@ class QLFPipeline(object):
                 metrics = qa['METRICS']
 
                 logger.info("Ingesting %s" % name)
-                self.register.insert_qa(name, paname, metrics, camera.get('job_id'))
+                self.models.insert_qa(name, paname, metrics, camera.get('job_id'))
             except Exception:
                 logger.error("Error ingesting %s" % name, exc_info=True)
 
@@ -259,7 +259,7 @@ class QLFPipeline(object):
         """ Returns [<Process object>] if expid was processed else returns [] """
 
         expid = self.data.get('expid')
-        return self.register.get_expid_in_process(expid)
+        return self.models.get_expid_in_process(expid)
 
 
 if __name__ == "__main__":
