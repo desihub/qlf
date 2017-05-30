@@ -18,7 +18,6 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^start', views.start, name='start'),
     url(r'^stop', views.stop, name='stop'),
-    url(r'^dashboard/nightsum', views.exposureList,  name='exposureList'),
     url(r'^restart', views.restart, name='restart'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),

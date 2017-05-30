@@ -37,28 +37,28 @@
                 <li><a href="/"><b>Help</b></a></li>
             </ul>
             {% if "monitor" in bokeh_app %}
+                <ul class="nav navbar-nav navbar-left">
+                    <button class="btn btn-success navbar-btn" onclick="opem('/start')"><i class="fa fa-play"></i><b> START</b></button>
+                    <button class="btn btn-danger navbar-btn" onclick="opem('/stop')"><i class="fa fa-stop"></i><b> STOP</b></button>
+                    <button class="btn btn-warning navbar-btn" onclick="opem('/restart')"><i class="fa fa-refresh"></i><b> RESET</b></button>
+                    <p class="nav navbar-nav navbar-text pull-left">
+                        <b> STATUS:
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if forloop.first %}
+                                        {{ message }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                - -
+                            {% endif %}
+                        </b>
+                    </p>
 
-            <ul class="nav navbar-nav navbar-left">
-                <button class="btn btn-success navbar-btn" onclick="opem('/start')"><i class="fa fa-play"></i><b> START</b></button>
-                <button class="btn btn-danger navbar-btn" onclick="opem('/stop')"><i class="fa fa-stop"></i><b> STOP</b></button>
-                <button class="btn btn-warning navbar-btn" onclick="opem('/restart')"><i class="fa fa-refresh"></i><b> RESET</b></button>
-                <p class="nav navbar-nav navbar-text pull-left">
-                    <b> STATUS:
-                        {% if messages %}
-                            {% for message in messages %}
-                                {{ message }}
-                            {% endfor %}
-                        {% else %}
-                            - -
-                        {% endif %}
-                    </b>
-                </p>
-
-            </ul>
-
-            <ul class="nav navbar-nav navbar-right">
-                <p class="nav navbar-nav navbar-text"><b>Disk space: --</b></p>
-            </ul>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <p class="nav navbar-nav navbar-text"><b>Disk space: --</b></p>
+                </ul>
             {% endif %}
         </div>
 

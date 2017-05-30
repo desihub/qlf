@@ -7,6 +7,7 @@ from .serializers import (
     QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer
 )
 import Pyro4
+
 from django.http import HttpResponseRedirect
 from django.conf import settings
 
@@ -14,12 +15,11 @@ from bokeh.embed import autoload_server
 from django.template import loader
 from django.http import HttpResponse
 
-from django.shortcuts import render
-from django_tables2 import RequestConfig
-from .tables import ExposureTable
 from django.contrib import messages
 import logging
 
+uri = settings.QLF_DAEMON_URL
+qlf = Pyro4.Proxy(uri)
 logger = logging.getLogger(__name__)
 
 class DefaultsMixin(object):
@@ -107,28 +107,14 @@ class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
 
-def exposureList(request):
-    table = ExposureTable(Exposure.objects.all())
-    table.paginate(page=request.GET.get('page', 1), per_page=25)
-    RequestConfig(request).configure(table)
-    return render(request, 'dashboard/exposure_list.html', {'table': table})
-
 def start(request):
-    uri = settings.QLF_DAEMON_URL
-    qlf = Pyro4.Proxy(uri)
     qlf.start()
-    messages.success(request, "Running")
     return HttpResponseRedirect('dashboard/monitor')
 def stop(request):
-    uri = settings.QLF_DAEMON_URL
-    qlf = Pyro4.Proxy(uri)
     qlf.stop()
-    messages.success(request, "Idle")
     return HttpResponseRedirect('dashboard/monitor')
 
 def restart(request):
-    uri = settings.QLF_DAEMON_URL
-    qlf = Pyro4.Proxy(uri)
     qlf.restart()
     return HttpResponseRedirect('dashboard/monitor')
 
@@ -149,6 +135,14 @@ def embed_bokeh(request, bokeh_app):
 
     context = {'bokeh_script': bokeh_script,
                'bokeh_app': bokeh_app}
+
+    status = qlf.get_status()
+    if status == True:
+        messages.success(request, "Running")
+    elif status == False:
+        messages.success(request, "Idle")
+    else:
+        messages.success(request, "- -")
 
     response = HttpResponse(template.render(context, request))
 
