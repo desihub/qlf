@@ -88,22 +88,22 @@ class QLFDaemon(object):
     def start(self):
         if self.run and self.run.is_alive():
             self.run.clear()
-            logger.info("Monitor is already initialized (pid: %i)." % self.run.pid)
+            logger.info("QLF daemon is already initialized (pid: %i)." % self.run.pid)
         else:
             self.run = QLFRun()
             self.run.start()
-            logger.info("Starting pid %i..." % self.run.pid)
+            logger.info("Starting QLF daemon pid %i..." % self.run.pid)
 
     def stop(self):
         if self.run and self.run.is_alive():
-            logger.info("Stop pid %i" % self.run.pid)
+            logger.info("Stopped QLF daemon pid %i..." % self.run.pid)
             self.run.shutdown()
         else:
-            logger.info("Monitor is not initialized.")
+            logger.info("QLF daemon is not initialized.")
 
     def restart(self):
         self.stop()
-        logger.info("Restarting...")
+        logger.info("Restarting QLF daemon...")
         sleep(5)
         self.start()
 
@@ -113,7 +113,7 @@ class QLFDaemon(object):
         if self.run and not self.run.exit.is_set():
             status = True
 
-        logger.info("Running? {}".format(status))
+        logger.info("Is Quick Look running? {}".format(status))
         return status
 
 
