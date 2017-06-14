@@ -7,58 +7,53 @@ import glob
 import yaml
 import configparser
 from multiprocessing import Process, Manager
-from qlf_ingest import QLFIngest
+from qlf_models import QLFModels
+
+# Project main directory
+qlf_root = os.getenv('QLF_ROOT')
+cfg = configparser.ConfigParser()
+
+try:
+    cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    scratch = cfg.get('namespace', 'scratch')
+except Exception as error:
+    print(error)
+    print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+    sys.exit(1)
+
+logger = logging.getLogger(__name__)
 
 
 class QLFPipeline(object):
     """ Class responsible for managing Quick Look pipeline execution """
 
     def __init__(self, data):
-        # Project main directory
-        qlf_root = os.getenv('QLF_ROOT')
-        self.cfg = configparser.ConfigParser()
-        try:
-            self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
-            logfile = self.cfg.get("main", "logfile")
-            loglevel = self.cfg.get("main", "loglevel")
-            self.scratch = self.cfg.get('namespace', 'scratch')
-        except Exception as error:
-            print(error)
-            print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
-            sys.exit(1)
-
         self.pipeline_name = 'Quick Look'
-
-        logging.basicConfig(filename=logfile, level=eval("logging.%s"%loglevel))
-
-        self.logger = logging.getLogger("QLF")
-
-        self.register = QLFIngest()
-
+        self.models = QLFModels()
         self.data = data
 
     def start_process(self):
         """ Start pipeline """
 
-        self.logger.info('Started %s ...' % self.pipeline_name)
-        self.logger.info('Night: %s' % self.data.get('night'))
-        self.logger.info('Exposure: %s' % str(self.data.get('expid')))
+        logger.info('Started %s ...' % self.pipeline_name)
+        logger.info('Night: %s' % self.data.get('night'))
+        logger.info('Exposure: %s' % str(self.data.get('expid')))
+
+        self.data['start'] = datetime.datetime.now().replace(microsecond=0)
 
         # create process in database and obtain the process id
-        process = self.register.insert_process(
+        process = self.models.insert_process(
             self.data.get('expid'),
             self.data.get('night'),
+            self.data.get('start'),
             self.pipeline_name
         )
 
-        # TODO: ingest configuration file used, this should be done by
-	# process
-        # self.register.insert_config(process.id)
+        # TODO: ingest configuration file used, this should be done by process
+        # self.models.insert_config(process.id)
 
-        self.logger.info('Process ID: %i' % process.id)
-        self.logger.info('Start: %s' % process.start)
-
-        self.data['start'] = process.start
+        logger.info('Process ID: %i' % process.id)
+        logger.info('Start: %s' % self.data.get('start'))
 
         output_dir = os.path.join(
             'exposures',
@@ -66,13 +61,13 @@ class QLFPipeline(object):
             self.data.get('zfill')
         )
 
-        output_full_dir = os.path.join(self.scratch, output_dir)
+        output_full_dir = os.path.join(scratch, output_dir)
 
         # Make sure output dir is created
         if not os.path.isdir(output_full_dir):
             os.makedirs(output_full_dir)
 
-        self.logger.info('Output dir: %s' % output_dir)
+        logger.info('Output dir: %s' % output_dir)
 
         self.data['output_dir'] = output_dir
 
@@ -81,7 +76,9 @@ class QLFPipeline(object):
         return_cameras = Manager().list()
 
         for camera in self.data.get('cameras'):
-            camera['start'] = str(datetime.datetime.now())
+            camera['start'] = datetime.datetime.now().replace(
+                microsecond=0
+            )
 
             logname = os.path.join(
                 self.data.get('output_dir'),
@@ -90,9 +87,11 @@ class QLFPipeline(object):
 
             camera['logname'] = logname
 
-            self.logger.info('Output log for camera %s: %s' %(camera.get('name'), camera.get('logname')))
+            logger.info('Output log for camera %s: %s' % (
+                camera.get('name'), camera.get('logname')
+            ))
             
-            job = self.register.insert_job(
+            job = self.models.insert_job(
                 process_id=process.id,
                 camera=camera.get('name'),
                 start=camera.get('start'),
@@ -106,13 +105,19 @@ class QLFPipeline(object):
             proc.start()
 
         for proc in procs:
-            ret = proc.join()
+            proc.join()
 
-        self.data['end'] = str(datetime.datetime.now())
-        self.logger.info('end: %s' % self.data.get('end'))
-        self.logger.info("Process complete.")
+        self.data['end'] = datetime.datetime.now().replace(microsecond=0)
+        logger.info('end: %s' % self.data.get('end'))
 
-        self.logger.info('Begin ingestion of results...')
+        self.data['duration'] = str(
+            self.data.get('end') - self.data.get('start')
+        )
+
+        logger.info("Process complete in %s." % self.data.get('duration'))
+
+        logger.info('Begin ingestion of results...')
+        start_ingestion = datetime.datetime.now().replace(microsecond=0)
 
         # TODO: refactor?
         camera_failed = 0
@@ -130,13 +135,17 @@ class QLFPipeline(object):
         if camera_failed > 0:
             status = 1
 
-        process = self.register.update_process(
+        self.models.update_process(
             process_id=process.id,
             end=self.data.get('end'),
             status=status
         )
 
-        self.logger.info("Ingestion complete.")
+        duration_ingestion = str(
+            datetime.datetime.now().replace(microsecond=0) - start_ingestion
+        )
+
+        logger.info("Ingestion complete in %s." % duration_ingestion)
 
     def execute(self, camera, return_cameras):
         """ Execute QL Pipeline by camera """
@@ -153,10 +162,10 @@ class QLFPipeline(object):
             'psfboot': camera.get('psfboot'),
             'fiberflat': camera.get('fiberflat'),
             'data_dir': self.data.get('data_dir'),
-            'scratch': self.scratch
+            'scratch': scratch
         })
 
-        self.logger.info(
+        logger.info(
             "Started job %i on exposure %s and camera %s ... " % (
             camera.get('job_id'),
             self.data.get('expid'),
@@ -164,17 +173,17 @@ class QLFPipeline(object):
         ))
 
         logname = open(os.path.join(
-            self.scratch,
+            scratch,
             camera.get('logname')
         ), 'wb')
 
         cwd = os.path.join(
-            self.scratch,
+            scratch,
             self.data.get('output_dir')
         )
 
-        with subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, shell=True, cwd=cwd) as process:
+        with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              shell=True, cwd=cwd) as process:
             for line in iter(process.stdout.readline, bytes()):
                 logname.write(line)
                 logname.flush()
@@ -187,35 +196,43 @@ class QLFPipeline(object):
 
         logname.close()
 
-        camera['end'] = str(datetime.datetime.now())
+        camera['end'] = datetime.datetime.now().replace(microsecond=0)
         camera['status'] = 0
+        camera['duration'] = str(
+            camera.get('end') - camera.get('start')
+        )
 
         if retcode < 0:
             camera['status'] = 1
             msg = (
                 "Job on exposure %s and camera %s "
-                "finished with code %i "
+                "finished with code %i in %s"
             ) % (
                 camera.get('name'),
                 self.data.get('expid'),
-                retcode
+                retcode,
+                camera.get('duration')
             )
-            self.logger.error(msg)
+            logger.error(msg)
 
         return_cameras.append(camera)
-        self.logger.info("Finished job %i" % camera.get('job_id'))
+
+        logger.info("Finished job %i in %s" % (
+            camera.get('job_id'),
+            camera.get('duration')
+        ))
 
     def update_job(self, camera):
         """ Update job and ingest QA results """
 
-        self.register.update_job(
+        self.models.update_job(
             job_id=camera.get('job_id'),
             end=camera.get('end'),
             status=camera.get('status')
         )
 
         output_path = os.path.join(
-            self.scratch,
+            scratch,
             self.data.get('output_dir'),
             'ql-*-%s-%s.yaml' % (
                 camera.get('name'),
@@ -231,19 +248,18 @@ class QLFPipeline(object):
                 paname = qa['PANAME']
                 metrics = qa['METRICS']
 
-                self.logger.info("Ingesting %s" % name)
-                self.register.insert_qa(name, paname, metrics, camera.get('job_id'))
-            except Exception as error:
-                self.logger.error("Error ingesting %s" % name)
-                self.logger.error(str(error))
+                logger.info("Ingesting %s" % name)
+                self.models.insert_qa(name, paname, metrics, camera.get('job_id'))
+            except Exception:
+                logger.error("Error ingesting %s" % name, exc_info=True)
 
-        self.logger.info("Finished ingestion of pipeline results.")
+        logger.info("Finished ingestion of pipeline results.")
 
     def was_processed(self):
         """ Returns [<Process object>] if expid was processed else returns [] """
 
         expid = self.data.get('expid')
-        return self.register.get_expid_in_process(expid)
+        return self.models.get_expid_in_process(expid)
 
 
 if __name__ == "__main__":

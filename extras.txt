@@ -6,3 +6,4 @@ django-json-field==0.5.7
 speclite==0.5
 fitsio==0.9.10
 furl==0.5.7
+Pyro4==4.59
