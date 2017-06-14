@@ -12,7 +12,7 @@
     <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <script>
-        function opem(btn) {
+        function btn_click(btn) {
             window.open(btn, "_self")
         }
     </script>
@@ -33,14 +33,15 @@
         <div class="navbar-collapse collapse" id="navbar">
 
             <ul class="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/desihub/qlf"><i class="fa fa-github fa-lg"></i><b> GitHub</b></a></li>
                 <li><a href="/dashboard/api/"><b>API</b> </a></li>
                 <li><a href="/"><b>Help</b></a></li>
             </ul>
             {% if "monitor" in bokeh_app %}
                 <ul class="nav navbar-nav navbar-left">
-                    <button class="btn btn-success navbar-btn" onclick="opem('/start')"><i class="fa fa-play"></i><b> START</b></button>
-                    <button class="btn btn-danger navbar-btn" onclick="opem('/stop')"><i class="fa fa-stop"></i><b> STOP</b></button>
-                    <button class="btn btn-warning navbar-btn" onclick="opem('/restart')"><i class="fa fa-refresh"></i><b> RESET</b></button>
+                    <button class="btn btn-success navbar-btn" onclick="btn_click('/start')"><i class="fa fa-play"></i><b> START</b></button>
+                    <button class="btn btn-danger navbar-btn" onclick="btn_click('/stop')"><i class="fa fa-stop"></i><b> STOP</b></button>
+                    <button class="btn btn-warning navbar-btn" onclick="btn_click('/restart')"><i class="fa fa-refresh"></i><b> RESET</b></button>
                     <p class="nav navbar-nav navbar-text pull-left">
                         <b> STATUS:
                             {% if messages %}
@@ -56,10 +57,7 @@
                     </p>
 
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <p class="nav navbar-nav navbar-text"><b>Disk space: --</b></p>
-                </ul>
-            {% endif %}
+                {% endif %}
         </div>
 
     </div>
@@ -69,12 +67,11 @@
         <!-- Sidebar menu -->
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li><a href="/dashboard/exposures/"><i class="fa fa-eye fa-lg"></i> QA Monitor</a></li>
-                <li><a href="/dashboard/nightsum/"><i class="fa fa-th fa-lg"></i> Night Summary</a></li>
-                <li><a href="/dashboard/nightsum/"><i class="fa fa-line-chart fa-lg"></i> Observing History</a></li>
+                <li><a href="/dashboard/exposures/"><i class="fa fa-eye fa-lg"></i> QA </a></li>
+                <li><a href=""><i class="fa fa-line-chart fa-lg"></i> Observing History</a></li>
             </ul>
             <ul class="nav nav-sidebar">
-                <li><a href="/dashboard/monitor/"><i class="fa fa-cogs fa-lg"></i> Pipeline Execution</a></li>
+                <li><a href="/dashboard/monitor/"><i class="fa fa-cogs fa-lg"></i> QL Pipeline</a></li>
             </ul>
             <ul class="nav nav-sidebar">
                 <li><a href="/dashboard/api/"> API</a></li>
