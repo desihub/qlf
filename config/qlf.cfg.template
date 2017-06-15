@@ -20,6 +20,7 @@ loglevel=INFO
 logfile=
 
 # configuration file for the quick look pipeline
+# e.g. $QLF_ROOT/desispec/py/desispec/data/quicklook/qlconfig_dark.yaml
 qlconfig=
 
 
