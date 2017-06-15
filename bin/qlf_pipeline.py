@@ -15,6 +15,7 @@ cfg = configparser.ConfigParser()
 
 try:
     cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    qlconfig = cfg.get('main', 'qlconfig')
     scratch = cfg.get('namespace', 'scratch')
 except Exception as error:
     print(error)
@@ -151,16 +152,13 @@ class QLFPipeline(object):
         """ Execute QL Pipeline by camera """
 
         cmd = (
-            'desi_quicklook -n {night} -c {camera} -e {exposure} '
-            '-f dark --psfboot {psfboot} --fiberflat {fiberflat} '
+            'desi_quicklook -i {qlconfig} -n {night} -c {camera} -e {exposure} '
             '--rawdata_dir {data_dir} --specprod_dir {scratch} '
-            '--save qlconfig-{camera}-{exposure}'
         ).format(**{
+            'qlconfig': qlconfig,
             'night': self.data.get('night'),
-            'exposure': str(self.data.get('expid')),
             'camera': camera.get('name'),
-            'psfboot': camera.get('psfboot'),
-            'fiberflat': camera.get('fiberflat'),
+            'exposure': str(self.data.get('expid')),
             'data_dir': self.data.get('data_dir'),
             'scratch': scratch
         })
