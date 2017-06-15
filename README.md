@@ -1,7 +1,5 @@
 ## DESI Quick Look Framework
 
-See development documentation at http://quick-look-framework.readthedocs.io
-
 ### Installing DESI QLF locally
 
 1. Install the Quick Look Framework 
@@ -12,7 +10,7 @@ See development documentation at http://quick-look-framework.readthedocs.io
     mkdir -p $QLF_ROOT
     cd $QLF_ROOT
    
-    git clone https://github.com/linea-it/qlf.git
+    git clone https://github.com/desihub/qlf.git
     ```
 
 2. Install software dependencies
