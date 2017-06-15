@@ -19,12 +19,13 @@ loglevel=INFO
 # the progress of the data reduction
 logfile=
 
+# configuration file for the quick look pipeline
+qlconfig=
+
+
 [data]
 # Which night to process? we do not support a list of nights yet.
 night=20170428
-
-# calibration exposure id to be used, e.g. fiberflat-b0-00000001.fits
-calib=1
 
 # exposure ids to be processed, e.g. desi-00000003.fits.fz, desi-00000004.fits.fz
 exposures=3,4
