@@ -50,13 +50,7 @@
 
 4. Configure QLF
 
-    Activate the `quicklook` environment
-    
-    ```
-    source ~/miniconda3/bin/activate quicklook
-    export QLF_ROOT=$HOME/quicklook
-    ```
-    
+   
     Create your `qlf.cfg` file
 
     ```
@@ -87,8 +81,15 @@
 
 ### Running QLF
 
-1. Start QLF
 
+1. Activate the `quicklook` environment
+    
+    ```
+    source ~/miniconda3/bin/activate quicklook
+    export QLF_ROOT=$HOME/quicklook
+    ```
+
+2. Start QLF
     ```
     cd $QLF_ROOT/qlf/qlf
     ./run.sh
