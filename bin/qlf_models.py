@@ -179,44 +179,4 @@ class QLFModels(object):
 if __name__=='__main__':
     qlf = QLFModels()
 
-# TODO: implement command line interface for qlf_models.py
-# if __name__=='__main__':
-#
-#     parser = argparse.ArgumentParser(
-#         description="""Upload QA metrics produced by the Quick Look pipeline to QLF database.
-# This script is meant to be run from the command line or imported by Quick Look. """,
-#         formatter_class=argparse.RawDescriptionHelpFormatter)
-#
-#     parser.add_argument(
-#             '--file',
-#             dest='file',
-#             required=True,
-#             help='Path to QA file produced by Quick Look')
-#
-#     parser.add_argument(
-#             '--qa-name',
-#             dest='qa_name',
-#             required=True,
-#             help='Name of the QA metric to be ingested'
-#     )
-#
-#     parser.add_argument(
-#             '--force',
-#             default=False,
-#             action='store_true',
-#             help='Overwrite QA results for a given metric'
-#     )
-#
-#     qa_name = parser.parse_args().qa_name
-#
-#     file = parser.parse_args().file
-#
-#     job_name = os.path.basename(file)
-#
-#     results = yaml.load(open(file, 'r'))
-#
-#     force = parser.parse_args().force
-#
-#     qlfi = QLFIngest()
-#
-#     qlfi.post(qa_name, job_name, results, force)
+

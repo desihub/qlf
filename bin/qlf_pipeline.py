@@ -257,22 +257,3 @@ class QLFPipeline(object):
         expid = self.data.get('expid')
         return self.models.get_expid_in_process(expid)
 
-
-if __name__ == "__main__":
-    exposure = {
-        'night': '20170428',
-        'expid': '3',
-        'zfill': '00000003',
-        'desi_spectro_data': '/home/singulani/raw_data',
-        'cameras': [
-          {
-            'name': 'r8',
-          },
-          {
-            'name': 'r9',
-          }
-        ]
-    }
-
-    qlp = QLFPipeline(exposure)
-    qlp.start_process()
