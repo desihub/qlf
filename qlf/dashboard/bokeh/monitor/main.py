@@ -14,7 +14,7 @@ cfg = configparser.ConfigParser()
 
 try:
     cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
-    scratch = cfg.get('namespace', 'scratch')
+    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 except Exception as error:
     logger.error(error)
     logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
@@ -96,7 +96,7 @@ def update(t):
             try:
                 for item in PROCESS.get("jobs", list()):
                     if cam == item.get("camera"):
-                        cameralog = os.path.join(scratch, item.get('logname'))
+                        cameralog = os.path.join(desi_spectro_redux, item.get('logname'))
                         break
                 if cameralog:
                     arq = open(cameralog, 'r')

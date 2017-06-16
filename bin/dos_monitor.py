@@ -12,7 +12,7 @@ class DOSmonitor(object):
         self.cfg = configparser.ConfigParser()
         try:
             self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
-            self.datadir = os.path.normpath(self.cfg.get('namespace', 'datadir'))
+            self.desi_spectro_data = os.path.normpath(self.cfg.get('namespace', 'desi_spectro_data'))
         except Exception as error:
             print(error)
             print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
@@ -30,12 +30,11 @@ class DOSmonitor(object):
 
         exposures_list = list()
 
-        calib = self.cfg.get("data", "calib")
         exposures = self.cfg.get("data", "exposures").split(',')
 
         for expid in exposures:
             try:
-                exposure = self.get_exposure(night, expid, calib)
+                exposure = self.get_exposure(night, expid)
                 exposures_list.append(exposure)
             except Exception as error:
                 print(error)
@@ -60,23 +59,15 @@ class DOSmonitor(object):
 
         return cameras
 
-    def get_exposure(self, night, exposure, calib):
+    def get_exposure(self, night, exposure):
         """ Gets all data of a determinate exposure. """
 
         camera_list = list()
 
         for camera in self.cameras:
-            try:
-                fiberflat = self.get_fiberflat_file(night, calib, camera)
-                psfboot = self.get_psfboot_file(night, camera)
-            except Exception as error:
-                print(error)
-                continue
 
             camera_dict = {
                 "name": camera,
-                "psfboot": psfboot,
-                "fiberflat": fiberflat
             }
             camera_list.append(camera_dict)
 
@@ -84,38 +75,9 @@ class DOSmonitor(object):
             "night": night,
             "expid": exposure,
             "zfill": str(exposure).zfill(8),
-            "data_dir": self.datadir,
+            "desi_spectro_data": self.desi_spectro_data,
             "cameras": camera_list
         }
-
-    def get_fiberflat_file(self, night, calib, camera):
-        """ Gets the fiberflat file by camera """
-
-        path = os.path.join(self.datadir, night)
-        calib = str(calib).zfill(8)
-
-        pattern = "(fiberflat-%s-%s.fits)" % (camera, calib)
-        regex = re.compile(pattern)
-
-        for f in os.listdir(path):
-            if regex.search(f):
-                return os.path.join(path, f)
-
-        raise OSError(2, 'fiberflat not found', pattern)
-
-    def get_psfboot_file(self, night, camera):
-        """ Gets the psfboot file by camera """
-
-        path = os.path.join(self.datadir, night)
-
-        pattern = "(psfboot-%s.fits)" % camera
-        regex = re.compile(pattern)
-
-        for f in os.listdir(path):
-            if regex.search(f):
-                return os.path.join(path, f)
-
-        raise OSError(2, 'psfboot not found', pattern)
 
 if __name__ == "__main__":
 
