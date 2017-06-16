@@ -66,7 +66,6 @@ class QLFRun(Process):
 
                 ql = QLFPipeline(exposure)
                 ql.start_process()
-                logger.info('Executing expid %s...' % exposure.get('expid'))
 
             self.last_night = night
 

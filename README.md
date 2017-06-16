@@ -48,23 +48,7 @@
     desi_quicklook --help
     ```
 
-4. Get test data
-
-    ```
-    export DESI_SPECTRO_DATA=$QLF_ROOT/data
-    mkdir -p $DESI_SPECTRO_DATA
-    cd $DESI_SPECTRO_DATA
-    
-    # Test data for local run of QLF: night 20170428, exposures 3,4 and all cameras
-    wget -c http://portal.nersc.gov/project/desi/data/quicklook/20170428_small.tar.gz
-    tar xvzf 20170428.tar.gz
-    ```
-    
-    NOTE: on `desidev@lbl.gov`, you might copy ~1 night of data from `/home/angelofausti/data/20170428.tgz`
-
-### Running QLF 
-
-1. Configure QLF 
+4. Configure QLF
 
     Activate the `quicklook` environment
     
@@ -86,7 +70,24 @@
     NOTE: in development mode, QLF will process the data specified in the `qlf.cfg`. 
     Each time you run QLF a fresh database is created and the Quick Look outputs are ingested at the end of the processing of each exposure. 
 
-2. Start QLF  
+5. Get test data
+
+    ```
+    export DESI_SPECTRO_DATA=<input data directory configured in step 4>
+    mkdir -p $DESI_SPECTRO_DATA
+    cd $(dirname $DESI_SPECTRO_DATA)
+
+    # Test data for local run of QLF: night 20170428, exposures 3,4 and all cameras
+    wget -c http://portal.nersc.gov/project/desi/data/quicklook/20170428_small.tar.gz
+    tar xvzf 20170428.tar.gz
+    ```
+
+    NOTE: on `desidev@lbl.gov`, you might copy ~1 night of data from `/home/angelofausti/data/20170428.tgz`
+
+
+### Running QLF
+
+1. Start QLF
 
     ```
     cd $QLF_ROOT/qlf/qlf
