@@ -16,7 +16,7 @@ cfg = configparser.ConfigParser()
 try:
     cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
     qlconfig = cfg.get('main', 'qlconfig')
-    scratch = cfg.get('namespace', 'scratch')
+    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 except Exception as error:
     print(error)
     print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
@@ -38,7 +38,7 @@ class QLFPipeline(object):
 
         logger.info('Started %s ...' % self.pipeline_name)
         logger.info('Night: %s' % self.data.get('night'))
-        logger.info('Exposure: %s' % str(self.data.get('expid')))
+        logger.info('Exposure ID: %s' % str(self.data.get('expid')))
 
         self.data['start'] = datetime.datetime.now().replace(microsecond=0)
 
@@ -53,8 +53,7 @@ class QLFPipeline(object):
         # TODO: ingest configuration file used, this should be done by process
         # self.models.insert_config(process.id)
 
-        logger.info('Process ID: %i' % process.id)
-        logger.info('Start: %s' % self.data.get('start'))
+        logger.info('Process ID: %ii started ...' % process.id)
 
         output_dir = os.path.join(
             'exposures',
@@ -62,7 +61,7 @@ class QLFPipeline(object):
             self.data.get('zfill')
         )
 
-        output_full_dir = os.path.join(scratch, output_dir)
+        output_full_dir = os.path.join(desi_spectro_redux, output_dir)
 
         # Make sure output dir is created
         if not os.path.isdir(output_full_dir):
@@ -109,13 +108,12 @@ class QLFPipeline(object):
             proc.join()
 
         self.data['end'] = datetime.datetime.now().replace(microsecond=0)
-        logger.info('end: %s' % self.data.get('end'))
 
         self.data['duration'] = str(
             self.data.get('end') - self.data.get('start')
         )
 
-        logger.info("Process complete in %s." % self.data.get('duration'))
+        logger.info("Process finished in %s." % self.data.get('duration'))
 
         logger.info('Begin ingestion of results...')
         start_ingestion = datetime.datetime.now().replace(microsecond=0)
@@ -146,21 +144,21 @@ class QLFPipeline(object):
             datetime.datetime.now().replace(microsecond=0) - start_ingestion
         )
 
-        logger.info("Ingestion complete in %s." % duration_ingestion)
+        logger.info("Ingestion finished in %s." % duration_ingestion)
 
     def execute(self, camera, return_cameras):
         """ Execute QL Pipeline by camera """
 
         cmd = (
             'desi_quicklook -i {qlconfig} -n {night} -c {camera} -e {exposure} '
-            '--rawdata_dir {data_dir} --specprod_dir {scratch} '
+            '--rawdata_dir {desi_spectro_data} --specprod_dir {desi_spectro_redux} '
         ).format(**{
             'qlconfig': qlconfig,
             'night': self.data.get('night'),
             'camera': camera.get('name'),
             'exposure': str(self.data.get('expid')),
-            'data_dir': self.data.get('data_dir'),
-            'scratch': scratch
+            'desi_spectro_data': self.data.get('desi_spectro_data'),
+            'desi_spectro_redux': desi_spectro_redux
         })
 
         logger.info(
@@ -171,12 +169,12 @@ class QLFPipeline(object):
         ))
 
         logname = open(os.path.join(
-            scratch,
+            desi_spectro_redux,
             camera.get('logname')
         ), 'wb')
 
         cwd = os.path.join(
-            scratch,
+            desi_spectro_redux,
             self.data.get('output_dir')
         )
 
@@ -230,7 +228,7 @@ class QLFPipeline(object):
         )
 
         output_path = os.path.join(
-            scratch,
+            desi_spectro_redux,
             self.data.get('output_dir'),
             'ql-*-%s-%s.yaml' % (
                 camera.get('name'),
@@ -251,7 +249,7 @@ class QLFPipeline(object):
             except Exception:
                 logger.error("Error ingesting %s" % name, exc_info=True)
 
-        logger.info("Finished ingestion of pipeline results.")
+        logger.info("Finished ingestion of pipeline results for camera {}.".format(camera.get('name')))
 
     def was_processed(self):
         """ Returns [<Process object>] if expid was processed else returns [] """
@@ -265,17 +263,13 @@ if __name__ == "__main__":
         'night': '20170428',
         'expid': '3',
         'zfill': '00000003',
-        'data_dir': '/home/singulani/raw_data',
+        'desi_spectro_data': '/home/singulani/raw_data',
         'cameras': [
           {
             'name': 'r8',
-            'psfboot': '/home/singulani/raw_data/20170428/psfboot-r8.fits',
-            'fiberflat': '/home/singulani/raw_data/20170428/fiberflat-r8-00000003.fits'
           },
           {
             'name': 'r9',
-            'psfboot': '/home/singulani/raw_data/20170428/psfboot-r9.fits',
-            'fiberflat': '/home/singulani/raw_data/20170428/fiberflat-r9-00000003.fits'
           }
         ]
     }

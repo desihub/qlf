@@ -12,7 +12,7 @@ class DOSmonitor(object):
         self.cfg = configparser.ConfigParser()
         try:
             self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
-            self.datadir = os.path.normpath(self.cfg.get('namespace', 'datadir'))
+            self.desi_spectro_data = os.path.normpath(self.cfg.get('namespace', 'desi_spectro_data'))
         except Exception as error:
             print(error)
             print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
@@ -75,7 +75,7 @@ class DOSmonitor(object):
             "night": night,
             "expid": exposure,
             "zfill": str(exposure).zfill(8),
-            "data_dir": self.datadir,
+            "desi_spectro_data": self.desi_spectro_data,
             "cameras": camera_list
         }
 

@@ -44,9 +44,9 @@ arms=b,r,z
 spectrographs=0,1
 
 [namespace]
-# Input data directory, e.g. $QLF_ROOT/data
-datadir=
+# Input data directory, e.g. $DESI_SPECTRO_DATA
+desi_spectro_data=
 
-# Processing output, e.g. $QLF_ROOT/outputs or some other local (fast) scratch area
+# Processing output, e.g. $DESI_SPECTRO_REDUX or some other local (fast) scratch area
 # Note: this directory is created by QLF if it does not exist.
-scratch=
+desi_spectro_redux=
