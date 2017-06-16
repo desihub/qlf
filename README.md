@@ -81,7 +81,6 @@
 
 ### Running QLF
 
-
 1. Activate the `quicklook` environment
     
     ```
