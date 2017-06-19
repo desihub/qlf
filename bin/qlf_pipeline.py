@@ -53,7 +53,7 @@ class QLFPipeline(object):
         # TODO: ingest configuration file used, this should be done by process
         # self.models.insert_config(process.id)
 
-        logger.info('Process ID: %ii started ...' % process.id)
+        logger.info('Process ID: %i started ...' % process.id)
 
         output_dir = os.path.join(
             'exposures',
