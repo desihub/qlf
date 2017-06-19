@@ -63,9 +63,11 @@ nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr 
 echo "QLF web application is running at http://localhost:8000 you may start Quick Look from the pipeline interface."
 
 # Clean previous log
-echo > $QLF_ROOT/qlf.log
 
-echo 'QLF daemon is running, watch $QLF_ROOT/qlf.log...'
+logfile=$(grep logfile ../config/qlf.cfg | cut -f2 -d=)
+echo > $logfile
+
+echo "QLF is running, watch $logfile" 
 
 # Start QLF daemon
 nohup python -Wi ../bin/qlf_daemon.py > $QLF_ROOT/qlf_daemon.log 2>&1 &
