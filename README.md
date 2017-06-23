@@ -30,7 +30,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     ```
     conda config --add channels conda-forge
     conda create --name quicklook python=3.5 --yes --file qlf/requirements.txt
-    source activate quicklook # Make sure you are in the quicklook environment before moving on
+    source activate quicklook 
     # Packages not available through conda
     pip install -r qlf/extras.txt
     ```
