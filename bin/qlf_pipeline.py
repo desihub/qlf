@@ -1,4 +1,5 @@
 import os
+import io
 import sys
 import logging
 import subprocess
@@ -149,17 +150,15 @@ class QLFPipeline(object):
     def execute(self, camera, return_cameras):
         """ Execute QL Pipeline by camera """
 
-        cmd = (
-            'desi_quicklook -i {qlconfig} -n {night} -c {camera} -e {exposure} '
-            '--rawdata_dir {desi_spectro_data} --specprod_dir {desi_spectro_redux} '
-        ).format(**{
-            'qlconfig': qlconfig,
-            'night': self.data.get('night'),
-            'camera': camera.get('name'),
-            'exposure': str(self.data.get('expid')),
-            'desi_spectro_data': self.data.get('desi_spectro_data'),
-            'desi_spectro_redux': desi_spectro_redux
-        })
+        cmd = [
+            'desi_quicklook',
+            '-i', qlconfig,
+            '-n', self.data.get('night'),
+            '-c', camera.get('name'),
+            '-e', str(self.data.get('expid')),
+            '--rawdata_dir', self.data.get('desi_spectro_data'),
+            '--specprod_dir', desi_spectro_redux
+        ]
 
         logger.info(
             "Started job %i on exposure %s and camera %s ... " % (
@@ -168,7 +167,7 @@ class QLFPipeline(object):
             camera.get('name')
         ))
 
-        logname = open(os.path.join(
+        logname = io.open(os.path.join(
             desi_spectro_redux,
             camera.get('logname')
         ), 'wb')
@@ -178,19 +177,13 @@ class QLFPipeline(object):
             self.data.get('output_dir')
         )
 
-        with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              shell=True, cwd=cwd) as process:
-            for line in iter(process.stdout.readline, bytes()):
-                logname.write(line)
-                logname.flush()
-
-            for line in iter(process.stderr.readline, bytes()):
-                logname.write(line)
+        with subprocess.Popen(cmd, stdout=logname,
+                              stderr=subprocess.STDOUT,
+                              cwd=cwd) as process:
+            while process.poll() is None:
                 logname.flush()
 
             retcode = process.wait()
-
-        logname.close()
 
         camera['end'] = datetime.datetime.now().replace(microsecond=0)
         camera['status'] = 0
