@@ -2,18 +2,84 @@
 {% load cache %}
 
 {% block content %}
-
-<div class="container">
-
-    <h2>Welcome to DESI Quick Look!</h2>
-
-    <p>DESI Quick Look is being developed for monitoring the DESI observations in real time.</p>
-
-    <ul>
-        <li><b>QA</b> summarizes the  QA results at the exposure level and link to QA results for individual cameras.</li>
-        <li><b>Observing History</b> shows time series and statistics for the current or for a range of nights.</li>
-        <li><b>QL Pipeline</b> follows the progress of the data reduction and control the Quick Look pipeline execution.</li>
-    </ul>
+<div class="row">
+  <div class="col-sm-4 col-xs-12">
+    <div class="well col-xs-12 box">
+      <a href="/dashboard/monitor/" target="_blank">
+        <div class="well">
+          <i class="fa fa-cogs"></i>
+        </div>
+        <h2 class="box-title">Pipeline Monitor</h2>
+        <p class="box-text">Control and monitor the execution of the Quick Look pipeline.</p>
+      </a>
+    </div>
+  </div>
+  <div class="col-sm-4 col-xs-12">
+    <div class="well col-xs-12 box">
+      <a href="/dashboard/exposures/" target="_blank">
+        <div class="well">
+          <i class="fa fa-eye"></i>
+        </div>
+        <h2 class="box-title">QA</h2>
+        <p class="box-text">Monitor QA metrics and provide access to diagnostic plots.</p>
+      </a>
+    </div>
+  </div>
+  <div class="col-sm-4 col-xs-12">
+    <div class="well col-xs-12 box">
+      <a href="#" target="_blank">
+        <div class="well">
+          <i class="fa fa-sun-o"></i>
+        </div>
+        <h2 class="box-title">Sky Conditions</h2>
+        <p class="box-text">
+          Display sky conditions such as atmospheric transparency, seeing,
+          and sky background from the GFA camera.
+        </p>
+      </a>
+    </div>
+  </div>
 </div>
-
+<div class="row">
+  <div class="col-sm-4 col-xs-12">
+    <div class="well col-xs-12 box">
+      <a href="#" target="_blank">
+        <div class="well">
+          <i class="fa fa-area-chart"></i>
+        </div>
+        <h2 class="box-title">Observing History</h2>
+        <p class="box-text">
+          Display time series plots for QA metrics, list of exposures and
+          observed targets for the current night of for a range of nights.
+        </p>
+      </a>
+    </div>
+  </div>
+  <div class="col-sm-4 col-xs-12">
+    <div class="well col-xs-12 box">
+      <a href="#" target="_blank">
+        <div class="well">
+          <i class="fa fa-line-chart"></i>
+        </div>
+        <h2 class="box-title">Trend Analysis</h2>
+        <p class="box-text">
+          Simple plots using quantities stored in the database.
+        </p>
+      </a>
+    </div>
+  </div>
+  <div class="col-sm-4 col-xs-12">
+    <div class="well col-xs-12 box">
+      <a href="#" target="_blank">
+        <div class="well">
+          <i class="fa fa-table"></i>
+        </div>
+        <h2 class="box-title">Survey Reports</h2>
+        <p class="box-text">
+          Show the overall progress and performance of survey.
+        </p>
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock content %}

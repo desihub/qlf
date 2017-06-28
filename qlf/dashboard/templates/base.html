@@ -63,33 +63,15 @@
     </div>
 </nav>
 <div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar menu -->
-        <div class="col-sm-3 col-md-2 sidebar">
-            <ul class="nav nav-sidebar">
-                <li><a href="/dashboard/exposures/"><i class="fa fa-eye fa-lg"></i> QA </a></li>
-                <li><a href=""><i class="fa fa-line-chart fa-lg"></i> Observing History</a></li>
-            </ul>
-            <ul class="nav nav-sidebar">
-                <li><a href="/dashboard/monitor/"><i class="fa fa-cogs fa-lg"></i> QL Pipeline</a></li>
-            </ul>
-            <ul class="nav nav-sidebar">
-                <li><a href="/dashboard/api/"> API</a></li>
-                <li><a href="/"> Help</a></li>
-            </ul>
-        </div>
-        <!-- Page main content -->
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            {% block content %}
-            {% endblock %}
-            <footer>
-                <hr>
-                <div class="container" >
-                    <p>&copy; Copyright {% now 'Y' %}, LIneA/DESI</p>
-                </div>
-            </footer>
-        </div>
-    </div>
+  <!-- Page main content -->
+  {% block content %}
+  {% endblock %}
+  <footer>
+      <hr>
+      <div class="container" >
+          <p>&copy; Copyright {% now 'Y' %}, LIneA/DESI</p>
+      </div>
+  </footer>
 </div>
 <!-- Keep at the end of the document, so that pages load faster -->
 <script src="{% static 'js/jquery.min.js' %}"></script>

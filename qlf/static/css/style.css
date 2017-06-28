@@ -93,3 +93,38 @@ body {
   margin-top: 0;
 }
 
+/*Index Boxes*/
+
+.box {
+  margin: 1%;
+  background-color: #fff;
+  padding: 2%;
+  border: 2px solid #E5E5E5;
+  /*min-width: 300px;*/
+}
+
+.box a {
+    color: #272727;
+    text-decoration: none;
+}
+
+.box .well {
+  border-radius: 0;
+  border: 0;
+  background-color: #E5E5E5;
+}
+
+.box i {
+  width: 69%;
+  text-align: center;
+  display: block;
+  font-size: 8em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.box-text {
+  max-height: 6em;
+  min-height: 6em;
+  overflow: hidden;
+}
