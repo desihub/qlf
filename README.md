@@ -25,13 +25,12 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     source ~/miniconda3/bin/activate root
     ```
     
-    NOTE: if you don't have conda installed we recommend installing miniconda3 follow the instructions at `https://conda.io/docs/install/quick.html` and make sure ~/miniconda3/bin is in your PATH
+    NOTE: if you don't have conda installed we recommend installing miniconda3 follow the instructions [here](https://conda.io/docs/install/quick.html) and make sure ~/miniconda3/bin is in your PATH
    
     ```
     conda config --add channels conda-forge
     conda create --name quicklook python=3.5 --yes --file qlf/requirements.txt
-    source activate quicklook 
-    # Packages not available through conda
+    source activate quicklook 
     pip install -r qlf/extras.txt
     ```
 
@@ -59,9 +58,9 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     ```
     mkdir -p $QLF_ROOT/spectro # or any other place, make sure this path is consistent with qlf.cfg in step 5.
     cd $QLF_ROOT/spectro
-
-    # Test data for local run of QLF: night 20170428, exposures 3 and 4.
     
+    # Test data for local run of QLF: night 20170428, exposures 3 and 4.
+ 
     wget -c http://portal.nersc.gov/project/desi/data/quicklook/20170428_small.tar.gz
     tar xvzf 20170428_small.tar.gz
     ```
