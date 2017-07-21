@@ -23,25 +23,43 @@ from dashboard.models import (
 class QLFModels(object):
     """ Class responsible by manage the database models from Quick Look pipeline. """
 
-    def insert_exposure(self, expid, night):
+    def insert_exposure(
+            self, expid, night, telra=None, teldec=None,
+            tile=None, dateobs=None, flavor=None, exptime=None
+    ):
         """ Inserts and gets exposure and night if necessary. """
 
         # Check if expid is already registered
         if not Exposure.objects.filter(expid=expid):
-            exposure = Exposure(expid=expid, night=night)
+            exposure = Exposure(
+                expid=expid, night=night,
+                telra=telra, teldec=teldec,
+                tile=tile, dateobs=dateobs,
+                flavor=flavor, exptime=exptime
+            )
             exposure.save()
 
         # Save Process for this exposure
         return Exposure.objects.get(expid=expid)
 
-    def insert_process(self, expid, night, start, pipeline_name):
+    # def insert_process(self, expid, night, start, pipeline_name):
+    def insert_process(self, data, pipeline_name):
         """ Inserts initial data in process table. """
 
-        exposure = self.insert_exposure(expid, night)
+        exposure = self.insert_exposure(
+            data.get('expid'),
+            data.get('night'),
+            data.get('telra', None),
+            data.get('teldec', None),
+            data.get('tile', None),
+            data.get('dateobs', None),
+            data.get('flavor', None),
+            data.get('exptime', None)
+        )
 
         process = Process(
             exposure_id=exposure.expid,
-            start=start,
+            start=data.get('start'),
             pipeline_name=pipeline_name
         )
 

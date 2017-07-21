@@ -1,0 +1,12 @@
+/*
+ * Observing History
+ */
+
+.extra-pad-top {
+    padding-top: 15px;
+}
+
+span.border-lr-without {
+    border-left-width: 0px;
+    border-right-width: 0px;
+}

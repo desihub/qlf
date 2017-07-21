@@ -1,12 +1,16 @@
-from django.shortcuts import render_to_response
-from rest_framework import authentication, permissions, viewsets, filters
+#from django.shortcuts import render_to_response
+from django.shortcuts import render
+from rest_framework import authentication, permissions, viewsets, filters, status
+from rest_framework.response import Response
 
+from django.db.models import Max, Min
 from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer
 )
 import Pyro4
+import datetime
 
 from django.http import HttpResponseRedirect
 from django.conf import settings
@@ -100,6 +104,36 @@ class ExposureViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Exposure.objects.order_by('expid')
     serializer_class = ExposureSerializer
 
+class OHExposureViewSet(viewsets.ModelViewSet):
+    """API endpoint for listing exposures"""
+
+    queryset = Exposure.objects.order_by('expid')
+    serializer_class = ExposureSerializer
+
+    def list(self, request, **kwargs):
+
+        print('-> DataTables OH')
+        print(request.query_params)
+
+        result = dict()
+        result['data'] = [{'expid': 2, 'tile': 'testing', 'telra': 344, 'teldec': 65, 'flavor': 'dark'}]
+        result['draw'] = 0
+        result['recordsTotal'] = 0
+        result['recordsFiltered'] = 0
+        return Response(result, status=status.HTTP_200_OK, template_name=None, content_type=None)
+
+        # try:
+        #     music = query_exposures_by_args(**request.query_params)
+        #     serializer = MusicSerializer(music['items'], many=True)
+        #     result = dict()
+        #     result['data'] = serializer.data
+        #     result['draw'] = music['draw']
+        #     result['recordsTotal'] = music['count']
+        #     result['recordsFiltered'] = music['count']
+        #     return Response(result, status=status.HTTP_200_OK, template_name=None, content_type=None)
+        #
+        # except Exception as e:
+        #     return Response(e, status=status.HTTP_404_NOT_FOUND, template_name=None, content_type=None)
 
 class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing cameras"""
@@ -118,9 +152,27 @@ def restart(request):
     qlf.restart()
     return HttpResponseRedirect('dashboard/monitor')
 
-def index(request):
-    return render_to_response('dashboard/index.html')
+def observing_history(request):
+    start_date = Exposure.objects.all().aggregate(Min('dateobs'))['dateobs__min']
+    end_date = Exposure.objects.all().aggregate(Max('dateobs'))['dateobs__max']
 
+    if not start_date and not end_date:
+        end_date = start_date = datetime.datetime.now()
+
+    start_date = start_date.strftime("%Y-%m-%d")
+    end_date = end_date.strftime("%Y-%m-%d")
+
+    return render(
+        request,
+        'dashboard/observing_history.html',
+        {
+            'start_date': start_date,
+            'end_date': end_date
+        }
+    )
+
+def index(request):
+    return render(request, 'dashboard/index.html')
 
 def embed_bokeh(request, bokeh_app):
     """Render the requested app from the bokeh server"""

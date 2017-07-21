@@ -1,7 +1,7 @@
 import os
 import sys
 import configparser
-import re
+from astropy.io import fits
 
 
 class DOSmonitor(object):
@@ -17,7 +17,7 @@ class DOSmonitor(object):
             print(error)
             print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
             sys.exit(1)
-        
+
         self.cameras = self.get_cameras()
 
     def get_last_night(self):
@@ -71,7 +71,9 @@ class DOSmonitor(object):
             }
             camera_list.append(camera_dict)
 
-        return {
+        exposure_info = self.get_exposure_info(night, exposure)
+
+        exposure_dict = {
             "night": night,
             "expid": exposure,
             "zfill": str(exposure).zfill(8),
@@ -79,8 +81,37 @@ class DOSmonitor(object):
             "cameras": camera_list
         }
 
-if __name__ == "__main__":
+        exposure_dict.update(exposure_info)
+        return exposure_dict
 
+    def get_exposure_info(self, night, exposure):
+        """ """
+
+        exponame = "desi-%s.fits.fz" % str(exposure).zfill(8)
+        filepath = os.path.join(self.desi_spectro_data, night, exponame)
+
+        if not os.path.isfile(filepath):
+            print("exposure not found %s" % exponame)
+            return {}
+
+        try:
+            fitsfile = fits.open(filepath)
+            hdr = fitsfile[0].header
+        except Exception as error:
+            print("error to load fits file: %s" % error)
+            return {}
+
+        return {
+            'telra': hdr.get('telra', None),
+            'teldec': hdr.get('teldec', None),
+            'tile': hdr.get('tileid', None),
+            'dateobs': hdr.get('date-obs', None),
+            'flavor': hdr.get('flavor', None),
+            'exptime': hdr.get('exptime', None)
+        }
+
+
+if __name__ == "__main__":
     dos_monitor = DOSmonitor()
     night = dos_monitor.get_last_night()
     exposures = dos_monitor.get_exposures_by_night(night)
