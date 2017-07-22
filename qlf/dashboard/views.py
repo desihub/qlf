@@ -4,7 +4,7 @@ from rest_framework import authentication, permissions, viewsets, filters, statu
 from rest_framework.response import Response
 
 from django.db.models import Max, Min
-from .models import Job, Exposure, Camera, QA, Process, Configuration
+from .models import Job, Exposure, Camera, QA, Process, Configuration, query_exposures_by_args
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer
@@ -13,6 +13,7 @@ import Pyro4
 import datetime
 
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.conf import settings
 
 from bokeh.embed import autoload_server
@@ -104,36 +105,64 @@ class ExposureViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Exposure.objects.order_by('expid')
     serializer_class = ExposureSerializer
 
-class OHExposureViewSet(viewsets.ModelViewSet):
-    """API endpoint for listing exposures"""
 
+class DataTableExposureViewSet(viewsets.ModelViewSet):
     queryset = Exposure.objects.order_by('expid')
     serializer_class = ExposureSerializer
+
+    ORDER_COLUMN_CHOICES = {
+        '0': 'expid',
+        '1': 'tile',
+        '2': 'telra',
+        '3': 'teldec',
+        '4': 'flavor',
+    }
 
     def list(self, request, **kwargs):
 
         print('-> DataTables OH')
-        print(request.query_params)
 
-        result = dict()
-        result['data'] = [{'expid': 2, 'tile': 'testing', 'telra': 344, 'teldec': 65, 'flavor': 'dark'}]
-        result['draw'] = 0
-        result['recordsTotal'] = 0
-        result['recordsFiltered'] = 0
-        return Response(result, status=status.HTTP_200_OK, template_name=None, content_type=None)
+        if True:
+            params = dict(request.query_params)
+            print(params)
 
-        # try:
-        #     music = query_exposures_by_args(**request.query_params)
-        #     serializer = MusicSerializer(music['items'], many=True)
-        #     result = dict()
-        #     result['data'] = serializer.data
-        #     result['draw'] = music['draw']
-        #     result['recordsTotal'] = music['count']
-        #     result['recordsFiltered'] = music['count']
-        #     return Response(result, status=status.HTTP_200_OK, template_name=None, content_type=None)
-        #
+            draw = int(params.get('draw', [1])[0])
+            print('draw', draw)
+            length = int(params.get('length', [10])[0])
+            print('len', length)
+            start = int(params.get('start', [0])[0])
+            print('start', start)
+            search_value = params.get('search[value]', [''])[0]
+            print('search_value', search_value)
+            order_column = params.get('order[0][column]', ['0'])[0]
+            print('order_column', order_column)
+            order = params.get('order[0][dir]', ['asc'])[0]
+            print(order)
+
+            print('----')
+
+            order_column = self.ORDER_COLUMN_CHOICES[order_column]
+
+            exposure = query_exposures_by_args(
+                draw, length, start,
+                search_value, order_column, order
+            )
+
+            print('EXP: ')
+            print(exposure)
+
+            serializer = ExposureSerializer(exposure['items'], many=True)
+            result = dict()
+            result['data'] = serializer.data
+            result['draw'] = exposure['draw']
+            result['recordsTotal'] = exposure['count']
+            result['recordsFiltered'] = exposure['count']
+
+            #return JsonResponse(result)
+            return Response(result, status=status.HTTP_200_OK, template_name=None, content_type=None)
         # except Exception as e:
         #     return Response(e, status=status.HTTP_404_NOT_FOUND, template_name=None, content_type=None)
+
 
 class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing cameras"""

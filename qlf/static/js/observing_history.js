@@ -15,7 +15,7 @@ $(document).ready(function() {
         "processing": true,
         "serverSide": true,
         "ajax": $.fn.dataTable.pipeline( {
-            "url": "/dashboard/api/oh_exposure/",
+            "url": "/dashboard/api/datatable_exposures/",
             "pages": 5,
             "type": "GET"
          } ),
