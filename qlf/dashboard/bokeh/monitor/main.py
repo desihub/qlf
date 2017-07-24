@@ -53,7 +53,7 @@ for num in range(30):
         label_name.append('b' + str(num - 20))
 
 plot = figure(height=700, x_range=(-9, 120))
-plot.logo = None
+# plot.logo = None
 plot.toolbar_location = None
 
 for cam in cameras:

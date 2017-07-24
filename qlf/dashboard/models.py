@@ -1,5 +1,7 @@
 from django.db import models
+from django.db.models import Q
 from json_field import JSONField
+
 
 class Exposure(models.Model):
     """Exposure information"""
@@ -24,6 +26,7 @@ class Exposure(models.Model):
                                 help_text='Airmass')
     exptime = models.FloatField(blank=True, null=True,
                                 help_text='Exposure time')
+
 
 class Process(models.Model):
     """Process information"""
@@ -102,3 +105,31 @@ class QA(models.Model):
         return str(self.name)
 
 
+def query_exposures_by_args(draw, length, start, search_value, order_column, order):
+
+    print('INSIDE>>>')
+    print('orderCol: ', order_column)
+
+    # django orm '-' -> desc
+    if order == 'desc':
+        order_column = '-' + order_column
+
+    if search_value:
+        queryset = Exposure.objects.filter(Q(epxid__icontains=search_value) |
+                                        Q(tile__icontains=search_value) |
+                                        Q(telra__icontains=search_value) |
+                                        Q(teldec__icontains=search_value) |
+                                        Q(flavor__icontains=search_value))
+    else:
+        queryset = Exposure.objects
+
+    print('OHHH>>>')
+
+    count = queryset.count()
+    queryset = queryset.order_by(order_column)[start:start + length]
+
+    return {
+        'items': queryset,
+        'count': count,
+        'draw': draw
+    }
