@@ -27,6 +27,7 @@ uri = settings.QLF_DAEMON_URL
 qlf = Pyro4.Proxy(uri)
 logger = logging.getLogger(__name__)
 
+
 class DefaultsMixin(object):
     """
     Default settings for view authentication, permissions,
@@ -239,4 +240,3 @@ def embed_bokeh(request, bokeh_app):
 
     response.set_cookie('django_full_path', request.get_full_path())
     return response
-
