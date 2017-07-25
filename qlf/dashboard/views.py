@@ -1,10 +1,11 @@
-#from django.shortcuts import render_to_response
 from django.shortcuts import render
 from rest_framework import authentication, permissions, viewsets, filters, status
 from rest_framework.response import Response
 
 from django.db.models import Max, Min
-from .models import Job, Exposure, Camera, QA, Process, Configuration, query_exposures_by_args
+from django.db.models import Q
+
+from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer
@@ -13,7 +14,6 @@ import Pyro4
 import datetime
 
 from django.http import HttpResponseRedirect
-from django.http import JsonResponse
 from django.conf import settings
 
 from bokeh.embed import autoload_server
@@ -111,57 +111,64 @@ class DataTableExposureViewSet(viewsets.ModelViewSet):
     serializer_class = ExposureSerializer
 
     ORDER_COLUMN_CHOICES = {
-        '0': 'expid',
-        '1': 'tile',
-        '2': 'telra',
-        '3': 'teldec',
-        '4': 'flavor',
+        '0': 'dateobs',
+        '1': 'expid',
+        '2': 'tile',
+        '3': 'telra',
+        '4': 'teldec',
+        '5': 'exptime',
+        '6': 'flavor',
+        '7': 'airmass'
     }
 
     def list(self, request, **kwargs):
 
-        print('-> DataTables OH')
-
-        if True:
+        try:
             params = dict(request.query_params)
-            print(params)
 
+            start_date = "{} 00:00:00".format(params.get('start_date')[0])
+            end_date = "{} 23:59:59".format(params.get('end_date')[0])
             draw = int(params.get('draw', [1])[0])
-            print('draw', draw)
             length = int(params.get('length', [10])[0])
-            print('len', length)
-            start = int(params.get('start', [0])[0])
-            print('start', start)
+            start_items = int(params.get('start', [0])[0])
             search_value = params.get('search[value]', [''])[0]
-            print('search_value', search_value)
             order_column = params.get('order[0][column]', ['0'])[0]
-            print('order_column', order_column)
             order = params.get('order[0][dir]', ['asc'])[0]
-            print(order)
-
-            print('----')
 
             order_column = self.ORDER_COLUMN_CHOICES[order_column]
 
-            exposure = query_exposures_by_args(
-                draw, length, start,
-                search_value, order_column, order
-            )
+            # django orm '-' -> desc
+            if order == 'desc':
+                order_column = '-' + order_column
 
-            print('EXP: ')
-            print(exposure)
+            if search_value:
+                queryset = Exposure.objects.filter(
+                    dateobs__range=(start_date, end_date)
+                ).filter(
+                    Q(expid__icontains=search_value) |
+                    Q(tile__icontains=search_value) |
+                    Q(telra__icontains=search_value) |
+                    Q(teldec__icontains=search_value) |
+                    Q(flavor__icontains=search_value)
+                )
+            else:
+                queryset = Exposure.objects.filter(
+                    dateobs__range=(start_date, end_date)
+                )
 
-            serializer = ExposureSerializer(exposure['items'], many=True)
+            count = queryset.count()
+            queryset = queryset.order_by(order_column)[start_items:start_items + length]
+
+            serializer = ExposureSerializer(queryset, many=True)
             result = dict()
             result['data'] = serializer.data
-            result['draw'] = exposure['draw']
-            result['recordsTotal'] = exposure['count']
-            result['recordsFiltered'] = exposure['count']
+            result['draw'] = draw
+            result['recordsTotal'] = count
+            result['recordsFiltered'] = count
 
-            #return JsonResponse(result)
             return Response(result, status=status.HTTP_200_OK, template_name=None, content_type=None)
-        # except Exception as e:
-        #     return Response(e, status=status.HTTP_404_NOT_FOUND, template_name=None, content_type=None)
+        except Exception as e:
+            return Response(e, status=status.HTTP_404_NOT_FOUND, template_name=None, content_type=None)
 
 
 class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):

@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Q
 from json_field import JSONField
 
 
@@ -48,25 +47,28 @@ class Process(models.Model):
                                       help_text='Process status, 0=OK, 1=Failed')
     exposure = models.ForeignKey(Exposure)
 
+
 class Configuration(models.Model):
     """Configuration information"""
 
     configuration = JSONField(decoder=None, help_text='Configuration used.')
     creation_date = models.DateTimeField(auto_now=True,
-                                help_text='Datetime when the configuration was created')
+                                         help_text='Datetime when the configuration was created')
     process = models.ForeignKey(Process)
+
 
 class Camera(models.Model):
     """Camera information"""
     camera = models.CharField(max_length=2,
                               help_text='Camera ID', primary_key=True)
     spectrograph = models.CharField(max_length=1,
-                                     help_text='Spectrograph ID')
+                                    help_text='Spectrograph ID')
     arm = models.CharField(max_length=1,
                            help_text='Arm ID')
 
     def __str__(self):
         return str(self.camera)
+
 
 class Job(models.Model):
     """Job information"""
@@ -78,7 +80,7 @@ class Job(models.Model):
     name = models.CharField(max_length=45, default='Quick Look',
                             help_text='Name of the job.')
     start = models.DateTimeField(auto_now=True,
-                                help_text='Datetime when the job was started')
+                                 help_text='Datetime when the job was started')
     end = models.DateTimeField(blank=True, null=True,
                                help_text='Datetime when the job was finished.')
     status = models.SmallIntegerField(default=STATUS_RUNNING,
@@ -87,10 +89,11 @@ class Job(models.Model):
     camera = models.ForeignKey(Camera)
     process = models.ForeignKey(Process, related_name='jobs', on_delete=models.CASCADE)
     logname = models.CharField(max_length=45, null=True,
-                            help_text='Name of the log file.')
+                               help_text='Name of the log file.')
 
     def __str__(self):
         return str(self.name)
+
 
 class QA(models.Model):
     """QA information"""
@@ -103,33 +106,3 @@ class QA(models.Model):
 
     def __str__(self):
         return str(self.name)
-
-
-def query_exposures_by_args(draw, length, start, search_value, order_column, order):
-
-    print('INSIDE>>>')
-    print('orderCol: ', order_column)
-
-    # django orm '-' -> desc
-    if order == 'desc':
-        order_column = '-' + order_column
-
-    if search_value:
-        queryset = Exposure.objects.filter(Q(epxid__icontains=search_value) |
-                                        Q(tile__icontains=search_value) |
-                                        Q(telra__icontains=search_value) |
-                                        Q(teldec__icontains=search_value) |
-                                        Q(flavor__icontains=search_value))
-    else:
-        queryset = Exposure.objects
-
-    print('OHHH>>>')
-
-    count = queryset.count()
-    queryset = queryset.order_by(order_column)[start:start + length]
-
-    return {
-        'items': queryset,
-        'count': count,
-        'draw': draw
-    }
