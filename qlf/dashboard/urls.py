@@ -12,6 +12,7 @@ api_router.register(r'last_process', views.LastProcessViewSet, 'monitor')
 api_router.register(r'configuration', views.ConfigurationViewSet)
 api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
+api_router.register(r'datatable_exposures', views.DataTableExposureViewSet, 'datatable_exposures')
 api_router.register(r'camera', views.CameraViewSet)
 
 urlpatterns = [
@@ -21,6 +22,6 @@ urlpatterns = [
     url(r'^restart', views.restart, name='restart'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
-    url(r'^dashboard/(?P<bokeh_app>\w+)/$', views.embed_bokeh,
-        name='embed-bokeh')
+    url(r'^dashboard/(?P<bokeh_app>\w+)/$', views.embed_bokeh, name='embed-bokeh'),
+    url(r'^dashboard/observing_history', views.observing_history, name='observing_history')
 ]

@@ -45,9 +45,10 @@ class QLFPipeline(object):
 
         # create process in database and obtain the process id
         process = self.models.insert_process(
-            self.data.get('expid'),
-            self.data.get('night'),
-            self.data.get('start'),
+            # self.data.get('expid'),
+            # self.data.get('night'),
+            # self.data.get('start'),
+            self.data,
             self.pipeline_name
         )
 

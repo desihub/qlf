@@ -66,13 +66,15 @@ class ExposureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exposure
-        fields = ('expid', 'flavor', 'night', 'links',)
+        fields = (
+            'expid', 'tile', 'telra', 'teldec',
+            'dateobs', 'exptime', 'flavor',
+            'night', 'airmass', 'links'
+        )
 
     def get_links(self, obj):
-        request = self.context['request']
         return {
-            'self': reverse('exposure-detail', kwargs={'pk': obj.pk},
-                            request=request),
+            'self': reverse('exposure-detail', kwargs={'pk': obj.pk}),
          }
 
 

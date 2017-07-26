@@ -11,6 +11,7 @@
     <!-- Custom styles for this template -->
     <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
     <script>
         function btn_click(btn) {
             window.open(btn, "_self")
@@ -62,6 +63,12 @@
 
     </div>
 </nav>
+
+<!-- Keep at the end of the document, so that pages load faster -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/jquery.site.js' %}"></script>
+
 <div class="container-fluid">
   <!-- Page main content -->
   {% block content %}
@@ -73,9 +80,6 @@
       </div>
   </footer>
 </div>
-<!-- Keep at the end of the document, so that pages load faster -->
-<script src="{% static 'js/jquery.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/jquery.site.js' %}"></script>
+
 </body>
 </html>
