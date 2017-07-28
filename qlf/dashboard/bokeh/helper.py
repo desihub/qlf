@@ -83,8 +83,13 @@ def get_exposures():
     r = requests.get(api['exposure']).json()
     expid = [int(e['expid']) for e in r]
     flavor = [e['flavor'] for e in r]
+    ra = [e['telra'] for e in r]
+    dec = [e['teldec'] for e in r]
 
-    return {'expid': expid, 'flavor': flavor}
+    return {
+        'expid': expid, 'flavor': flavor,
+        'ra': ra, 'dec': dec
+    }
 
 
 def get_cameras():

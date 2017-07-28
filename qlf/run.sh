@@ -58,7 +58,7 @@ for package in desispec desiutil; do
 done
 
 nohup python -Wi manage.py runserver &> $QLF_ROOT/runserver.log & echo $(ps opgid= $!) > $QLF_ROOT/run.pgid
-nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures &> $QLF_ROOT/bokeh.log & 
+nohup bokeh serve --allow-websocket-origin=localhost:8000 dashboard/bokeh/qasnr dashboard/bokeh/monitor dashboard/bokeh/exposures dashboard/bokeh/footprint &> $QLF_ROOT/bokeh.log &
 
 echo "QLF web application is running at http://localhost:8000 you may start Quick Look from the pipeline interface."
 
