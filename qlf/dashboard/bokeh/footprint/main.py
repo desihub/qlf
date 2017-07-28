@@ -17,9 +17,9 @@ plot.circle(x, y, size=8)
 plot.xaxis.axis_label = "RA (deg)"
 plot.yaxis.axis_label = "DEC (deg)"
 
-select = Select(title="Target Class:", value="ELG", options=["ELG"])
+select = Select(title="Program:", value="All", options=["All", "Dark", "Grey", "Bright"])
 
-panel_exposures = row(column(Div(text="<b>N Tiles:</b> {}".format(str(len(x)))), widgetbox(select)), column(plot))
+panel_exposures = row(column(Div(text="<b>N Exposures:</b> {}".format(str(len(x)))), widgetbox(select)), column(plot))
 
 tab = Panel(child=panel_exposures, title="Footprint")
 
