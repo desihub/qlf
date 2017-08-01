@@ -1,7 +1,7 @@
 import os
 
 from bokeh.io import curdoc
-from bokeh.models import ColumnDataSource, HoverTool
+from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
 
@@ -12,10 +12,18 @@ QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
 
 # Get url query args
-args = get_url_args(curdoc, defaults={'expid': '3'})
+args = get_url_args(curdoc, defaults={'exposure': '3'})
+
+selected_exposure = args['exposure']
+selected_arm = args['arm']
+selected_spectrograph = args['spectrograph']
+
+exp_zfill = str(selected_exposure).zfill(8)
 
 # get the data
-data = get_data(name='ql-snr-z0-00000003.yaml')
+qasnr = 'ql-snr-{}-{}.yaml'.format(selected_arm + selected_spectrograph, exp_zfill)
+
+data = get_data(name=qasnr)
 
 if data.empty:
     raise ValueError("No data to display, resquest from {}/qa".format(QLF_API_URL))
@@ -45,25 +53,39 @@ star = ColumnDataSource(data={'x': data.STAR_SNR_MAG[1],
 
 # configure bokeh widgets
 exposure = get_exposures()
-slider = Slider(start=exposure['expid'][0], end=exposure['expid'][-1], value=exposure['expid'][0], step=1,
+slider = Slider(start=exposure['expid'][0], end=exposure['expid'][-1], value=int(selected_exposure), step=1,
                              title="Exposure ID")
 
 # we can filter by spectrograph
 spectrograph = Select(title="Spectrograph:",
-                      value='0',
-                      options=['0','1','2','3','4','5','6','7','8','9'],
+                      value=selected_spectrograph,
+                      options=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
                       width=100)
 
 # and arm
 arm = Select(title="Arm:",
-             value='b',
-             options=['b','r','z'],
+             value=selected_arm,
+             options=['b', 'r', 'z'],
              width=100)
 
 # here we make the plots
 
-hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
-                            ("Value", "@y")])
+# hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
+#                             ("Value", "@y")])
+
+hover = HoverTool( tooltips="""
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
+            <span style="font-size: 13px; color: #515151;">@fiber_id</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Value: </span>
+            <span style="font-size: 13px; color: #515151;">@y</span>
+        </div>
+    </div>
+    """
+)
 
 elg_plot = init_xy_plot(hover=hover)
 
@@ -74,11 +96,37 @@ elg_plot.xaxis.axis_label = "DECAM_R"
 elg_plot.yaxis.axis_label = "SNR"
 elg_plot.title.text = "ELG"
 
-hover = HoverTool(tooltips=[("SNR", "@y"),
-                            ("DECAM_R", "@x"),
-                            ("Fiber ID", "@fiber_id"),
-                            ("RA", "@ra"),
-                            ("Dec", "@dec")])
+# hover = HoverTool(tooltips=[("SNR", "@y"),
+#                             ("DECAM_R", "@x"),
+#                             ("Fiber ID", "@fiber_id"),
+#                             ("RA", "@ra"),
+#                             ("Dec", "@dec")])
+
+hover = HoverTool(tooltips="""
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">SNR: </span>
+            <span style="font-size: 13px; color: #515151;">@y</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">DECAM_R: </span>
+            <span style="font-size: 13px; color: #515151;">@x</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
+            <span style="font-size: 13px; color: #515151;">@fiber_id</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
+            <span style="font-size: 13px; color: #515151;">@ra</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Dec: </span>
+            <span style="font-size: 13px; color: #515151">@dec</span>
+        </div>
+    </div>
+    """
+)
 
 lrg_plot = init_xy_plot(hover=hover)
 
@@ -89,8 +137,27 @@ lrg_plot.xaxis.axis_label = "DECAM_R"
 lrg_plot.yaxis.axis_label = "SNR"
 lrg_plot.title.text = "LRG"
 
-hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
-                            ("Value", "@y")])
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr3"
+
+taptool = lrg_plot.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
+
+# hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
+#                             ("Value", "@y")])
+
+hover = HoverTool( tooltips="""
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
+            <span style="font-size: 13px; color: #515151;">@fiber_id</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Value: </span>
+            <span style="font-size: 13px; color: #515151;">@y</span>
+        </div>
+    </div>
+    """
+)
 
 qso_plot = init_xy_plot(hover=hover)
 
@@ -101,8 +168,22 @@ qso_plot.xaxis.axis_label = "DECAM_R"
 qso_plot.yaxis.axis_label = "SNR"
 qso_plot.title.text = "QSO"
 
-hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
-                            ("Value", "@y")])
+# hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
+#                             ("Value", "@y")])
+
+hover = HoverTool( tooltips="""
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
+            <span style="font-size: 13px; color: #515151;">@fiber_id</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Value: </span>
+            <span style="font-size: 13px; color: #515151;">@y</span>
+        </div>
+    </div>
+    """
+)
 
 star_plot = init_xy_plot(hover=hover)
 star_plot.circle(x='x', y='y', source=star,
@@ -122,5 +203,3 @@ layout = column(widgetbox(slider, width=1000),
 
 curdoc().add_root(layout)
 curdoc().title = "SNR"
-
-

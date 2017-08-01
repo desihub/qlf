@@ -18,9 +18,7 @@ def get_data(name=None):
 
     r = requests.get(api['qa'], params={'name': name}).json()
 
-    data = None
-
-    metric = r[0]['metric'].replace('inf','0')
+    metric = r[0]['metric'].replace('inf', '0')
 
     metric = eval(metric)
 
@@ -108,7 +106,7 @@ def init_xy_plot(hover):
     """
     Defaults for xy plots
     """
-    plot = Figure(tools="pan,wheel_zoom,box_zoom,reset")
+    plot = Figure(tools="pan,wheel_zoom,box_zoom,reset,tap")
     plot.add_tools(hover)
 
     return plot

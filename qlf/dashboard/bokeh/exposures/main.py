@@ -80,16 +80,7 @@ label_set = LabelSet(x='x', y='y', text='text', source=labels, render_mode='canv
 # Add labels to the plot layout
 p.add_layout(label_set)
 
-# Here we configure the tap tool to open the drill down plots for the selected camera and metric
-
-# TODO: for now it is fixed for the SNR metric which will open the SNR vs. Mag plot
-
-url = "http://localhost:8000/dashboard/qasnr?exposure=@exposure&arm=@arm&spectrograph=@spectrograph"
-taptool = p.select(type=TapTool)
-taptool.callback = OpenURL(url=url)
-
 # Update the datasource when the selected exposure changes
-
 
 def update(expid):
 
@@ -114,21 +105,36 @@ def update(expid):
             source.data['color'][spectrograph+20] = "green"
             source.data['camera'][spectrograph+20] = camera['camera']
             source.data['status'][spectrograph+20] = "SNR passed"
+            source.data['spectrograph'][spectrograph+20] = spectrograph
+            source.data['arm'][spectrograph+20] = arm
 
         if arm == 'r':
             source.data['color'][spectrograph+10] = "green"
             source.data['camera'][spectrograph+10] = camera['camera']
             source.data['status'][spectrograph+10] = "SNR passed"
+            source.data['spectrograph'][spectrograph+10] = spectrograph
+            source.data['arm'][spectrograph+10] = arm
 
         if arm == 'z':
             source.data['color'][spectrograph] = "green"
             source.data['camera'][spectrograph] = camera['camera']
             source.data['status'][spectrograph] = "SNR passed"
+            source.data['spectrograph'][spectrograph] = spectrograph
+            source.data['arm'][spectrograph] = arm
 
-    source.stream(source.data,30)
+    source.stream(source.data, 30)
 
 # Update camera grid with data from the last exposure
 update(expid)
+
+# Here we configure the tap tool to open the drill down plots for the selected camera and metric
+
+# TODO: for now it is fixed for the SNR metric which will open the SNR vs. Mag plot
+
+url = "http://localhost:8000/dashboard/qasnr?exposure={}&arm=@arm&spectrograph=@spectrograph".format(expid)
+
+taptool = p.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
 
 # Configure an action if slider changes
 
@@ -136,7 +142,6 @@ def slider_update(attr, old, new):
     update(new)
 
 slider.on_change('value', slider_update)
-
 
 # Configure the metric selection
 
