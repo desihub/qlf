@@ -61,8 +61,8 @@ source = ColumnDataSource(data={
     "spectrograph": [None] * 30,  # spectrograph of each camera
     "arm": [None] * 30, # arm of each camera
     "expid": [None] * 30, # selected expid  (needed here?)
-    "status" : ["Not processed"] * 30,
-    "camera" : [None] * 30
+    "status": ["Not processed"] * 30,
+    "camera": [None] * 30
 })
 
 camera_grid = p.square('x', 'y', color='color', size=45, source=source)

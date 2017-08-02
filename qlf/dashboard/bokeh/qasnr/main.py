@@ -6,103 +6,133 @@ from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
 
 from dashboard.bokeh.helper import get_data, get_exposures, \
-    init_xy_plot, get_url_args
+    init_xy_plot, get_url_args, get_arms_and_spectrographs_by_expid
 
-QLF_API_URL = os.environ.get('QLF_API_URL',
-                             'http://localhost:8000/dashboard/api')
+QLF_API_URL = os.environ.get(
+    'QLF_API_URL',
+    'http://localhost:8000/dashboard/api'
+)
 
 # Get url query args
-args = get_url_args(curdoc, defaults={'exposure': '3'})
+args = get_url_args(curdoc)
+
+print(args)
 
 selected_exposure = args['exposure']
 selected_arm = args['arm']
 selected_spectrograph = args['spectrograph']
 
-exp_zfill = str(selected_exposure).zfill(8)
+data_model = {
+    'x': [],
+    'y': [],
+    'fiber_id': [],
+    'ra': [],
+    'dec': []
+}
 
-# get the data
-qasnr = 'ql-snr-{}-{}.yaml'.format(selected_arm + selected_spectrograph, exp_zfill)
+elg = ColumnDataSource(data={
+    'x': [],
+    'y': [],
+    'fiber_id': [],
+    'ra': [],
+    'dec': []
+})
 
-data = get_data(name=qasnr)
+lrg = ColumnDataSource(data=data_model.copy())
+qso = ColumnDataSource(data=data_model.copy())
+star = ColumnDataSource(data=data_model.copy())
 
-if data.empty:
-    raise ValueError("No data to display, resquest from {}/qa".format(QLF_API_URL))
+def update(arm, spectrograph, expid):
 
-# create the bokeh column data sources
-elg = ColumnDataSource(data={'x': data.ELG_SNR_MAG[1],
-                             'y': data.ELG_SNR_MAG[0],
-                             'fiber_id': data.ELG_FIBERID.dropna().tolist()})
+    exp_zfill = str(expid).zfill(8)
 
-# TODO: RA, Dec coordinates should come from the QA outputs
+    # get the data
+    qa_snr = 'ql-snr-{}-{}.yaml'.format(arm + spectrograph, exp_zfill)
 
-lrg = ColumnDataSource(data={'x': data.LRG_SNR_MAG[1],
-                             'y': data.LRG_SNR_MAG[0],
-                             'fiber_id': data.LRG_FIBERID.dropna().tolist(),
-                             'ra': ["181.2035"] * len(data.LRG_SNR_MAG[1]),
-                             'dec': ["-2.7371"] * len(data.LRG_SNR_MAG[1])})
+    data = get_data(name=qa_snr)
 
-qso = ColumnDataSource(data={'x': data.QSO_SNR_MAG[1],
-                             'y': data.QSO_SNR_MAG[0],
-                             'fiber_id': data.QSO_FIBERID.dropna().tolist()})
+    if data.empty:
+        raise ValueError("No data to display, resquest from {}/qa".format(QLF_API_URL))
 
-star = ColumnDataSource(data={'x': data.STAR_SNR_MAG[1],
-                              'y': data.STAR_SNR_MAG[0],
-                              'fiber_id': data.STAR_FIBERID.dropna().tolist()})
+    # drop rows that have ELG_FIBERID null
+    elg_data = data[data.ELG_FIBERID.notnull()]
 
-# make the app layout
+    # create the bokeh column data sources
+    elg.data['x'] = elg_data.ELG_SNR_MAG[1]
+    elg.data['y'] = elg_data.ELG_SNR_MAG[0]
+    elg.data['fiber_id'] = elg_data.ELG_FIBERID.tolist()
+    elg.data['ra'] = elg_data.RA.tolist()
+    elg.data['dec'] = elg_data.DEC.tolist()
+    elg.stream(elg.data, 30)
+
+    # drop rows that have ELG_FIBERID null
+    lrg_data = data[data.LRG_FIBERID.notnull()]
+
+    lrg.data['x'] = lrg_data.LRG_SNR_MAG[1]
+    lrg.data['y'] = lrg_data.LRG_SNR_MAG[0]
+    lrg.data['fiber_id'] = lrg_data.LRG_FIBERID.dropna().tolist()
+    lrg.data['ra'] = lrg_data.RA.dropna().tolist()
+    lrg.data['dec'] = lrg_data.DEC.dropna().tolist()
+    lrg.stream(lrg.data, 30)
+
+    # drop rows that have QSO_FIBERID null
+    qso_data = data[data.QSO_FIBERID.notnull()]
+
+    qso.data['x'] = qso_data.QSO_SNR_MAG[1]
+    qso.data['y'] = qso_data.QSO_SNR_MAG[0]
+    qso.data['fiber_id'] = qso_data.QSO_FIBERID.dropna().tolist()
+    qso.data['ra'] = qso_data.RA.dropna().tolist()
+    qso.data['dec'] = qso_data.DEC.dropna().tolist()
+    qso.stream(qso.data, 30)
+
+    # drop rows that have STAR_FIBERID null
+    star_data = data[data.STAR_FIBERID.notnull()]
+
+    star.data['x'] = star_data.STAR_SNR_MAG[1]
+    star.data['y'] = star_data.STAR_SNR_MAG[0]
+    star.data['fiber_id'] = star_data.STAR_FIBERID.dropna().tolist()
+    star.data['ra'] = star_data.RA.dropna().tolist()
+    star.data['dec'] = star_data.DEC.dropna().tolist()
+    star.stream(star.data, 30)
 
 # configure bokeh widgets
 exposure = get_exposures()
-slider = Slider(start=exposure['expid'][0], end=exposure['expid'][-1], value=int(selected_exposure), step=1,
-                             title="Exposure ID")
+exp_slider = Slider(
+    start=exposure['expid'][0], end=exposure['expid'][-1],
+    value=int(selected_exposure), step=1,
+    title="Exposure ID")
+
+cameras = get_arms_and_spectrographs_by_expid(selected_exposure)
 
 # we can filter by spectrograph
-spectrograph = Select(title="Spectrograph:",
-                      value=selected_spectrograph,
-                      options=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-                      width=100)
+spectrograph_select = Select(
+    title="Spectrograph:",
+    value=selected_spectrograph,
+    options=cameras["spectrographs"],
+    width=100)
 
 # and arm
-arm = Select(title="Arm:",
-             value=selected_arm,
-             options=['b', 'r', 'z'],
-             width=100)
+arm_select = Select(
+    title="Arm:",
+    options=cameras['arms'],
+    value=selected_arm,
+    width=100)
+
+def arm_handler(attr, old, value):
+    update(value, spectrograph_select.value, exp_slider.value)
+
+def spectrograph_handler(attr, old, value):
+    update(arm_select.value, value, exp_slider.value)
+
+def exposure_handler(attr, old, value):
+    update(arm_select.value, spectrograph_select.value, value)
+
+arm_select.on_change("value", arm_handler)
+spectrograph_select.on_change("value", spectrograph_handler)
+exp_slider.on_change("value", exposure_handler)
 
 # here we make the plots
-
-# hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
-#                             ("Value", "@y")])
-
-hover = HoverTool( tooltips="""
-    <div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
-            <span style="font-size: 13px; color: #515151;">@fiber_id</span>
-        </div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Value: </span>
-            <span style="font-size: 13px; color: #515151;">@y</span>
-        </div>
-    </div>
-    """
-)
-
-elg_plot = init_xy_plot(hover=hover)
-
-elg_plot.circle(x='x', y='y', source=elg,
-                color="blue", size=5)
-
-elg_plot.xaxis.axis_label = "DECAM_R"
-elg_plot.yaxis.axis_label = "SNR"
-elg_plot.title.text = "ELG"
-
-# hover = HoverTool(tooltips=[("SNR", "@y"),
-#                             ("DECAM_R", "@x"),
-#                             ("Fiber ID", "@fiber_id"),
-#                             ("RA", "@ra"),
-#                             ("Dec", "@dec")])
-
-hover = HoverTool(tooltips="""
+html_tooltip = """
     <div>
         <div>
             <span style="font-size: 12px; font-weight: bold; color: #303030;">SNR: </span>
@@ -125,81 +155,58 @@ hover = HoverTool(tooltips="""
             <span style="font-size: 13px; color: #515151">@dec</span>
         </div>
     </div>
-    """
-)
+"""
 
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr3"
+
+hover = HoverTool(tooltips=html_tooltip)
+elg_plot = init_xy_plot(hover=hover)
+elg_plot.circle(x='x', y='y', source=elg, color="blue", size=5)
+elg_plot.xaxis.axis_label = "DECAM_R"
+elg_plot.yaxis.axis_label = "SNR"
+elg_plot.title.text = "ELG"
+
+taptool = elg_plot.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
+
+hover = HoverTool(tooltips=html_tooltip)
 lrg_plot = init_xy_plot(hover=hover)
-
-lrg_plot.circle(x='x', y='y', source=lrg,
-                color="red", size=5)
-
+lrg_plot.circle(x='x', y='y', source=lrg, color="red", size=5)
 lrg_plot.xaxis.axis_label = "DECAM_R"
 lrg_plot.yaxis.axis_label = "SNR"
 lrg_plot.title.text = "LRG"
 
-url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr3"
-
 taptool = lrg_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
 
-# hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
-#                             ("Value", "@y")])
-
-hover = HoverTool( tooltips="""
-    <div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
-            <span style="font-size: 13px; color: #515151;">@fiber_id</span>
-        </div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Value: </span>
-            <span style="font-size: 13px; color: #515151;">@y</span>
-        </div>
-    </div>
-    """
-)
-
+hover = HoverTool(tooltips=html_tooltip)
 qso_plot = init_xy_plot(hover=hover)
-
-qso_plot.circle(x='x', y='y', source=qso,
-                color="green", size=5)
-
+qso_plot.circle(x='x', y='y', source=qso, color="green", size=5)
 qso_plot.xaxis.axis_label = "DECAM_R"
 qso_plot.yaxis.axis_label = "SNR"
 qso_plot.title.text = "QSO"
 
-# hover = HoverTool(tooltips=[("Fiber ID", "@fiber_id"),
-#                             ("Value", "@y")])
+taptool = qso_plot.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
 
-hover = HoverTool( tooltips="""
-    <div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
-            <span style="font-size: 13px; color: #515151;">@fiber_id</span>
-        </div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Value: </span>
-            <span style="font-size: 13px; color: #515151;">@y</span>
-        </div>
-    </div>
-    """
-)
-
+hover = HoverTool(tooltips=html_tooltip)
 star_plot = init_xy_plot(hover=hover)
-star_plot.circle(x='x', y='y', source=star,
-                 color="black", size=5)
-
+star_plot.circle(x='x', y='y', source=star, color="black", size=5)
 star_plot.xaxis.axis_label = "DECAM_R"
 star_plot.yaxis.axis_label = "SNR"
 star_plot.title.text = "STAR"
 
-plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
+taptool = star_plot.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
+
+update(selected_arm, selected_spectrograph, selected_exposure)
+
+plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=True)
 
 # and create the final layout
-layout = column(widgetbox(slider, width=1000),
-                row(widgetbox(arm, width=150),
-                    widgetbox(spectrograph, width=150)),
-                plot)
+layout = column(widgetbox(exp_slider, responsive=True),
+                row(arm_select, spectrograph_select),
+                plot, responsive=True)
 
 curdoc().add_root(layout)
 curdoc().title = "SNR"

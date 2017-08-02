@@ -18,13 +18,38 @@ def get_data(name=None):
 
     r = requests.get(api['qa'], params={'name': name}).json()
 
-    metric = r[0]['metric'].replace('inf', '0')
+    metric = {}
 
-    metric = eval(metric)
+    if r:
+        metric = r[0]['metric'].replace('inf', '0')
+        metric = eval(metric)
 
-    data = pd.DataFrame.from_dict(metric, orient='index').transpose()
+    return pd.DataFrame.from_dict(metric, orient='index').transpose()
 
-    return data
+def get_arms_and_spectrographs_by_expid(expid):
+    """
+    Rescues all the arms and all spectrographs used by an exposure.
+
+    :param expid: exposure id
+    :return: {"arms": [...], "spectrographs": [...]}
+    """
+    arms = list()
+    spectrographs = list()
+
+    api = requests.get(QLF_API_URL).json()
+    processes = requests.get(
+        api['process'] + "?exposure__id={}".format(str(expid))
+    ).json()
+
+    for process in processes:
+        jobs = requests.get(api['job'] + "?process={}".format(process['pk'])).json()
+
+        for job in jobs:
+            camera = requests.get(api['camera'] + job['camera']).json()
+            arms.append(camera['arm'])
+            spectrographs.append(camera['spectrograph'])
+
+    return {"arms": arms, "spectrographs": spectrographs}
 
 def get_camera_by_exposure(expid):
     processesList = list()
@@ -32,13 +57,17 @@ def get_camera_by_exposure(expid):
     cameraReturn = list()
     api = requests.get(QLF_API_URL).json()
     processes = requests.get(api['process']).json()
+
     for process in processes:
         if process['exposure'] == expid:
             processesList.append(process['pk'])
+
     jobs = requests.get(api['job']).json()
+
     for job in jobs:
         if job['process'] in processesList:
             cameraList.append(job['camera'])
+
     cameras = requests.get(api['camera']).json()
 
     for camera in cameras:
