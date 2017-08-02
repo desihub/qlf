@@ -201,11 +201,12 @@ taptool.callback = OpenURL(url=url)
 
 update(selected_arm, selected_spectrograph, selected_exposure)
 
-plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=True)
+plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
 
 # and create the final layout
 layout = column(widgetbox(exp_slider, responsive=True),
-                row(arm_select, spectrograph_select),
+                row(widgetbox(arm_select, width=130),
+                    widgetbox(spectrograph_select, width=130)),
                 plot, responsive=True)
 
 curdoc().add_root(layout)

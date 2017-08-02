@@ -46,8 +46,12 @@ def get_arms_and_spectrographs_by_expid(expid):
 
         for job in jobs:
             camera = requests.get(api['camera'] + job['camera']).json()
-            arms.append(camera['arm'])
-            spectrographs.append(camera['spectrograph'])
+
+            if not camera['arm'] in arms:
+                arms.append(camera['arm'])
+
+            if not camera['spectrograph'] in spectrographs:
+                spectrographs.append(camera['spectrograph'])
 
     return {"arms": arms, "spectrographs": spectrographs}
 
