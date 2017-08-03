@@ -30,14 +30,7 @@ data_model = {
     'dec': []
 }
 
-elg = ColumnDataSource(data={
-    'x': [],
-    'y': [],
-    'fiber_id': [],
-    'ra': [],
-    'dec': []
-})
-
+elg = ColumnDataSource(data=data_model.copy())
 lrg = ColumnDataSource(data=data_model.copy())
 qso = ColumnDataSource(data=data_model.copy())
 star = ColumnDataSource(data=data_model.copy())
@@ -201,7 +194,7 @@ taptool.callback = OpenURL(url=url)
 
 update(selected_arm, selected_spectrograph, selected_exposure)
 
-plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
+plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=True)
 
 # and create the final layout
 layout = column(widgetbox(exp_slider, responsive=True),

@@ -11,6 +11,7 @@ import pandas as pd
 
 # Get the list of exposures
 exposures = get_exposures()
+print(exposures)
 
 # By default display the last one on the interface
 expid = exposures['expid'][-1]
