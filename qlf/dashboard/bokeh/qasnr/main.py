@@ -16,8 +16,6 @@ QLF_API_URL = os.environ.get(
 # Get url query args
 args = get_url_args(curdoc)
 
-print(args)
-
 selected_exposure = args['exposure']
 selected_arm = args['arm']
 selected_spectrograph = args['spectrograph']
@@ -44,58 +42,66 @@ def update(arm, spectrograph, expid):
 
     data = get_data(name=qa_snr)
 
-    if data.empty:
-        raise ValueError("No data to display, resquest from {}/qa".format(QLF_API_URL))
+    if not data.empty:
+        # drop rows that have ELG_FIBERID null
+        elg_data = data[data.ELG_FIBERID.notnull()]
 
-    # drop rows that have ELG_FIBERID null
-    elg_data = data[data.ELG_FIBERID.notnull()]
+        # create the bokeh column data sources
+        elg.data['x'] = elg_data.ELG_SNR_MAG[1]
+        elg.data['y'] = elg_data.ELG_SNR_MAG[0]
+        elg.data['fiber_id'] = elg_data.ELG_FIBERID.tolist()
+        elg.data['ra'] = elg_data.RA.tolist()
+        elg.data['dec'] = elg_data.DEC.tolist()
+        elg.stream(elg.data, 30)
 
-    # create the bokeh column data sources
-    elg.data['x'] = elg_data.ELG_SNR_MAG[1]
-    elg.data['y'] = elg_data.ELG_SNR_MAG[0]
-    elg.data['fiber_id'] = elg_data.ELG_FIBERID.tolist()
-    elg.data['ra'] = elg_data.RA.tolist()
-    elg.data['dec'] = elg_data.DEC.tolist()
-    elg.stream(elg.data, 30)
+        # drop rows that have ELG_FIBERID null
+        lrg_data = data[data.LRG_FIBERID.notnull()]
 
-    # drop rows that have ELG_FIBERID null
-    lrg_data = data[data.LRG_FIBERID.notnull()]
+        lrg.data['x'] = lrg_data.LRG_SNR_MAG[1]
+        lrg.data['y'] = lrg_data.LRG_SNR_MAG[0]
+        lrg.data['fiber_id'] = lrg_data.LRG_FIBERID.dropna().tolist()
+        lrg.data['ra'] = lrg_data.RA.dropna().tolist()
+        lrg.data['dec'] = lrg_data.DEC.dropna().tolist()
+        lrg.stream(lrg.data, 30)
 
-    lrg.data['x'] = lrg_data.LRG_SNR_MAG[1]
-    lrg.data['y'] = lrg_data.LRG_SNR_MAG[0]
-    lrg.data['fiber_id'] = lrg_data.LRG_FIBERID.dropna().tolist()
-    lrg.data['ra'] = lrg_data.RA.dropna().tolist()
-    lrg.data['dec'] = lrg_data.DEC.dropna().tolist()
-    lrg.stream(lrg.data, 30)
+        # drop rows that have QSO_FIBERID null
+        qso_data = data[data.QSO_FIBERID.notnull()]
 
-    # drop rows that have QSO_FIBERID null
-    qso_data = data[data.QSO_FIBERID.notnull()]
+        qso.data['x'] = qso_data.QSO_SNR_MAG[1]
+        qso.data['y'] = qso_data.QSO_SNR_MAG[0]
+        qso.data['fiber_id'] = qso_data.QSO_FIBERID.dropna().tolist()
+        qso.data['ra'] = qso_data.RA.dropna().tolist()
+        qso.data['dec'] = qso_data.DEC.dropna().tolist()
+        qso.stream(qso.data, 30)
 
-    qso.data['x'] = qso_data.QSO_SNR_MAG[1]
-    qso.data['y'] = qso_data.QSO_SNR_MAG[0]
-    qso.data['fiber_id'] = qso_data.QSO_FIBERID.dropna().tolist()
-    qso.data['ra'] = qso_data.RA.dropna().tolist()
-    qso.data['dec'] = qso_data.DEC.dropna().tolist()
-    qso.stream(qso.data, 30)
+        # drop rows that have STAR_FIBERID null
+        star_data = data[data.STAR_FIBERID.notnull()]
 
-    # drop rows that have STAR_FIBERID null
-    star_data = data[data.STAR_FIBERID.notnull()]
-
-    star.data['x'] = star_data.STAR_SNR_MAG[1]
-    star.data['y'] = star_data.STAR_SNR_MAG[0]
-    star.data['fiber_id'] = star_data.STAR_FIBERID.dropna().tolist()
-    star.data['ra'] = star_data.RA.dropna().tolist()
-    star.data['dec'] = star_data.DEC.dropna().tolist()
-    star.stream(star.data, 30)
+        star.data['x'] = star_data.STAR_SNR_MAG[1]
+        star.data['y'] = star_data.STAR_SNR_MAG[0]
+        star.data['fiber_id'] = star_data.STAR_FIBERID.dropna().tolist()
+        star.data['ra'] = star_data.RA.dropna().tolist()
+        star.data['dec'] = star_data.DEC.dropna().tolist()
+        star.stream(star.data, 30)
 
 # configure bokeh widgets
 exposure = get_exposures()
+
+if not exposure['expid']:
+    exposure['expid'].append(int(selected_exposure))
+
 exp_slider = Slider(
     start=exposure['expid'][0], end=exposure['expid'][-1],
     value=int(selected_exposure), step=1,
     title="Exposure ID")
 
 cameras = get_arms_and_spectrographs_by_expid(selected_exposure)
+
+if not cameras["spectrographs"]:
+    cameras["spectrographs"].append(selected_spectrograph)
+
+if not cameras["arms"]:
+    cameras["arms"].append(selected_arm)
 
 # we can filter by spectrograph
 spectrograph_select = Select(
