@@ -17,6 +17,7 @@ django=1.8.4
 markdown=2.6.2
 django-filter=0.15.3
 djangorestframework=3.6.2
+django-debug-toolbar==1.8
 pytest=3.0.7
 tornado=4.4.2 # make sure bokeh uses this version of tornado
 bokeh=0.12.4
