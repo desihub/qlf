@@ -128,8 +128,8 @@ class DataTableExposureViewSet(viewsets.ModelViewSet):
         try:
             params = dict(request.query_params)
 
-            start_date = "{} 00:00:00".format(params.get('start_date')[0])
-            end_date = "{} 23:59:59".format(params.get('end_date')[0])
+            start_date = params.get('start_date', [None])[0]
+            end_date = params.get('end_date', [None])[0]
             draw = int(params.get('draw', [1])[0])
             length = int(params.get('length', [10])[0])
             start_items = int(params.get('start', [0])[0])
@@ -143,19 +143,23 @@ class DataTableExposureViewSet(viewsets.ModelViewSet):
             if order == 'desc':
                 order_column = '-' + order_column
 
-            if search_value:
+            if start_date and end_date:
                 queryset = Exposure.objects.filter(
-                    dateobs__range=(start_date, end_date)
-                ).filter(
+                    dateobs__range=(
+                        "{} 00:00:00".format(start_date),
+                        "{} 23:59:59".format(end_date)
+                    )
+                )
+            else:
+                queryset = Exposure.objects.all()
+
+            if search_value:
+                queryset = queryset.filter(
                     Q(exposure_id__icontains=search_value) |
                     Q(tile__icontains=search_value) |
                     Q(telra__icontains=search_value) |
                     Q(teldec__icontains=search_value) |
                     Q(flavor__icontains=search_value)
-                )
-            else:
-                queryset = Exposure.objects.filter(
-                    dateobs__range=(start_date, end_date)
                 )
 
             count = queryset.count()
