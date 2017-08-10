@@ -22,9 +22,11 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'dashboard',
+    'debug_toolbar'
 )
 
 MIDDLEWARE_CLASSES = (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -35,6 +37,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
+INTERNAL_IPS = '127.0.0.1'
 ROOT_URLCONF = 'dashboard.urls'
 
 TEMPLATES = [

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
@@ -25,3 +26,8 @@ urlpatterns = [
     url(r'^dashboard/(?P<bokeh_app>\w+)/$', views.embed_bokeh, name='embed-bokeh'),
     url(r'^dashboard/observing_history', views.observing_history, name='observing_history')
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [url(r'^__debug__/', include(debug_toolbar.urls)),] + urlpatterns
+
