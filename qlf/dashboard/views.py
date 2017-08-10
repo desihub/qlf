@@ -83,6 +83,7 @@ class ProcessViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Process.objects.order_by('start')
     serializer_class = ProcessSerializer
+    filter_fields = ('exposure__id',)
 
 
 class ConfigurationViewSet(DefaultsMixin, viewsets.ModelViewSet):

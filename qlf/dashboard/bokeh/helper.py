@@ -18,15 +18,42 @@ def get_data(name=None):
 
     r = requests.get(api['qa'], params={'name': name}).json()
 
-    data = None
+    metric = {}
 
-    metric = r[0]['metric'].replace('inf','0')
+    if r:
+        metric = r[0]['metric'].replace('inf', '0')
+        metric = eval(metric)
 
-    metric = eval(metric)
+    return pd.DataFrame.from_dict(metric, orient='index').transpose()
 
-    data = pd.DataFrame.from_dict(metric, orient='index').transpose()
+def get_arms_and_spectrographs_by_expid(expid):
+    """
+    Rescues all the arms and all spectrographs used by an exposure.
 
-    return data
+    :param expid: exposure id
+    :return: {"arms": [...], "spectrographs": [...]}
+    """
+    arms = list()
+    spectrographs = list()
+
+    api = requests.get(QLF_API_URL).json()
+    processes = requests.get(
+        api['process'] + "?exposure__id={}".format(str(expid))
+    ).json()
+
+    for process in processes:
+        jobs = requests.get(api['job'] + "?process={}".format(process['pk'])).json()
+
+        for job in jobs:
+            camera = requests.get(api['camera'] + job['camera']).json()
+
+            if not camera['arm'] in arms:
+                arms.append(camera['arm'])
+
+            if not camera['spectrograph'] in spectrographs:
+                spectrographs.append(camera['spectrograph'])
+
+    return {"arms": arms, "spectrographs": spectrographs}
 
 def get_camera_by_exposure(expid):
     processesList = list()
@@ -34,13 +61,17 @@ def get_camera_by_exposure(expid):
     cameraReturn = list()
     api = requests.get(QLF_API_URL).json()
     processes = requests.get(api['process']).json()
+
     for process in processes:
         if process['exposure'] == expid:
             processesList.append(process['pk'])
+
     jobs = requests.get(api['job']).json()
+
     for job in jobs:
         if job['process'] in processesList:
             cameraList.append(job['camera'])
+
     cameras = requests.get(api['camera']).json()
 
     for camera in cameras:
@@ -108,7 +139,7 @@ def init_xy_plot(hover):
     """
     Defaults for xy plots
     """
-    plot = Figure(tools="pan,wheel_zoom,box_zoom,reset")
+    plot = Figure(tools="pan,wheel_zoom,box_zoom,reset,tap")
     plot.add_tools(hover)
 
     return plot
