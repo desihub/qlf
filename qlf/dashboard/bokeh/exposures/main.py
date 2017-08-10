@@ -11,18 +11,22 @@ import pandas as pd
 
 # Get the list of exposures
 exposures = get_exposures()
-print(exposures)
 
-# By default display the last one on the interface
-expid = exposures['expid'][-1]
-flavor = exposures['flavor'][-1]
+expid = None
 
-# Page title reflects the selected exposure
-title = Div(text="<h3>Exposure ID {} ({})</h3>".format(expid, flavor))
+if exposures['expid']:
+    exposures['expid'] = sorted(exposures['expid'])
 
-# Here we configure a 'slider' to change the exposure
-slider = Slider(start=exposures['expid'][0], end=expid,
-                value=expid, step=1, title="EXPID")
+    # By default display the last one on the interface
+    expid = exposures['expid'][-1]
+    flavor = exposures['flavor'][-1]
+
+    # Page title reflects the selected exposure
+    title = Div(text="<h3>Exposure ID {} ({})</h3>".format(expid, flavor))
+
+    # Here we configure a 'slider' to change the exposure
+    slider = Slider(start=exposures['expid'][0], end=expid,
+                    value=expid, step=1, title="EXPID")
 
 # Now we configure the camera grid layout
 
@@ -125,8 +129,9 @@ def update(expid):
 
     source.stream(source.data, 30)
 
-# Update camera grid with data from the last exposure
-update(expid)
+if expid:
+    # Update camera grid with data from the last exposure
+    update(expid)
 
 # Here we configure the tap tool to open the drill down plots for the selected camera and metric
 

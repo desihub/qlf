@@ -83,7 +83,7 @@ class ProcessViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Process.objects.order_by('start')
     serializer_class = ProcessSerializer
-    filter_fields = ('exposure__id',)
+    filter_fields = ('exposure__exposure_id',)
 
 
 class ConfigurationViewSet(DefaultsMixin, viewsets.ModelViewSet):
@@ -104,17 +104,17 @@ class QAViewSet(DefaultsMixin, viewsets.ModelViewSet):
 class ExposureViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing exposures"""
 
-    queryset = Exposure.objects.order_by('expid')
+    queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
 
 
 class DataTableExposureViewSet(viewsets.ModelViewSet):
-    queryset = Exposure.objects.order_by('expid')
+    queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
 
     ORDER_COLUMN_CHOICES = {
         '0': 'dateobs',
-        '1': 'expid',
+        '1': 'exposure_id',
         '2': 'tile',
         '3': 'telra',
         '4': 'teldec',
@@ -147,7 +147,7 @@ class DataTableExposureViewSet(viewsets.ModelViewSet):
                 queryset = Exposure.objects.filter(
                     dateobs__range=(start_date, end_date)
                 ).filter(
-                    Q(expid__icontains=search_value) |
+                    Q(exposure_id__icontains=search_value) |
                     Q(tile__icontains=search_value) |
                     Q(telra__icontains=search_value) |
                     Q(teldec__icontains=search_value) |

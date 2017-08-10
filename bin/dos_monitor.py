@@ -20,10 +20,24 @@ class DOSmonitor(object):
 
         self.cameras = self.get_cameras()
 
+    def get_nights(self):
+        """ Gets nights """
+
+        nights = self.cfg.get("data", "night")
+
+        if not nights:
+            return []
+
+        return sorted(nights.split(','))
+
     def get_last_night(self):
         """ Gets last night """
+        nights = self.cfg.get("data", "night")
 
-        return self.cfg.get("data", "night")
+        if not nights:
+            return []
+
+        return sorted(nights.split(','))[-1]
 
     def get_exposures_by_night(self, night):
         """ Gets exposures by night """
@@ -35,7 +49,8 @@ class DOSmonitor(object):
         for expid in exposures:
             try:
                 exposure = self.get_exposure(night, expid)
-                exposures_list.append(exposure)
+                if exposure:
+                    exposures_list.append(exposure)
             except Exception as error:
                 print(error)
                 sys.exit(1)
@@ -62,6 +77,13 @@ class DOSmonitor(object):
     def get_exposure(self, night, exposure):
         """ Gets all data of a determinate exposure. """
 
+        exponame = "desi-%s.fits.fz" % str(exposure).zfill(8)
+        filepath = os.path.join(self.desi_spectro_data, night, exponame)
+
+        if not os.path.isfile(filepath):
+            print("exposure not found %s" % exponame)
+            return {}
+
         camera_list = list()
 
         for camera in self.cameras:
@@ -71,11 +93,12 @@ class DOSmonitor(object):
             }
             camera_list.append(camera_dict)
 
-        exposure_info = self.get_exposure_info(night, exposure)
+        exposure_info = self.get_exposure_info(filepath, night)
 
         exposure_dict = {
             "night": night,
             "expid": exposure,
+            #"tile": exposure,
             "zfill": str(exposure).zfill(8),
             "desi_spectro_data": self.desi_spectro_data,
             "cameras": camera_list
@@ -84,15 +107,8 @@ class DOSmonitor(object):
         exposure_dict.update(exposure_info)
         return exposure_dict
 
-    def get_exposure_info(self, night, exposure):
+    def get_exposure_info(self, filepath, night):
         """ """
-
-        exponame = "desi-%s.fits.fz" % str(exposure).zfill(8)
-        filepath = os.path.join(self.desi_spectro_data, night, exponame)
-
-        if not os.path.isfile(filepath):
-            print("exposure not found %s" % exponame)
-            return {}
 
         try:
             fitsfile = fits.open(filepath)
@@ -101,11 +117,14 @@ class DOSmonitor(object):
             print("error to load fits file: %s" % error)
             return {}
 
+        dateobs = "%s-%s-%s 22:00" % (night[:-4], night[-4:][:2], night[-2:])
+
         return {
             'telra': hdr.get('telra', None),
             'teldec': hdr.get('teldec', None),
             'tile': hdr.get('tileid', None),
-            'dateobs': hdr.get('date-obs', None),
+            #'dateobs': hdr.get('date-obs', None),
+            'dateobs': dateobs,
             'flavor': hdr.get('flavor', None),
             'exptime': hdr.get('exptime', None)
         }

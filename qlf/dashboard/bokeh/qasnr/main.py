@@ -87,11 +87,15 @@ def update(arm, spectrograph, expid):
 # configure bokeh widgets
 exposure = get_exposures()
 
+print("EXPOSURES: ", exposure)
+
 if not exposure['expid']:
     exposure['expid'].append(int(selected_exposure))
 
+exposure['expid'] = sorted(exposure['expid'])
+
 exp_slider = Slider(
-    start=exposure['expid'][0], end=exposure['expid'][-1],
+    start=int(exposure['expid'][0]), end=int(exposure['expid'][-1]),
     value=int(selected_exposure), step=1,
     title="Exposure ID")
 

@@ -7,8 +7,8 @@ class Exposure(models.Model):
 
     # TODO: make null=False when exposure data is available
 
-    expid = models.CharField(max_length=8, unique=True,
-                                 help_text='Exposure number')
+    exposure_id = models.IntegerField(primary_key=True,
+                                      help_text='Exposure number')
     telra = models.FloatField(blank=True, null=True,
                               help_text='Central RA of the exposure')
     teldec = models.FloatField(blank=True, null=True,

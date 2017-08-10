@@ -25,7 +25,7 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('pk', 'name', 'start', 'end', 'status', 'version', 'logname', 'links', 'process', 'camera')        
+        fields = ('pk', 'name', 'start', 'end', 'status', 'version', 'logname', 'links', 'process', 'camera')
 
     def get_links(self, obj):
         request = self.context['request']
@@ -67,7 +67,7 @@ class ExposureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exposure
         fields = (
-            'expid', 'tile', 'telra', 'teldec',
+            'exposure_id', 'tile', 'telra', 'teldec',
             'dateobs', 'exptime', 'flavor',
             'night', 'airmass', 'links'
         )

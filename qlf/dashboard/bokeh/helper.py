@@ -112,7 +112,7 @@ def get_exposures():
 
     # TODO: filter exposures by flavor?
     r = requests.get(api['exposure']).json()
-    expid = [int(e['expid']) for e in r]
+    expid = [int(e['exposure_id']) for e in r]
     flavor = [e['flavor'] for e in r]
     ra = [e['telra'] for e in r]
     dec = [e['teldec'] for e in r]
