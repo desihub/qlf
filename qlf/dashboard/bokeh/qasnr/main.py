@@ -5,8 +5,8 @@ from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
 
-from dashboard.bokeh.helper import get_data, get_exposures, \
-    init_xy_plot, get_url_args, get_arms_and_spectrographs_by_expid
+from dashboard.bokeh.helper import get_data, get_exposure_ids, \
+    init_xy_plot, get_url_args, get_arms_and_spectrographs
 
 QLF_API_URL = os.environ.get(
     'QLF_API_URL',
@@ -85,21 +85,19 @@ def update(arm, spectrograph, expid):
         star.stream(star.data, 30)
 
 # configure bokeh widgets
-exposure = get_exposures()
+exposure = get_exposure_ids()
 
-print("EXPOSURES: ", exposure)
+if not exposure:
+    exposure.append(int(selected_exposure))
 
-if not exposure['expid']:
-    exposure['expid'].append(int(selected_exposure))
-
-exposure['expid'] = sorted(exposure['expid'])
+exposure = sorted(exposure)
 
 exp_slider = Slider(
-    start=int(exposure['expid'][0]), end=int(exposure['expid'][-1]),
+    start=int(exposure[0]), end=int(exposure[-1]),
     value=int(selected_exposure), step=1,
     title="Exposure ID")
 
-cameras = get_arms_and_spectrographs_by_expid(selected_exposure)
+cameras = get_arms_and_spectrographs()
 
 if not cameras["spectrographs"]:
     cameras["spectrographs"].append(selected_spectrograph)

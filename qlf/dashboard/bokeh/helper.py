@@ -16,83 +16,52 @@ def get_data(name=None):
     """
     api = requests.get(QLF_API_URL).json()
 
-    r = requests.get(api['qa'], params={'name': name}).json()
+    qa = requests.get(api['qa'], params={'name': name}).json()
+    qa = qa['results']
 
     metric = {}
 
-    if r:
-        metric = r[0]['metric'].replace('inf', '0')
+    if qa:
+        metric = qa[0]['metric'].replace('inf', '0')
         metric = eval(metric)
 
     return pd.DataFrame.from_dict(metric, orient='index').transpose()
 
-def get_arms_and_spectrographs_by_expid(expid):
+def get_arms_and_spectrographs():
     """
-    Rescues all the arms and all spectrographs used by an exposure.
+    Rescues all the arms and spectrographs.
 
-    :param expid: exposure id
     :return: {"arms": [...], "spectrographs": [...]}
     """
     arms = list()
     spectrographs = list()
 
     api = requests.get(QLF_API_URL).json()
-    processes = requests.get(
-        api['process'] + "?exposure__id={}".format(str(expid))
+
+    cameras = requests.get(
+        api['camera'],
+        params={'paginate': 'null', 'fields': ','.join(['arm','spectrograph'])}
     ).json()
 
-    for process in processes:
-        jobs = requests.get(api['job'] + "?process={}".format(process['pk'])).json()
-
-        for job in jobs:
-            camera = requests.get(api['camera'] + job['camera']).json()
-
-            if not camera['arm'] in arms:
-                arms.append(camera['arm'])
-
-            if not camera['spectrograph'] in spectrographs:
-                spectrographs.append(camera['spectrograph'])
+    for camera in cameras:
+        arms.append(camera['arm'])
+        spectrographs.append(camera['spectrograph'])
 
     return {"arms": arms, "spectrographs": spectrographs}
 
-def get_camera_by_exposure(expid):
-    processesList = list()
-    cameraList = list()
-    cameraReturn = list()
-    api = requests.get(QLF_API_URL).json()
-    processes = requests.get(api['process']).json()
-
-    for process in processes:
-        if process['exposure'] == expid:
-            processesList.append(process['pk'])
-
-    jobs = requests.get(api['job']).json()
-
-    for job in jobs:
-        if job['process'] in processesList:
-            cameraList.append(job['camera'])
-
-    cameras = requests.get(api['camera']).json()
-
-    for camera in cameras:
-        if camera['camera'] in cameraList:
-            cameraReturn.append(camera)
-
-    return cameraReturn
-
 def get_all_exposure():
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['exposure']).json()
+    data = requests.get(api['exposure'], params={'paginate': 'null'}).json()
     return data
 
 def get_all_camera():
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['camera']).json()
+    data = requests.get(api['camera'], params={'paginate': 'null'}).json()
     return data
 
 def get_all_qa():
     api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['qa']).json()
+    data = requests.get(api['qa'], params={'paginate': 'small'}).json()
     return data
 
 def get_last_process():
@@ -103,6 +72,17 @@ def get_last_process():
     api = requests.get(QLF_API_URL).json()
     return requests.get(api['last_process']).json()
 
+def get_exposure_ids():
+    """ Returns the list with exposure ids """
+
+    api = requests.get(QLF_API_URL).json()
+
+    r = requests.get(
+        api['exposure'], params={'paginate': 'null', 'fields':'exposure_id'}
+    ).json()
+
+    return [int(e['exposure_id']) for e in r]
+
 def get_exposures():
     """
     Returns the list of registered exposures
@@ -111,7 +91,14 @@ def get_exposures():
     api = requests.get(QLF_API_URL).json()
 
     # TODO: filter exposures by flavor?
-    r = requests.get(api['exposure']).json()
+    r = requests.get(
+        api['exposure'],
+        params={
+            'paginate': 'null',
+            'fields': ','.join(['exposure_id', 'flavor', 'telra', 'teldec'])
+        }
+    ).json()
+
     expid = [int(e['exposure_id']) for e in r]
     flavor = [e['flavor'] for e in r]
     ra = [e['telra'] for e in r]
@@ -130,9 +117,7 @@ def get_cameras():
 
     api = requests.get(QLF_API_URL).json()
 
-    r = requests.get(api['camera']).json()
-
-    return r
+    return requests.get(api['camera'], params={'paginate': 'null'}).json()
 
 
 def init_xy_plot(hover):

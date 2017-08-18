@@ -102,7 +102,6 @@ def update(expid):
     # Fill up the datasource with properties of each camera
 
     for camera in cameras:
-
         arm = camera['arm']
         spectrograph = int(camera['spectrograph'])
 
