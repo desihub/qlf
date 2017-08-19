@@ -19,6 +19,9 @@ loglevel=INFO
 # the progress of the data reduction
 logfile=
 
+# Configuration file for the quick look pipeline
+# e.g. $QLF_ROOT/desispec/py/desispec/data/quicklook/qlconfig_dark.yaml
+qlconfig=
 
 [data]
 # Which night to process? we do not support a list of nights yet.
@@ -39,6 +42,7 @@ arms=b,r,z
 # 0,1,2,3,4,5,6,7,8,9
 spectrographs=0,1
 
+
 [namespace]
 # Input data directory, e.g. $DESI_SPECTRO_DATA
 desi_spectro_data=
@@ -47,8 +51,4 @@ desi_spectro_data=
 # Note: this directory is created by QLF if it does not exist.
 desi_spectro_redux=
 
-# Configuration file for the quick look pipeline, usually changes according to the data
-# and can be found in the 20190101_small.tar.gz package
-# e.g. $DESI_SPECTRO_REDUX/qlconfig_dark.yaml
-qlconfig=
 
