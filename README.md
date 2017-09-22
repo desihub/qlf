@@ -11,7 +11,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
 1. Install the Quick Look Framework 
 
     ```
-    # We assume you are using bash
+    # We assume you are using bash. It is useful to add this to your .bashrc file (or related)
     export QLF_ROOT=$HOME/quicklook
     mkdir -p $QLF_ROOT
     cd $QLF_ROOT
@@ -19,13 +19,13 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     git clone https://github.com/desihub/qlf.git
     ```
 
-2. Install software dependencies
+2. Install software dependencies and create conda environment 
 
     ```
     source ~/miniconda3/bin/activate root
     ```
     
-    NOTE: if you don't have conda installed we recommend installing miniconda3 follow the instructions [here](https://conda.io/docs/install/quick.html) and make sure ~/miniconda3/bin is in your PATH
+    NOTE: if you don't have conda installed we recommend installing miniconda3 follow the instructions [here](https://conda.io/docs/install/quick.html) and make sure ~/miniconda3/bin is in your PATH by running `echo $PATH` and checking your .bashrc (or related)
    
     ```
     conda config --add channels conda-forge
@@ -53,7 +53,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     desi_quicklook --help
     ```
     
-4. Get test data
+4. Get test data (~1 GB)
 
     ```
     mkdir -p $QLF_ROOT/spectro # or any other place, make sure this path is consistent with qlf.cfg in step 5.
@@ -63,7 +63,15 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
  
     wget -c http://portal.nersc.gov/project/desi/data/quicklook/20190101_small.tar.gz 
     
+    # IF using OSX and wget not available, download with curl -O
+    
     tar xvzf 20190101_small.tar.gz
+    
+    # This creates two directories: data and redux which should be exported as environment variables that goes on qlf.cfg in step 5
+
+    export DESI_SPECTRO_DATA=$QLF_ROOT/spectro/data
+    export DESI_SPECTRO_REDUX=$QLF_ROOT/spectro/redux
+
     ```
 
 5. Configure QLF
@@ -91,6 +99,9 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     ```
     source ~/miniconda3/bin/activate quicklook
     export QLF_ROOT=$HOME/quicklook
+    export DESI_SPECTRO_DATA=$QLF_ROOT/spectro/data
+    export DESI_SPECTRO_REDUX=$QLF_ROOT/spectro/redux
+
     ```
 
 2. Start QLF
@@ -99,7 +110,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     ./run.sh
     ```
     
-    NOTE: you can follow the progress of the data processing watching `qlf.log` or from the web application.
+    NOTE: you can follow the progress of the data processing watching `$QLF_ROOT/qlf.log` or from the web application at http://localhost:8000.
 
 ### Support
 
