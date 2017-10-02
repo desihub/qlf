@@ -1,4 +1,4 @@
-from bokeh.layouts import row, column, gridplot, widgetbox
+from bokeh.layouts import row, column, widgetbox
 from bokeh.models import ColumnDataSource, Slider, CheckboxGroup, RadioButtonGroup, Div, LabelSet,\
     OpenURL, TapTool, HoverTool
 
@@ -136,7 +136,7 @@ if expid:
 
 # TODO: for now it is fixed for the SNR metric which will open the SNR vs. Mag plot
 
-url = "http://localhost:8000/dashboard/qasnr?exposure={}&arm=@arm&spectrograph=@spectrograph".format(expid)
+url = "/dashboard/qasnr?exposure={}&arm=@arm&spectrograph=@spectrograph".format(expid)
 
 taptool = p.select(type=TapTool)
 taptool.callback = OpenURL(url=url)

@@ -2,6 +2,9 @@ import os
 import sys
 import configparser
 from astropy.io import fits
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DOSmonitor(object):
@@ -14,8 +17,8 @@ class DOSmonitor(object):
             self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
             self.desi_spectro_data = os.path.normpath(self.cfg.get('namespace', 'desi_spectro_data'))
         except Exception as error:
-            print(error)
-            print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+            logger.error(error)
+            logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
             sys.exit(1)
 
         self.cameras = self.get_cameras()
@@ -52,8 +55,7 @@ class DOSmonitor(object):
                 if exposure:
                     exposures_list.append(exposure)
             except Exception as error:
-                print(error)
-                sys.exit(1)
+                logger.error(error)
 
         return exposures_list
 
@@ -70,7 +72,7 @@ class DOSmonitor(object):
                 try:
                     cameras.append(arm + spec)
                 except Exception as error:
-                    print(error)
+                    logger.error(error)
 
         return cameras
 
@@ -81,7 +83,7 @@ class DOSmonitor(object):
         filepath = os.path.join(self.desi_spectro_data, night, exponame)
 
         if not os.path.isfile(filepath):
-            print("exposure not found %s" % exponame)
+            logger.error("exposure not found: %s" % filepath)
             return {}
 
         camera_list = list()
@@ -98,7 +100,6 @@ class DOSmonitor(object):
         exposure_dict = {
             "night": night,
             "expid": exposure,
-            #"tile": exposure,
             "zfill": str(exposure).zfill(8),
             "desi_spectro_data": self.desi_spectro_data,
             "cameras": camera_list
@@ -114,7 +115,7 @@ class DOSmonitor(object):
             fitsfile = fits.open(filepath)
             hdr = fitsfile[0].header
         except Exception as error:
-            print("error to load fits file: %s" % error)
+            logger.error("error to load fits file: %s" % error)
             return {}
 
         dateobs = "%s-%s-%s 22:00" % (night[:-4], night[-4:][:2], night[-2:])
@@ -134,4 +135,4 @@ if __name__ == "__main__":
     dos_monitor = DOSmonitor()
     night = dos_monitor.get_last_night()
     exposures = dos_monitor.get_exposures_by_night(night)
-    print(exposures)
+    logger.info(exposures)

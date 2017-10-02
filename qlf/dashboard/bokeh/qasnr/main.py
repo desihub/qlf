@@ -33,14 +33,22 @@ lrg = ColumnDataSource(data=data_model.copy())
 qso = ColumnDataSource(data=data_model.copy())
 star = ColumnDataSource(data=data_model.copy())
 
-def update(arm, spectrograph, expid):
+params = [
+    'ELG_SNR_MAG', 'ELG_FIBERID',
+    'LRG_SNR_MAG', 'LRG_FIBERID',
+    'QSO_SNR_MAG', 'QSO_FIBERID',
+    'STAR_SNR_MAG', 'STAR_FIBERID',
+    'RA', 'DEC'
+]
 
-    exp_zfill = str(expid).zfill(8)
+
+def update(arm, spectrograph, exposure_id):
+    exp_zfill = str(exposure_id).zfill(8)
 
     # get the data
     qa_snr = 'ql-snr-{}-{}.yaml'.format(arm + spectrograph, exp_zfill)
 
-    data = get_data(name=qa_snr)
+    data = get_data(qa_snr, params)
 
     if not data.empty:
         # drop rows that have ELG_FIBERID null

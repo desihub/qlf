@@ -63,6 +63,11 @@ class QLFRun(Process):
 
             exposures = self.dos_monitor.get_exposures_by_night(night)
 
+            if not exposures:
+                logger.warn('No exposure was found')
+                sleep(10)
+                continue
+
             for exposure in exposures:
                 if self.exit.is_set():
                     logger.info('Execution stopped')

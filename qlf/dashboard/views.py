@@ -299,6 +299,7 @@ def embed_bokeh(request, bokeh_app):
                'bokeh_app': bokeh_app}
 
     status = qlf.get_status()
+
     if status == True:
         messages.success(request, "Running")
     elif status == False:
