@@ -353,7 +353,7 @@ class JobsParallelIngestion(QLFProcess):
 
         output_path = os.path.join(
             desi_spectro_redux,
-            outputdir,
+            self.data.get('output_dir'),
             'ql-*-%s-%s.yaml' % (
                 camera.get('name'),
                 camera.get('zfill')
@@ -367,27 +367,6 @@ class JobsParallelIngestion(QLFProcess):
             output_path=output_path
         )
 
-if __name__ == "__main__":
-    exposure = {
-        'night': '20170428',
-        'expid': '3',
-        'zfill': '00000003',
-        'data_dir': '/home/singulani/raw_data',
-        'cameras': [
-          {
-            'name': 'r8',
-            'psfboot': '/home/singulani/raw_data/20170428/psfboot-r8.fits',
-            'fiberflat': '/home/singulani/raw_data/20170428/fiberflat-r8-00000003.fits'
-          },
-          {
-            'name': 'r9',
-            'psfboot': '/home/singulani/raw_data/20170428/psfboot-r9.fits',
-            'fiberflat': '/home/singulani/raw_data/20170428/fiberflat-r9-00000003.fits'
-          }
-        ]
-    }
 
-    qlp = JobsParallelIngestion(exposure)
-    qlp.start_process()
-    qlp.start_jobs()
-    qlp.finish_process()
+if __name__ == "__main__":
+    print('Standalone execution...')

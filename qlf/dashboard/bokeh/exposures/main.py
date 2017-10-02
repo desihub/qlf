@@ -26,7 +26,7 @@ if exposures['expid']:
 
     # Here we configure a 'slider' to change the exposure
     slider = Slider(start=exposures['expid'][0], end=expid,
-                    value=expid, step=1, title="EXPID")
+                    value=expid, step=1, title="EXPOSURE ID")
 
 # Now we configure the camera grid layout
 
