@@ -59,10 +59,11 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     mkdir -p $QLF_ROOT/spectro # or any other place, make sure this path is consistent with qlf.cfg in step 5.
     cd $QLF_ROOT/spectro
     
-    # Test data for local run of QLF: night 20170428, exposures 3 and 4.
+    # Test data for local run of QLF: night 20190101, exposures 3 and 4.
  
-    wget -c http://portal.nersc.gov/project/desi/data/quicklook/20170428_small.tar.gz
-    tar xvzf 20170428_small.tar.gz
+    wget -c http://portal.nersc.gov/project/desi/data/quicklook/20190101_small.tar.gz 
+    
+    tar xvzf 20190101_small.tar.gz
     ```
 
 5. Configure QLF
