@@ -1,6 +1,7 @@
 import os
 import sys
-# import yaml
+import yaml
+import glob
 import json
 import numpy
 import django
@@ -30,9 +31,9 @@ class QLFModels(object):
         """ Inserts and gets exposure and night if necessary. """
 
         # Check if expid is already registered
-        if not Exposure.objects.filter(expid=expid):
+        if not Exposure.objects.filter(exposure_id=expid):
             exposure = Exposure(
-                expid=expid, night=night,
+                exposure_id=expid, night=night,
                 telra=telra, teldec=teldec,
                 tile=tile, dateobs=dateobs,
                 flavor=flavor, exptime=exptime
@@ -40,9 +41,8 @@ class QLFModels(object):
             exposure.save()
 
         # Save Process for this exposure
-        return Exposure.objects.get(expid=expid)
+        return Exposure.objects.get(exposure_id=expid)
 
-    # def insert_process(self, expid, night, start, pipeline_name):
     def insert_process(self, data, pipeline_name):
         """ Inserts initial data in process table. """
 
@@ -58,7 +58,7 @@ class QLFModels(object):
         )
 
         process = Process(
-            exposure_id=exposure.expid,
+            exposure_id=exposure.exposure_id,
             start=data.get('start'),
             pipeline_name=pipeline_name
         )
@@ -119,30 +119,40 @@ class QLFModels(object):
 
         return job
 
-    def update_process(self, process_id, end, status):
+    def update_process(self, process_id, end, process_dir, status):
         """ Updates process with execution results. """
 
         process = Process.objects.filter(id=process_id).update(
             end=end,
+            process_dir=process_dir,
             status=status
         )
 
         return process
 
-    def update_job(self, job_id, end, status):
+    def update_job(self, job_id, end, status, output_path):
         """ Updates job with execution results. """
 
-        job = Job.objects.filter(id=job_id).update(
+        Job.objects.filter(id=job_id).update(
             end=end,
             status=status
         )
 
-        return job
+        for product in glob.glob(output_path):
+            qa = yaml.load(open(product, 'r'))
+            name = os.path.basename(product)
+
+            if 'PANAME' in qa and 'METRICS' in qa:
+                paname = qa['PANAME']
+                metrics = self.jsonify(qa['METRICS'])
+
+                print("Ingesting %s" % name)
+                self.insert_qa(name, paname, metrics, job_id)
+
+        print('Job {} updated.'.format(job_id))
 
     def insert_qa(self, name, paname, metrics, job_id, force=False):
         """ Inserts or updates qa table """
-
-        metrics = self.jsonify(metrics)
 
         if not QA.objects.filter(name=name):
             # Register for QA results for the first time
@@ -194,7 +204,6 @@ class QLFModels(object):
         return data
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     qlf = QLFModels()
-
 

@@ -1,99 +1,74 @@
 import os
-
+import logging
 import pandas as pd
 import requests
 from furl import furl
+import ast
 from bokeh.plotting import Figure
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
 
+logger = logging.getLogger(__name__)
 
-def get_data(name=None):
+
+def get_data(name, params):
     """
-    Returns a panda dataframe so that we can access the QA data arrays for each expid,
-    e.g. data.loc[expid].MEDIAN_SNR
+    Returns a panda dataframe so that we can access the QA data arrays
+    e.g. data.MEDIAN_SNR
+
+    args:
+        name (str): QA file name
+        params (list): Metrics to be rescued in QA
     """
+
     api = requests.get(QLF_API_URL).json()
 
-    r = requests.get(api['qa'], params={'name': name}).json()
+    qa = requests.get(api['qa'], params={'name': name}).json()
+    qa = qa['results']
 
-    metric = {}
+    logger.info('QA: {}'.format(qa))
 
-    if r:
-        metric = r[0]['metric'].replace('inf', '0')
-        metric = eval(metric)
+    metrics = {}
 
-    return pd.DataFrame.from_dict(metric, orient='index').transpose()
+    if not qa:
+        logger.warn('{} not found in database'.format(name))
+        return pd.DataFrame.from_dict(metrics, orient='index').transpose()
 
-def get_arms_and_spectrographs_by_expid(expid):
+    full_metrics = qa[0]['metric'].replace('inf', '0')
+    full_metrics = ast.literal_eval(full_metrics)
+
+    for metric in params:
+        if metric not in full_metrics:
+            logger.warn('The {} metric is not present in {}'.format(metric, name))
+
+        metrics[metric] = full_metrics.get(metric, [])
+
+    return pd.DataFrame.from_dict(metrics, orient='index').transpose()
+
+
+def get_arms_and_spectrographs():
     """
-    Rescues all the arms and all spectrographs used by an exposure.
+    Rescues all the arms and spectrographs.
 
-    :param expid: exposure id
-    :return: {"arms": [...], "spectrographs": [...]}
+    return: {"arms": [...], "spectrographs": [...]}
     """
     arms = list()
     spectrographs = list()
 
     api = requests.get(QLF_API_URL).json()
-    processes = requests.get(
-        api['process'] + "?exposure__id={}".format(str(expid))
+
+    cameras = requests.get(
+        api['camera'],
+        params={'paginate': 'null', 'fields': ','.join(['arm', 'spectrograph'])}
     ).json()
 
-    for process in processes:
-        jobs = requests.get(api['job'] + "?process={}".format(process['pk'])).json()
-
-        for job in jobs:
-            camera = requests.get(api['camera'] + job['camera']).json()
-
-            if not camera['arm'] in arms:
-                arms.append(camera['arm'])
-
-            if not camera['spectrograph'] in spectrographs:
-                spectrographs.append(camera['spectrograph'])
-
-    return {"arms": arms, "spectrographs": spectrographs}
-
-def get_camera_by_exposure(expid):
-    processesList = list()
-    cameraList = list()
-    cameraReturn = list()
-    api = requests.get(QLF_API_URL).json()
-    processes = requests.get(api['process']).json()
-
-    for process in processes:
-        if process['exposure'] == expid:
-            processesList.append(process['pk'])
-
-    jobs = requests.get(api['job']).json()
-
-    for job in jobs:
-        if job['process'] in processesList:
-            cameraList.append(job['camera'])
-
-    cameras = requests.get(api['camera']).json()
-
     for camera in cameras:
-        if camera['camera'] in cameraList:
-            cameraReturn.append(camera)
+        arms.append(camera['arm'])
+        spectrographs.append(camera['spectrograph'])
 
-    return cameraReturn
+    return {"arms": list(set(arms)), "spectrographs": list(set(spectrographs))}
 
-def get_all_exposure():
-    api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['exposure']).json()
-    return data
-
-def get_all_camera():
-    api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['camera']).json()
-    return data
-
-def get_all_qa():
-    api = requests.get(QLF_API_URL).json()
-    data = requests.get(api['qa']).json()
-    return data
 
 def get_last_process():
     """
@@ -103,6 +78,21 @@ def get_last_process():
     api = requests.get(QLF_API_URL).json()
     return requests.get(api['last_process']).json()
 
+
+def get_exposure_ids():
+    """
+    Returns the list with exposure ids
+    """
+
+    api = requests.get(QLF_API_URL).json()
+
+    r = requests.get(
+        api['exposure'], params={'paginate': 'null', 'fields': 'exposure_id'}
+    ).json()
+
+    return [int(e['exposure_id']) for e in r]
+
+
 def get_exposures():
     """
     Returns the list of registered exposures
@@ -111,8 +101,15 @@ def get_exposures():
     api = requests.get(QLF_API_URL).json()
 
     # TODO: filter exposures by flavor?
-    r = requests.get(api['exposure']).json()
-    expid = [int(e['expid']) for e in r]
+    r = requests.get(
+        api['exposure'],
+        params={
+            'paginate': 'null',
+            'fields': ','.join(['exposure_id', 'flavor', 'telra', 'teldec'])
+        }
+    ).json()
+
+    expid = [int(e['exposure_id']) for e in r]
     flavor = [e['flavor'] for e in r]
     ra = [e['telra'] for e in r]
     dec = [e['teldec'] for e in r]
@@ -130,9 +127,7 @@ def get_cameras():
 
     api = requests.get(QLF_API_URL).json()
 
-    r = requests.get(api['camera']).json()
-
-    return r
+    return requests.get(api['camera'], params={'paginate': 'null'}).json()
 
 
 def init_xy_plot(hover):
@@ -146,33 +141,37 @@ def init_xy_plot(hover):
 
 
 def get_url_args(curdoc, defaults=None):
-    """Return url args recovered from django_full_path cookie in
+    """
+    Return url args recovered from django_full_path cookie in
     the bokeh request header.
     If url args are not provided, default values can be used
     instead
     """
     args = {}
+
     if defaults:
         for key in defaults:
             args[key] = defaults[key]
 
-    r = curdoc().session_context.request
+    http_request = curdoc().session_context.request
 
-    if r:
-        if 'django_full_path' in r.cookies:
-            django_full_path = r.cookies['django_full_path'].value
-            tmp = furl(django_full_path).args
-            for key in tmp:
-                args[key] = tmp[key]
+    logger.info(http_request)
 
-            # the bokeh app name is the second segment of the url path
-            args['bokeh_app'] = furl(django_full_path).path.segments[1]
+    if http_request and 'django_full_path' in http_request.cookies:
+        uri = http_request.cookies['django_full_path'].value
+        tmp = furl(uri).args
+
+        for key in tmp:
+            args[key] = tmp[key]
+
+        logger.info('URI: {}'.format(uri))
+        logger.info('ARGS: {}'.format(tmp))
+
+        # the bokeh app name is the second segment of the url path
+        args['bokeh_app'] = furl(uri).path.segments[1]
 
     return args
 
 
-
 if __name__ == '__main__':
-
-    data = get_data()
-    print(data.info())
+    logger.info('Standalone execution...')

@@ -4,13 +4,11 @@ import sys
 import logging
 import subprocess
 import datetime
-import glob
-import yaml
 import configparser
-from multiprocessing import Process, Manager
+from multiprocessing import Manager
+from threading import Thread
 from qlf_models import QLFModels
 
-# Project main directory
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
 
@@ -26,36 +24,37 @@ except Exception as error:
 logger = logging.getLogger(__name__)
 
 
-class QLFPipeline(object):
-    """ Class responsible for managing Quick Look pipeline execution """
+class QLFProcess(object):
+    """ Class responsible for managing Quick Look pipeline process. """
 
     def __init__(self, data):
         self.pipeline_name = 'Quick Look'
-        self.models = QLFModels()
         self.data = data
+        self.models = QLFModels()
 
     def start_process(self):
-        """ Start pipeline """
+        """ Start pipeline. """
 
         logger.info('Started %s ...' % self.pipeline_name)
         logger.info('Night: %s' % self.data.get('night'))
-        logger.info('Exposure ID: %s' % str(self.data.get('expid')))
+        logger.info('Exposure: %s' % str(self.data.get('expid')))
 
         self.data['start'] = datetime.datetime.now().replace(microsecond=0)
 
         # create process in database and obtain the process id
         process = self.models.insert_process(
-            # self.data.get('expid'),
-            # self.data.get('night'),
-            # self.data.get('start'),
             self.data,
             self.pipeline_name
         )
 
+        self.data['process_id'] = process.id
+        self.data['status'] = process.status
+
         # TODO: ingest configuration file used, this should be done by process
         # self.models.insert_config(process.id)
 
-        logger.info('Process ID: %i started ...' % process.id)
+        logger.info('Process ID: %i' % process.id)
+        logger.info('Starting...')
 
         output_dir = os.path.join(
             'exposures',
@@ -73,8 +72,35 @@ class QLFPipeline(object):
 
         self.data['output_dir'] = output_dir
 
-        procs = list()
+    def finish_process(self):
+        """ Finish pipeline. """
 
+        self.data['end'] = datetime.datetime.now().replace(microsecond=0)
+
+        self.data['duration'] = str(self.data.get('end') - self.data.get('start'))
+
+        logger.info("Process with expID {} completed in {}.".format(
+            self.data.get('expid'),
+            self.data.get('duration')
+        ))
+
+        self.models.update_process(
+            process_id=self.data.get('process_id'),
+            end=self.data.get('end'),
+            process_dir=self.data.get('output_dir'),
+            status=self.data.get('status')
+        )
+
+
+class Jobs(QLFProcess):
+
+    def __init__(self, data):
+        super().__init__(data)
+
+    def start_jobs(self):
+        """ Distributes the cameras for parallel processing. """
+
+        procs = list()
         return_cameras = Manager().list()
 
         for camera in self.data.get('cameras'):
@@ -92,9 +118,9 @@ class QLFPipeline(object):
             logger.info('Output log for camera %s: %s' % (
                 camera.get('name'), camera.get('logname')
             ))
-            
+
             job = self.models.insert_job(
-                process_id=process.id,
+                process_id=self.data.get('process_id'),
                 camera=camera.get('name'),
                 start=camera.get('start'),
                 logname=camera.get('logname')
@@ -102,20 +128,20 @@ class QLFPipeline(object):
 
             camera['job_id'] = job.id
 
-            proc = Process(target=self.execute, args=(camera, return_cameras,))
-            procs.append(proc)
+            args = (
+                self.data,
+                camera,
+                return_cameras,
+            )
+
+            proc = Thread(target=self.start_parallel_job, args=args)
             proc.start()
+            procs.append(proc)
 
         for proc in procs:
             proc.join()
 
-        self.data['end'] = datetime.datetime.now().replace(microsecond=0)
-
-        self.data['duration'] = str(
-            self.data.get('end') - self.data.get('start')
-        )
-
-        logger.info("Process finished in %s." % self.data.get('duration'))
+        self.data['cameras'] = return_cameras
 
         logger.info('Begin ingestion of results...')
         start_ingestion = datetime.datetime.now().replace(microsecond=0)
@@ -123,10 +149,22 @@ class QLFPipeline(object):
         # TODO: refactor?
         camera_failed = 0
 
-        self.data['cameras'] = return_cameras
-
         for camera in self.data.get('cameras'):
-            self.update_job(camera)
+            output_path = os.path.join(
+                desi_spectro_redux,
+                self.data.get('output_dir'),
+                'ql-*-%s-%s.yaml' % (
+                    camera.get('name'),
+                    self.data.get('zfill')
+                )
+            )
+
+            self.models.update_job(
+                job_id=camera.get('job_id'),
+                end=camera.get('end'),
+                status=camera.get('status'),
+                output_path=output_path
+            )
 
             if not camera.get('status') == 0:
                 camera_failed += 1
@@ -136,19 +174,122 @@ class QLFPipeline(object):
         if camera_failed > 0:
             status = 1
 
-        self.models.update_process(
-            process_id=process.id,
-            end=self.data.get('end'),
-            status=status
-        )
+        self.data['status'] = status
 
         duration_ingestion = str(
             datetime.datetime.now().replace(microsecond=0) - start_ingestion
         )
 
-        logger.info("Ingestion finished in %s." % duration_ingestion)
+        logger.info("Results ingestion complete in %s." % duration_ingestion)
 
-    def execute(self, camera, return_cameras):
+    @staticmethod
+    def start_parallel_job(data, camera, return_cameras):
+        """ Execute QL Pipeline by camera """
+
+        cmd = [
+            'desi_quicklook',
+            '-i', qlconfig,
+            '-n', data.get('night'),
+            '-c', camera.get('name'),
+            '-e', str(data.get('expid')),
+            '--rawdata_dir', data.get('desi_spectro_data'),
+            '--specprod_dir', desi_spectro_redux
+        ]
+
+        logger.info(
+            "Started job %i on exposure %s and camera %s ... " % (
+            camera.get('job_id'),
+            data.get('expid'),
+            camera.get('name')
+        ))
+
+        logname = io.open(os.path.join(
+            desi_spectro_redux,
+            camera.get('logname')
+        ), 'wb')
+
+        cwd = os.path.join(
+            desi_spectro_redux,
+            data.get('output_dir')
+        )
+
+        with subprocess.Popen(cmd, stdout=logname,
+                              stderr=subprocess.STDOUT, cwd=cwd) as process:
+            while process.poll() is None:
+                logname.flush()
+
+            retcode = process.wait()
+
+        camera['end'] = datetime.datetime.now().replace(microsecond=0)
+        camera['status'] = 0
+        camera['duration'] = str(
+            camera.get('end') - camera.get('start')
+        )
+
+        if retcode < 0:
+            camera['status'] = 1
+            msg = (
+                "Job on exposure %s and camera %s "
+                "finished with code %i in %s"
+            ) % (
+                camera.get('name'),
+                data.get('expid'),
+                retcode,
+                camera.get('duration')
+            )
+            logger.error(msg)
+
+        return_cameras.append(camera)
+
+        logger.info("Finished job %i in %s" % (
+            camera.get('job_id'),
+            camera.get('duration')
+        ))
+
+class JobsParallelIngestion(QLFProcess):
+    """ """
+
+    def __init__(self, data):
+        super().__init__(data)
+
+    def start_jobs(self):
+        """ Distributes the cameras for parallel processing. """
+
+        procs = list()
+        return_cameras = Manager().list()
+
+        for camera in self.data.get('cameras'):
+            args = (
+                camera,
+                return_cameras,
+            )
+
+            proc = Thread(target=self.start_parallel_job, args=args)
+            proc.start()
+            procs.append(proc)
+
+        for proc in procs:
+            proc.join()
+
+        self.data['cameras'] = return_cameras
+
+        # TODO: refactor?
+        camera_failed = 0
+
+        for camera in self.data.get('cameras'):
+            logger.info("Finished ingestion of pipeline results.")
+
+            if not camera.get('status') == 0:
+                camera_failed += 1
+
+        status = 0
+
+        if camera_failed > 0:
+            status = 1
+
+        self.data['status'] = status
+
+    def start_parallel_job(self, camera, return_cameras):
         """ Execute QL Pipeline by camera """
 
         cmd = [
@@ -178,9 +319,7 @@ class QLFPipeline(object):
             self.data.get('output_dir')
         )
 
-        with subprocess.Popen(cmd, stdout=logname,
-                              stderr=subprocess.STDOUT,
-                              cwd=cwd) as process:
+        with subprocess.Popen(cmd, stdout=logname, stderr=subprocess.STDOUT, cwd=cwd) as process:
             while process.poll() is None:
                 logname.flush()
 
@@ -212,42 +351,22 @@ class QLFPipeline(object):
             camera.get('duration')
         ))
 
-    def update_job(self, camera):
-        """ Update job and ingest QA results """
-
-        self.models.update_job(
-            job_id=camera.get('job_id'),
-            end=camera.get('end'),
-            status=camera.get('status')
-        )
-
         output_path = os.path.join(
             desi_spectro_redux,
             self.data.get('output_dir'),
             'ql-*-%s-%s.yaml' % (
                 camera.get('name'),
-                self.data.get('zfill')
+                camera.get('zfill')
             )
         )
 
-        for product in glob.glob(output_path):
-            try:
-                qa = yaml.load(open(product, 'r'))
+        self.models.update_job(
+            job_id=camera.get('job_id'),
+            end=camera.get('end'),
+            status=camera.get('status'),
+            output_path=output_path
+        )
 
-                name = os.path.basename(product)
-                paname = qa['PANAME']
-                metrics = qa['METRICS']
 
-                logger.info("Ingesting %s" % name)
-                self.models.insert_qa(name, paname, metrics, camera.get('job_id'))
-            except Exception:
-                logger.error("Error ingesting %s" % name, exc_info=True)
-
-        logger.info("Finished ingestion of pipeline results for camera {}.".format(camera.get('name')))
-
-    def was_processed(self):
-        """ Returns [<Process object>] if expid was processed else returns [] """
-
-        expid = self.data.get('expid')
-        return self.models.get_expid_in_process(expid)
-
+if __name__ == "__main__":
+    print('Standalone execution...')

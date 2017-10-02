@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework import authentication, permissions, viewsets, filters, status
 from rest_framework.response import Response
+from rest_framework.pagination import LimitOffsetPagination
+
 
 from django.db.models import Max, Min
 from django.db.models import Q
@@ -28,6 +30,64 @@ qlf = Pyro4.Proxy(uri)
 logger = logging.getLogger(__name__)
 
 
+class LargeLimitOffsetPagination(LimitOffsetPagination):
+    default_limit = 100
+    max_limit = 500
+
+
+class StandartLimitOffsetPagination(LimitOffsetPagination):
+    default_limit = 50
+    max_limit = 100
+
+
+class SmallLimitOffsetPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 50
+
+
+class DynamicFieldsMixin(object):
+
+    def list(self, request, *args, **kwargs):
+        fields = request.query_params.get('fields', None)
+
+        if fields:
+            fields = tuple(fields.split(','))
+
+        queryset = self.filter_queryset(self.get_queryset())
+
+        paginate = request.query_params.get('paginate', None)
+
+        self.pagination_class = StandartLimitOffsetPagination
+
+        if paginate == 'small':
+            self.pagination_class = SmallLimitOffsetPagination
+        elif paginate == 'large':
+            self.pagination_class = LargeLimitOffsetPagination
+        elif paginate == 'null':
+            self.pagination_class = None
+
+        if self.pagination_class:
+            page = self.paginate_queryset(queryset)
+
+            if page is not None:
+                serializer = self.get_serializer(page, many=True, fields=fields)
+                return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True, fields=fields)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        fields = request.query_params.get('fields', None)
+
+        if fields:
+            fields = tuple(fields.split(','))
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, fields=fields)
+
+        return Response(serializer.data)
+
+
 class DefaultsMixin(object):
     """
     Default settings for view authentication, permissions,
@@ -42,10 +102,6 @@ class DefaultsMixin(object):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
-
-    paginate_by = 25
-    paginate_by_param = 'page_size'
-    max_paginate_by = 100
 
     # list of available filter_backends, will enable these for all ViewSets
     filter_backends = (
@@ -70,7 +126,7 @@ class LastProcessViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessJobsSerializer
 
 
-class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
+class JobViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""
 
     queryset = Job.objects.order_by('start')
@@ -78,43 +134,54 @@ class JobViewSet(DefaultsMixin, viewsets.ModelViewSet):
     filter_fields = ('process',)
 
 
-class ProcessViewSet(DefaultsMixin, viewsets.ModelViewSet):
+class ProcessViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processes"""
 
     queryset = Process.objects.order_by('start')
     serializer_class = ProcessSerializer
-    filter_fields = ('exposure__id',)
+    filter_fields = ('exposure__exposure_id',)
 
 
-class ConfigurationViewSet(DefaultsMixin, viewsets.ModelViewSet):
+class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing configurations"""
 
     queryset = Configuration.objects.order_by('creation_date')
     serializer_class = ConfigurationSerializer
 
 
-class QAViewSet(DefaultsMixin, viewsets.ModelViewSet):
+class QAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing QA results"""
 
+    filter_fields = ('name',)
     queryset = QA.objects.order_by('name')
     serializer_class = QASerializer
-    filter_fields = ('name',)
+
+    # def get_queryset(self):
+    #     fields = self.request.query_params.get('fields', list())
+    #
+    #     if fields:
+    #         required = ('pk',)
+    #         fields = fields.split(',')
+    #         fields = list(set(list(required) + fields))
+    #         return QA.objects.values(*fields).order_by('name')
+    #
+    #     return QA.objects.order_by('name')
 
 
-class ExposureViewSet(DefaultsMixin, viewsets.ModelViewSet):
+class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing exposures"""
 
-    queryset = Exposure.objects.order_by('expid')
+    queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
 
 
 class DataTableExposureViewSet(viewsets.ModelViewSet):
-    queryset = Exposure.objects.order_by('expid')
+    queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
 
     ORDER_COLUMN_CHOICES = {
         '0': 'dateobs',
-        '1': 'expid',
+        '1': 'exposure_id',
         '2': 'tile',
         '3': 'telra',
         '4': 'teldec',
@@ -128,8 +195,8 @@ class DataTableExposureViewSet(viewsets.ModelViewSet):
         try:
             params = dict(request.query_params)
 
-            start_date = "{} 00:00:00".format(params.get('start_date')[0])
-            end_date = "{} 23:59:59".format(params.get('end_date')[0])
+            start_date = params.get('start_date', [None])[0]
+            end_date = params.get('end_date', [None])[0]
             draw = int(params.get('draw', [1])[0])
             length = int(params.get('length', [10])[0])
             start_items = int(params.get('start', [0])[0])
@@ -143,19 +210,23 @@ class DataTableExposureViewSet(viewsets.ModelViewSet):
             if order == 'desc':
                 order_column = '-' + order_column
 
-            if search_value:
+            if start_date and end_date:
                 queryset = Exposure.objects.filter(
-                    dateobs__range=(start_date, end_date)
-                ).filter(
-                    Q(expid__icontains=search_value) |
+                    dateobs__range=(
+                        "{} 00:00:00".format(start_date),
+                        "{} 23:59:59".format(end_date)
+                    )
+                )
+            else:
+                queryset = Exposure.objects
+
+            if search_value:
+                queryset = queryset.filter(
+                    Q(exposure_id__icontains=search_value) |
                     Q(tile__icontains=search_value) |
                     Q(telra__icontains=search_value) |
                     Q(teldec__icontains=search_value) |
                     Q(flavor__icontains=search_value)
-                )
-            else:
-                queryset = Exposure.objects.filter(
-                    dateobs__range=(start_date, end_date)
                 )
 
             count = queryset.count()
@@ -173,7 +244,7 @@ class DataTableExposureViewSet(viewsets.ModelViewSet):
             return Response(e, status=status.HTTP_404_NOT_FOUND, template_name=None, content_type=None)
 
 
-class CameraViewSet(DefaultsMixin, viewsets.ModelViewSet):
+class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing cameras"""
 
     queryset = Camera.objects.order_by('camera')
@@ -191,8 +262,9 @@ def restart(request):
     return HttpResponseRedirect('dashboard/monitor')
 
 def observing_history(request):
-    start_date = Exposure.objects.all().aggregate(Min('dateobs'))['dateobs__min']
-    end_date = Exposure.objects.all().aggregate(Max('dateobs'))['dateobs__max']
+    exposure = Exposure.objects.all()
+    start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']
+    end_date = exposure.aggregate(Max('dateobs'))['dateobs__max']
 
     if not start_date and not end_date:
         end_date = start_date = datetime.datetime.now()
@@ -227,6 +299,7 @@ def embed_bokeh(request, bokeh_app):
                'bokeh_app': bokeh_app}
 
     status = qlf.get_status()
+
     if status == True:
         messages.success(request, "Running")
     elif status == False:

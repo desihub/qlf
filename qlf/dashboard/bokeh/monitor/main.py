@@ -94,7 +94,7 @@ def update(t):
             log = str()
 
             try:
-                for item in PROCESS.get("jobs", list()):
+                for item in PROCESS.get("process_jobs", list()):
                     if cam == item.get("camera"):
                         cameralog = os.path.join(desi_spectro_redux, item.get('logname'))
                         break

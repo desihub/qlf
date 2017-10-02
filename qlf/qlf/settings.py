@@ -93,13 +93,15 @@ DATABASES = {
     }
 }
 
+HOSTNAME = os.environ.get('HOSTNAME', 'localhost')
+
 BOKEH_URL='http://{}:{}'.format(
-    os.environ.get('BOKEH_SERVER', 'localhost'),
+    os.environ.get('BOKEH_SERVER', HOSTNAME),
     os.environ.get('BOKEH_PORT', '5006')
 )
 
 QLF_DAEMON_URL='PYRO:{}@{}:{}'.format(
     os.environ.get('QLF_DAEMON_NS', 'qlf.daemon'),
-    os.environ.get('QLF_DAEMON_HOST', 'localhost'),
+    os.environ.get('QLF_DAEMON_HOST', HOSTNAME),
     str(os.environ.get('QLF_DAEMON_PORT', 56005))
 )

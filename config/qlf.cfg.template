@@ -23,6 +23,8 @@ logfile=
 # e.g. $QLF_ROOT/desispec/py/desispec/data/quicklook/qlconfig_dark.yaml
 qlconfig=
 
+parallel_ingestion=False
+
 [data]
 # Which night to process? we do not support a list of nights yet.
 night=20190101

@@ -1,4 +1,4 @@
-from bokeh.layouts import row, column, gridplot, widgetbox
+from bokeh.layouts import row, column, widgetbox
 from bokeh.models import ColumnDataSource, Slider, CheckboxGroup, RadioButtonGroup, Div, LabelSet,\
     OpenURL, TapTool, HoverTool
 
@@ -11,18 +11,22 @@ import pandas as pd
 
 # Get the list of exposures
 exposures = get_exposures()
-print(exposures)
 
-# By default display the last one on the interface
-expid = exposures['expid'][-1]
-flavor = exposures['flavor'][-1]
+expid = None
 
-# Page title reflects the selected exposure
-title = Div(text="<h3>Exposure ID {} ({})</h3>".format(expid, flavor))
+if exposures['expid']:
+    exposures['expid'] = sorted(exposures['expid'])
 
-# Here we configure a 'slider' to change the exposure
-slider = Slider(start=exposures['expid'][0], end=expid,
-                value=expid, step=1, title="EXPID")
+    # By default display the last one on the interface
+    expid = exposures['expid'][-1]
+    flavor = exposures['flavor'][-1]
+
+    # Page title reflects the selected exposure
+    title = Div(text="<h3>Exposure ID {} ({})</h3>".format(expid, flavor))
+
+    # Here we configure a 'slider' to change the exposure
+    slider = Slider(start=exposures['expid'][0], end=expid,
+                    value=expid, step=1, title="EXPOSURE ID")
 
 # Now we configure the camera grid layout
 
@@ -98,7 +102,6 @@ def update(expid):
     # Fill up the datasource with properties of each camera
 
     for camera in cameras:
-
         arm = camera['arm']
         spectrograph = int(camera['spectrograph'])
 
@@ -125,14 +128,15 @@ def update(expid):
 
     source.stream(source.data, 30)
 
-# Update camera grid with data from the last exposure
-update(expid)
+if expid:
+    # Update camera grid with data from the last exposure
+    update(expid)
 
 # Here we configure the tap tool to open the drill down plots for the selected camera and metric
 
 # TODO: for now it is fixed for the SNR metric which will open the SNR vs. Mag plot
 
-url = "http://localhost:8000/dashboard/qasnr?exposure={}&arm=@arm&spectrograph=@spectrograph".format(expid)
+url = "/dashboard/qasnr?exposure={}&arm=@arm&spectrograph=@spectrograph".format(expid)
 
 taptool = p.select(type=TapTool)
 taptool.callback = OpenURL(url=url)

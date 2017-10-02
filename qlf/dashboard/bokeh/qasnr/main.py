@@ -5,8 +5,8 @@ from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
 
-from dashboard.bokeh.helper import get_data, get_exposures, \
-    init_xy_plot, get_url_args, get_arms_and_spectrographs_by_expid
+from dashboard.bokeh.helper import get_data, get_exposure_ids, \
+    init_xy_plot, get_url_args, get_arms_and_spectrographs
 
 QLF_API_URL = os.environ.get(
     'QLF_API_URL',
@@ -33,14 +33,22 @@ lrg = ColumnDataSource(data=data_model.copy())
 qso = ColumnDataSource(data=data_model.copy())
 star = ColumnDataSource(data=data_model.copy())
 
-def update(arm, spectrograph, expid):
+params = [
+    'ELG_SNR_MAG', 'ELG_FIBERID',
+    'LRG_SNR_MAG', 'LRG_FIBERID',
+    'QSO_SNR_MAG', 'QSO_FIBERID',
+    'STAR_SNR_MAG', 'STAR_FIBERID',
+    'RA', 'DEC'
+]
 
-    exp_zfill = str(expid).zfill(8)
+
+def update(arm, spectrograph, exposure_id):
+    exp_zfill = str(exposure_id).zfill(8)
 
     # get the data
     qa_snr = 'ql-snr-{}-{}.yaml'.format(arm + spectrograph, exp_zfill)
 
-    data = get_data(name=qa_snr)
+    data = get_data(qa_snr, params)
 
     if not data.empty:
         # drop rows that have ELG_FIBERID null
@@ -85,17 +93,19 @@ def update(arm, spectrograph, expid):
         star.stream(star.data, 30)
 
 # configure bokeh widgets
-exposure = get_exposures()
+exposure = get_exposure_ids()
 
-if not exposure['expid']:
-    exposure['expid'].append(int(selected_exposure))
+if not exposure:
+    exposure.append(int(selected_exposure))
+
+exposure = sorted(exposure)
 
 exp_slider = Slider(
-    start=exposure['expid'][0], end=exposure['expid'][-1],
+    start=int(exposure[0]), end=int(exposure[-1]),
     value=int(selected_exposure), step=1,
     title="Exposure ID")
 
-cameras = get_arms_and_spectrographs_by_expid(selected_exposure)
+cameras = get_arms_and_spectrographs()
 
 if not cameras["spectrographs"]:
     cameras["spectrographs"].append(selected_spectrograph)
