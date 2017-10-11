@@ -21,6 +21,7 @@ from django.conf import settings
 from bokeh.embed import autoload_server
 from django.template import loader
 from django.http import HttpResponse
+from django.http import JsonResponse
 
 from django.contrib import messages
 import logging
@@ -250,16 +251,33 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
 
+
 def start(request):
     qlf.start()
     return HttpResponseRedirect('dashboard/monitor')
+
+
 def stop(request):
     qlf.stop()
     return HttpResponseRedirect('dashboard/monitor')
 
+
 def restart(request):
     qlf.restart()
     return HttpResponseRedirect('dashboard/monitor')
+
+
+def daemon_status(request):
+    qlf_status = qlf.get_status()
+    return JsonResponse({'status': qlf_status})
+
+
+def run_manual_mode(request):
+
+    print(request)
+
+    return JsonResponse({'data': ''})
+
 
 def observing_history(request):
     exposure = Exposure.objects.all()

@@ -1,12 +1,14 @@
 import os
 
+HOSTNAME = os.environ.get('QLF_HOSTNAME', 'localhost')
+
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
 )
 
 SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(32))
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', HOSTNAME).split(',')
 
 SITE_PAGES_DIRECTORY = os.path.join(BASE_DIR, 'layouts')
 
@@ -92,8 +94,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-HOSTNAME = os.environ.get('HOSTNAME', 'localhost')
 
 BOKEH_URL='http://{}:{}'.format(
     os.environ.get('BOKEH_SERVER', HOSTNAME),

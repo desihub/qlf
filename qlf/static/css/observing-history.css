@@ -14,3 +14,21 @@ span.border-lr-without {
 td.highlight {
     background-color: whitesmoke !important;
 }
+
+#btn-manual-exec {
+    margin-left: 3px;
+    margin-top: 10px;
+    margin-bottom: 13px;
+}
+
+#alert-manual-exec > div.alert {
+    margin-bottom: 0;
+}
+
+.btn-alert {
+    width: 45px;
+}
+
+tr.selected {
+    background-color: #DEDEDE;
+}
