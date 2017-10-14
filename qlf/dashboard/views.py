@@ -3,7 +3,6 @@ from rest_framework import authentication, permissions, viewsets, filters, statu
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
-
 from django.db.models import Max, Min
 from django.db.models import Q
 
@@ -28,6 +27,10 @@ import logging
 
 uri = settings.QLF_DAEMON_URL
 qlf = Pyro4.Proxy(uri)
+
+uri_manual = settings.QLF_MANUAL_URL
+qlf_manual = Pyro4.Proxy(uri_manual)
+
 logger = logging.getLogger(__name__)
 
 
@@ -117,12 +120,12 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         try:
-            last_process = Process.objects.latest('pk').id
+            process_id = Process.objects.latest('pk').id
         except Process.DoesNotExist as error:
             logger.debug(error)
-            last_process = None
+            process_id = None
 
-        return Process.objects.filter(id=last_process)
+        return Process.objects.filter(id=process_id)
 
     serializer_class = ProcessJobsSerializer
 
@@ -253,6 +256,11 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
 
 def start(request):
+    qlf_manual_status = qlf_manual.get_status()
+
+    if qlf_manual_status:
+        qlf_manual.stop()
+
     qlf.start()
     return HttpResponseRedirect('dashboard/monitor')
 
@@ -263,20 +271,53 @@ def stop(request):
 
 
 def restart(request):
+    qlf_manual_status = qlf_manual.get_status()
+
+    if qlf_manual_status:
+        qlf_manual.stop()
+
     qlf.restart()
     return HttpResponseRedirect('dashboard/monitor')
 
 
 def daemon_status(request):
-    qlf_status = qlf.get_status()
-    return JsonResponse({'status': qlf_status})
+    ql_status = True
+
+    run_auto = qlf.get_status()
+    run_manual = qlf_manual.get_status()
+
+    if run_auto:
+        message = "Please stop the automatic execution before executing the manual processing."
+    elif run_manual:
+        message = "There is already a sequence of exposures being processed."
+    elif qlf.is_running():
+        message = "Wait for processing to complete."
+    else:
+        message = "Ok"
+        ql_status = False
+
+    return JsonResponse({'status': ql_status, 'message': message})
 
 
 def run_manual_mode(request):
 
-    print(request)
+    qlf_auto_status = qlf.get_status()
 
-    return JsonResponse({'data': ''})
+    if qlf_auto_status:
+        return JsonResponse({
+            "success": False,
+            "message": "Please stop the automatic execution before executing the manual processing."
+        })
+
+    exposures = request.GET.getlist('exposures[]')
+    logger.info(exposures)
+
+    qlf_manual.start(exposures)
+
+    return JsonResponse({
+        "success": True,
+        "message": "Processing in background."
+    })
 
 
 def observing_history(request):

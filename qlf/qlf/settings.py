@@ -105,3 +105,9 @@ QLF_DAEMON_URL='PYRO:{}@{}:{}'.format(
     os.environ.get('QLF_DAEMON_HOST', HOSTNAME),
     str(os.environ.get('QLF_DAEMON_PORT', 56005))
 )
+
+QLF_MANUAL_URL='PYRO:{}@{}:{}'.format(
+    os.environ.get('QLF_MANUAL_NS', 'qlf.manual'),
+    os.environ.get('QLF_DAEMON_HOST', HOSTNAME),
+    str(os.environ.get('QLF_DAEMON_PORT', 56005))
+)

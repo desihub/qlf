@@ -10,6 +10,14 @@ $.prototype.note = function(message, options) {
 
     var buttons = [];
     var alarm = "danger"
+
+    console.log(options)
+
+    if (options.alarm) {
+        console.log(options.alarm)
+        alarm = options.alarm;
+    }
+
     var main_class = "alert alert-" + alarm;
 
     if (Array.isArray(options.buttons)) {

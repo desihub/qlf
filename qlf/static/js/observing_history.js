@@ -31,12 +31,11 @@ $(document).ready(function() {
                         var options = {};
 
                         $("#alert-manual-exec").note(
-                            "Please stop the automatic execution before executing the manual processing.",
+                            data.message,
                             options
                         );
 
                     } else {
-
                         console.log('Running manual mode...');
 
                         $.ajax( {
@@ -44,7 +43,22 @@ $(document).ready(function() {
                             data: { 'exposures': exposures },
                             dataType: 'json',
                             success: function(data) {
-                                console.log('In background...')
+
+                                if (!data['success']) {
+                                    $("#alert-manual-exec").note(
+                                        data['message']
+                                    );
+                                    return false
+                                }
+
+                                window.open('/dashboard/monitor/', 'monitorAPP', 'toolbar=0,location=0,menubar=0').focus();
+
+                                $("#alert-manual-exec").note(
+                                    data['message'],
+                                    {'alarm': 'success'}
+                                );
+
+                                return true
                             }
                         } );
 
