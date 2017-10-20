@@ -193,6 +193,7 @@ class Jobs(QLFProcess):
             '-c', camera.get('name'),
             '-e', str(data.get('expid')),
             '--rawdata_dir', data.get('desi_spectro_data'),
+            '--mergeQA',
             '--specprod_dir', desi_spectro_redux
         ]
 
@@ -299,6 +300,7 @@ class JobsParallelIngestion(QLFProcess):
             '-c', camera.get('name'),
             '-e', str(self.data.get('expid')),
             '--rawdata_dir', self.data.get('desi_spectro_data'),
+            '--mergeQA',
             '--specprod_dir', desi_spectro_redux
         ]
 
