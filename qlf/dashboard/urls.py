@@ -21,6 +21,8 @@ urlpatterns = [
     url(r'^start', views.start, name='start'),
     url(r'^stop', views.stop, name='stop'),
     url(r'^restart', views.restart, name='restart'),
+    url(r'^daemon_status', views.daemon_status, name='daemon_status'),
+    url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
     url(r'^dashboard/(?P<bokeh_app>\w+)/$', views.embed_bokeh, name='embed-bokeh'),
