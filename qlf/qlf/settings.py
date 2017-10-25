@@ -1,12 +1,14 @@
 import os
 
+HOSTNAME = os.environ.get('QLF_HOSTNAME', 'localhost')
+
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
 )
 
 SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(32))
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', HOSTNAME).split(',')
 
 SITE_PAGES_DIRECTORY = os.path.join(BASE_DIR, 'layouts')
 
@@ -93,8 +95,6 @@ DATABASES = {
     }
 }
 
-HOSTNAME = os.environ.get('HOSTNAME', 'localhost')
-
 BOKEH_URL='http://{}:{}'.format(
     os.environ.get('BOKEH_SERVER', HOSTNAME),
     os.environ.get('BOKEH_PORT', '5006')
@@ -102,6 +102,12 @@ BOKEH_URL='http://{}:{}'.format(
 
 QLF_DAEMON_URL='PYRO:{}@{}:{}'.format(
     os.environ.get('QLF_DAEMON_NS', 'qlf.daemon'),
+    os.environ.get('QLF_DAEMON_HOST', HOSTNAME),
+    str(os.environ.get('QLF_DAEMON_PORT', 56005))
+)
+
+QLF_MANUAL_URL='PYRO:{}@{}:{}'.format(
+    os.environ.get('QLF_MANUAL_NS', 'qlf.manual'),
     os.environ.get('QLF_DAEMON_HOST', HOSTNAME),
     str(os.environ.get('QLF_DAEMON_PORT', 56005))
 )
