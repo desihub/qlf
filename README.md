@@ -17,15 +17,17 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     cd $QLF_ROOT
    
     git clone https://github.com/desihub/qlf.git
+    cd qlf
+    git checkout merge_qa_ohio
     ```
 
-2. Install software dependencies and create conda environment 
+2. Install software dependencies and create miniconda environment 
+
+    NOTE: install miniconda3 following instructions [here](https://conda.io/docs/install/quick.html) and make sure ~/miniconda3/bin is in your PATH by running `echo $PATH` and checking your .bashrc (or related)
 
     ```
     source ~/miniconda3/bin/activate root
     ```
-    
-    NOTE: if you don't have conda installed we recommend installing miniconda3 follow the instructions [here](https://conda.io/docs/install/quick.html) and make sure ~/miniconda3/bin is in your PATH by running `echo $PATH` and checking your .bashrc (or related)
    
     ```
     conda config --add channels conda-forge
@@ -38,8 +40,13 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
 
     ```
     cd $QLF_ROOT
-    git clone https://github.com/desihub/desispec.git
+    git clone https://github.com/desihub/desispec.git 
     git clone https://github.com/desihub/desiutil.git
+    cd desispec
+    git checkout 885661aa99b29f151c95b3a16d08e43a8e572080
+    cd ../desiutil
+    git checkout 1.9.7
+    cd ..
     ```
   
     Test if DESI Quick Look pipeline is available (optional)
@@ -94,13 +101,16 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
 
 ### Running QLF
 
-1. Activate the `quicklook` environment
+1. Activate the `quicklook` environment and export paths
     
     ```
     source ~/miniconda3/bin/activate quicklook
     export QLF_ROOT=$HOME/quicklook
     export DESI_SPECTRO_DATA=$QLF_ROOT/spectro/data
     export DESI_SPECTRO_REDUX=$QLF_ROOT/spectro/redux
+    export QL_SPEC_DATA=$DESI_SPECTRO_DATA
+    export QL_SPEC_REDUX=$DESI_SPECTRO_REDUX
+
 
     ```
 
