@@ -19,6 +19,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     git clone https://github.com/desihub/qlf.git
     cd qlf
     git checkout merge_qa_ohio
+    cd ..
     ```
 
 2. Install software dependencies and create miniconda environment 
