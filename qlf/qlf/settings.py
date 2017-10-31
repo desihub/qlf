@@ -24,7 +24,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'dashboard',
-    'debug_toolbar'
+    'debug_toolbar',
+    'channels',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -111,3 +112,10 @@ QLF_MANUAL_URL='PYRO:{}@{}:{}'.format(
     os.environ.get('QLF_DAEMON_HOST', HOSTNAME),
     str(os.environ.get('QLF_DAEMON_PORT', 56005))
 )
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "ROUTING": "qlf.routing.channel_routing",
+    },
+}

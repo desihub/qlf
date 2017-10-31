@@ -54,3 +54,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+qlf/db.sqlite3
+config/qlf.cfg
