@@ -111,7 +111,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     export DESI_SPECTRO_REDUX=$QLF_ROOT/spectro/redux
     export QL_SPEC_DATA=$DESI_SPECTRO_DATA
     export QL_SPEC_REDUX=$DESI_SPECTRO_REDUX
-
+    export OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
 
     ```
 
