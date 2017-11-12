@@ -4,15 +4,18 @@ from channels import Group
 def ws_add(message):
     # Accept the connection
     message.reply_channel.send({"accept": True})
-    # Add to the chat group
-    Group("chat").add(message.reply_channel)
+    # Add to the monitor group
+    Group("monitor").add(message.reply_channel)
+    Group("monitor").send({
+        "text": "teste",
+    })
 
 # Connected to websocket.receive
 def ws_message(message):
-    Group("chat").send({
-        "text": "[user] %s" % message.content['text'],
+    Group("monitor").send({
+        "text": "%s" % message.content['text'],
     })
 
 # Connected to websocket.disconnect
 def ws_disconnect(message):
-    Group("chat").discard(message.reply_channel)
+    Group("monitor").discard(message.reply_channel)
