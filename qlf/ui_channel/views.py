@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from channels import Group
-import subprocess, fcntl, os
+import subprocess, fcntl, os, json
 import configparser
 import logging
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 def open_stream(filename):
     qlf_root = os.getenv('QLF_ROOT')
@@ -24,16 +26,13 @@ def open_stream(filename):
         logger.warn(e)
 
 def send_message(request):
-    Group("monitor").send({
-        "text": 'aqui',
-    })
-    print('abcas')
     logfile = open_stream('logfile')
     file = open(logfile, "r")
     lines = file.readlines()
-    for line in lines:
-      open('/app/debug.log', 'w').write(str(line))
-      Group("monitor").send({
-          "text": line,
-      })
+    Group("monitor").send({
+        "text": json.dumps({
+            "lines": lines,
+        })
+    })
+    # open('/app/debug.log', 'w').write(str("x\n"))
     return HttpResponse(status=201)

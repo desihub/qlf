@@ -1,4 +1,5 @@
 from channels import Group
+import json
 
 # Connected to websocket.connect
 def ws_add(message):
@@ -7,13 +8,17 @@ def ws_add(message):
     # Add to the monitor group
     Group("monitor").add(message.reply_channel)
     Group("monitor").send({
-        "text": "teste",
+        "text": json.dumps({
+            "text": "teste"
+        })
     })
 
 # Connected to websocket.receive
 def ws_message(message):
     Group("monitor").send({
-        "text": "%s" % message.content['text'],
+        "text": json.dumps({
+            "text": "%s" % message.content['text']
+        })
     })
 
 # Connected to websocket.disconnect
