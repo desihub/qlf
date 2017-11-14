@@ -12,6 +12,7 @@ scikit-learn
 matplotlib
 channels
 asgi_redis
+schedule
 
 # Packages required by the DESI Quick Look framework
 
