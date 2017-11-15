@@ -26,6 +26,7 @@ INSTALLED_APPS = (
     'dashboard',
     'debug_toolbar',
     'channels',
+    'ui_channel',
 )
 
 MIDDLEWARE_CLASSES = (

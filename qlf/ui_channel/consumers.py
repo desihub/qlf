@@ -1,15 +1,17 @@
 from channels import Group
 import json
+from ui_channel.upstream import start_uptream
 
 # Connected to websocket.connect
 def ws_add(message):
+    start_uptream()
     # Accept the connection
     message.reply_channel.send({"accept": True})
     # Add to the monitor group
     Group("monitor").add(message.reply_channel)
     Group("monitor").send({
         "text": json.dumps({
-            "text": "teste"
+            "status": "connected"
         })
     })
 

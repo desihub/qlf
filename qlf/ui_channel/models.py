@@ -3,14 +3,9 @@ from django.db import models
 # Create your models here.
 
 class QlfState(models.Model):
-    class Meta:
-        abstract = True
+    daemon_status = models.BooleanField(default=False)
+    upstream_status = models.BooleanField(default=False)
 
-    running = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        self.pk = 1
-        super(QlfState, self).save(*args, **kwargs)
     def delete(self, *args, **kwargs):
         pass
 

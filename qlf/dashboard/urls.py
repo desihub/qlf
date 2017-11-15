@@ -4,7 +4,6 @@ from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from . import views
 from ui_channel import views as WebsocketView
-from ui_channel.upstream import start_uptream
 
 admin.site.site_header = 'QLF Admin'
 
@@ -31,8 +30,6 @@ urlpatterns = [
     url(r'^dashboard/(?P<bokeh_app>\w+)/$', views.embed_bokeh, name='embed-bokeh'),
     url(r'^dashboard/observing_history', views.observing_history, name='observing_history')
 ]
-
-start_uptream()
 
 if settings.DEBUG:
     import debug_toolbar
