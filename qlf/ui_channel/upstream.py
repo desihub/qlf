@@ -4,9 +4,18 @@ import schedule
 import json
 from .models import QlfState
 from channels import Group
+import Pyro4
+from django.conf import settings
+
+uri = settings.QLF_DAEMON_URL
+qlf = Pyro4.Proxy(uri)
 
 def job():
     state = QlfState.load()
+    if qlf.get_status() != state.daemon_status:
+        state.daemon_status = qlf.get_status()
+        state.save()
+
     Group("monitor").send({
         "text": json.dumps({
             "daemon_status": state.daemon_status,
