@@ -116,7 +116,10 @@ QLF_MANUAL_URL='PYRO:{}@{}:{}'.format(
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
         "ROUTING": "qlf.routing.channel_routing",
     },
 }
