@@ -8,7 +8,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-def open_stream(filename):
+def open_file(filename):
     qlf_root = os.getenv('QLF_ROOT')
     cfg = configparser.ConfigParser()
 
@@ -26,7 +26,7 @@ def open_stream(filename):
         logger.warn(e)
 
 def send_message(request):
-    logfile = open_stream('logfile')
+    logfile = open_file('logfile')
     file = open(logfile, "r")
     lines = file.readlines()
     Group("monitor").send({

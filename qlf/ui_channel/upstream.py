@@ -6,27 +6,85 @@ from .models import QlfState
 from channels import Group
 import Pyro4
 from django.conf import settings
-from .views import open_stream
+from .views import open_file
+import subprocess
+import os
+import configparser
+
+from dashboard.bokeh.helper import get_last_process
+
+qlf_root = os.getenv('QLF_ROOT')
+cfg = configparser.ConfigParser()
+
+try:
+    cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+except Exception as error:
+    logger.error(error)
+    logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+
+def get_camera_log(cam):
+    process = get_last_process()
+    cameralog = None
+    log = str()
+    try:
+        for item in process[0].get("process_jobs"):
+            if cam == item.get("camera"):
+                cameralog = os.path.join(desi_spectro_redux, item.get('logname'))
+                break
+        if cameralog:
+            arq = open(cameralog, 'r')
+            log = arq.readlines()
+            return log
+
+    except Exception as e:
+        print(e)
+        return "Error"
 
 uri = settings.QLF_DAEMON_URL
 qlf = Pyro4.Proxy(uri)
 
-def job():
+uri_manual = settings.QLF_MANUAL_URL
+qlf_manual = Pyro4.Proxy(uri_manual)
+
+def start_daemon():
+    qlf_manual_status = qlf_manual.get_status()
+
+    if qlf_manual_status:
+        qlf_manual.stop()
+
+    qlf_manual.start()
+
+def stop_daemon():
+    qlf_manual.stop()
+
+def get_current_state():
     state = QlfState.load()
+    process = get_last_process()
     if qlf.get_status() != state.daemon_status:
         state.daemon_status = qlf.get_status()
         state.save()
 
-    logfile = open_stream('logfile')
-    file = open(logfile, "r")
-    lines = file.readlines()
+    logfile = open_file('logfile')
+    if len(process) > 0:
+        exposure = process[0].get("exposure")
+    else:
+        exposure = ''
 
-    Group("monitor").send({
-        "text": json.dumps({
+    lines = subprocess.check_output(['tail', '-100', logfile])
+    lines_array = lines.strip().decode('utf-8').split("\n")
+    return json.dumps({
             "daemon_status": state.daemon_status,
             "upstream_status": state.upstream_status,
-            "lines": lines,
+            "lines": lines_array,
+            "exposure": exposure,
         })
+
+def job():
+    state = get_current_state()
+
+    Group("monitor").send({
+        "text": state
     })
 
 def run_threaded(job_func):
