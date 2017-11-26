@@ -10,6 +10,7 @@ from .views import open_file
 import subprocess
 import os
 import configparser
+import requests
 
 from dashboard.bokeh.helper import get_last_process
 
@@ -48,15 +49,12 @@ uri_manual = settings.QLF_MANUAL_URL
 qlf_manual = Pyro4.Proxy(uri_manual)
 
 def start_daemon():
-    qlf_manual_status = qlf_manual.get_status()
-
-    if qlf_manual_status:
-        qlf_manual.stop()
-
-    qlf_manual.start()
+    start_url = settings.QLF_BASE_URL + '/start'
+    requests.get(start_url)
 
 def stop_daemon():
-    qlf_manual.stop()
+    stop_url = settings.QLF_BASE_URL + '/stop'
+    requests.get(stop_url)
 
 def get_current_state():
     state = QlfState.load()

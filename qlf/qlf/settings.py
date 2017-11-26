@@ -114,6 +114,8 @@ QLF_MANUAL_URL='PYRO:{}@{}:{}'.format(
     str(os.environ.get('QLF_DAEMON_PORT', 56005))
 )
 
+QLF_BASE_URL = os.environ.get('QLF_BASE_URL', 'http://localhost:8000')
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
