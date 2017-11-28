@@ -11,6 +11,7 @@ import subprocess
 import os
 import configparser
 import requests
+from ui_channel.camera_status import get_camera_status
 
 from dashboard.bokeh.helper import get_last_process
 
@@ -57,6 +58,7 @@ def stop_daemon():
     requests.get(stop_url)
 
 def get_current_state():
+    camera_status = get_camera_status()
     state = QlfState.load()
     process = get_last_process()
     if qlf.get_status() != state.daemon_status:
@@ -76,6 +78,7 @@ def get_current_state():
             "upstream_status": state.upstream_status,
             "lines": lines_array,
             "exposure": exposure,
+            "cameras": camera_status,
         })
 
 def job():
