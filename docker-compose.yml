@@ -1,0 +1,29 @@
+version: '3'
+services:
+  db: 
+    image: postgres
+    environment:
+      - POSTGRES_USER=qlf
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=qlfdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  qlf:
+    build: .
+    environment:
+      - QLF_API_URL=http://localhost:8000/dashboard/api
+      - QLF_BASE_URL=http://localhost:8000
+      - QLF_HOSTNAME=localhost
+    volumes:
+      - .:/app
+    restart: always
+    working_dir: /app/
+    command: ./run.sh
+    ports:
+      - "8000:8000"
+      - "5006:5006"
+      - "56005:56005"
+    links:
+      - db
