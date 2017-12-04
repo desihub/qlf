@@ -11,17 +11,16 @@ emulate_dos=True
 # previous exposure is done 
 exptime=0 
 
-
 # Log level, e.g. DEBUG, INFO, WARNING or ERROR
 loglevel=INFO
 
 # Log file name, e.g. $QLF_ROOT/qlf.log this is the main place for following
 # the progress of the data reduction
-logfile=
+logfile=/app/qlf.log
 
 # Configuration file for the quick look pipeline
 # e.g. $QLF_ROOT/desispec/py/desispec/data/quicklook/qlconfig_dark.yaml
-qlconfig=
+qlconfig=/app/desispec/py/desispec/data/quicklook/qlconfig_dark.yaml
 
 parallel_ingestion=False
 
@@ -39,18 +38,15 @@ exposures=3,4
 # cameras to be processed, camera=arm+spectrograph
 
 # b,r,z
-arms=b,r,z
+arms=r
 
 # 0,1,2,3,4,5,6,7,8,9
 spectrographs=0,1
 
-
 [namespace]
 # Input data directory, e.g. $DESI_SPECTRO_DATA
-desi_spectro_data=
+desi_spectro_data=/app/spectro/data
 
 # Processing output, e.g. $DESI_SPECTRO_REDUX or some other local (fast) scratch area
 # Note: this directory is created by QLF if it does not exist.
-desi_spectro_redux=
-
-
+desi_spectro_redux=/app/spectro/redux

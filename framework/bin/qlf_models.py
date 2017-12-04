@@ -43,7 +43,7 @@ class QLFModels(object):
         # Save Process for this exposure
         return Exposure.objects.get(exposure_id=expid)
 
-    def insert_process(self, data, pipeline_name):
+    def insert_process(self, data):
         """ Inserts initial data in process table. """
 
         exposure = self.insert_exposure(
@@ -60,7 +60,7 @@ class QLFModels(object):
         process = Process(
             exposure_id=exposure.exposure_id,
             start=data.get('start'),
-            pipeline_name=pipeline_name
+            pipeline_name=data.get('pipeline_name')
         )
 
         process.save()
@@ -103,7 +103,7 @@ class QLFModels(object):
         # Save Job for this camera
         return Camera.objects.get(camera=camera)
 
-    def insert_job(self, process_id, camera, start, logname, version='1.0'):
+    def insert_job(self, process_id, camera, logname, version='1.0'):
         """ Insert job and camera if necessary. """
 
         camera = self.insert_camera(camera)
@@ -111,7 +111,6 @@ class QLFModels(object):
         job = Job(
             process_id=process_id,
             camera_id=camera,
-            start=start,
             logname=logname,
             version=version
         )
@@ -130,10 +129,11 @@ class QLFModels(object):
 
         return process
 
-    def update_job(self, job_id, end, status, output_path):
+    def update_job(self, job_id, start, end, status, output_path):
         """ Updates job with execution results. """
 
         Job.objects.filter(id=job_id).update(
+            start=start,
             end=end,
             status=status
         )
