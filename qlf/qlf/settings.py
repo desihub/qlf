@@ -125,3 +125,7 @@ CHANNEL_LAYERS = {
         "ROUTING": "qlf.routing.channel_routing",
     },
 }
+
+X_FRAME_OPTIONS = 'ALLOWALL'
+
+XS_SHARING_ALLOWED_METHODS = ['POST','GET','OPTIONS', 'PUT', 'DELETE']

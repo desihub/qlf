@@ -13,6 +13,7 @@ matplotlib
 channels
 asgi_redis
 schedule
+pyyaml
 
 # Packages required by the DESI Quick Look framework
 
