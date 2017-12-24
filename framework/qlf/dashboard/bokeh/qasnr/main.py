@@ -93,52 +93,52 @@ def update(arm, spectrograph, exposure_id):
         star.stream(star.data, 30)
 
 # configure bokeh widgets
-exposure = get_exposure_ids()
+# exposure = get_exposure_ids()
 
-if not exposure:
-    exposure.append(int(selected_exposure))
+# if not exposure:
+#     exposure.append(int(selected_exposure))
 
-exposure = sorted(exposure)
+# exposure = sorted(exposure)
 
-exp_slider = Slider(
-    start=int(exposure[0]), end=int(exposure[-1]),
-    value=int(selected_exposure), step=1,
-    title="Exposure ID")
+# exp_slider = Slider(
+#     start=int(exposure[0]), end=int(exposure[-1]),
+#     value=int(selected_exposure), step=1,
+#     title="Exposure ID")
 
-cameras = get_arms_and_spectrographs()
+# cameras = get_arms_and_spectrographs()
 
-if not cameras["spectrographs"]:
-    cameras["spectrographs"].append(selected_spectrograph)
+# if not cameras["spectrographs"]:
+#     cameras["spectrographs"].append(selected_spectrograph)
 
-if not cameras["arms"]:
-    cameras["arms"].append(selected_arm)
+# if not cameras["arms"]:
+#     cameras["arms"].append(selected_arm)
 
-# we can filter by spectrograph
-spectrograph_select = Select(
-    title="Spectrograph:",
-    value=selected_spectrograph,
-    options=cameras["spectrographs"],
-    width=100)
+# # we can filter by spectrograph
+# spectrograph_select = Select(
+#     title="Spectrograph:",
+#     value=selected_spectrograph,
+#     options=cameras["spectrographs"],
+#     width=100)
 
-# and arm
-arm_select = Select(
-    title="Arm:",
-    options=cameras['arms'],
-    value=selected_arm,
-    width=100)
+# # and arm
+# arm_select = Select(
+#     title="Arm:",
+#     options=cameras['arms'],
+#     value=selected_arm,
+#     width=100)
 
-def arm_handler(attr, old, value):
-    update(value, spectrograph_select.value, exp_slider.value)
+# def arm_handler(attr, old, value):
+#     update(value, spectrograph_select.value, exp_slider.value)
 
-def spectrograph_handler(attr, old, value):
-    update(arm_select.value, value, exp_slider.value)
+# def spectrograph_handler(attr, old, value):
+#     update(arm_select.value, value, exp_slider.value)
 
-def exposure_handler(attr, old, value):
-    update(arm_select.value, spectrograph_select.value, value)
+# def exposure_handler(attr, old, value):
+#     update(arm_select.value, spectrograph_select.value, value)
 
-arm_select.on_change("value", arm_handler)
-spectrograph_select.on_change("value", spectrograph_handler)
-exp_slider.on_change("value", exposure_handler)
+# arm_select.on_change("value", arm_handler)
+# spectrograph_select.on_change("value", spectrograph_handler)
+# exp_slider.on_change("value", exposure_handler)
 
 # here we make the plots
 html_tooltip = """
@@ -213,10 +213,12 @@ update(selected_arm, selected_spectrograph, selected_exposure)
 plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=True)
 
 # and create the final layout
-layout = column(widgetbox(exp_slider, responsive=True),
-                row(widgetbox(arm_select, width=130),
-                    widgetbox(spectrograph_select, width=130)),
-                plot, responsive=True)
+# layout = column(widgetbox(exp_slider, responsive=True),
+#                 row(widgetbox(arm_select, width=130),
+#                     widgetbox(spectrograph_select, width=130)),
+#                 plot, responsive=True)
+
+layout = column(plot, responsive=True)
 
 curdoc().add_root(layout)
 curdoc().title = "SNR"

@@ -3,6 +3,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from . import views
+from ui_channel import views as WebsocketView
 
 admin.site.site_header = 'QLF Admin'
 
@@ -21,6 +22,7 @@ urlpatterns = [
     url(r'^start', views.start, name='start'),
     url(r'^stop', views.stop, name='stop'),
     url(r'^restart', views.restart, name='restart'),
+    url(r'^send_message', WebsocketView.send_message, name='send_message'),
     url(r'^daemon_status', views.daemon_status, name='daemon_status'),
     url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),
     url(r'^dashboard/admin', include(admin.site.urls)),

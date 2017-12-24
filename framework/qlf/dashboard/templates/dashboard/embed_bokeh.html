@@ -1,6 +1,3 @@
-{% extends 'base.html' %}
-{% load cache %}
-
 {% block content %}
 
 <div class="container">
@@ -13,9 +10,9 @@
         {% elif "monitor" in bokeh_app %}
         {% elif "footprint" in bokeh_app %}
         {% else %}
-            <a class="btn btn-default"
+            <!-- <a class="btn btn-default"
                href="/dashboard/exposures/"
-               role="button" style="margin-top: 10px;">Back</a>
+               role="button" style="margin-top: 10px;">Back</a> -->
         {% endif %}
 
     <div class="container">

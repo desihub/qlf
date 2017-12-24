@@ -24,7 +24,9 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'dashboard',
-    'debug_toolbar'
+    'debug_toolbar',
+    'channels',
+    'ui_channel',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -96,18 +98,34 @@ DATABASES = {
 }
 
 BOKEH_URL='http://{}:{}'.format(
-    os.environ.get('BOKEH_SERVER', HOSTNAME),
+    os.environ.get('BOKEH_SERVER', 'localhost'),
     os.environ.get('BOKEH_PORT', '5006')
 )
 
 QLF_DAEMON_URL='PYRO:{}@{}:{}'.format(
     os.environ.get('QLF_DAEMON_NS', 'qlf.daemon'),
-    os.environ.get('QLF_DAEMON_HOST', HOSTNAME),
+    os.environ.get('QLF_DAEMON_HOST', 'localhost'),
     str(os.environ.get('QLF_DAEMON_PORT', 56005))
 )
 
 QLF_MANUAL_URL='PYRO:{}@{}:{}'.format(
     os.environ.get('QLF_MANUAL_NS', 'qlf.manual'),
-    os.environ.get('QLF_DAEMON_HOST', HOSTNAME),
+    os.environ.get('QLF_DAEMON_HOST', 'localhost'),
     str(os.environ.get('QLF_DAEMON_PORT', 56005))
 )
+
+QLF_BASE_URL = os.environ.get('QLF_BASE_URL', 'http://localhost:8000')
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+        "ROUTING": "qlf.routing.channel_routing",
+    },
+}
+
+X_FRAME_OPTIONS = 'ALLOWALL'
+
+XS_SHARING_ALLOWED_METHODS = ['POST','GET','OPTIONS', 'PUT', 'DELETE']
