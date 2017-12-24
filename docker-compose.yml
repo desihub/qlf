@@ -8,8 +8,6 @@ services:
       - POSTGRES_DB=qlfdb
     ports:
       - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
   qlf:
     build: .
     environment:
@@ -27,3 +25,8 @@ services:
       - "56005:56005"
     links:
       - db
+      - redis
+  redis:
+    image: redis
+    ports:
+      - "6379"

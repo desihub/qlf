@@ -28,20 +28,18 @@ ENTRYPOINT [ "/usr/bin/tini", "--" ]
 # END INSTALL: miniconda3
 
 # BEGIN INSTALL: dependencies
-RUN /bin/bash -c "source /opt/conda/bin/activate root" && \
+RUN /bin/bash -c "source /opt/conda/bin/activate root && \
+        conda update conda -y && \ 
 		conda config --add channels conda-forge && \
 		conda create --name quicklook python=3.5 --yes --file requirements.txt && \
-		/bin/bash -c "source /opt/conda/bin/activate quicklook" && \
-		pip install -r extras.txt
+		source /opt/conda/bin/activate quicklook && \
+        apt-get install build-essential -y && \
+		pip install -r extras.txt"
 # END INSTALL: dependencies
 
 ENV PATH=$QLF_ROOT/desispec/bin:$PATH PYTHONPATH=$QLF_ROOT/desispec/py:$PYTHONPATH
 
 ENV PATH=$QLF_ROOT/desiutil/bin:$PATH PYTHONPATH=$QLF_ROOT/desiutil/py:$PYTHONPATH
-
-RUN mkdir -p $QLF_ROOT/spectro && cd $QLF_ROOT/spectro && \
-		wget -c http://portal.nersc.gov/project/desi/data/quicklook/20190101_small.tar.gz && \
-		tar xvzf 20190101_small.tar.gz
 
 ENV DESI_SPECTRO_DATA=$QLF_ROOT/spectro/data DESI_SPECTRO_REDUX=$QLF_ROOT/spectro/redux
 
