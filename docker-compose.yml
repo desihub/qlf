@@ -1,13 +1,13 @@
 version: '3'
 services:
-  db: 
-    image: postgres
-    environment:
-      - POSTGRES_USER=qlf
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_DB=qlfdb
-    ports:
-      - "5432:5432"
+  # db: 
+  #   image: postgres
+  #   environment:
+  #     - POSTGRES_USER=qlf
+  #     - POSTGRES_PASSWORD=1234
+  #     - POSTGRES_DB=qlfdb
+  #   ports:
+  #     - "5432:5432"
   qlf:
     build: .
     environment:
@@ -24,7 +24,7 @@ services:
       - "5006:5006"
       - "56005:56005"
     links:
-      - db
+      # - db
       - redis
   redis:
     image: redis
