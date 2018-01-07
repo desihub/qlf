@@ -5,6 +5,8 @@ import argparse
 import celeryconfig
 import os
 from qlf_models import QLFModels
+import sys
+import logging
 
 models = QLFModels()
 
@@ -51,9 +53,9 @@ def start(data):
     if not os.path.isdir(output_full_dir):
         os.makedirs(output_full_dir)
 
-    logger.info('Output dir: %s' % output_dir)
+    logger.info('Output dir: %s' % output_full_dir)
 
-    data['output_dir'] = output_dir
+    data['output_dir'] = output_full_dir
 
     runs = list()
 
@@ -85,12 +87,38 @@ def start(data):
     # job_runs = jobs.apply_async()
     # job_runs.join()
 
-@app.task
+def get_or_create_task_logger(func, output):
+    """ A helper function to create function specific logger lazily. """
+
+    # https://docs.python.org/2/library/logging.html?highlight=logging#logging.getLogger
+    # This will always result the same singleton logger
+    # based on the task's function name (does not check cross-module name clash, 
+    # for demo purposes only)
+    loggerNew = logging.getLogger(func.name)
+
+    # Add our custom logging handler for this logger only
+    # You could also peek into Celery task context variables here
+    #  http://celery.readthedocs.org/en/latest/userguide/tasks.html#context
+    if len(loggerNew.handlers) == 0:
+        # Log to output file based on the function name
+        hdlr = logging.FileHandler(output)
+        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+        hdlr.setFormatter(formatter)
+        loggerNew.addHandler(hdlr) 
+        loggerNew.setLevel(logging.DEBUG)
+
+    return loggerNew
+
+@app.task(name='parallel_job')
 def parallel_job(data, camera):
     """ Execute QL Pipeline by camera """
+    old_outs = sys.stdout, sys.stderr
+    rlevel = 'INFO'
+    logfile = "%s/run-%s.log" % (data.get('output_dir'), camera.get('name'))
+    logger = get_or_create_task_logger(parallel_job, logfile)
+    app.log.redirect_stdouts_to_logger(logger, rlevel)
 
     camera['start'] = datetime.datetime.now().replace(microsecond=0)
-
     logger.info(
         "Started job %i on exposure %s and camera %s ... " % (
         camera.get('job_id'),
@@ -137,6 +165,8 @@ def parallel_job(data, camera):
         camera.get('job_id'),
         camera.get('duration')
     ))
+
+    sys.stdout, sys.stderr = old_outs
 
     return camera
 
@@ -209,34 +239,3 @@ def finish(cameras, data):
         process_dir=data.get('output_dir'),
         status=data.get('status')
     )
-
-
-import time
-
-@app.task
-def wrapper():
-
-    # to kill all running task
-    # result = wrapper.s().apply_async()
-    # for x in result.children:
-    #     x.revoke(terminate=True)
-    #     # or x.revoke(terminate=True)
-
-    callback = create_log.s('Testing')
-    header = [add.s(200), add.s(400)]
-    chord(header)(callback)
-
-@app.task
-def add(x):
-
-    print('Add %i' % x)
-    time.sleep(x)
-    return {'number': x}
-
-@app.task
-def create_log(d, e):
-
-    print('PARAM 1: %s' % str(d))
-    print('PARAM 2: %s' % str(e))
-
-    return d, e

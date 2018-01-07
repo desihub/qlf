@@ -4,11 +4,12 @@ source activate quicklook
 export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
 
-cd $QLF_ROOT
+cd $QLF_ROOT/framework/bin/
 echo "Initializing QLF Daemon..."
 
 # Start QLF daemon
-python -Wi framework/bin/qlf_daemon.py &
+python -Wi qlf_daemon.py &
+celery -A tasks worker --loglevel=info &
 
 cd $QLF_PROJECT
 
