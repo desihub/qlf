@@ -14,6 +14,12 @@ services:
       - QLF_API_URL=http://localhost:8000/dashboard/api
       - QLF_BASE_URL=http://localhost:8000
       - QLF_HOSTNAME=localhost
+      - QLF_ROOT=/app/
+      - DESI_SPECTRO_DATA=/app/spectro/data
+      - DESI_SPECTRO_REDUX=/app/spectro/redux
+      - QL_SPEC_DATA=/app/spectro/data
+      - QL_SPEC_REDUX=/app/spectro/redux
+      - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
     volumes:
       - .:/app
     restart: always

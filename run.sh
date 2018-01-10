@@ -9,7 +9,7 @@ echo "Initializing QLF Daemon..."
 
 # Start QLF daemon
 python -Wi qlf_daemon.py &
-celery -A tasks worker --loglevel=info &
+celery -A tasks worker -l info -E --purge &
 
 cd $QLF_PROJECT
 

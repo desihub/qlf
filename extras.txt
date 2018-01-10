@@ -5,7 +5,7 @@
 channels
 asgi_redis
 schedule
-celery[redis]
+celery[redis]==4.1.0
 
 django-json-field==0.5.7
 speclite==0.5
