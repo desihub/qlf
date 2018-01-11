@@ -6,6 +6,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+qlf_root = os.getenv('QLF_ROOT')
+cfg = configparser.ConfigParser()
+
 
 class DOSmonitor(object):
 
@@ -14,11 +17,13 @@ class DOSmonitor(object):
         qlf_root = os.getenv('QLF_ROOT')
         self.cfg = configparser.ConfigParser()
         try:
-            self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+            self.cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
             self.desi_spectro_data = os.path.normpath(self.cfg.get('namespace', 'desi_spectro_data'))
+            self.qlconfig = self.cfg.get('main', 'qlconfig')
+            self.desi_spectro_redux = self.cfg.get('namespace', 'desi_spectro_redux')
         except Exception as error:
             logger.error(error)
-            logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+            logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
             sys.exit(1)
 
         self.cameras = self.get_cameras()
@@ -102,6 +107,8 @@ class DOSmonitor(object):
             "expid": exposure,
             "zfill": str(exposure).zfill(8),
             "desi_spectro_data": self.desi_spectro_data,
+            "desi_spectro_redux": self.desi_spectro_redux,
+            "qlconfig": self.qlconfig,
             "cameras": camera_list
         }
 

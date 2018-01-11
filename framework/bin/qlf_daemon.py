@@ -7,24 +7,25 @@ import Pyro4
 import configparser
 import sys
 import os
+from tasks import start
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
 
 try:
-    cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
     logfile = cfg.get("main", "logfile")
     loglevel = cfg.get("main", "loglevel")
     parallel_ingestion = cfg.getboolean("main", "parallel_ingestion")
 except Exception as error:
     print(error)
-    print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+    print("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
     sys.exit(1)
 
-if parallel_ingestion:
-    from qlf_pipeline import JobsParallelIngestion as QLFPipeline
-else:
-    from qlf_pipeline import Jobs as QLFPipeline
+# if parallel_ingestion:
+#     from qlf_pipeline import JobsParallelIngestion as QLFPipeline
+# else:
+#     from qlf_pipeline import Jobs as QLFPipeline
 
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s]: %(message)s",
@@ -76,11 +77,14 @@ class QLFAutoRun(Process):
 
                 self.running.set()
                 self.current_exposure = exposure
-                ql = QLFPipeline(self.current_exposure)
-                logger.info('Executing expid %s...' % exposure.get('expid'))
-                ql.start_process()
-                ql.start_jobs()
-                ql.finish_process()
+
+                self.result = start.s(self.current_exposure).apply_async()
+
+                # ql = QLFPipeline(self.current_exposure)
+                # logger.info('Executing expid %s...' % exposure.get('expid'))
+                # ql.start_process()
+                # ql.start_jobs()
+                # ql.finish_process()
 
             self.running.clear()
             self.current_exposure

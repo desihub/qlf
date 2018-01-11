@@ -10,10 +10,8 @@
 h5py
 scikit-learn
 matplotlib
-channels
-asgi_redis
-schedule
 pyyaml
+Twisted[tls,http2]
 
 # Packages required by the DESI Quick Look framework
 
