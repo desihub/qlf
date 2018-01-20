@@ -1,4 +1,5 @@
 import os
+import sys
 
 from bokeh.io import curdoc
 from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
@@ -47,8 +48,11 @@ def update(arm, spectrograph, exposure_id):
 
     # get the data
     qa_snr = 'ql-snr-{}-{}.yaml'.format(arm + spectrograph, exp_zfill)
+    try:
+        data = get_data(qa_snr, params)
+    except:
+        sys.exit('Could not load snr metrics')
 
-    data = get_data(qa_snr, params)
 
     if not data.empty:
         # drop rows that have ELG_FIBERID null

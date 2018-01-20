@@ -35,7 +35,7 @@ class QASerializer(DynamicFieldsModelSerializer):
         model = QA
         fields = (
             'pk', 'name', 'description', 'paname',
-            'metric', 'job', 'links'
+            'metrics', 'params', 'job', 'links'
         )
 
     def get_links(self, obj):
@@ -110,7 +110,7 @@ class CameraSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Camera
-        fields = ('camera', 'spectrograph', 'arm', 'links')
+        fields = ('camera', 'spectrograph', 'arm', 'links', 'qa_tests')
 
     def get_links(self, obj):
         request = self.context['request']

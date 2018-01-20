@@ -9,6 +9,8 @@ from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args
 
+import ast
+
 import numpy as np
 import logging
 
@@ -51,6 +53,8 @@ skycont   = metrics['skycont']
 skypeak   = metrics['skypeak']
 skyresid  = metrics['skyresid']
 snr       = metrics['snr']
+
+skyresid = ast.literal_eval(skyresid)
 
 # ============================================
 # THIS: Given the set up in the block above, 

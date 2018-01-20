@@ -13,6 +13,8 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
+import ast
+
 from dashboard.bokeh.helper import get_url_args
 
 import numpy as np
@@ -41,7 +43,7 @@ from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
 
 cam = selected_arm+str(selected_spectrograph)
 exp = selected_exposure # intentionaly redundant
-lm = LoadMetrics(cam, exp, night);
+lm = LoadMetrics(cam, exp, night)
 metrics, tests  = lm.metrics, lm.tests 
 
 # =============================================
@@ -64,7 +66,7 @@ snr       = metrics['snr']
 
 
 name = 'NPIX_LOW_AMP'
-metr = countpix
+metr = ast.literal_eval(countpix)
 
 dx = [0,1,0,1]
 dy = [1,1,0,0]

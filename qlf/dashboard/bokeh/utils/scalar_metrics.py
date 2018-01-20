@@ -5,6 +5,14 @@ from __future__ import division
 #    ==> PARTIALsteps_color: It only will be complete when we find all the ALERT criteria!
 #    ==> Fixed for the case in which the pipeline breaks 
 import logging
+from dashboard.bokeh.helper import get_data
+import requests
+import os
+import sys
+import ast
+
+QLF_API_URL = os.environ.get('QLF_API_URL',
+                             'http://localhost:8000/dashboard/api')
 
 logger = logging.getLogger(__name__)
 
@@ -75,11 +83,8 @@ class LoadMetrics:
         try: #ff
             self.metrics, self.tests = self.Load_metrics_n_tests()
         except: #ff
-            logger.info("Could not load metrics and tests" )
-        
+            sys.exit("Could not load metrics and tests" )
 
-        
-        
     def Load_qa(self, qa):
         """loads a single yaml file ( rather slow!)
          
@@ -98,20 +103,18 @@ class LoadMetrics:
         # qlf_folder = '/home/foliveira/'
         # exp_folder = 'quicklook/spectro/redux/exposures/'
         # aux = '{}{}{}/{}/{}{}-{}-{}.yaml'.format(qlf_folder,exp_folder, night, exp, self.prfx, qa, cam,exp)
-        exp_folder = '/app/spectro/redux/exposures/'
-        aux = '{}{}/0000000{}/{}{}-{}-0000000{}.yaml'.format(exp_folder, night, exp, self.prfx, qa, cam,exp)
-        try:
-            y2 = yaml.load(open(aux, "r"))
-            logger.info ('loading {}'.format(qa))
+
+        exp_zfill = str(exp).zfill(8)
+        qa_name = '{}{}-{}-{}.yaml'.format(self.prfx, qa, cam, exp_zfill)
+        api = requests.get(QLF_API_URL).json()
+
+        data = requests.get(api['qa'], params={'name': qa_name}).json()
+        data = data['results'][0]
+        if data != None:
             self.error.update({qa:False})
-
-        except:
-            y2 = None
-            logger.info ('{}: yaml not found'.format(qa) )
-            #self.error.update({qa:True})
-        logger.info ( aux )
-
-        return y2 
+        else:
+            self.error.update({qa:True})
+        return data 
 
     
     def Load_metrics_n_tests(self):
@@ -150,12 +153,12 @@ class LoadMetrics:
                 dic_tst.update({i: aux})
                 self.error.update({i:True})
             else:
-                dic_met.update({i: aux['METRICS']})
-                dic_tst.update({i: aux['PARAMS']})
+                dic_met.update({i: aux['metrics']})
+                dic_tst.update({i: aux['params']})
         return dic_met, dic_tst
 
 
-    def keys_from_scalars(self,  params_keys):    
+    def keys_from_scalars(self, params_keys):    
         """ Finds the equivalente alert keys in yaml for a metric.
 
         Arguments
@@ -234,9 +237,9 @@ class LoadMetrics:
             raise Exception('Error: Invalid QA name:', qa)
         elif(self.qa in ['xsigma', 'wsigma']):
             qa_2       = 'xwsigma'        
-            test_range = tests[qa_2][self.d[self.qa][self.kot]]
+            test_range = ast.literal_eval(tests[qa_2])[self.d[self.qa][self.kot]]
         else:
-            test_range = tests[qa][self.d[self.qa][self.kot]]
+            test_range = ast.literal_eval(tests[qa])[self.d[self.qa][self.kot]]
         
         return test_range
 
@@ -258,11 +261,11 @@ class LoadMetrics:
         if qa == 'xwsigma':
             alarm_x = self.test_ranges('xsigma','alarm')
             warn_x = self.test_ranges('xsigma','warn')
-            val_x = self.metrics[qa][self.metric_dict['xsigma']]
+            val_x = ast.literal_eval(self.metrics[qa])[self.metric_dict['xsigma']]
 
             alarm_w = self.test_ranges('wsigma','alarm')
             warn_w = self.test_ranges('wsigma','warn')
-            val_w = self.metrics[qa][self.metric_dict['wsigma']]
+            val_w = ast.literal_eval(self.metrics[qa])[self.metric_dict['wsigma']]
 
             if isinstance(val_w,float) or isinstance(val_w, int) or isinstance(val_x,float) or isinstance(val_x, int):
                 pass
@@ -285,7 +288,7 @@ class LoadMetrics:
         else:               
             alarm = self.test_ranges(qa,'alarm')
             warn  = self.test_ranges(qa,'warn')
-            val   = self.metrics[qa][self.metric_dict[qa]]
+            val   = ast.literal_eval(self.metrics[qa])[self.metric_dict[qa]]
         #dblogger.info(qa, self.metric_dict[qa])
         
         if isinstance(val,float) or isinstance(val, int):
@@ -329,9 +332,8 @@ class LoadMetrics:
                      'skysubs':['snr']}
         steps_status = []
 
-        logger.info ( 'init_error', self.error    )
+        # logger.info ('init_error', self.error)
         for i in steps_dic[self.step_name]:
-            logger.info (i, self.error[i])
             if(self.error[i]):
                 logger.info ('QL FAILURE')
                 steps_status.append('FAILURE')
@@ -339,11 +341,8 @@ class LoadMetrics:
             else:
                 aux1 = self.qa_status(i)
                 steps_status.append(aux1)
-                #pass
        
-        #for i in PARTIALsteps_dic[self.step_name]:
-        #    steps_status.append(self.qa_status(i))
-        logger.info( 'Steps_status:', steps_status)
+        # logger.info('Steps_status:', steps_status)
 
         if any(x=='FAILURE' for x in steps_status):
             color = 'magenta' # Pick a color for failure case
@@ -357,4 +356,5 @@ class LoadMetrics:
         elif all(x=='NORMAL' for x in steps_status): #intentionally redundant
             color = "green"
             logger.info( color )
-        return color
+        result = {'color': color, 'steps_status': steps_status }
+        return result

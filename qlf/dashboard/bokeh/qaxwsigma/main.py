@@ -9,6 +9,8 @@ from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args
 
+import ast
+
 import numpy as np
 import logging
 
@@ -52,8 +54,7 @@ skypeak   = metrics['skypeak']
 skyresid  = metrics['skyresid']
 snr       = metrics['snr']
 
-logger.info('metrics')
-logger.info(metrics)
+xwsigma = ast.literal_eval(xwsigma)
 
 def palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 

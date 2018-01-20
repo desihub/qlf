@@ -7,6 +7,7 @@ from bokeh.io import output_notebook, show, output_file
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
+import ast
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
@@ -63,7 +64,7 @@ snr       = metrics['snr']
 #       we have the bokeh plots
 
 name = 'INTEG_AVG_AMP'
-metr = integ
+metr = ast.literal_eval(integ)
 
 dx = [0,1,0,1]
 dy = [1,1,0,0]

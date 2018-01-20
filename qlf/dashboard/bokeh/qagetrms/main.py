@@ -13,6 +13,8 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
+import ast
+
 from dashboard.bokeh.helper import get_url_args
 
 import numpy as np
@@ -63,7 +65,7 @@ snr       = metrics['snr']
 #       we have the bokeh plots
 
 name = 'RMS_AMP'
-metr = getrms
+metr = ast.literal_eval(getrms)
 
 # Get Bias
 dx = [0,1,0,1]

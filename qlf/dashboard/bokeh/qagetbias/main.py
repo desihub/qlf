@@ -15,6 +15,8 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args
 
+import ast
+
 import numpy as np
 import logging
 
@@ -68,6 +70,7 @@ metr = getbias
 
 dx = [0,1,0,1]
 dy = [1,1,0,0]
+metr = ast.literal_eval(metr)
 dz = metr[name] #getbias['BIAS_AMP']
 
 mapper = LinearColorMapper(palette= Viridis256)

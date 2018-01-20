@@ -65,6 +65,7 @@ class Camera(models.Model):
                                     help_text='Spectrograph ID')
     arm = models.CharField(max_length=1,
                            help_text='Arm ID')
+    qa_tests = JSONField(decoder=None, help_text='JSON structure with the QA tests results')
 
     def __str__(self):
         return str(self.camera)
@@ -101,7 +102,8 @@ class QA(models.Model):
     name = models.CharField(max_length=45, help_text='QA name')
     description = models.TextField(help_text='QA Description')
     paname = models.CharField(max_length=45, help_text='Associate PA name')
-    metric = JSONField(decoder=None, help_text='JSON structure with the QA result')
+    metrics = JSONField(decoder=None, help_text='JSON structure with the QA result')
+    params = JSONField(decoder=None, help_text='JSON structure with the QA tests')
     job = models.ForeignKey(Job, related_name='job_qas')
 
     def __str__(self):

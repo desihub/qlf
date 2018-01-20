@@ -15,6 +15,8 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args
 
+import ast
+
 import numpy as np
 import logging
 
@@ -57,6 +59,9 @@ skycont   = metrics['skycont']
 skypeak   = metrics['skypeak']
 skyresid  = metrics['skyresid']
 snr       = metrics['snr']
+
+
+countbins = ast.literal_eval(countbins)
 
 # ============================================
 # THIS: Given the set up in the block above, 
