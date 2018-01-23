@@ -7,8 +7,8 @@ attrs:
     min_border_bottom: 50
     min_border_left: 50
     background_fill_color: "#fafafa"
-    plot_width: 400
-    plot_height: 300
+    plot_width: 800
+    plot_height: 800
   Axis:
     major_label_text_font_size: '10pt'
     major_label_text_font_style: 'normal'

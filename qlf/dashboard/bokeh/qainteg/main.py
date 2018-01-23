@@ -63,91 +63,107 @@ snr       = metrics['snr']
 # THIS: Given the set up in the block above, 
 #       we have the bokeh plots
 
-name = 'INTEG_AVG_AMP'
-metr = ast.literal_eval(integ)
+def palette(name_of_mpl_palette):
+    """ Transforms a matplotlib palettes into a bokeh 
+    palettes
+    """
+    from matplotlib.colors import rgb2hex
+    import matplotlib.cm as cm
+    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
+    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
+    return bokehpalette
 
-dx = [0,1,0,1]
-dy = [1,1,0,0]
-dz = metr[name] 
-mapper = LinearColorMapper(palette= Viridis256)
+
+my_palette = palette("viridis")
 
 
-source = ColumnDataSource(
-    data=dict(
-        x=dx,
-        y=dy,
-        y_offset1 = [i+0.15 for i in dy],
-        y_offset2 = [i-0.05 for i in dy],
+from bokeh.models import PrintfTickFormatter
+formatter = PrintfTickFormatter(format='%1.1e')
 
-        z = dz,
-        amp = ['AMP %s'%i for i in range(1,5) ] ,
-        ztext = ['{:4.3e}'.format(i) for i in dz]
-    )
-)
-
-cmap_tooltip = """
+skc_tooltips = """
     <div>
         <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">counts: </span>
-            <span style="font-size: 13px; color: #515151">@z</span>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">INTEG: </span>
+            <span style="font-size: 13px; color: #515151;">@integ</span>
         </div>
         <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">AMP: </span>
-            <span style="font-size: 13px; color: #515151;">@amp</span>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
+            <span style="font-size: 13px; color: #515151;">@ra</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
+            <span style="font-size: 13px; color: #515151;">@dec</span>
         </div>
     </div>
-""".replace("counts:", name+":")
+"""
+c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
+qlf_fiberid = np.arange(0,5000)[c1:c2] 
 
-hover = HoverTool(tooltips=cmap_tooltip)
+hover = HoverTool(tooltips=skc_tooltips)
+
+integ = ast.literal_eval(integ)
+
+qainteg = integ['INTEG']
+fibers = integ['STD_FIBERID']
+
+ra = [ integ['RA'][c1:c2][i] for i in fibers]
+dec = [ integ['DEC'][c1:c2][i] for i in fibers]
+
+ra_not, dec_not=[],[]
+for i in range(500):
+    if i not in fibers:
+        ra_not.append( integ['RA'][c1:c2][i])
+        dec_not.append(integ['DEC'][c1:c2][i])
+
+source2 = ColumnDataSource(data={
+                'integ' : qainteg,
+                'fiberid' : fibers,
+                'ra'  : ra,
+                'dec' : dec
+})
+
+source2_not = ColumnDataSource(data={
+            'ra':ra_not,
+            'dec':dec_not,
+            'integ': ['']*len(dec_not)
+            })
+        
+mapper = LinearColorMapper(palette= my_palette,
+                           low = np.min(qainteg), 
+                           high = np.max(qainteg))
+p2 = figure(title='INTEG', 
+            x_axis_label='RA', y_axis_label='DEC',
+            plot_width=700, plot_height=600,
+            tools= [hover, "pan,box_zoom,reset"])
+
+p2.circle('ra','dec', source=source2, radius=0.016,
+        fill_color={'field': 'integ', 'transform': mapper}, 
+         line_color='black', line_width=0.1)
+
+# marking the Hover point
+p2.circle('ra','dec', source = source2, radius = 0.0186
+          , fill_color=None, line_color=None
+          , hover_fill_color={'field': 'integ', 'transform': mapper}
+          , line_width=3, hover_line_color='red')
 
 
-p = figure(title=name, tools=[hover],
-           x_range= list([-0.5,1.5]),           # length = 18
-           y_range= list([-0.5,1.5]), #numeros romanos
-           plot_width=400, plot_height=400
-          )
+# Gray Fibers:
+p2.circle('ra', 'dec', source= source2_not, radius=0.015, 
+            fill_color = 'lightgray', line_color='black', line_width=0.3)
 
+# Gray Fibers: marking the Hover point
+p2.circle('ra','dec', source = source2_not, radius = 0.0186
+          , fill_color=None, line_color=None
+          , line_width=3, hover_line_color='red', hover_fill_color='lightgrey')
 
-p.grid.grid_line_color = None
-p.outline_line_color = None
-p.axis.clear
+color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
+                     major_label_text_font_style='bold', padding = 46,
+                     major_label_text_align='right',
+                     major_label_text_font_size="10pt",
+                     location=(0, 0))
+color_bar.formatter = formatter
 
-text_props = {
-    "source": source,
-    "angle": 0,
-    "color": "black",
-    "text_color":"black",
-    "text_align": "center",
-    "text_baseline": "middle"
-}
-
-
-
-p.rect("x", "y", .98, .98, 0, source=source,
-       fill_color={'field': 'z', 'transform': mapper}, fill_alpha=0.9)#, color="color")
-p.axis.minor_tick_line_color=None
-
-p.text(x="x", y="y_offset2", text="ztext",
-       text_font_style="bold", text_font_size="20pt", **text_props)
-p.text(x="x", y="y_offset1", text="amp",
-        text_font_size="18pt", **text_props)
-color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                major_label_text_font_size='10pt', label_standoff=2,location=(1, 0))
-
-p.add_layout(color_bar, 'left')
-
-
-p.xaxis.major_label_text_font_size = '0pt'  # turn off x-axis tick labels
-p.yaxis.major_label_text_font_size = '0pt'  # turn off y-axis tick labels
-p.xaxis.major_tick_line_color = None  # turn off x-axis major ticks
-p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
-
-p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
-p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
-
-
-
-
+p2.add_layout(color_bar)
 
 # End of Bokeh Block
-curdoc().add_root(p)
+curdoc().add_root(p2)
