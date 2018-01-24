@@ -2,11 +2,13 @@ from dos_monitor import DOSmonitor
 from qlf_models import QLFModels
 from time import sleep
 from multiprocessing import Process, Event
-import logging
+# import logging
 import Pyro4
 import configparser
 import sys
 import os
+from log import setup_logger
+from qlf_pipeline import Jobs as QLFPipeline
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -21,19 +23,7 @@ except Exception as error:
     print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
     sys.exit(1)
 
-if parallel_ingestion:
-    from qlf_pipeline import JobsParallelIngestion as QLFPipeline
-else:
-    from qlf_pipeline import Jobs as QLFPipeline
-
-logging.basicConfig(
-    format="%(asctime)s [%(levelname)s]: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    filename=logfile,
-    level=eval("logging.%s" % loglevel)
-)
-
-logger = logging.getLogger(__name__)
+logger = setup_logger("main_logger", logfile, loglevel)
 
 
 class QLFAutoRun(Process):
@@ -53,37 +43,51 @@ class QLFAutoRun(Process):
 
     def run(self):
         self.clear()
+        notify_night = False
+        notify_exposure = False
 
         while not self.exit.is_set():
             night = self.dos_monitor.get_last_night()
 
             if night == self.last_night:
-                logger.info("The night %s has already been processed" % night)
+                if not notify_night:
+                    # Monitoring next night
+                    logger.info('Monitoring...')
+                    notify_night = True
                 sleep(10)
                 continue
+
+            notify_night = False
+
+            logger.info('Night {}, waiting for exposures...'.format(night))
 
             exposures = self.dos_monitor.get_exposures_by_night(night)
 
             if not exposures:
-                logger.warn('No exposure was found')
+                if not notify_exposure:
+                    logger.warn('No exposure was found')
+                    notify_exposure = True
                 sleep(10)
                 continue
+
+            notify_exposure = False
 
             for exposure in exposures:
                 if self.exit.is_set():
                     logger.info('Execution stopped')
                     break
 
+                logger.info('Found expID {}, processing...'.format(exposure.get('expid')))
                 self.running.set()
                 self.current_exposure = exposure
                 ql = QLFPipeline(self.current_exposure)
-                logger.info('Executing expid %s...' % exposure.get('expid'))
                 ql.start_process()
                 ql.start_jobs()
                 ql.finish_process()
+                logger.info('ExpID {} finished.'.format(exposure.get('expid')))
 
             self.running.clear()
-            self.current_exposure
+            self.current_exposure = None
             self.last_night = night
 
         logger.info("Bye!")
@@ -98,13 +102,6 @@ class QLFAutoRun(Process):
 class QLFManualRun(Process):
 
     def __init__(self, exposures):
-
-        # exposures = [{
-        #     'exptime': 1000, 'teldec': 0.0, 'night': '20170428', 'telra': 0.0,
-        #     'desi_spectro_data': '/home/singulani/quicklook/rawdir/data', 'dateobs': '2017-04-28 22:00', 'expid': '3',
-        #     'flavor': 'dark', 'zfill': '00000003', 'tile': 2000, 'cameras': [{'name': 'r7'}, {'name': 'r8'}]
-        # }]
-
         super().__init__()
         self.running = Event()
         self.exit = Event()

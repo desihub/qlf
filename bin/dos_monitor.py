@@ -2,9 +2,9 @@ import os
 import sys
 import configparser
 from astropy.io import fits
-import logging
+from log import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__, "{}.log".format(__name__))
 
 
 class DOSmonitor(object):
@@ -16,6 +16,7 @@ class DOSmonitor(object):
         try:
             self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
             self.desi_spectro_data = os.path.normpath(self.cfg.get('namespace', 'desi_spectro_data'))
+            self.desi_spectro_redux = os.path.normpath(self.cfg.get('namespace', 'desi_spectro_redux'))
         except Exception as error:
             logger.error(error)
             logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
@@ -102,6 +103,7 @@ class DOSmonitor(object):
             "expid": exposure,
             "zfill": str(exposure).zfill(8),
             "desi_spectro_data": self.desi_spectro_data,
+            "desi_spectro_redux": self.desi_spectro_redux,
             "cameras": camera_list
         }
 
@@ -135,4 +137,5 @@ if __name__ == "__main__":
     dos_monitor = DOSmonitor()
     night = dos_monitor.get_last_night()
     exposures = dos_monitor.get_exposures_by_night(night)
+    print(exposures)
     logger.info(exposures)
