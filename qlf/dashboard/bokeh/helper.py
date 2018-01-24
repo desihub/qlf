@@ -27,7 +27,7 @@ def get_data(name, params):
     qa = requests.get(api['qa'], params={'name': name}).json()
     qa = qa['results']
 
-    logger.info('QA: {}'.format(qa))
+    # logger.info('QA: {}'.format(qa))
 
     metrics = {}
 
@@ -35,7 +35,7 @@ def get_data(name, params):
         logger.warn('{} not found in database'.format(name))
         return pd.DataFrame.from_dict(metrics, orient='index').transpose()
 
-    full_metrics = qa[0]['metric'].replace('inf', '0')
+    full_metrics = qa[0]['metrics'].replace('inf', '0')
     full_metrics = ast.literal_eval(full_metrics)
 
     for metric in params:
@@ -166,6 +166,7 @@ def get_url_args(curdoc, defaults=None):
 
         logger.info('URI: {}'.format(uri))
         logger.info('ARGS: {}'.format(tmp))
+        logger.info(__name__)
 
         # the bokeh app name is the second segment of the url path
         args['bokeh_app'] = furl(uri).path.segments[1]

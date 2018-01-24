@@ -19,6 +19,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     git clone https://github.com/desihub/qlf.git
     cd qlf
     git checkout merge_qa_ohio
+    cd ..
     ```
 
 2. Install software dependencies and create miniconda environment 
@@ -110,7 +111,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     export DESI_SPECTRO_REDUX=$QLF_ROOT/spectro/redux
     export QL_SPEC_DATA=$DESI_SPECTRO_DATA
     export QL_SPEC_REDUX=$DESI_SPECTRO_REDUX
-
+    export OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
 
     ```
 
