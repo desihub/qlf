@@ -93,6 +93,7 @@ def get_current_state():
         state.save()
 
     logfile = open_file('logfile')
+    ingestionlog = []
     if len(process) > 0:
         exposure = process[0].get("exposure")
         ingestionlog = get_ingestion_log(exposure)
