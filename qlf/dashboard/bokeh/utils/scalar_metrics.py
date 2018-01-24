@@ -339,9 +339,11 @@ class LoadMetrics:
                 steps_status.append('FAILURE')
                 
             else:
-                aux1 = self.qa_status(i)
-                steps_status.append(aux1)
-       
+                try:
+                    aux1 = self.qa_status(i)
+                    steps_status.append(aux1)
+                except:
+                    steps_status.append('FAILURE')
         # logger.info('Steps_status:', steps_status)
 
         if any(x=='FAILURE' for x in steps_status):
