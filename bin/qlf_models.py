@@ -142,16 +142,17 @@ class QLFModels(object):
             qa = yaml.load(open(product, 'r'))
             name = os.path.basename(product)
 
-            if 'PANAME' in qa and 'METRICS' in qa:
+            if 'PANAME' in qa and 'METRICS' in qa and 'PARAMS' in qa:
                 paname = qa['PANAME']
                 metrics = self.jsonify(qa['METRICS'])
+                params = self.jsonify(qa['PARAMS'])
 
                 print("Ingesting %s" % name)
-                self.insert_qa(name, paname, metrics, job_id)
+                self.insert_qa(name, paname, metrics, params, job_id)
 
         print('Job {} updated.'.format(job_id))
 
-    def insert_qa(self, name, paname, metrics, job_id, force=False):
+    def insert_qa(self, name, paname, metrics, params, job_id, force=False):
         """ Inserts or updates qa table """
 
         if not QA.objects.filter(name=name):
@@ -160,7 +161,8 @@ class QLFModels(object):
                 name=name,
                 description='',
                 paname=paname,
-                metric=metrics,
+                metrics=metrics,
+                params=params,
                 job_id=job_id
             )
             qa.save()
@@ -170,7 +172,8 @@ class QLFModels(object):
                 job_id=job_id,
                 description='',
                 paname=paname,
-                metric=metrics
+                metrics=metrics,
+                params=params,
             )
         else:
             print(

@@ -13,7 +13,7 @@ import configparser
 import requests
 from ui_channel.camera_status import get_camera_status
 
-from dashboard.bokeh.helper import get_last_process
+from dashboard.bokeh.helper import get_last_process, get_cameras
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -43,6 +43,14 @@ def get_camera_log(cam):
         print(e)
         return "Error"
 
+def avaiable_cameras(process):
+    if len(process) != 0:
+        cams = list()
+        for job in process[0]['process_jobs']:
+            cams.append(job['camera'])
+        return cams
+    return list()
+
 uri = settings.QLF_DAEMON_URL
 qlf = Pyro4.Proxy(uri)
 
@@ -59,8 +67,10 @@ def stop_daemon():
 
 def get_current_state():
     camera_status = get_camera_status()
+    qa_results = get_cameras()
     state = QlfState.load()
     process = get_last_process()
+    available_cameras = avaiable_cameras(process)
     if qlf.get_status() != state.daemon_status:
         state.daemon_status = qlf.get_status()
         state.save()
@@ -79,6 +89,8 @@ def get_current_state():
             "lines": lines_array,
             "exposure": exposure,
             "cameras": camera_status,
+            "available_cameras": available_cameras,
+            "qa_results": qa_results,
         })
 
 def job():

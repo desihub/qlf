@@ -115,16 +115,16 @@ QLF_MANUAL_URL='PYRO:{}@{}:{}'.format(
 )
 
 QLF_BASE_URL = os.environ.get('QLF_BASE_URL', 'http://localhost:8000')
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],
+if os.environ.get('QLF_REDIS', False):
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "asgi_redis.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("redis", 6379)],
+            },
+            "ROUTING": "qlf.routing.channel_routing",
         },
-        "ROUTING": "qlf.routing.channel_routing",
-    },
-}
+    }
 
 X_FRAME_OPTIONS = 'ALLOWALL'
 
