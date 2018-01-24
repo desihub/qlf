@@ -21,6 +21,7 @@ cfg = configparser.ConfigParser()
 try:
     cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
     desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+    night = cfg.get('data', 'night')
 except Exception as error:
     logger.error(error)
     logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
@@ -36,6 +37,22 @@ def get_camera_log(cam):
                 break
         if cameralog:
             arq = open(cameralog, 'r')
+            log = arq.readlines()
+            return log
+
+    except Exception as e:
+        print(e)
+        return "Error"
+
+def get_ingestion_log(exp):
+    ingestionlog = None
+    log = str()
+    exp_zfill = str(exp).zfill(8)
+
+    ingestionlog = '{}/exposures/{}/{}/expid.{}.log'.format(desi_spectro_redux, night, exp_zfill, exp)
+    try:
+        if ingestionlog:
+            arq = open(ingestionlog, 'r')
             log = arq.readlines()
             return log
 
@@ -78,6 +95,7 @@ def get_current_state():
     logfile = open_file('logfile')
     if len(process) > 0:
         exposure = process[0].get("exposure")
+        ingestionlog = get_ingestion_log(exposure)
     else:
         exposure = ''
 
@@ -91,6 +109,7 @@ def get_current_state():
             "cameras": camera_status,
             "available_cameras": available_cameras,
             "qa_results": qa_results,
+            "ingestion": ingestionlog,
         })
 
 def job():
