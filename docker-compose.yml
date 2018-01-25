@@ -1,0 +1,29 @@
+version: '3'
+services:
+  qlf:
+    build: .
+    environment:
+      - QLF_API_URL=http://localhost:8000/dashboard/api
+      - QLF_BASE_URL=http://localhost:8000
+      - QLF_HOSTNAME=localhost
+      - QLF_ROOT=/app/
+      - DESI_SPECTRO_DATA=/app/spectro/data
+      - DESI_SPECTRO_REDUX=/app/spectro/redux
+      - QL_SPEC_DATA=/app/spectro/data
+      - QL_SPEC_REDUX=/app/spectro/redux
+      - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
+    volumes:
+      - .:/app
+    restart: always
+    working_dir: /app/
+    command: ./run.sh
+    ports:
+      - "8000:8000"
+      - "5006:5006"
+      - "56005:56005"
+    links:
+      - redis
+  redis:
+    image: redis
+    ports:
+      - "6379"

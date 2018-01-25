@@ -15,13 +15,13 @@ exptime=0
 # Log level, e.g. DEBUG, INFO, WARNING or ERROR
 loglevel=INFO
 
-# Log file name, e.g. $QLF_ROOT/qlf.log this is the main place for following
+# Log file name, e.g. full/path/to/qlf.log this is the main place for following
 # the progress of the data reduction
-logfile=
+logfile=/app/qlf.log
 
 # Configuration file for the quick look pipeline
-# e.g. $QLF_ROOT/desispec/py/desispec/data/quicklook/qlconfig_dark.yaml
-qlconfig=
+# e.g. full/path/to/desispec/py/desispec/data/quicklook/qlconfig_dark.yaml
+qlconfig=/app/desispec/py/desispec/data/quicklook/qlconfig_dark.yaml
 
 [data]
 # Which night to process? we do not support a list of nights yet.
@@ -44,11 +44,9 @@ spectrographs=0,1
 
 
 [namespace]
-# Input data directory, e.g. $DESI_SPECTRO_DATA
-desi_spectro_data=
+# Input data directory, e.g. full/path/to/spectro/data
+desi_spectro_data=/app/spectro/data
 
-# Processing output, e.g. $DESI_SPECTRO_REDUX or some other local (fast) scratch area
+# Processing output, e.g. full/path/to/spectro/redux or some other local (fast) scratch area
 # Note: this directory is created by QLF if it does not exist.
-desi_spectro_redux=
-
-
+desi_spectro_redux=/app/spectro/redux

@@ -14,13 +14,13 @@ qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
 
 try:
-    cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
     logfile = cfg.get("main", "logfile")
     loglevel = cfg.get("main", "loglevel")
     parallel_ingestion = cfg.getboolean("main", "parallel_ingestion")
 except Exception as error:
     print(error)
-    print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+    print("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
     sys.exit(1)
 
 logger = setup_logger("main_logger", logfile, loglevel)

@@ -55,5 +55,6 @@ docs/_build/
 # PyBuilder
 target/
 
-qlf/db.sqlite3
-config/qlf.cfg
+framework/qlf/db.sqlite3
+framework/config/qlf.cfg
+spectro/
