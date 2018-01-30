@@ -7,7 +7,7 @@ QLF current version allows to follow the execution of QL pipeline, which process
 
 ## Running
 
-- [Docker instalation](https://github.com/desihub/qlf/blob/master/docker.md) or  [Manual instalation](https://github.com/desihub/qlf/blob/master/manual.md)
+- [Docker installation](https://github.com/desihub/qlf/blob/master/DOCKER.md) or  [Manual installation](https://github.com/desihub/qlf/blob/master/MANUAL.md)
 
 ### Support
 
