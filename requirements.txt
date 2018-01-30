@@ -10,7 +10,6 @@
 h5py
 scikit-learn
 matplotlib
-pyyaml
 
 # Packages required by the DESI Quick Look framework
 

@@ -1,6 +1,13 @@
+### Install Docker
+
+- docker https://docs.docker.com/install/
+
+- docker-compose https://docs.docker.com/compose/install/
+
 ### Running locally with docker
 
-    # Config file
+    # Config file.
+    # This file sets which cameras and exposures will be processed
 
     cp framework/config/qlf.cfg.template framework/config/qlf.cfg
 
@@ -18,6 +25,14 @@
 
     rm 20190101_small.tar.gz
 
-### Running QLF
+### Starting QLF
 
     docker-compose up
+
+### Stoping QLF
+
+    docker-compose stop
+
+### Starting Pipeline
+
+    http://localhost:8000/start

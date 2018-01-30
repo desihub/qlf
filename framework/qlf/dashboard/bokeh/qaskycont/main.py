@@ -157,7 +157,7 @@ color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
                      major_label_text_align='right',
                      major_label_text_font_size="10pt",
                      location=(0, 0))
-p2.add_layout(color_bar)
+p2.add_layout(color_bar, 'right')
 
 
 

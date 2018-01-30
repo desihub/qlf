@@ -17,7 +17,7 @@ cd $QLF_ROOT
 echo "Initializing QLF Daemon..."
 
 # Start QLF daemon
-python -Wi framework/bin/qlf_daemon.py
+python -Wi framework/bin/qlf_daemon.py &
 
 cd $QLF_PROJECT
 
