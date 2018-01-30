@@ -100,21 +100,23 @@ class LoadMetrics:
         """
         import yaml
         cam, exp, night = self.cam, self.exp, self.night
-        # qlf_folder = '/home/foliveira/'
-        # exp_folder = 'quicklook/spectro/redux/exposures/'
-        # aux = '{}{}{}/{}/{}{}-{}-{}.yaml'.format(qlf_folder,exp_folder, night, exp, self.prfx, qa, cam,exp)
 
         exp_zfill = str(exp).zfill(8)
         qa_name = '{}{}-{}-{}.yaml'.format(self.prfx, qa, cam, exp_zfill)
         api = requests.get(QLF_API_URL).json()
 
         data = requests.get(api['qa'], params={'name': qa_name}).json()
-        data = data['results'][0]
+
+        if data['results'] == []:
+            data = None
+        else:
+            data = data['results'][0]
+
         if data != None:
             self.error.update({qa:False})
         else:
             self.error.update({qa:True})
-        return data 
+        return data
 
     
     def Load_metrics_n_tests(self):
@@ -221,7 +223,7 @@ class LoadMetrics:
                    , 'skycont', 'skypeak', 'skyresid', 'snr']
         
         metrics = self.metrics
-        tests   = self.tests 
+        tests   = self.tests
 
         self.par_k   = self.params_keys
         #self.d  = self.keys_from_scalars(qa_name, self.par_k)#f
@@ -262,7 +264,6 @@ class LoadMetrics:
             alarm_x = self.test_ranges('xsigma','alarm')
             warn_x = self.test_ranges('xsigma','warn')
             val_x = ast.literal_eval(self.metrics[qa])[self.metric_dict['xsigma']]
-
             alarm_w = self.test_ranges('wsigma','alarm')
             warn_w = self.test_ranges('wsigma','warn')
             val_w = ast.literal_eval(self.metrics[qa])[self.metric_dict['wsigma']]
@@ -332,7 +333,7 @@ class LoadMetrics:
                      'skysubs':['snr']}
         steps_status = []
 
-        # logger.info ('init_error', self.error)
+        logger.info ('init_error', self.error)
         for i in steps_dic[self.step_name]:
             if(self.error[i]):
                 logger.info ('QL FAILURE')
