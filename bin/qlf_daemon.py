@@ -185,7 +185,7 @@ class QLFAutomatic(object):
         if self.process and not self.process.exit.is_set():
             status = True
 
-        logger.info("QLF Daemon status: {}".format(status))
+        # logger.info("QLF Daemon status: {}".format(status))
         return status
 
     def get_current_run(self):
@@ -197,7 +197,7 @@ class QLFAutomatic(object):
         if self.process and self.process.running.is_set():
             running = True
 
-        logger.info("Running? {}".format(running))
+        # logger.info("Running? {}".format(running))
         return running
 
 
