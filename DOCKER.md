@@ -1,15 +1,11 @@
 ### Install Docker
 
-- docker https://docs.docker.com/install/
-
-- docker-compose https://docs.docker.com/compose/install/
+- [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/)
 
 ### Clone the Quick Look Framework Project
 
-    ```
     git clone https://github.com/desihub/qlf.git
     cd qlf
-    ```
 
 ### Running locally with docker
 
