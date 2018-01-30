@@ -2,9 +2,6 @@
 # $ source activate quicklook  (load quicklook environment, see requirements.txt)
 # $ pip install -r extras.txt
 
-channels
-asgi_redis
-schedule
 Twisted[tls,http2]
 
 django-json-field==0.5.7

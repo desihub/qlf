@@ -1,3 +1,5 @@
+_This readme was made on Nov 8, 2017 and could be outdated_
+
 ### Installing DESI QLF locally
 
 1. Install the Quick Look Framework 
