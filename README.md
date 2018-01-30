@@ -1,10 +1,9 @@
 ## DESI Quick Look Framework
 
-The Quick Look Framework is part of the DES Instrument Control System (ICS) and provide interfaces for executing the quick look pipeline and display data quality information in realtime. 
+The Quick Look Framework is part of the DES Instrument Control System (ICS) and provides an interface to execute the Quick Look (QL) pipeline and display data quality information in realtime. 
 
-In the current version it is possible to control the execution of the quicklook pipeline through the interface, process multiple cameras in paralel and follow the progress of the data reduction. The interfaces for QA display are still in initial stage of development. Your suggestions and comments to improve this system are very welcome!  
+QLF current version allows to follow the execution of QL pipeline, which process multiple cameras/arms in parallel. The interfaces for QA display are now in a mature stage of development using React and Bokeh plots.
 
-See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/private/ShowDocument?docid=3024).
 
 ### Installing DESI QLF locally
 
@@ -19,6 +18,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     git clone https://github.com/desihub/qlf.git
     cd qlf
     git checkout merge_qa_ohio
+    cd ..
     ```
 
 2. Install software dependencies and create miniconda environment 
@@ -36,7 +36,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     pip install -r qlf/extras.txt
     ```
 
-3. Install the DESI Quick Look pipeline 
+3. Install the DESI Quick Look pipeline (tags as agreed in Ohio Oct 17 meeting)
 
     ```
     cd $QLF_ROOT
@@ -110,7 +110,7 @@ See a presentation from June 2017 [here](https://desi.lbl.gov/DocDB/cgi-bin/priv
     export DESI_SPECTRO_REDUX=$QLF_ROOT/spectro/redux
     export QL_SPEC_DATA=$DESI_SPECTRO_DATA
     export QL_SPEC_REDUX=$DESI_SPECTRO_REDUX
-
+    export OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
 
     ```
 
