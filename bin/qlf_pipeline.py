@@ -1,5 +1,6 @@
 import os
 import sys
+import io
 from log import setup_logger
 import subprocess
 import datetime
@@ -49,15 +50,11 @@ class QLFProcess(object):
         # Make output dir
         os.makedirs(output_full_dir)
 
-        # logger.info('Output dir: %s' % output_full_dir)
-
         self.data['output_dir'] = output_dir
         self.logger = setup_logger(
             'pipe-{}'.format(self.data.get('expid')),
             '{}/expid.{}.log'.format(output_full_dir, self.data.get('expid'))
         )
-
-        # self.logger = io.open('{}/expid.{}.log'.format(output_full_dir, self.data.get('expid')), 'w')
 
     def start_process(self):
         """ Start pipeline. """
@@ -107,6 +104,8 @@ class Jobs(QLFProcess):
     def __init__(self, data):
         super().__init__(data)
         self.num_cameras = len(self.data.get('cameras'))
+
+        # TODO: improvements - get stages/steps in database
         self.stages = [
             {"display_name": "Initialize", "regex": "Starting to run step Initialize", "count": 0},
             {"display_name": "Preprocessing", "regex": "Starting to run step Preproc", "count": 0},
@@ -212,17 +211,12 @@ class Jobs(QLFProcess):
             '--specprod_dir', desi_spectro_redux
         ]
 
-        self.logger.info("Submitted job %i - camera %s" % (
-            camera.get('job_id'),
-            camera.get('name')
-        ))
-
         log_path = os.path.join(desi_spectro_redux, camera.get('logname'))
 
-        log = setup_logger(
-            camera.get('name'),
-            log_path
-        )
+        logname = io.open(os.path.join(
+                desi_spectro_redux,
+                camera.get('logname')
+        ), 'wb')
 
         cwd = os.path.join(
             desi_spectro_redux,
@@ -236,9 +230,12 @@ class Jobs(QLFProcess):
                 if not line:
                     break
                 self.resume_log(line, camera.get('name'), data.get('expid'), lock)
-                log.info(line)
+                logname.write(line)
+                logname.flush()
 
             retcode = process.wait()
+
+        logname.close()
 
         camera['end'] = datetime.datetime.now().replace(microsecond=0)
         camera['status'] = 0
@@ -254,16 +251,16 @@ class Jobs(QLFProcess):
     def resume_log(self, line, camera, expid, lock):
         """ """
 
-        line = line.decode("utf-8").replace('\n', '').split(':')[-1]
-        pipe_log = logging.getLogger("pipe-{}".format(expid))
-
         lock.acquire()
 
         try:
+            line = line.decode("utf-8").replace('\n', '')
+            line_str = line.split(':')[-1]
+
             if line.find('ERROR') > -1:
-                pipe_log.error("Camera {}: {}".format(camera, line))
+                self.logger.error("ERROR: Camera {}: {}".format(camera, line_str))
             elif line.find('CRITICAL') > -1:
-                pipe_log.critical("Camera {}: {}".format(camera, line))
+                self.logger.critical("CRITICAL: Camera {}: {}".format(camera, line_str))
             else:
                 for stage in self.stages:
                     if line.find(stage.get('regex')) > -1:
@@ -279,13 +276,13 @@ class Jobs(QLFProcess):
 
                         if stage.get('count') == self.num_cameras:
                             if last_stage and last_stage.get('count') != self.num_cameras:
-                                self.logger.error("stage '{}' did not end as expected.".format(
+                                self.logger.error("ERROR: stage '{}' did not end as expected.".format(
                                     last_stage.get("display_name")))
 
                             self.logger.info(stage.get('regex'))
 
         except Exception as err:
-            pipe_log.error(err)
+            self.logger.info(err)
 
         lock.release()
 
