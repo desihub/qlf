@@ -20,9 +20,16 @@ log.addHandler(sh)
 class ExposureGenerator(object):
 
     def __init__(self):
-        self.min_interval = 5 * 60
-        self.max_interval = 10 * 60
-        self.night_to_generate = datetime.date.today().strftime("%Y%m%d")
+        self.min_interval = 10
+        self.max_interval = 15
+
+        self.spectro_path = None
+        self.fiberflat_path = None
+        self.psfboot_path = None
+
+        self.base_night = None
+        self.base_exposure = None
+        self.all_cameras = None
 
         self.__getConfigs()
 
@@ -68,13 +75,18 @@ class ExposureGenerator(object):
         return cameras
 
     def generateExposure(self):
+        gen_time = datetime.datetime.now()
         exp_id = self.__genNewExpId()
-        self.__genDesiFile(exp_id)
-        self.__genFibermapFile(exp_id)
-        self.__genFiberflatFolder(exp_id)
-        self.__genPsfbootFolder(exp_id)
+        self.__genDesiFile(exp_id, gen_time)
+        self.__genFibermapFile(exp_id, gen_time)
+        self.__genFiberflatFolder(exp_id, gen_time)
+        self.__genPsfbootFolder(exp_id, gen_time)
 
-        return exp_id
+        return {
+            "exp_id": exp_id,
+            "date-obs": self.__dateObs(gen_time),
+            "night": self.__nightToGenerate(gen_time)
+        }
 
     def __genNewExpId(self):
         last_id = self.__getLastExpId()
@@ -105,15 +117,22 @@ class ExposureGenerator(object):
 
         return sorted(m)[-1]
 
-    def __genDesiFile(self, exp_id):
+    def __genDesiFile(self, exp_id, gen_time):
         src = os.path.join(self.spectro_path, self.base_night)
-        dest = os.path.join(self.spectro_path, self.night_to_generate)
+        dest = os.path.join(
+            self.spectro_path, self.__nightToGenerate(gen_time))
         self.__ensureDir(dest)
         src_file = os.path.join(
             src, ("desi-%s.fits.fz" % (self.base_exposure)))
         dest_file = os.path.join(dest, ("desi-%s.fits.fz" % (exp_id)))
         shutil.copy(src_file, dest_file)
         self.__updateExposureFileMetadata(dest_file, exp_id)
+
+    def __nightToGenerate(self, gen_time):
+        return (gen_time - datetime.timedelta(hours=12)).strftime("%Y%m%d")
+
+    def __dateObs(self, gen_time):
+        return gen_time.strftime("%Y-%m-%dT%H:%M:%S")
 
     def __ensureDir(self, path):
         if not os.path.exists(path):
@@ -127,27 +146,30 @@ class ExposureGenerator(object):
         hdulist.flush()
         hdulist.close()
 
-    def __genFibermapFile(self, exp_id):
+    def __genFibermapFile(self, exp_id, gen_time):
         src = os.path.join(self.spectro_path, self.base_night)
-        dest = os.path.join(self.spectro_path, self.night_to_generate)
+        dest = os.path.join(
+            self.spectro_path, self.__nightToGenerate(gen_time))
         self.__ensureDir(dest)
         shutil.copy(
             os.path.join(src, ("fibermap-%s.fits" % (self.base_exposure))),
             os.path.join(dest, ("fibermap-%s.fits" % (exp_id))))
 
-    def __genFiberflatFolder(self, exp_id):
+    def __genFiberflatFolder(self, exp_id, gen_time):
         # actually just copy the path
         # TODO check if the 00000001 part of the filename should be updated
         src = os.path.join(self.fiberflat_path, self.base_night)
-        dest = os.path.join(self.fiberflat_path, self.night_to_generate)
+        dest = os.path.join(
+            self.fiberflat_path, self.__nightToGenerate(gen_time))
 
         if not os.path.exists(dest):
             shutil.copytree(src, dest)
 
-    def __genPsfbootFolder(self, exp_id):
+    def __genPsfbootFolder(self, exp_id, gen_time):
         # it is fine to just copy the path
         src = os.path.join(self.psfboot_path, self.base_night)
-        dest = os.path.join(self.psfboot_path, self.night_to_generate)
+        dest = os.path.join(
+            self.psfboot_path, self.__nightToGenerate(gen_time))
 
         if not os.path.exists(dest):
             shutil.copytree(src, dest)
@@ -155,7 +177,6 @@ class ExposureGenerator(object):
     def printVars(self):
         log.info("min_interval:      %s" % self.min_interval)
         log.info("max_interval:      %s" % self.max_interval)
-        log.info("night_to_generate: %s" % self.night_to_generate)
 
         log.info("spectro_path:      %s" % self.spectro_path)
         log.info("fiberflat_path:    %s" % self.fiberflat_path)
@@ -171,16 +192,16 @@ if __name__ == "__main__":
     eg.printVars()
 
     while True:
-        rand = random.randint(10, 15)
+        print("Starting generation of new exposure...")
+        result = eg.generateExposure()
+        print(
+            "Exposure id '%s' generated at '%s' as night '%s'."
+            % (result['exp_id'], result['date-obs'], result['night'])
+        )
+        rand = random.randint(eg.min_interval, eg.max_interval)
         print("Next generation in %s minutes..." % rand)
         time.sleep(rand * 60)
-        print(
-            "Generated exposure id '%s'."
-            % eg.generateExposure()
-        )
 
     # TODO change the MJD header to the time of generation
-
-    # TODO change the generated folder to the date of generation
 
     # TODO add a function to cleanup generated files
