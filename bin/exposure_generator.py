@@ -126,7 +126,7 @@ class ExposureGenerator(object):
             src, ("desi-%s.fits.fz" % (self.base_exposure)))
         dest_file = os.path.join(dest, ("desi-%s.fits.fz" % (exp_id)))
         shutil.copy(src_file, dest_file)
-        self.__updateExposureFileMetadata(dest_file, exp_id)
+        self.__updateFITSFileMetadata(dest_file, exp_id, gen_time)
 
     def __nightToGenerate(self, gen_time):
         return (gen_time - datetime.timedelta(hours=12)).strftime("%Y%m%d")
@@ -138,11 +138,24 @@ class ExposureGenerator(object):
         if not os.path.exists(path):
             os.makedirs(path)
 
-    def __updateExposureFileMetadata(self, exp_file, exp_id):
+    def __updateFITSFileMetadata(self, exp_file, exp_id, gen_time):
         hdulist = astropy.io.fits.open(exp_file, mode="update")
         for hduid in range(0, len(hdulist)):
-            if 'EXPID' in hdulist[hduid].header:
-                hdulist[hduid].header['EXPID'] = exp_id
+            if "EXPID" in hdulist[hduid].header:
+                hdulist[hduid].header["EXPID"] = (
+                    int(exp_id))
+            if "DATE-OBS" in hdulist[hduid].header:
+                hdulist[hduid].header["DATE-OBS"] = (
+                    self.__dateObs(gen_time))
+            if "NIGHT" in hdulist[hduid].header:
+                hdulist[hduid].header["NIGHT"] = (
+                    self.__nightToGenerate(gen_time))
+            if "ARCNIGHT" in hdulist[hduid].header:
+                hdulist[hduid].header["ARCNIGHT"] = (
+                    self.__nightToGenerate(gen_time))
+            if "FLANIGHT" in hdulist[hduid].header:
+                hdulist[hduid].header["FLANIGHT"] = (
+                    self.__nightToGenerate(gen_time))
         hdulist.flush()
         hdulist.close()
 
@@ -151,19 +164,27 @@ class ExposureGenerator(object):
         dest = os.path.join(
             self.spectro_path, self.__nightToGenerate(gen_time))
         self.__ensureDir(dest)
-        shutil.copy(
-            os.path.join(src, ("fibermap-%s.fits" % (self.base_exposure))),
-            os.path.join(dest, ("fibermap-%s.fits" % (exp_id))))
+        src_file = os.path.join(
+            src, ("fibermap-%s.fits" % (self.base_exposure)))
+        dest_file = os.path.join(dest, ("fibermap-%s.fits" % (exp_id)))
+        shutil.copy(src_file, dest_file)
+        self.__updateFITSFileMetadata(dest_file, exp_id, gen_time)
 
     def __genFiberflatFolder(self, exp_id, gen_time):
-        # actually just copy the path
-        # TODO check if the 00000001 part of the filename should be updated
         src = os.path.join(self.fiberflat_path, self.base_night)
         dest = os.path.join(
             self.fiberflat_path, self.__nightToGenerate(gen_time))
 
-        if not os.path.exists(dest):
-            shutil.copytree(src, dest)
+        self.__ensureDir(dest)
+        regex = re.compile("^(fiberflat-\w+-)(\d{8})(.fits)$")
+
+        for filename in os.listdir(src):
+            src_file = os.path.join(src, filename)
+            new_filename = regex.sub("\g<1>" + exp_id + "\g<3>", filename)
+            dest_file = os.path.join(dest, new_filename)
+            shutil.copy(src_file, dest_file)
+
+            self.__updateFITSFileMetadata(dest_file, exp_id, gen_time)
 
     def __genPsfbootFolder(self, exp_id, gen_time):
         # it is fine to just copy the path
@@ -173,6 +194,10 @@ class ExposureGenerator(object):
 
         if not os.path.exists(dest):
             shutil.copytree(src, dest)
+
+            for filename in os.listdir(dest):
+                dest_file = os.path.join(dest, filename)
+                self.__updateFITSFileMetadata(dest_file, exp_id, gen_time)
 
     def printVars(self):
         log.info("min_interval:      %s" % self.min_interval)
@@ -201,7 +226,5 @@ if __name__ == "__main__":
         rand = random.randint(eg.min_interval, eg.max_interval)
         print("Next generation in %s minutes..." % rand)
         time.sleep(rand * 60)
-
-    # TODO change the MJD header to the time of generation
 
     # TODO add a function to cleanup generated files
