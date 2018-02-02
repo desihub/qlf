@@ -109,6 +109,8 @@ class LoadMetrics:
         api = requests.get(QLF_API_URL).json()
 
         data = requests.get(api['qa'], params={'name': qa_name}).json()
+        print('qa',qa_name)
+        #print('***', data['results'].keys() )
         data = data['results'][0]
         if data != None:
             self.error.update({qa:False})

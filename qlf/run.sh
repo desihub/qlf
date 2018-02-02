@@ -70,4 +70,6 @@ echo > $logfile
 echo "QLF is running, watch $logfile" 
 
 # Start QLF daemon
-nohup python -Wi ../bin/qlf_daemon.py > $QLF_ROOT/qlf_daemon.log 2>&1 &
+# nohup python -Wi ../bin/qlf_daemon.py > $QLF_ROOT/qlf_daemon.log 2>&1 &
+python -Wi ../bin/qlf_daemon.py &
+

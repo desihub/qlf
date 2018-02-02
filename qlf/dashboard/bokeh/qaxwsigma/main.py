@@ -158,6 +158,7 @@ px.circle('x1','y1', source = source, name="data", radius = 0.018,
 
 # marking the Hover point
 px.circle('x1','y1', source = source, name="data", radius = 0.0186
+          , hover_fill_color={'field': 'xsigma', 'transform': xmapper}
           , fill_color=None, line_color=None
           , line_width=3, hover_line_color='red')
 
@@ -190,6 +191,7 @@ pw.circle('x1','y1', source = source, name="data", radius = 0.018,
 
 # marking the Hover point
 pw.circle('x1','y1', source = source, name="data", radius = 0.0186
+          , hover_fill_color={'field': 'wsigma', 'transform': wmapper}
           , fill_color=None, line_color=None
           , line_width=3, hover_line_color='red')
 
