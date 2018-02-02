@@ -15,13 +15,13 @@ qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
 
 try:
-    cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
     qlconfig = cfg.get('main', 'qlconfig')
     logmain = cfg.get('main', 'logfile')
     desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 except Exception as error:
     print(error)
-    print("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+    print("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
     sys.exit(1)
 
 logger = logging.getLogger("main_logger")

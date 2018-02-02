@@ -14,12 +14,12 @@ class DOSmonitor(object):
         qlf_root = os.getenv('QLF_ROOT')
         self.cfg = configparser.ConfigParser()
         try:
-            self.cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+            self.cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
             self.desi_spectro_data = os.path.normpath(self.cfg.get('namespace', 'desi_spectro_data'))
             self.desi_spectro_redux = os.path.normpath(self.cfg.get('namespace', 'desi_spectro_redux'))
         except Exception as error:
             logger.error(error)
-            logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+            logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
             sys.exit(1)
 
         self.cameras = self.get_cameras()
