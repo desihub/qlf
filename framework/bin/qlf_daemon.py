@@ -17,7 +17,6 @@ try:
     cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
     logfile = cfg.get("main", "logfile")
     loglevel = cfg.get("main", "loglevel")
-    parallel_ingestion = cfg.getboolean("main", "parallel_ingestion")
 except Exception as error:
     print(error)
     print("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
@@ -185,7 +184,7 @@ class QLFAutomatic(object):
         if self.process and not self.process.exit.is_set():
             status = True
 
-        logger.info("QLF Daemon status: {}".format(status))
+        # logger.info("QLF Daemon status: {}".format(status))
         return status
 
     def get_current_run(self):
@@ -197,7 +196,7 @@ class QLFAutomatic(object):
         if self.process and self.process.running.is_set():
             running = True
 
-        logger.info("Running? {}".format(running))
+        # logger.info("Running? {}".format(running))
         return running
 
 
