@@ -17,7 +17,6 @@ try:
     cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
     logfile = cfg.get("main", "logfile")
     loglevel = cfg.get("main", "loglevel")
-    parallel_ingestion = cfg.getboolean("main", "parallel_ingestion")
 except Exception as error:
     print(error)
     print("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
