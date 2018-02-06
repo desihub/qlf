@@ -4,6 +4,12 @@ The Quick Look Framework is part of the DES Instrument Control System (ICS) and 
 
 QLF current version allows to follow the execution of QL pipeline, which process multiple cameras/arms in parallel. The interfaces for QA display are now in a mature stage of development using React and Bokeh plots.
 
+### Clone Quick Look Framework Project
+
+    git clone https://github.com/desihub/qlf.git
+    cd qlf
+    git submodule init
+    git submodule update
 
 ## Running
 
@@ -13,4 +19,3 @@ QLF current version allows to follow the execution of QL pipeline, which process
 
 
     Contact: helpdesk@linea.gov.br
-    
