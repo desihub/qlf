@@ -120,7 +120,7 @@ wsigma_tooltip = """
 c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 # 171 qlf_fiberid = np.arange(0,5000)[c1:c2] 
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
-print (snr['ELG_FIBERID'][:10], '\nfiber:',qlf_fiberid[:10])
+# print (snr['ELG_FIBERID'][:10], '\nfiber:',qlf_fiberid[:10])
 # marking type of objects:
 obj_name=[]
 for j in qlf_fiberid:
