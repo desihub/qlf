@@ -60,14 +60,18 @@ skypeak   = metrics['skypeak']
 skyresid  = metrics['skyresid']
 snr       = metrics['snr']
 
+
+# ============================================
+# values to plot:
+name = 'PEAKCOUNT'
+metr = ast.literal_eval(skypeak)
+
 # ============================================
 # THIS: Given the set up in the block above, 
 #       we have the bokeh plots
 
 
-name = 'PEAKCOUNT'
-metr = ast.literal_eval(skypeak)
-print('\n\n\n\n'+'=='*90, metr.keys(), '\n\n\n\n')
+
 
 def palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 
