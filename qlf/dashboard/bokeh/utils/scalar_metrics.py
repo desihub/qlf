@@ -1,7 +1,7 @@
 from __future__ import division
 # Scalar_metrics.py DESISPEC 0.17.1
 # To do: Finish the documentation
-#        python3 and matplotlib2 (cm.jet)
+
 import logging
 from dashboard.bokeh.helper import get_data
 import requests
