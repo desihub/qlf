@@ -67,7 +67,7 @@ snr       = metrics['snr']
 
 name = 'SUMCOUNT_RMS_AMP'
 metr = ast.literal_eval(skypeak)
-print('Here')
+
 
 dx = [0,1,0,1]
 dy = [1,1,0,0]
