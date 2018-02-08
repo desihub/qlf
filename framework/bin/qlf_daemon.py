@@ -1,67 +1,52 @@
 from dos_monitor import DOSmonitor
 from qlf_models import QLFModels
 from time import sleep
-from multiprocessing import Process, Event
+from multiprocessing import Process, Event, Value
 import Pyro4
 import configparser
 import sys
 import os
-import psutil
-import signal
+import errno
+from socket import error as socket_error
 from log import setup_logger
+from procutil import kill_proc_tree
 from qlf_pipeline import Jobs as QLFPipeline
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
 
-try:
-    cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
-    logfile = cfg.get("main", "logfile")
-    loglevel = cfg.get("main", "loglevel")
-except Exception as error:
-    print(error)
-    print("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
-    sys.exit(1)
+cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
+logfile = cfg.get("main", "logfile")
+loglevel = cfg.get("main", "loglevel")
 
 logger = setup_logger("main_logger", logfile, loglevel)
+model = QLFModels()
 
 
 class QLFAutoRun(Process):
 
     def __init__(self):
         super().__init__()
-        # inicia os eventos running e exit
         self.running = Event()
         self.exit = Event()
 
         self.dos_monitor = DOSmonitor()
 
-        # TODO
-        self.last_night = str()
-        self.current_exposure = None
-        self.process_id = None
+        self.last_night = None
+        self.process_id = Value('i', 0)
 
-        # pegar a ultima exposure processada no database
-        exposure = QLFModels().get_last_exposure()
+        exposure = model.get_last_exposure()
 
         if exposure:
-            # night do ultimo processamento
             self.last_night = exposure.night
 
     def run(self):
-        # a cada run(start) o evento 'exit' eh limpado
-        self.exit.clear()
-
-        # variaveis para controlar messagem de log
         notify_night = False
         notify_exposure = False
 
-        while not self.exit.is_set():
-
-            # pegar a ultima night disponivel no ICS
+        while not self.get_exit():
             night = self.dos_monitor.get_last_night()
 
-            # verifica se ja foi processada
             if night == self.last_night:
                 if not notify_night:
                     # Monitoring next night
@@ -74,7 +59,6 @@ class QLFAutoRun(Process):
 
             logger.info('Night {}, waiting for exposures...'.format(night))
 
-            # pega as exposures da night
             exposures = self.dos_monitor.get_exposures_by_night(night)
 
             if not exposures:
@@ -86,68 +70,48 @@ class QLFAutoRun(Process):
 
             notify_exposure = False
 
-            test = 1
-
             for exposure in exposures:
-                if self.exit.is_set():
+                if self.get_exit():
                     logger.info('Execution stopped')
                     break
 
                 logger.info('Found expID {}, processing...'.format(exposure.get('expid')))
                 self.running.set()
-                self.current_exposure = exposure
-                sleep(30)
-                #ql = QLFPipeline(self.current_exposure)
-                #self.process_id = ql.start_process()
-                #ql.start_jobs()
-                #ql.finish_process()
-                self.process_id = test
-                logger.info('Process ID {} finished.'.format(self.process_id))
-                test += 1
+
+                try:
+                    ql = QLFPipeline(exposure)
+                    self.process_id.value = ql.start_process()
+                    ql.start_jobs()
+                    ql.finish_process()
+                except socket_error as serr:
+                    if serr.errno != errno.ECONNREFUSED:
+                        logger.exception('Daemon Error')
+                        raise
+
                 logger.info('ExpID {} finished.'.format(exposure.get('expid')))
 
             self.running.clear()
-            self.process_id = None
-            self.current_exposure = None
+            self.process_id.value = 0
             self.last_night = night
 
         logger.info("Bye!")
 
-    def shutdown(self):
-        self.exit.set()
-        self.reap_children()
-        self.running.clear()
-        self.process_id = None
-        self.current_exposure = None
-        self.last_night = night
+    def get_current_process_id(self):
+        """ """
+        return self.process_id.value
 
-    def reap_children(self, timeout=3):
-        """Tries hard to terminate and ultimately kill all the children of this process.
-        https://psutil.readthedocs.io/en/latest/#terminate-my-children """
+    def set_exit(self, value=True):
+        """ """
+        if value:
+            self.exit.set()
+        else:
+            self.exit.clear()
 
-        def on_terminate(proc):
-            logger.info("process {} terminated with exit code {}".format(proc, proc.returncode))
+    def get_exit(self):
+        """ """
+        return self.exit.is_set()
 
-        procs = psutil.Process().children()
-        # send SIGTERM
-        for p in procs:
-            p.terminate()
-
-        gone, alive = psutil.wait_procs(procs, timeout=timeout, callback=on_terminate)
-
-        if alive:
-            # send SIGKILL
-            for p in alive:
-                logger.info("process {} survived SIGTERM; trying SIGKILL" % p)
-                p.kill()
-
-            gone, alive = psutil.wait_procs(alive, timeout=timeout, callback=on_terminate)
-
-            if alive:
-                # give up
-                for p in alive:
-                    logger.info("process {} survived SIGKILL; giving up" % p)
-
+# TODO: refactor QLFManualRun
 class QLFManualRun(Process):
 
     def __init__(self, exposures):
@@ -172,12 +136,10 @@ class QLFManualRun(Process):
         for exposure in self.exposures:
             logger.info("Initiating {} exposure processing...".format(exposure.get("expid")))
 
-            # if exit is set
             if self.exit.is_set():
                 logger.info('Execution stopped')
                 break
 
-            # is running
             self.running.set()
             self.current_exposure = exposure
             ql = QLFPipeline(self.current_exposure)
@@ -186,7 +148,6 @@ class QLFManualRun(Process):
             ql.start_jobs()
             ql.finish_process()
 
-        # not running
         self.running.clear()
         self.current_exposure = None
 
@@ -207,71 +168,42 @@ class QLFAutomatic(object):
 
     def start(self):
         if self.process and self.process.is_alive():
-            # se tem processo instanciado e ainda esta vivo, a flag 'exit' eh
-            # desativada
-            self.process.exit.clear()
+            self.process.set_exit(False)
             logger.info("Monitor is already initialized (pid: %i)." % self.process.pid)
         else:
-            # caso contrario a classe de monitoramento de exposures eh
-            # instanciada e startada.
             self.process = QLFAutoRun()
             self.process.start()
             logger.info("Starting pid %i..." % self.process.pid)
 
     def stop(self):
         if self.process and self.process.is_alive():
-            # se tem processo instanciado e ainda esta vivo, o processo eh
-            # interrompido
+            self.process.set_exit()
             logger.info("Stop pid %i" % self.process.pid)
-            process_id = self.process.process_id
+
+            process_id = self.process.get_current_process_id()
             pid = self.process.pid
 
-            if pid == os.getpid():
-                raise RuntimeError("I refuse to kill myself")
+            kill_proc_tree(pid, include_parent=False)
 
-            parent = psutil.Process(pid)
-            children = parent.children(recursive=True)
-
-            children.append(parent)
-
-            for p in children:
-                p.send_signal(signal.SIGTERM)
-
-            gone, alive = psutil.wait_procs(children)
-
-            logger.info(gone, alive)
-
-            # self.process.shutdown()
-
-            logger.info('Delete {}?'.format(process_id))
-            # verifica se existe algum processo rodando no momento do stop e
-            # deleta do database
             if process_id:
-                QLFModels().delete_process(process_id)
-
-            # self.process = None
+                model.delete_process(process_id)
         else:
             logger.info("Monitor is not initialized.")
 
     def reset(self):
-        # interrompe o monitoramento de exposures
         self.stop()
-        sleep(5)
-        # deleta todo os processos do database
-        QLFModels().delete_all_processes()
-        # zera o atributo process
-        self.process = None
+        sleep(2)
+        model.delete_all_processes()
+        model.delete_all_exposures()
+        logger.info('Deleted all processes and exposures')
 
     def get_status(self):
         status = False
 
-        if self.process and not self.process.exit.is_set():
+        if self.process and not self.process.get_exit():
             status = True
 
         return status
-
-    def get_current_run(self):
-        return self.process.current_exposure
 
     def is_running(self):
         running = False
@@ -281,6 +213,7 @@ class QLFAutomatic(object):
 
         return running
 
+# TODO: refactor QLFManual
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
 class QLFManual(object):

@@ -199,14 +199,22 @@ class QLFModels(object):
     def delete_all_processes(self):
         """ delete all processes """
 
-        print('delete all process')
-        #Process.objects.all().delete()
+        Process.objects.all().delete()
+
+    def delete_all_exposures(self):
+        """ delete all exposures """
+
+        Exposure.objects.all().delete()
 
     def delete_process(self, process_id):
         """ delete by process_id """
 
-        print('delete process')
-        #Process.objects.filter(id=process_id).delete()
+        Process.objects.filter(id=process_id).delete()
+
+    def delete_exposure(self, expid):
+        """ delete by exposure id """
+
+        Exposure.objects.filter(exposure_id=expid).delete()
 
     @staticmethod
     def jsonify(data):
