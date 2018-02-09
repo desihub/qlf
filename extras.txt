@@ -2,10 +2,15 @@
 # $ source activate quicklook  (load quicklook environment, see requirements.txt)
 # $ pip install -r extras.txt
 
+Twisted[tls,http2]
+
 django-json-field==0.5.7
 speclite==0.5
-fitsio==0.9.10
+fitsio==0.9.11
 furl==0.5.7
 Pyro4==4.59
-
+channels==1.1.8
+asgi_redis==1.4.3
+schedule==0.5.0
+pyyaml==3.12
 

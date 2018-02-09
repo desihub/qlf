@@ -12,6 +12,8 @@ import os
 import configparser
 import requests
 from ui_channel.camera_status import get_camera_status
+from astropy.io import fits
+from astropy.time import Time
 
 from dashboard.bokeh.helper import get_last_process, get_cameras
 
@@ -19,12 +21,29 @@ qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
 
 try:
-    cfg.read('%s/qlf/config/qlf.cfg' % qlf_root)
+    cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
     desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+    desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
     night = cfg.get('data', 'night')
 except Exception as error:
     logger.error(error)
-    logger.error("Error reading  %s/qlf/config/qlf.cfg" % qlf_root)
+    logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
+
+def get_mjd_date(exp):
+    # open file
+    exp_zfill = str(exp).zfill(8)
+    fits_file = '{}/{}/desi-{}.fits.fz'.format(desi_spectro_data, night, exp_zfill)
+    
+    f = fits.open(fits_file)
+
+    # read the time in isot
+    time = f[0].header['DATE-OBS']
+
+    # declare the format
+    t = Time(time, format='isot', scale='utc')
+
+    # Convert to MJD
+    return t.mjd
 
 def get_camera_log(cam):
     process = get_last_process()
@@ -94,9 +113,11 @@ def get_current_state():
 
     logfile = open_file('logfile')
     ingestionlog = []
+    mjd = str()
     if len(process) > 0:
         exposure = process[0].get("exposure")
         ingestionlog = get_ingestion_log(exposure)
+        mjd = get_mjd_date(exposure)
     else:
         exposure = ''
 
@@ -111,6 +132,7 @@ def get_current_state():
             "available_cameras": available_cameras,
             "qa_results": qa_results,
             "ingestion": ingestionlog,
+            "mjd": mjd
         })
 
 def job():
