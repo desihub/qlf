@@ -65,7 +65,7 @@ snr       = metrics['snr']
 #       we have the bokeh plots
 
 
-name = 'NPIX_LOW_AMP'
+name = 'NPIX_AMP'
 metr = ast.literal_eval(countpix)
 
 dx = [0,1,0,1]

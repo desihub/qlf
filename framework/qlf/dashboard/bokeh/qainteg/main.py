@@ -101,7 +101,9 @@ qlf_fiberid = np.arange(0,5000)[c1:c2]
 
 hover = HoverTool(tooltips=skc_tooltips)
 
-integ = ast.literal_eval(integ)
+integ = ast.literal_eval(integ.replace("nan","''"))
+#integ = ast.parse(integ, mode='eval')
+#print('\n ======'*6, integ)
 
 qainteg = integ['INTEG']
 fibers = integ['STD_FIBERID']
@@ -133,7 +135,7 @@ mapper = LinearColorMapper(palette= my_palette,
                            high = np.max(qainteg))
 p2 = figure(title='INTEG', 
             x_axis_label='RA', y_axis_label='DEC',
-            plot_width=700, plot_height=600,
+            plot_width=750, plot_height=700,
             tools= [hover, "pan,box_zoom,reset"])
 
 p2.circle('ra','dec', source=source2, radius=0.016,
