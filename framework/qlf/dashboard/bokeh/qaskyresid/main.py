@@ -37,7 +37,7 @@ from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
 
 cam = selected_arm+str(selected_spectrograph)
 exp = selected_exposure # intentionaly redundant
-lm = LoadMetrics(cam, exp, night);
+lm = LoadMetrics(cam, exp, night)
 metrics, tests  = lm.metrics, lm.tests 
 
 # =============================================
@@ -54,7 +54,10 @@ skypeak   = metrics['skypeak']
 skyresid  = metrics['skyresid']
 snr       = metrics['snr']
 
-skyresid = ast.literal_eval(skyresid)
+try:
+    skyresid = ast.literal_eval(skyresid)
+except:
+    sys.exit('Could not load skyresid metrics')
 
 # ============================================
 # THIS: Given the set up in the block above, 

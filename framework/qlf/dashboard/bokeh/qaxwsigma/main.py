@@ -55,8 +55,6 @@ skyresid  = metrics['skyresid']
 snr       = metrics['snr']
 
 xwsigma = ast.literal_eval(xwsigma)
-snr       = ast.literal_eval(snr)
-skycont       = ast.literal_eval(skycont)
 
 def palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 
@@ -71,16 +69,11 @@ def palette(name_of_mpl_palette):
 #nipy_spectral)#Viridis256)#,RdYlBu11)#Viridis256)#, low=0, high=100)
 my_palette = palette("viridis")
 
-
 xsigma_tooltip = """
     <div>
         <div>
             <span style="font-size: 12px; font-weight: bold; color: #303030;">XSigma: </span>
             <span style="font-size: 13px; color: #515151">@xsigma</span>
-        </div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-            <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
         </div>
         <div>
             <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
@@ -100,10 +93,6 @@ wsigma_tooltip = """
             <span style="font-size: 13px; color: #515151">@wsigma</span>
         </div>
         <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-            <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
-        </div>
-        <div>
             <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
             <span style="font-size: 13px; color: #515151;">@x1</span>
         </div>
@@ -117,27 +106,8 @@ wsigma_tooltip = """
 
 
 # determining the position of selected cam fibers:
-c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
-# 171 qlf_fiberid = np.arange(0,5000)[c1:c2] 
+c1,c2 = int(selected_spectrograph)*500, (  int(selected_spectrograph) +1 )*500
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
-# print (snr['ELG_FIBERID'][:10], '\nfiber:',qlf_fiberid[:10])
-# marking type of objects:
-obj_name=[]
-for j in qlf_fiberid:
-    i = j - c1
-    if  i in snr['ELG_FIBERID']:
-        obj_name.append('ELG')
-    elif  i  in snr['QSO_FIBERID']:
-        obj_name.append('QSO')
-    elif  i  in snr['LRG_FIBERID']:
-        obj_name.append('LRG')
-    elif  i in snr['STAR_FIBERID']:
-        obj_name.append('STAR')
-    elif i in skycont['SKYFIBERID']:
-        obj_name.append('SKY')
-    else:
-        obj_name.append('UNKNOWN')
-
 
 xsigma_hover = HoverTool(tooltips=xsigma_tooltip)
 wsigma_hover = HoverTool(tooltips=wsigma_tooltip)
@@ -151,7 +121,6 @@ source = ColumnDataSource(data={
     'xsigma' : xwsigma['XSIGMA'],
     'wsigma' : xwsigma['WSIGMA'],
     'QLF_FIBERID': qlf_fiberid,
-    'OBJ_TYPE': obj_name
 })
 
 source_comp = ColumnDataSource(
@@ -189,7 +158,6 @@ px.circle('x1','y1', source = source, name="data", radius = 0.018,
 
 # marking the Hover point
 px.circle('x1','y1', source = source, name="data", radius = 0.0186
-          , hover_fill_color={'field': 'xsigma', 'transform': xmapper}
           , fill_color=None, line_color=None
           , line_width=3, hover_line_color='red')
 
@@ -222,7 +190,6 @@ pw.circle('x1','y1', source = source, name="data", radius = 0.018,
 
 # marking the Hover point
 pw.circle('x1','y1', source = source, name="data", radius = 0.0186
-          , hover_fill_color={'field': 'wsigma', 'transform': wmapper}
           , fill_color=None, line_color=None
           , line_width=3, hover_line_color='red')
 
@@ -238,6 +205,5 @@ wcolor_bar = ColorBar(color_mapper= wmapper, label_standoff=-13,
 
 pw.add_layout(wcolor_bar, 'left')
 
-layout= row([px,pw])#, sizing_mode='scale_width')
-
+layout= column([px,pw])
 curdoc().add_root(layout)
