@@ -395,12 +395,12 @@ class LoadMetrics:
         # begin for desispec >= 0.17.1
         steps_status = []
 
-
         for i in steps_dic[self.step_name]:
             #print('%13s %s' % (i, lm.metrics[i][alert_keys[i]]))
-            try:               
-                aux1 = self.metrics[i][alert_keys[i]]
-            except:
+            try:
+                aux1 = ast.literal_eval(self.metrics[i])[alert_keys[i]]
+            except Exception as e:
+                logger.error('Failed metric alert: '+ str(e))
                 aux1 = 'FAILURE'
         
             steps_status.append(aux1)
