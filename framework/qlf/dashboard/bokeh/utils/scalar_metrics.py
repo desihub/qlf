@@ -306,64 +306,6 @@ class LoadMetrics:
         else:
             return 'NORMAL'
 
-
-       
-    def step_colorOld(self, step_name):
-        """ This was the version used before tag 0.17.1 of desispec
-        Missing: Xsigma and Wsigma
-        Arguments
-        ---------
-        step_name: str
-            The abbreviated name of one of the four QA steps
-        Return
-        ------
-        color: str
-            Wedge color Alert
-        """
-        self.step_name = step_name
-        steps_list = ['preproc', 'extract', 'fiberfl', 'skysubs']
-        if not isinstance(self.step_name, str): 
-            return "{} is not a String".format(self.step_name)
-        if self.step_name not in steps_list:
-            return "Invalid step: please return a value in {}".format(steps_list)
-    
-        steps_dic = {'preproc':['countpix', 'getbias','getrms', 'xwsigma'],
-                     'extract':['countbins'],
-                     'fiberfl':['integ','skycont','skypeak','skyresid'],
-                     'skysubs':['snr']}
-        steps_status = []
-
-        logger.info ('init_error', self.error)
-        for i in steps_dic[self.step_name]:
-            if(self.error[i]):
-                logger.info ('QL FAILURE')
-                steps_status.append('FAILURE')
-                
-            else:
-                try:
-                    aux1 = self.qa_status(i)
-                    steps_status.append(aux1)
-                except:
-                    steps_status.append('FAILURE')
-        # logger.info('Steps_status:', steps_status)
-
-        if any(x=='FAILURE' for x in steps_status):
-            color = 'magenta' # Pick a color for failure case
-        
-        elif any( x == 'ALARM'  for x in steps_status):
-            color =  "red"
-            logger.info( color )
-        elif any( x == 'WARN'  for x in steps_status):
-            color =  "yellow"
-            logger.info( color )
-        elif all(x=='NORMAL' for x in steps_status): #intentionally redundant
-            color = "green"
-            logger.info( color )
-        result = {'color': color, 'steps_status': steps_status }
-        return result
-
-
-
     def step_color(self, step_name):
         """ Reading step color produced in desispec 0.17.1
        
@@ -395,12 +337,12 @@ class LoadMetrics:
         # begin for desispec >= 0.17.1
         steps_status = []
 
-
         for i in steps_dic[self.step_name]:
             #print('%13s %s' % (i, lm.metrics[i][alert_keys[i]]))
-            try:               
-                aux1 = self.metrics[i][alert_keys[i]]
-            except:
+            try:
+                aux1 = ast.literal_eval(self.metrics[i])[alert_keys[i]]
+            except Exception as e:
+                logger.error('Failed metric alert: '+ str(e))
                 aux1 = 'FAILURE'
         
             steps_status.append(aux1)

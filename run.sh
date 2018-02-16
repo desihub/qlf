@@ -2,6 +2,7 @@
 source activate quicklook 
 
 pip install -r requirements.txt
+pip install -r extras.txt
 
 export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
