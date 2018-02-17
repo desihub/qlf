@@ -16,7 +16,7 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args
 
-import numpy as np
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -138,19 +138,10 @@ p2 = figure(title='INTEG',
             plot_width=750, plot_height=700,
             tools= [hover, "pan,box_zoom,reset"])
 
-p2.circle('ra','dec', source=source2, radius=0.016,
-        fill_color={'field': 'integ', 'transform': mapper}, 
-         line_color='black', line_width=0.1)
-
-# marking the Hover point
-p2.circle('ra','dec', source = source2, radius = 0.0186
-          , fill_color=None, line_color=None
-          , hover_fill_color={'field': 'integ', 'transform': mapper}
-          , line_width=3, hover_line_color='red')
-
+radius = 0.011
 
 # Gray Fibers:
-p2.circle('ra', 'dec', source= source2_not, radius=0.015, 
+p2.circle('ra', 'dec', source= source2_not, radius= radius, 
             fill_color = 'lightgray', line_color='black', line_width=0.3)
 
 # Gray Fibers: marking the Hover point
@@ -163,9 +154,22 @@ color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
                      major_label_text_align='right',
                      major_label_text_font_size="10pt",
                      location=(0, 0))
+
+# Colored fibers
+p2.circle('ra','dec', source=source2, radius=radius,
+        fill_color={'field': 'integ', 'transform': mapper}, 
+         line_color='black', line_width=0.1)
+
+# marking the Hover point
+p2.circle('ra','dec', source = source2, radius = 0.0186
+          , fill_color=None, line_color=None
+          , hover_fill_color={'field': 'integ', 'transform': mapper}
+          , line_width=3, hover_line_color='red')
+
+
 color_bar.formatter = formatter
 
-p2.add_layout(color_bar)
+p2.add_layout(color_bar, 'left')
 
 # End of Bokeh Block
 curdoc().add_root(p2)
