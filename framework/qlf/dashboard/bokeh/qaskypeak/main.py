@@ -127,15 +127,15 @@ mapper = LinearColorMapper(palette= my_palette,
                            high=1.02*np.max(peakcount))
 
 
-# ======
-# XSIGMA
+
+radius = 0.011
 p = figure( title = 'SKYPEAK', x_axis_label='RA', y_axis_label='DEC'
            , plot_width=750, plot_height=700
            ## , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
            , tools= [peak_hover, "pan,box_zoom,reset,crosshair"])
 
 # Color Map
-p.circle('x1','y1', source = source, name="data", radius = 0.018,
+p.circle('x1','y1', source = source, name="data", radius = radius,
         fill_color={'field': 'peakcount', 'transform': mapper}, 
          line_color='black', line_width=0.1,
          hover_line_color='red')
