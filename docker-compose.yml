@@ -1,5 +1,14 @@
 version: '3'
 services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=qlfuser
+      - POSTGRES_USER=userqlf
+      - POSTGRES_DB=dbqlf
+    ports:
+      - "5432"
   qlf:
     build: .
     environment:
@@ -12,6 +21,9 @@ services:
       - QL_SPEC_DATA=/app/spectro/data
       - QL_SPEC_REDUX=/app/spectro/redux
       - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
+      - POSTGRES_PASSWORD=qlfuser
+      - POSTGRES_USER=userqlf
+      - POSTGRES_DB=dbqlf
     volumes:
       - .:/app
     restart: always
@@ -21,8 +33,9 @@ services:
       - "8000:8000"
       - "5006:5006"
       - "56005:56005"
-    links:
+    depends_on:
       - redis
+      - db
   redis:
     image: redis
     ports:
