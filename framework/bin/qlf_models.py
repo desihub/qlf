@@ -196,6 +196,26 @@ class QLFModels(object):
 
         return exposure
 
+    def delete_all_processes(self):
+        """ delete all processes """
+
+        Process.objects.all().delete()
+
+    def delete_all_exposures(self):
+        """ delete all exposures """
+
+        Exposure.objects.all().delete()
+
+    def delete_process(self, process_id):
+        """ delete by process_id """
+
+        Process.objects.filter(id=process_id).delete()
+
+    def delete_exposure(self, expid):
+        """ delete by exposure id """
+
+        Exposure.objects.filter(exposure_id=expid).delete()
+
     @staticmethod
     def jsonify(data):
         """ Make a dictionary with numpy arrays JSON serializable """
