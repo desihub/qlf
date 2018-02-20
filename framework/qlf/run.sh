@@ -23,21 +23,8 @@ fi
 
 cd $QLF_PROJECT
 
-echo "Initializing QLF database..."
-# Test user for the development db
-export TEST_USER=nobody
-export TEST_USER_EMAIL=${TEST_USER}@example.com
-export TEST_USER_PASSWD=nobody
-
-# Initialize the development database
-DEVDB="db.sqlite3"
-if [ -f $DEVDB ];
-then
-    rm $DEVDB
-fi
-
+python -Wi manage.py makemigrations
 python -Wi manage.py migrate > /dev/null
-python -Wi manage.py createsuperuser --noinput --username $TEST_USER --email $TEST_USER_EMAIL
 
 # Start QLF web application
 
