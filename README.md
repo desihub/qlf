@@ -15,6 +15,10 @@ QLF current version allows to follow the execution of QL pipeline, which process
 
 - [Docker installation](https://github.com/desihub/qlf/blob/master/DOCKER.md) or  [Manual installation](https://github.com/desihub/qlf/blob/master/MANUAL.md)
 
+## Deployment
+
+- [Example deploy using docker and nginx.](https://github.com/desihub/qlf/blob/master/DEPLOY.md)
+
 ### Support
 
 
