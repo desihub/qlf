@@ -13,9 +13,9 @@ matplotlib
 
 # Packages required by the DESI Quick Look framework
 
-django==1.8.4
+django==1.11
 markdown==2.6.2
-django-filter==0.15.3
+django-filter==1.1.0
 djangorestframework==3.6.2
 django-debug-toolbar==1.8
 pytest==3.0.7
@@ -26,5 +26,3 @@ requests==2.13.0
 sphinx==1.5.4
 flake8==3.3.0
 astropy==2.0
-psutil
-psycopg2
