@@ -10,6 +10,7 @@ import logging
 from multiprocessing import Manager, Lock
 from threading import Thread
 from qlf_models import QLFModels
+from scalar_metrics import LoadMetrics
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -188,11 +189,34 @@ class Jobs(QLFProcess):
 
         self.data['status'] = status
 
+        self.logger.info("Running qa tests...")
+
+        self.set_qa_status()
+
         duration_ingestion = str(
             datetime.datetime.now().replace(microsecond=0) - start_ingestion
         )
 
         self.logger.info("Results ingestion complete in %s." % duration_ingestion)
+
+    def get_qa_metric_color(self, lm, metric):
+        try:
+            return lm.step_status(metric)
+        except:
+            return None
+
+    def set_qa_status(self):
+        for camera in self.data.get('cameras'):
+            try:
+                lm = LoadMetrics(camera.get('name'), self.data.get('expid'), self.data.get('night'))
+                preproc = self.get_qa_metric_color(lm, 'preproc')
+                extract = self.get_qa_metric_color(lm, 'extract')
+                fiberfl = self.get_qa_metric_color(lm, 'fiberfl')
+                skysubs = self.get_qa_metric_color(lm, 'skysubs')
+                qa_tests = {'preproc': preproc, 'extract': extract, 'fiberfl': fiberfl, 'skysubs': skysubs }
+                self.models.update_qa_tests(camera.get('name'), qa_tests)
+            except:
+                logger.error('Camera not found')
 
     def start_parallel_job(self, data, camera, return_cameras, lock):
         """ Execute QL Pipeline by camera """

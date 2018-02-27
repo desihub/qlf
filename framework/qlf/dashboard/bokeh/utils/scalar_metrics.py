@@ -3,7 +3,6 @@ from __future__ import division
 # To do: Finish the documentation
 
 import logging
-from dashboard.bokeh.helper import get_data
 import requests
 import os
 import sys
