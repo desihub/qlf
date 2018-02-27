@@ -38,6 +38,14 @@ rm 20190101_small.tar.gz
 
     docker-compose up
 
+## Starting Pipeline
+
+    http://localhost:8000/start
+
+## Stoping Pipeline
+
+    http://localhost:8000/stop
+
 ## Stoping QLF
 
     docker-compose stop
@@ -49,14 +57,6 @@ OR
     docker stop QLF_NAME
 
 _usually `docker stop qlf_qlf_1` and `docker stop qlf_redis_1`_
-
-## Starting Pipeline
-
-    http://localhost:8000/start
-
-## Stoping Pipeline
-
-    http://localhost:8000/stop
 
 ## FAQ
 
@@ -73,4 +73,4 @@ Add your current user to docker group:
 
 `sudo usermod -aG docker YOUR_USERNAME`
 
-​A​nd make sure to log out of your terminal prompt and log back in in order for `usermod` change to take effect.
+And make sure to log out of your terminal prompt and log back in in order for `usermod` change to take effect.
