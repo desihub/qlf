@@ -3,7 +3,6 @@ import logging
 import pandas as pd
 import requests
 from furl import furl
-import ast
 from bokeh.plotting import Figure
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
@@ -27,16 +26,13 @@ def get_data(name, params):
     qa = requests.get(api['qa'], params={'name': name}).json()
     qa = qa['results']
 
-    # logger.info('QA: {}'.format(qa))
-
     metrics = {}
 
     if not qa:
         logger.warn('{} not found in database'.format(name))
         return pd.DataFrame.from_dict(metrics, orient='index').transpose()
 
-    full_metrics = qa[0]['metrics'].replace('inf', '0')
-    full_metrics = ast.literal_eval(full_metrics)
+    full_metrics = qa[0]['metrics']
 
     for metric in params:
         if metric not in full_metrics:

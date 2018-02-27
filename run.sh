@@ -22,7 +22,6 @@ python -Wi framework/bin/qlf_daemon.py &
 
 cd $QLF_PROJECT
 
-python -Wi manage.py makemigrations dashboard ui_channel
 python -Wi manage.py migrate
 # echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 
