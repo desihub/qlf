@@ -1,6 +1,6 @@
 from channels import Group
 import json
-from ui_channel.upstream import start_uptream, start_daemon, stop_daemon, get_camera_log, job, get_current_state
+from ui_channel.upstream import start_uptream, start_daemon, stop_daemon, reset_daemon, get_camera_log, job, get_current_state
 
 # Connected to websocket.connect
 def ws_add(message):
@@ -28,6 +28,12 @@ def ws_message(message):
         return
     if message.content['text'] == "stopPipeline":
         stop_daemon()
+        message.reply_channel.send({
+            "text": get_current_state()
+        })
+        return
+    if message.content['text'] == "resetPipeline":
+        reset_daemon()
         message.reply_channel.send({
             "text": get_current_state()
         })

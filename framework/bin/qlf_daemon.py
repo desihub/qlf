@@ -193,6 +193,7 @@ class QLFAutomatic(object):
     def reset(self):
         self.stop()
         sleep(2)
+        model.delete_all_cameras()
         model.delete_all_processes()
         model.delete_all_exposures()
         logger.info('Deleted all processes and exposures')

@@ -206,6 +206,11 @@ class QLFModels(object):
 
         Exposure.objects.all().delete()
 
+    def delete_all_cameras(self):
+        """ delete all cameras """
+
+        Camera.objects.all().delete()
+
     def delete_process(self, process_id):
         """ delete by process_id """
 
