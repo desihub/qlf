@@ -157,10 +157,11 @@ color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
                      major_label_text_align='right',
                      major_label_text_font_size="10pt",
                      location=(0, 0))
-p2.add_layout(color_bar, 'right')
+p2.add_layout(color_bar, 'left')
 
 
 
 
 # End of Bokeh Block
 curdoc().add_root(p2)
+curdoc().title = "SKYCONT"
