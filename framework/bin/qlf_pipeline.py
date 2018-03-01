@@ -14,15 +14,10 @@ from qlf_models import QLFModels
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
 
-try:
-    cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
-    qlconfig = cfg.get('main', 'qlconfig')
-    logmain = cfg.get('main', 'logfile')
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-except Exception as error:
-    print(error)
-    print("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
-    sys.exit(1)
+cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
+qlconfig = cfg.get('main', 'qlconfig')
+logmain = cfg.get('main', 'logfile')
+desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 
 logger = logging.getLogger("main_logger")
 
@@ -78,6 +73,8 @@ class QLFProcess(object):
         # self.models.insert_config(process.id)
 
         self.logger.info('Process ID: %i' % process.id)
+
+        return process.id
 
     def finish_process(self):
         """ Finish pipeline. """

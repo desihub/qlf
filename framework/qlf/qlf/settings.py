@@ -92,8 +92,12 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('POSTGRES_DB', 'dbqlf'),
+        'USER': os.environ.get('POSTGRES_USER', 'userqlf'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'qlfuser'),
+        'HOST': 'db',
+        'PORT': '',
     }
 }
 
