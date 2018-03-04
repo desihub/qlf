@@ -6,6 +6,8 @@ from bokeh.io import output_notebook, show, output_file
 
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
+from bokeh.models import TapTool, OpenURL
+from bokeh.models.widgets import Select
 
 import ast
 
@@ -96,14 +98,14 @@ skc_tooltips = """
         </div>
     </div>
 """
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr3"
+
 c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
 
 hover = HoverTool(tooltips=skc_tooltips)
 
 integ = ast.literal_eval(integ.replace("nan","''"))
-#integ = ast.parse(integ, mode='eval')
-#print('\n ======'*6, integ)
 
 qainteg = integ['INTEG']
 fibers = integ['STD_FIBERID']
@@ -136,7 +138,7 @@ mapper = LinearColorMapper(palette= my_palette,
 p2 = figure(title='INTEG', 
             x_axis_label='RA', y_axis_label='DEC',
             plot_width=750, plot_height=700,
-            tools= [hover, "pan,box_zoom,reset"])
+            tools= [hover, "pan,wheel_zoom,box_zoom,reset,tap"])
 
 radius = 0.011
 
@@ -160,6 +162,12 @@ p2.circle('ra','dec', source=source2, radius=radius,
         fill_color={'field': 'integ', 'transform': mapper}, 
          line_color='black', line_width=0.1)
 
+
+
+taptool = p2.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
+
+
 # marking the Hover point
 p2.circle('ra','dec', source = source2, radius = 0.0186
           , fill_color=None, line_color=None
@@ -168,8 +176,12 @@ p2.circle('ra','dec', source = source2, radius = 0.0186
 
 
 color_bar.formatter = formatter
-
 p2.add_layout(color_bar, 'left')
 
+
+
+layout = gridplot([[p2]], responsive=True)
+
 # End of Bokeh Block
-curdoc().add_root(p2)
+curdoc().add_root(layout)
+curdoc().title ="INTEG"
