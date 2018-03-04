@@ -54,7 +54,7 @@ skypeak   = metrics['skypeak']
 skyresid  = metrics['skyresid']
 snr       = metrics['snr']
 
-xwsigma = ast.literal_eval(xwsigma)
+xwsigma = ast.literal_eval(xwsigma.replace('nan',''))
 
 def palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 
