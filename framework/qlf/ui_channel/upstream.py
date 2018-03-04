@@ -2,7 +2,6 @@ import threading
 import time
 import schedule
 import json
-from .models import QlfState
 from channels import Group
 import Pyro4
 from django.conf import settings
@@ -29,11 +28,11 @@ except Exception as error:
     logger.error(error)
     logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
 
-def get_mjd_date(exp):
+def get_date(exp):
     # open file
     exp_zfill = str(exp).zfill(8)
     fits_file = '{}/{}/desi-{}.fits.fz'.format(desi_spectro_data, night, exp_zfill)
-    
+
     f = fits.open(fits_file)
 
     # read the time in isot
@@ -43,7 +42,7 @@ def get_mjd_date(exp):
     t = Time(time, format='isot', scale='utc')
 
     # Convert to MJD
-    return t.mjd
+    return t
 
 def get_camera_log(cam):
     process = get_last_process()
@@ -101,38 +100,43 @@ def stop_daemon():
     stop_url = settings.QLF_BASE_URL + '/stop'
     requests.get(stop_url)
 
+def reset_daemon():
+    reset_url = settings.QLF_BASE_URL + '/reset'
+    requests.get(reset_url)
+
 def get_current_state():
     camera_status = get_camera_status()
     qa_results = get_cameras()
-    state = QlfState.load()
     process = get_last_process()
     available_cameras = avaiable_cameras(process)
-    if qlf.get_status() != state.daemon_status:
-        state.daemon_status = qlf.get_status()
-        state.save()
+    daemon_status = qlf.get_status()
 
     logfile = open_file('logfile')
     ingestionlog = []
     mjd = str()
+    date = dict()
+    date_time = str()
     if len(process) > 0:
         exposure = process[0].get("exposure")
         ingestionlog = get_ingestion_log(exposure)
-        mjd = get_mjd_date(exposure)
+        date = get_date(exposure)
+        date_time = date.value
+        mjd = date.mjd
     else:
         exposure = ''
 
     lines = subprocess.check_output(['tail', '-100', logfile])
     lines_array = lines.strip().decode('utf-8').split("\n")
     return json.dumps({
-            "daemon_status": state.daemon_status,
-            "upstream_status": state.upstream_status,
+            "daemon_status": daemon_status,
             "lines": lines_array,
             "exposure": exposure,
             "cameras": camera_status,
             "available_cameras": available_cameras,
             "qa_results": qa_results,
             "ingestion": ingestionlog,
-            "mjd": mjd
+            "mjd": mjd,
+            "date": date_time
         })
 
 def job():

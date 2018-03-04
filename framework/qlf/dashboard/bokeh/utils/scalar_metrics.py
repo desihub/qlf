@@ -340,7 +340,8 @@ class LoadMetrics:
         for i in steps_dic[self.step_name]:
             #print('%13s %s' % (i, lm.metrics[i][alert_keys[i]]))
             try:
-                aux1 = ast.literal_eval(self.metrics[i])[alert_keys[i]]
+                metric_aux = (self.metrics[i].replace(".nan","''")).replace("nan","''")
+                aux1 = ast.literal_eval(metric_aux)[alert_keys[i]]
             except Exception as e:
                 logger.error('Failed metric alert: '+ str(e))
                 aux1 = 'FAILURE'

@@ -262,6 +262,7 @@ def get_qa_metric_color(lm, metric):
     except:
         return None
 
+
 def qa_status(exp):
     cams = Camera.objects.all()
     for cam in cams:
@@ -276,6 +277,7 @@ def qa_status(exp):
         except:
             cam.qa_tests = None
             cam.save()
+
 
 def start(request):
     qlf_manual_status = qlf_manual.get_status()
@@ -301,13 +303,9 @@ def stop(request):
     return HttpResponseRedirect('dashboard/monitor')
 
 
-def restart(request):
-    qlf_manual_status = qlf_manual.get_status()
+def reset(request):
 
-    if qlf_manual_status:
-        qlf_manual.stop()
-
-    qlf.restart()
+    qlf.reset()
     return HttpResponseRedirect('dashboard/monitor')
 
 

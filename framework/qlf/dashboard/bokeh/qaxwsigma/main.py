@@ -58,6 +58,7 @@ xwsigma = ast.literal_eval(xwsigma)
 snr       = ast.literal_eval(snr)
 skycont       = ast.literal_eval(skycont)
 
+
 def palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 
     palettes

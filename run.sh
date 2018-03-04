@@ -22,22 +22,9 @@ python -Wi framework/bin/qlf_daemon.py &
 
 cd $QLF_PROJECT
 
-echo "Initializing QLF database..."
-# Test user for the development db
-export TEST_USER=nobody
-export TEST_USER_EMAIL=nobody@example.com
-export TEST_USER_PASSWD=nobody
-
-# Initialize the development database
-DEVDB="db.sqlite3"
-if [ -f $DEVDB ];
-then
-    rm $DEVDB
-fi
-
 python -Wi manage.py makemigrations
 python -Wi manage.py migrate > /dev/null
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
+# echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 
 echo "QLF web application is running at http://$QLF_HOSTNAME:8000 you may start Quick Look from the pipeline interface."
 
