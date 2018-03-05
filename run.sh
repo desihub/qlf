@@ -1,7 +1,7 @@
 #!/bin/bash
 source activate quicklook 
 
-pip install -r requirements.txt
+conda install -y --file requirements.txt
 pip install -r extras.txt
 
 export QLF_PROJECT=$(pwd)/framework/qlf
@@ -22,8 +22,7 @@ python -Wi framework/bin/qlf_daemon.py &
 
 cd $QLF_PROJECT
 
-python -Wi manage.py makemigrations
-python -Wi manage.py migrate > /dev/null
+python -Wi manage.py migrate
 # echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 
 echo "QLF web application is running at http://$QLF_HOSTNAME:8000 you may start Quick Look from the pipeline interface."

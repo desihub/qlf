@@ -5,6 +5,7 @@ import glob
 import json
 import numpy
 import django
+import math
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -148,6 +149,7 @@ class QLFModels(object):
                 params = self.jsonify(qa['PARAMS'])
 
                 print("Ingesting %s" % name)
+                print("Type: {}".format(str(type(qa['METRICS']))))
                 self.insert_qa(name, paname, metrics, params, job_id)
 
         print('Job {} updated.'.format(job_id))
@@ -228,6 +230,9 @@ class QLFModels(object):
         for key in data:
             if type(data[key]) == numpy.ndarray:
                 data[key] = data[key].tolist()
+
+            if isinstance(data[key], list):
+                data[key] = [0 if isinstance(x, float) and math.isnan(x) else x for x in data[key]]
 
         return data
 

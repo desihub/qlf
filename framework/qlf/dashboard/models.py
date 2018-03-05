@@ -1,5 +1,5 @@
+from django.contrib.postgres.fields import JSONField
 from django.db import models
-from json_field import JSONField
 
 
 class Exposure(models.Model):
@@ -51,7 +51,7 @@ class Process(models.Model):
 class Configuration(models.Model):
     """Configuration information"""
 
-    configuration = JSONField(decoder=None, help_text='Configuration used.')
+    configuration = JSONField(help_text='Configuration used.')
     creation_date = models.DateTimeField(auto_now=True,
                                          help_text='Datetime when the configuration was created')
     process = models.ForeignKey(Process, related_name='configuration_process')
@@ -65,7 +65,8 @@ class Camera(models.Model):
                                     help_text='Spectrograph ID')
     arm = models.CharField(max_length=1,
                            help_text='Arm ID')
-    qa_tests = JSONField(decoder=None, help_text='JSON structure with the QA tests results')
+    qa_tests = JSONField(blank=True, null=True,
+                         help_text='JSON structure with the QA tests results')
 
     def __str__(self):
         return str(self.camera)
@@ -102,8 +103,8 @@ class QA(models.Model):
     name = models.CharField(max_length=45, help_text='QA name')
     description = models.TextField(help_text='QA Description')
     paname = models.CharField(max_length=45, help_text='Associate PA name')
-    metrics = JSONField(decoder=None, help_text='JSON structure with the QA result')
-    params = JSONField(decoder=None, help_text='JSON structure with the QA tests')
+    metrics = JSONField(help_text='JSON structure with the QA result')
+    params = JSONField(help_text='JSON structure with the QA tests')
     job = models.ForeignKey(Job, related_name='job_qas')
 
     def __str__(self):
