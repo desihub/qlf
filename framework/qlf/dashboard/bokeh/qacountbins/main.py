@@ -224,13 +224,14 @@ for i in range(5):
     html_str=html_str.replace('%s%s'%("param",str(i)), str(params_countbins[txt_keys[i]]) )
 
 div=Div(text=html_str, 
-        width=300, height=200)
+        width=500, height=200)
 # ---------
 
 
 # plow.legend.location = "top_left"
 # layout = gridplot( [phi,pmed,plow,None], ncols=2, plot_width=600, plot_height=600)
-layout = gridplot( [phi,pmed,plow,div], ncols=2, plot_width=600, plot_height=600)
+layout = gridplot( [phi,pmed,plow,div], ncols=2, responsive=True, plot_width=600, plot_height=600)
 
 # End of Bokeh Block
 curdoc().add_root(layout)
+curdoc().title = "COUNTBINS"

@@ -236,7 +236,7 @@ html_tooltip = """
     </div>
 """
 
-url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr3"
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
 hover = HoverTool(tooltips=html_tooltip)
 elg_plot = init_xy_plot(hover=hover)

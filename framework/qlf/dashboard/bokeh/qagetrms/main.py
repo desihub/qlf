@@ -152,3 +152,4 @@ p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
 # End of Bokeh Block
 curdoc().add_root(p)
+curdoc().title="GETRMS"

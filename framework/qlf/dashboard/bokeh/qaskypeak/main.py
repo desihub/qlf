@@ -6,6 +6,8 @@ from bokeh.io import output_notebook, show, output_file
 
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
+from bokeh.models import TapTool, OpenURL
+from bokeh.models.widgets import Select
 
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -101,6 +103,7 @@ peak_tooltip = """
         </div>
     </div>
 """
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
 c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
@@ -132,7 +135,7 @@ radius = 0.011
 p = figure( title = 'SKYPEAK', x_axis_label='RA', y_axis_label='DEC'
            , plot_width=750, plot_height=700
            ## , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-           , tools= [peak_hover, "pan,box_zoom,reset,crosshair"])
+           , tools= [peak_hover, "pan,box_zoom,reset,crosshair, tap"])
 
 # Color Map
 p.circle('x1','y1', source = source, name="data", radius = radius,
@@ -146,6 +149,9 @@ p.circle('x1','y1', source = source, name="data", radius = 0.0186
           , fill_color=None, line_color=None
           , line_width=3, hover_line_color='red')
 
+taptool = p.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
+
 ## px.circle('x1','y1', source = source_comp, radius = 0.015,
 ##         fill_color = 'lightgray', line_color='black', line_width=0.3)
 
@@ -157,8 +163,9 @@ xcolor_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
                      location=(0, 0))
 
 p.add_layout(xcolor_bar, 'left')
-
+layout = gridplot([[p]]) 
 
 
 # End of Bokeh Block
-curdoc().add_root(p)
+curdoc().add_root(layout)
+curdoc().title= "SKYPEAK"

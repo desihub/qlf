@@ -124,3 +124,4 @@ p2.line('wl', 'wavg_resid', source=skyres_source)
 p1.x_range = p2.x_range
 layout=column(p1,p2)
 curdoc().add_root(layout)
+curdoc().title = "SKYRESID"
