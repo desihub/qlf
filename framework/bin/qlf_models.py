@@ -154,6 +154,11 @@ class QLFModels(object):
 
         print('Job {} updated.'.format(job_id))
 
+    def update_qa_tests(self, name, qa_tests):
+        Camera.objects.filter(camera=name).update(
+            qa_tests=qa_tests
+        )
+
     def insert_qa(self, name, paname, metrics, params, job_id, force=False):
         """ Inserts or updates qa table """
 
@@ -182,6 +187,11 @@ class QLFModels(object):
                 "{} results already registered. "
                 "Use --force to overwrite.".format(name)
             )
+
+    def get_qa(self, qa_name):
+        """ gets exposure """
+
+        return QA.objects.filter(name=qa_name)
 
     def get_expid_in_process(self, expid):
         """ gets process object by expid """
