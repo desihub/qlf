@@ -4,10 +4,12 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
-from bokeh.models import ColumnDataSource, HoverTool, TapTool, Range1d, OpenURL
+from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args
+from bokeh.models import TapTool, OpenURL
+from bokeh.models.widgets import Select
 
 import ast
 
@@ -115,7 +117,7 @@ wsigma_tooltip = """
     </div>
 """
 
-
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
 # determining the position of selected cam fibers:
 c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
@@ -164,8 +166,11 @@ source_comp = ColumnDataSource(
 })
 
 # axes limit
-left, right = 331, 335
-bottom, top = 13, 16.7
+xmin, xmax = [min(xwsigma['RA'][:]), max(xwsigma['RA'][:])]
+ymin, ymax = [min(xwsigma['DEC'][:]), max(xwsigma['DEC'][:])]
+xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
+left, right = xmin -xfac, xmax+xfac
+bottom, top = ymin-yfac, ymax+yfac
 
 xmapper = LinearColorMapper(palette= my_palette,
                            low=0.98*np.min(xsigma), 
@@ -180,7 +185,7 @@ wmapper = LinearColorMapper(palette= my_palette,
 px = figure( title = 'XSIGMA', x_axis_label='RA', y_axis_label='DEC'
            , plot_width=700, plot_height=600
            , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-           , tools= [xsigma_hover, "pan,box_zoom,reset,crosshair"])
+           , tools= [xsigma_hover, "pan,box_zoom,reset,crosshair, tap"])
 
 # Color Map
 px.circle('x1','y1', source = source, name="data", radius = 0.018,
@@ -196,6 +201,10 @@ px.circle('x1','y1', source = source, name="data", radius = 0.0186
 
 px.circle('x1','y1', source = source_comp, radius = 0.015,
          fill_color = 'lightgray', line_color='black', line_width=0.3)
+
+taptool = px.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
+
 
 # bokeh.pydata.org/en/latest/docs/reference/models/annotations.html
 xcolor_bar = ColorBar(color_mapper= xmapper, label_standoff=-13,
@@ -213,7 +222,7 @@ px.add_layout(xcolor_bar, 'left')
 pw = figure( title = 'WSIGMA', x_axis_label='RA', y_axis_label='DEC'
            , plot_width=700, plot_height=600
            , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-           , tools= [wsigma_hover, "pan,box_zoom,reset,crosshair"])
+           , tools= [wsigma_hover, "pan,box_zoom,reset,crosshair,tap"])
 
 # Color Map
 pw.circle('x1','y1', source = source, name="data", radius = 0.018,
@@ -230,6 +239,10 @@ pw.circle('x1','y1', source = source, name="data", radius = 0.0186
 pw.circle('x1','y1', source = source_comp, radius = 0.015,
          fill_color = 'lightgray', line_color='black', line_width=0.3)
 
+taptool = pw.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
+
+
 # bokeh.pydata.org/en/latest/docs/reference/models/annotations.html
 wcolor_bar = ColorBar(color_mapper= wmapper, label_standoff=-13,
                      major_label_text_font_style="bold", padding = 26,
@@ -239,6 +252,7 @@ wcolor_bar = ColorBar(color_mapper= wmapper, label_standoff=-13,
 
 pw.add_layout(wcolor_bar, 'left')
 
-layout= row([px,pw])#, sizing_mode='scale_width')
+layout= row([px,pw], responsive=True)#, sizing_mode='scale_width')
 
 curdoc().add_root(layout)
+curdoc().title = "XWSIGMA"
