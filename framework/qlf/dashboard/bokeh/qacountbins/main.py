@@ -15,8 +15,6 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args
 
-import ast
-
 import numpy as np
 import logging
 
@@ -46,22 +44,7 @@ exp = selected_exposure # intentionaly redundant
 lm = LoadMetrics(cam, exp, night);
 metrics, tests  = lm.metrics, lm.tests 
 
-# =============================================
-# THIS is only to simplify the code understanding
-#
-countpix  = metrics['countpix']
-getbias   = metrics['getbias']
-getrms    = metrics['getrms']
-xwsigma   = metrics['xwsigma']
 countbins = metrics['countbins']
-integ     = metrics['integ']
-skycont   = metrics['skycont']
-skypeak   = metrics['skypeak']
-skyresid  = metrics['skyresid']
-snr       = metrics['snr']
-
-
-countbins = ast.literal_eval(countbins)
 
 # ============================================
 # THIS: Given the set up in the block above, 

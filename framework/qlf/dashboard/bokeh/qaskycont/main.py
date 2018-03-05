@@ -7,8 +7,6 @@ from bokeh.io import output_notebook, show, output_file
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
-import ast
-
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
 from bokeh.io import output_notebook
@@ -45,23 +43,7 @@ exp = selected_exposure # intentionaly redundant
 lm = LoadMetrics(cam, exp, night);
 metrics, tests  = lm.metrics, lm.tests 
 
-# =============================================
-# THIS is only to simplify the code understanding
-#
-countpix  = metrics['countpix']
-getbias   = metrics['getbias']
-getrms    = metrics['getrms']
-xwsigma   = metrics['xwsigma']
-countbins = metrics['countbins']
-integ     = metrics['integ']
 skycont   = metrics['skycont']
-skypeak   = metrics['skypeak']
-skyresid  = metrics['skyresid']
-snr       = metrics['snr']
-
-# ============================================
-# THIS: Given the set up in the block above, 
-#       we have the bokeh plots
 
 def palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 
@@ -98,7 +80,7 @@ hover = HoverTool(tooltips=skc_tooltips)
 
 # sky continuum per sky fiber averaged over two continuum regions,
 #  'n' is number of sky fibers
-skycont =ast.literal_eval(skycont)
+skycont = skycont
 sky = skycont['SKYCONT_FIBER']
 skyfibers = skycont['SKYFIBERID']
 

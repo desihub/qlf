@@ -13,8 +13,6 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-import ast
-
 from dashboard.bokeh.helper import get_url_args
 
 import numpy as np
@@ -45,20 +43,7 @@ cam = selected_arm+str(selected_spectrograph)
 exp = selected_exposure # intentionaly redundant
 lm = LoadMetrics(cam, exp, night)
 metrics, tests  = lm.metrics, lm.tests 
-
-# =============================================
-# THIS is only to simplify the code understanding
-#
 countpix  = metrics['countpix']
-getbias   = metrics['getbias']
-getrms    = metrics['getrms']
-xwsigma   = metrics['xwsigma']
-countbins = metrics['countbins']
-integ     = metrics['integ']
-skycont   = metrics['skycont']
-skypeak   = metrics['skypeak']
-skyresid  = metrics['skyresid']
-snr       = metrics['snr']
 
 # ============================================
 # THIS: Given the set up in the block above, 
@@ -66,7 +51,7 @@ snr       = metrics['snr']
 
 
 name = 'NPIX_AMP'
-metr = ast.literal_eval(countpix)
+metr = countpix
 
 dx = [0,1,0,1]
 dy = [1,1,0,0]

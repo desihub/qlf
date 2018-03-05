@@ -6,7 +6,6 @@ import logging
 import requests
 import os
 import sys
-import ast
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
