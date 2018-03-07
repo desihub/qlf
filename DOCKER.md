@@ -34,6 +34,12 @@ tar xvzf 20190101_small.tar.gz
 rm 20190101_small.tar.gz
 ```
 
+#### Docker compose file
+
+```
+cp docker-compose.yml.template docker-compose.yml
+```
+
 ## Starting QLF
 
     docker-compose up
