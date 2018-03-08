@@ -5,6 +5,7 @@ import glob
 import json
 import numpy
 import django
+import math
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -148,9 +149,15 @@ class QLFModels(object):
                 params = self.jsonify(qa['PARAMS'])
 
                 print("Ingesting %s" % name)
+                print("Type: {}".format(str(type(qa['METRICS']))))
                 self.insert_qa(name, paname, metrics, params, job_id)
 
         print('Job {} updated.'.format(job_id))
+
+    def update_qa_tests(self, name, qa_tests):
+        Camera.objects.filter(camera=name).update(
+            qa_tests=qa_tests
+        )
 
     def insert_qa(self, name, paname, metrics, params, job_id, force=False):
         """ Inserts or updates qa table """
@@ -180,6 +187,11 @@ class QLFModels(object):
                 "{} results already registered. "
                 "Use --force to overwrite.".format(name)
             )
+
+    def get_qa(self, qa_name):
+        """ gets exposure """
+
+        return QA.objects.filter(name=qa_name)
 
     def get_expid_in_process(self, expid):
         """ gets process object by expid """
@@ -228,6 +240,9 @@ class QLFModels(object):
         for key in data:
             if type(data[key]) == numpy.ndarray:
                 data[key] = data[key].tolist()
+
+            if isinstance(data[key], list):
+                data[key] = [0 if isinstance(x, float) and math.isnan(x) else x for x in data[key]]
 
         return data
 

@@ -47,23 +47,7 @@ exp = selected_exposure # intentionaly redundant
 lm = LoadMetrics(cam, exp, night);
 metrics, tests  = lm.metrics, lm.tests 
 
-# =============================================
-# THIS is only to simplify the code understanding
-#
-countpix  = metrics['countpix']
-getbias   = metrics['getbias']
-getrms    = metrics['getrms']
-xwsigma   = metrics['xwsigma']
-countbins = metrics['countbins']
 integ     = metrics['integ']
-skycont   = metrics['skycont']
-skypeak   = metrics['skypeak']
-skyresid  = metrics['skyresid']
-snr       = metrics['snr']
-
-# ============================================
-# THIS: Given the set up in the block above, 
-#       we have the bokeh plots
 
 def palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 
@@ -105,7 +89,6 @@ qlf_fiberid = np.arange(0,5000)[c1:c2]
 
 hover = HoverTool(tooltips=skc_tooltips)
 
-integ = ast.literal_eval(integ.replace("nan","''"))
 
 qainteg = integ['INTEG']
 fibers = integ['STD_FIBERID']

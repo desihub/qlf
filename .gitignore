@@ -58,3 +58,8 @@ target/
 framework/qlf/db.sqlite3
 framework/config/qlf.cfg
 spectro/
+
+# PyCharm setting
+.idea/
+
+docker-compose.yml

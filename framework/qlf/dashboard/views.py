@@ -256,29 +256,6 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
 
-def get_qa_metric_color(lm, metric):
-    try:
-        return lm.step_color(metric)
-    except:
-        return None
-
-
-def qa_status(exp):
-    cams = Camera.objects.all()
-    for cam in cams:
-        try:
-            lm = LoadMetrics(cam, exp, '20190101')
-            preproc = get_qa_metric_color(lm, 'preproc')
-            extract = get_qa_metric_color(lm, 'extract')
-            fiberfl = get_qa_metric_color(lm, 'fiberfl')
-            skysubs = get_qa_metric_color(lm, 'skysubs')
-            cam.qa_tests = {'preproc': preproc, 'extract': extract, 'fiberfl': fiberfl, 'skysubs': skysubs }
-            cam.save()
-        except:
-            cam.qa_tests = None
-            cam.save()
-
-
 def start(request):
     qlf_manual_status = qlf_manual.get_status()
 
@@ -291,14 +268,6 @@ def start(request):
 
 def stop(request):
     qlf.stop()
-    try:
-        process_id = Process.objects.latest('pk').id
-    except Process.DoesNotExist as error:
-        logger.debug(error)
-        process_id = None
-
-    exp = Process.objects.filter(id=process_id)[0].exposure_id
-    qa_status(exp)
     
     return HttpResponseRedirect('dashboard/monitor')
 

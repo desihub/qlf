@@ -23,8 +23,7 @@ fi
 
 cd $QLF_PROJECT
 
-python -Wi manage.py makemigrations
-python -Wi manage.py migrate > /dev/null
+python -Wi manage.py migrate
 
 # Start QLF web application
 

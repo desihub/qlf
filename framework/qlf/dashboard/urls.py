@@ -23,7 +23,6 @@ urlpatterns = [
     url(r'^stop', views.stop, name='stop'),
     url(r'^reset', views.reset, name='reset'),
     url(r'^send_message', WebsocketView.send_message, name='send_message'),
-    url(r'^qa_status', views.qa_status, name='qa_status'),
     url(r'^daemon_status', views.daemon_status, name='daemon_status'),
     url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),
     url(r'^dashboard/admin', include(admin.site.urls)),
