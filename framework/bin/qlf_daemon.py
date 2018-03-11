@@ -215,25 +215,14 @@ class QLFAutomatic(object):
 
         return running
 
-    def get_qa_metric_color(self, lm, metric):
-        try:
-            return lm.step_status(metric)
-        except:
-            return None
-
     def qa_tests(self):
         for camera in model.get_cameras():
             try:
                 exposure = model.get_last_exposure()
                 lm = LoadMetrics(camera.camera, exposure.exposure_id, exposure.night)
-                preproc = self.get_qa_metric_color(lm, 'preproc')
-                extract = self.get_qa_metric_color(lm, 'extract')
-                fiberfl = self.get_qa_metric_color(lm, 'fiberfl')
-                skysubs = self.get_qa_metric_color(lm, 'skysubs')
-                qa_tests = {'preproc': preproc, 'extract': extract, 'fiberfl': fiberfl, 'skysubs': skysubs }
-                model.update_qa_tests(camera.camera, qa_tests)
+                lm.save_qa_tests()
             except:
-                logger.error('Camera not found %s' % (camera.camera))
+                logger.error('qa_tests error camera %s' % (camera.camera))
 
 # TODO: refactor QLFManual
 @Pyro4.expose

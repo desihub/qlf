@@ -143,8 +143,6 @@ class QLFModels(object):
 
             with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
                 {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
-            # for product in glob.glob(output_path):
-            #     self.parallel_ingestion(product, job_id)
 
             print('Job {} updated.'.format(job_id))
         except:
@@ -199,9 +197,9 @@ class QLFModels(object):
             )
 
     def get_qa(self, qa_name):
-        """ gets exposure """
+        """ gets qa """
 
-        return QA.objects.filter(name=qa_name)
+        return QA.objects.get(name=qa_name)
 
     def get_cameras(self):
         """ gets cameras """
