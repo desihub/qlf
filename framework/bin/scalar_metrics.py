@@ -11,6 +11,17 @@ from qlf_models import QLFModels
 import json
 
 logger = logging.getLogger(__name__)
+import configparser
+from log import setup_logger
+
+qlf_root = os.getenv('QLF_ROOT')
+cfg = configparser.ConfigParser()
+
+cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
+logfile = cfg.get("main", "logfile")
+loglevel = cfg.get("main", "loglevel")
+
+logger = setup_logger("main_logger", logfile, loglevel)
 
 class LoadMetrics:
     """ Read values from the yaml's files and return an alert (NORMAL, WARN or ALARM)
@@ -101,7 +112,9 @@ class LoadMetrics:
 
         exp_zfill = str(exp).zfill(8)
         qa_name = '{}{}-{}-{}.yaml'.format(self.prfx, qa, cam, exp_zfill)
+        logger.info(qa)
         data = self.models.get_qa(qa_name)
+        logger.info(data)
 
         if str(data) != []:
             data = data[0]
