@@ -161,6 +161,7 @@ class Jobs(QLFProcess):
 
         # TODO: refactor?
         camera_failed = 0
+        procs = []
 
         for camera in self.data.get('cameras'):
             output_path = os.path.join(
@@ -172,13 +173,21 @@ class Jobs(QLFProcess):
                 )
             )
 
-            self.models.update_job(
-                job_id=camera.get('job_id'),
-                end=camera.get('end'),
-                status=camera.get('status'),
-                output_path=output_path
+            args = (
+                camera.get('job_id'),
+                camera.get('end'),
+                camera.get('status'),
+                output_path
             )
 
+            proc = Thread(target=self.models.update_job, args=args)
+            proc.start()
+            procs.append(proc)
+
+        for proc in procs:
+            proc.join()
+
+        for camera in self.data.get('cameras'):
             if not camera.get('status') == 0:
                 camera_failed += 1
 
