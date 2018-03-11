@@ -135,12 +135,12 @@ class QLFModels(object):
     def update_job(self, job_id, end, status, output_path):
         """ Updates job with execution results. """
 
-        Job.objects.filter(id=job_id).update(
-            end=end,
-            status=status
-        )
-
         try:
+            Job.objects.filter(id=job_id).update(
+                end=end,
+                status=status
+            )
+
             with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
                 {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
             # for product in glob.glob(output_path):
