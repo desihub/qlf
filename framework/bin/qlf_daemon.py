@@ -11,6 +11,7 @@ from socket import error as socket_error
 from log import setup_logger
 from procutil import kill_proc_tree
 from qlf_pipeline import Jobs as QLFPipeline
+from scalar_metrics import LoadMetrics
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -213,6 +214,26 @@ class QLFAutomatic(object):
             running = True
 
         return running
+
+    def get_qa_metric_color(self, lm, metric):
+        try:
+            return lm.step_status(metric)
+        except:
+            return None
+
+    def qa_tests(self):
+        for camera in model.get_cameras():
+            try:
+                exposure = model.get_last_exposure()
+                lm = LoadMetrics(camera.camera, exposure.exposure_id, exposure.night)
+                preproc = self.get_qa_metric_color(lm, 'preproc')
+                extract = self.get_qa_metric_color(lm, 'extract')
+                fiberfl = self.get_qa_metric_color(lm, 'fiberfl')
+                skysubs = self.get_qa_metric_color(lm, 'skysubs')
+                qa_tests = {'preproc': preproc, 'extract': extract, 'fiberfl': fiberfl, 'skysubs': skysubs }
+                model.update_qa_tests(camera.camera, qa_tests)
+            except:
+                logger.error('Camera not found %s' % (camera.camera))
 
 # TODO: refactor QLFManual
 @Pyro4.expose
