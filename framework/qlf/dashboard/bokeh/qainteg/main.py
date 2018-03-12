@@ -163,7 +163,7 @@ p2.add_layout(color_bar, 'left')
 
 
 
-layout = gridplot([[p2]], responsive=True)
+layout = gridplot([[p2]], responsive=False)
 
 # End of Bokeh Block
 curdoc().add_root(layout)

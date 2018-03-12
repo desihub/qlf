@@ -151,7 +151,7 @@ color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
 p2.add_layout(color_bar, 'left')
 
 
-layout = gridplot([[p2]], responsive=True)
+layout = gridplot([[p2]], responsive=False)
 
 
 # End of Bokeh Block

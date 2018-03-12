@@ -27,6 +27,10 @@ logger = logging.getLogger(__name__)
 #
 args = get_url_args(curdoc)
 
+
+print('#fa-o\n'*3,'args:',  args)
+
+
 selected_exposure = args['exposure']
 selected_arm = args['arm']
 selected_spectrograph = args['spectrograph']
