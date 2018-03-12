@@ -141,7 +141,7 @@ class QLFModels(object):
                 status=status
             )
 
-            with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
                 {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
 
             print('Job {} updated.'.format(job_id))
