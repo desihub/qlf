@@ -1,3 +1,5 @@
+import sys
+
 from bokeh.plotting import figure
 from bokeh.layouts import row, column, widgetbox, gridplot
 
@@ -24,9 +26,12 @@ logger = logging.getLogger(__name__)
 #
 args = get_url_args(curdoc)
 
-selected_exposure = args['exposure']
-selected_arm = args['arm']
-selected_spectrograph = args['spectrograph']
+try:
+    selected_exposure = args['exposure']
+    selected_arm = args['arm']
+    selected_spectrograph = args['spectrograph']
+except:
+    sys.exit('Invalid args')
 
 # =============================================
 # THIS comes from QLF.CFG
