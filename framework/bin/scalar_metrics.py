@@ -80,8 +80,9 @@ class LoadMetrics:
 
         try: #ff
             self.metrics, self.tests = self.Load_metrics_n_tests()
-        except: #ff
-            sys.exit("Could not load metrics and tests" )
+        except Exception as e: #ff
+            print(e)
+            sys.exit("Could not load metrics and tests")
 
     def Load_qa(self, qa):
         """loads a single yaml file ( rather slow!)
@@ -101,10 +102,10 @@ class LoadMetrics:
 
         exp_zfill = str(exp).zfill(8)
         qa_name = '{}{}-{}-{}.yaml'.format(self.prfx, qa, cam, exp_zfill)
+
         data = self.models.get_qa(qa_name)
 
         if str(data) != []:
-            data = data[0]
             self.error.update({ qa: False })
         else:
             self.error.update({ qa: True })
@@ -139,16 +140,18 @@ class LoadMetrics:
             qa_list = [self.qa_name]
         else:
             return "Invalid QA format"
-            
         for i in qa_list:
-            aux = self.Load_qa(i)
-            if aux == None:
-                dic_met.update({i: aux})
-                dic_tst.update({i: aux})
-                self.error.update({i:True})
-            else:
-                dic_met.update({i: aux.metrics})
-                dic_tst.update({i: aux.params})
+            try:
+                aux = self.Load_qa(i)
+                if aux == None:
+                    dic_met.update({i: aux})
+                    dic_tst.update({i: aux})
+                    self.error.update({i:True})
+                else:
+                    dic_met.update({i: aux.metrics})
+                    dic_tst.update({i: aux.params})
+            except Exception as e: #ff
+                print(e)
         return dic_met, dic_tst
 
 
@@ -332,7 +335,7 @@ class LoadMetrics:
             try:
                 aux1 = ast.literal_eval(self.metrics[i])[alert_keys[i]]
             except Exception as e:
-                logger.error('Failed metric alert: '+ str(e))
+                logger.error('Failed metric alert: '+ str(e)[:20])
                 aux1 = 'FAILURE'
         
             steps_status.append(aux1)
@@ -340,4 +343,19 @@ class LoadMetrics:
         result = {'steps_status': steps_status }
         return result
 
+    def get_qa_metric_color(self, metric):
+        try:
+            return self.step_status(metric)
+        except:
+            return None
 
+    def save_qa_tests(self):
+        try:
+            preproc = self.get_qa_metric_color('preproc')
+            extract = self.get_qa_metric_color('extract')
+            fiberfl = self.get_qa_metric_color('fiberfl')
+            skysubs = self.get_qa_metric_color('skysubs')
+            qa_tests = {'preproc': preproc, 'extract': extract, 'fiberfl': fiberfl, 'skysubs': skysubs }
+            self.models.update_qa_tests(self.cam, qa_tests)
+        except:
+            logger.error('Camera not found %s' % (self.cam))

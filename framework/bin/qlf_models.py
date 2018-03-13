@@ -6,6 +6,7 @@ import json
 import numpy
 import django
 import math
+import concurrent.futures
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -134,25 +135,32 @@ class QLFModels(object):
     def update_job(self, job_id, end, status, output_path):
         """ Updates job with execution results. """
 
-        Job.objects.filter(id=job_id).update(
-            end=end,
-            status=status
-        )
+        try:
+            Job.objects.filter(id=job_id).update(
+                end=end,
+                status=status
+            )
 
-        for product in glob.glob(output_path):
-            qa = yaml.load(open(product, 'r'))
-            name = os.path.basename(product)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
 
-            if 'PANAME' in qa and 'METRICS' in qa and 'PARAMS' in qa:
-                paname = qa['PANAME']
-                metrics = self.jsonify(qa['METRICS'])
-                params = self.jsonify(qa['PARAMS'])
+            print('Job {} updated.'.format(job_id))
+        except:
+            print('Job {} failed.'.format(job_id))
 
-                print("Ingesting %s" % name)
-                print("Type: {}".format(str(type(qa['METRICS']))))
-                self.insert_qa(name, paname, metrics, params, job_id)
+    def parallel_ingestion(self, product, job_id):
+        qa = yaml.load(open(product, 'r'))
+        name = os.path.basename(product)
 
-        print('Job {} updated.'.format(job_id))
+        if 'PANAME' in qa and 'METRICS' in qa and 'PARAMS' in qa:
+            paname = qa['PANAME']
+            metrics = self.jsonify(qa['METRICS'])
+            params = self.jsonify(qa['PARAMS'])
+
+            print("Ingesting %s" % name)
+            print("Type: {}".format(str(type(qa['METRICS']))))
+            self.insert_qa(name, paname, metrics, params, job_id)
+
 
     def update_qa_tests(self, name, qa_tests):
         Camera.objects.filter(camera=name).update(
@@ -189,9 +197,14 @@ class QLFModels(object):
             )
 
     def get_qa(self, qa_name):
-        """ gets exposure """
+        """ gets qa """
 
-        return QA.objects.filter(name=qa_name)
+        return QA.objects.get(name=qa_name)
+
+    def get_cameras(self):
+        """ gets cameras """
+
+        return Camera.objects.all()
 
     def get_expid_in_process(self, expid):
         """ gets process object by expid """

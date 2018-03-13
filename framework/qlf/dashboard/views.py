@@ -277,6 +277,9 @@ def reset(request):
     qlf.reset()
     return HttpResponseRedirect('dashboard/monitor')
 
+def qa_tests(request):
+    qlf.qa_tests()
+    return JsonResponse({ 'status': 'Done' })
 
 def daemon_status(request):
     ql_status = True
