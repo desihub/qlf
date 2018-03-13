@@ -6,7 +6,6 @@ import logging
 import requests
 import os
 import sys
-import ast
 from qlf_models import QLFModels
 import json
 
@@ -234,9 +233,9 @@ class LoadMetrics:
             raise Exception('Error: Invalid QA name:', qa)
         elif(self.qa in ['xsigma', 'wsigma']):
             qa_2       = 'xwsigma'        
-            test_range = ast.literal_eval(tests[qa_2])[self.d[self.qa][self.kot]]
+            test_range = tests[qa_2][self.d[self.qa][self.kot]]
         else:
-            test_range = ast.literal_eval(tests[qa])[self.d[self.qa][self.kot]]
+            test_range = tests[qa][self.d[self.qa][self.kot]]
         
         return test_range
 
@@ -258,10 +257,10 @@ class LoadMetrics:
         if qa == 'xwsigma':
             alarm_x = self.test_ranges('xsigma','alarm')
             warn_x = self.test_ranges('xsigma','warn')
-            val_x = ast.literal_eval(self.metrics[qa])[self.metric_dict['xsigma']]
+            val_x = self.metrics[qa][self.metric_dict['xsigma']]
             alarm_w = self.test_ranges('wsigma','alarm')
             warn_w = self.test_ranges('wsigma','warn')
-            val_w = ast.literal_eval(self.metrics[qa])[self.metric_dict['wsigma']]
+            val_w = self.metrics[qa][self.metric_dict['wsigma']]
 
             if isinstance(val_w,float) or isinstance(val_w, int) or isinstance(val_x,float) or isinstance(val_x, int):
                 pass
@@ -284,7 +283,7 @@ class LoadMetrics:
         else:               
             alarm = self.test_ranges(qa,'alarm')
             warn  = self.test_ranges(qa,'warn')
-            val   = ast.literal_eval(self.metrics[qa])[self.metric_dict[qa]]
+            val   = self.metrics[qa][self.metric_dict[qa]]
         #dblogger.info(qa, self.metric_dict[qa])
         
         if isinstance(val,float) or isinstance(val, int):
@@ -333,7 +332,7 @@ class LoadMetrics:
 
         for i in steps_dic[self.step_name]:
             try:
-                aux1 = ast.literal_eval(self.metrics[i])[alert_keys[i]]
+                aux1 = self.metrics[i][alert_keys[i]]
             except Exception as e:
                 logger.error('Failed metric alert: '+ str(e)[:20])
                 aux1 = 'FAILURE'
