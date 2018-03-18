@@ -6,7 +6,6 @@ import logging
 import requests
 import os
 import sys
-import ast
 from qlf_models import QLFModels
 import json
 
@@ -80,8 +79,9 @@ class LoadMetrics:
 
         try: #ff
             self.metrics, self.tests = self.Load_metrics_n_tests()
-        except: #ff
-            sys.exit("Could not load metrics and tests" )
+        except Exception as e: #ff
+            print(e)
+            sys.exit("Could not load metrics and tests")
 
     def Load_qa(self, qa):
         """loads a single yaml file ( rather slow!)
@@ -101,10 +101,10 @@ class LoadMetrics:
 
         exp_zfill = str(exp).zfill(8)
         qa_name = '{}{}-{}-{}.yaml'.format(self.prfx, qa, cam, exp_zfill)
+
         data = self.models.get_qa(qa_name)
 
         if str(data) != []:
-            data = data[0]
             self.error.update({ qa: False })
         else:
             self.error.update({ qa: True })
@@ -139,16 +139,18 @@ class LoadMetrics:
             qa_list = [self.qa_name]
         else:
             return "Invalid QA format"
-            
         for i in qa_list:
-            aux = self.Load_qa(i)
-            if aux == None:
-                dic_met.update({i: aux})
-                dic_tst.update({i: aux})
-                self.error.update({i:True})
-            else:
-                dic_met.update({i: aux.metrics})
-                dic_tst.update({i: aux.params})
+            try:
+                aux = self.Load_qa(i)
+                if aux == None:
+                    dic_met.update({i: aux})
+                    dic_tst.update({i: aux})
+                    self.error.update({i:True})
+                else:
+                    dic_met.update({i: aux.metrics})
+                    dic_tst.update({i: aux.params})
+            except Exception as e: #ff
+                print(e)
         return dic_met, dic_tst
 
 
@@ -231,9 +233,9 @@ class LoadMetrics:
             raise Exception('Error: Invalid QA name:', qa)
         elif(self.qa in ['xsigma', 'wsigma']):
             qa_2       = 'xwsigma'        
-            test_range = ast.literal_eval(tests[qa_2])[self.d[self.qa][self.kot]]
+            test_range = tests[qa_2][self.d[self.qa][self.kot]]
         else:
-            test_range = ast.literal_eval(tests[qa])[self.d[self.qa][self.kot]]
+            test_range = tests[qa][self.d[self.qa][self.kot]]
         
         return test_range
 
@@ -255,10 +257,10 @@ class LoadMetrics:
         if qa == 'xwsigma':
             alarm_x = self.test_ranges('xsigma','alarm')
             warn_x = self.test_ranges('xsigma','warn')
-            val_x = ast.literal_eval(self.metrics[qa])[self.metric_dict['xsigma']]
+            val_x = self.metrics[qa][self.metric_dict['xsigma']]
             alarm_w = self.test_ranges('wsigma','alarm')
             warn_w = self.test_ranges('wsigma','warn')
-            val_w = ast.literal_eval(self.metrics[qa])[self.metric_dict['wsigma']]
+            val_w = self.metrics[qa][self.metric_dict['wsigma']]
 
             if isinstance(val_w,float) or isinstance(val_w, int) or isinstance(val_x,float) or isinstance(val_x, int):
                 pass
@@ -281,7 +283,7 @@ class LoadMetrics:
         else:               
             alarm = self.test_ranges(qa,'alarm')
             warn  = self.test_ranges(qa,'warn')
-            val   = ast.literal_eval(self.metrics[qa])[self.metric_dict[qa]]
+            val   = self.metrics[qa][self.metric_dict[qa]]
         #dblogger.info(qa, self.metric_dict[qa])
         
         if isinstance(val,float) or isinstance(val, int):
@@ -332,7 +334,7 @@ class LoadMetrics:
             try:
                 aux1 = self.metrics[i][alert_keys[i]]
             except Exception as e:
-                logger.error('Failed metric alert: '+ str(e))
+                logger.error('Failed metric alert: '+ str(e)[:20])
                 aux1 = 'FAILURE'
         
             steps_status.append(aux1)
@@ -340,4 +342,19 @@ class LoadMetrics:
         result = {'steps_status': steps_status }
         return result
 
+    def get_qa_metric_color(self, metric):
+        try:
+            return self.step_status(metric)
+        except:
+            return None
 
+    def save_qa_tests(self):
+        try:
+            preproc = self.get_qa_metric_color('preproc')
+            extract = self.get_qa_metric_color('extract')
+            fiberfl = self.get_qa_metric_color('fiberfl')
+            skysubs = self.get_qa_metric_color('skysubs')
+            qa_tests = {'preproc': preproc, 'extract': extract, 'fiberfl': fiberfl, 'skysubs': skysubs }
+            self.models.update_qa_tests(self.cam, qa_tests)
+        except:
+            logger.error('Camera not found %s' % (self.cam))
