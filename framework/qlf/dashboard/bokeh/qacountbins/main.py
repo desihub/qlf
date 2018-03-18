@@ -55,6 +55,8 @@ metrics, tests  = lm.metrics, lm.tests
 
 countbins = metrics['countbins']
 
+print('\n\n\n\n',tests.keys())
+
 # ============================================
 # THIS: Given the set up in the block above, 
 #       we have the bokeh plots
@@ -208,7 +210,7 @@ html_str="""
 """
 txt_keys=['CUTLO','CUTMED','CUTHI','NGOODFIB_NORMAL_RANGE', 'NGOODFIB_WARN_RANGE']
 for i in range(5):
-    html_str=html_str.replace('%s%s'%("param",str(i)), str(params_countbins[txt_keys[i]]) )
+    html_str=html_str.replace('%s%s'%("param",str(i)), str(tests['countbins'][txt_keys[i]]) )
 
 div=Div(text=html_str, 
         width=500, height=200)
