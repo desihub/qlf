@@ -9,6 +9,7 @@ import logging
 from multiprocessing import Manager, Lock
 from threading import Thread
 from qlf_models import QLFModels
+from scalar_metrics import LoadMetrics
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -159,7 +160,6 @@ class Jobs(QLFProcess):
 
         # TODO: refactor?
         camera_failed = 0
-
         for camera in self.data.get('cameras'):
             output_path = os.path.join(
                 desi_spectro_redux,
@@ -190,6 +190,10 @@ class Jobs(QLFProcess):
         duration_ingestion = str(
             datetime.datetime.now().replace(microsecond=0) - start_ingestion
         )
+
+        for camera in self.data.get('cameras'):
+            lm = LoadMetrics(camera.get('name'), self.data.get('expid'), self.data.get('night'))
+            lm.save_qa_tests()
 
         self.logger.info("Results ingestion complete in %s." % duration_ingestion)
 

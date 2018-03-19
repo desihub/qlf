@@ -1,3 +1,5 @@
+import sys
+
 from bokeh.plotting import figure
 from bokeh.layouts import row, column, widgetbox, gridplot
 
@@ -13,8 +15,6 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-import ast
-
 from dashboard.bokeh.helper import get_url_args
 
 import numpy as np
@@ -27,9 +27,12 @@ logger = logging.getLogger(__name__)
 #
 args = get_url_args(curdoc)
 
-selected_exposure = args['exposure']
-selected_arm = args['arm']
-selected_spectrograph = args['spectrograph']
+try:
+    selected_exposure = args['exposure']
+    selected_arm = args['arm']
+    selected_spectrograph = args['spectrograph']
+except:
+    sys.exit('Invalid args')
 
 # =============================================
 # THIS comes from QLF.CFG
@@ -46,26 +49,9 @@ exp = selected_exposure # intentionaly redundant
 lm = LoadMetrics(cam, exp, night);
 metrics, tests  = lm.metrics, lm.tests 
 
-# =============================================
-# THIS is only to simplify the code understanding
-#
-countpix  = metrics['countpix']
-getbias   = metrics['getbias']
 getrms    = metrics['getrms']
-xwsigma   = metrics['xwsigma']
-countbins = metrics['countbins']
-integ     = metrics['integ']
-skycont   = metrics['skycont']
-skypeak   = metrics['skypeak']
-skyresid  = metrics['skyresid']
-snr       = metrics['snr']
-
-# ============================================
-# THIS: Given the set up in the block above, 
-#       we have the bokeh plots
-
 name = 'RMS_AMP'
-metr = ast.literal_eval(getrms)
+metr = getrms
 
 # Get Bias
 dx = [0,1,0,1]

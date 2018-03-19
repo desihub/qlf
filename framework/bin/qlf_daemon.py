@@ -11,6 +11,7 @@ from socket import error as socket_error
 from log import setup_logger
 from procutil import kill_proc_tree
 from qlf_pipeline import Jobs as QLFPipeline
+from scalar_metrics import LoadMetrics
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -213,6 +214,15 @@ class QLFAutomatic(object):
             running = True
 
         return running
+
+    def qa_tests(self):
+        for camera in model.get_cameras():
+            try:
+                exposure = model.get_last_exposure()
+                lm = LoadMetrics(camera.camera, exposure.exposure_id, exposure.night)
+                lm.save_qa_tests()
+            except:
+                logger.error('qa_tests error camera %s' % (camera.camera))
 
 # TODO: refactor QLFManual
 @Pyro4.expose
