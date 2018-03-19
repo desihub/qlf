@@ -1,5 +1,4 @@
 import os
-import sys
 import io
 from log import setup_logger
 import subprocess
@@ -208,8 +207,6 @@ class Jobs(QLFProcess):
             '--specprod_dir', desi_spectro_redux
         ]
 
-        log_path = os.path.join(desi_spectro_redux, camera.get('logname'))
-
         logname = io.open(os.path.join(
                 desi_spectro_redux,
                 camera.get('logname')
@@ -226,7 +223,7 @@ class Jobs(QLFProcess):
                 line = process.stdout.readline()
                 if not line:
                     break
-                self.resume_log(line, camera.get('name'), data.get('expid'), lock)
+                self.resume_log(line, camera.get('name'), lock)
                 logname.write(line)
                 logname.flush()
 
@@ -245,7 +242,7 @@ class Jobs(QLFProcess):
 
         return_cameras.append(camera)
 
-    def resume_log(self, line, camera, expid, lock):
+    def resume_log(self, line, camera, lock):
         """ """
 
         lock.acquire()

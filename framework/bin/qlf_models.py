@@ -143,45 +143,28 @@ class QLFModels(object):
             qa = yaml.load(open(product, 'r'))
             name = os.path.basename(product)
 
-            if 'PANAME' in qa and 'METRICS' in qa and 'PARAMS' in qa:
+            if 'PANAME' and 'METRICS' and 'PARAMS' in qa:
                 paname = qa['PANAME']
                 metrics = self.jsonify(qa['METRICS'])
                 params = self.jsonify(qa['PARAMS'])
 
                 print("Ingesting %s" % name)
-                print("Type: {}".format(str(type(qa['METRICS']))))
                 self.insert_qa(name, paname, metrics, params, job_id)
 
         print('Job {} updated.'.format(job_id))
 
-    def insert_qa(self, name, paname, metrics, params, job_id, force=False):
+    def insert_qa(self, name, paname, metrics, params, job_id):
         """ Inserts or updates qa table """
 
-        if not QA.objects.filter(name=name):
-            # Register for QA results for the first time
-            qa = QA(
-                name=name,
-                description='',
-                paname=paname,
-                metrics=metrics,
-                params=params,
-                job_id=job_id
-            )
-            qa.save()
-        elif force:
-            # Overwrite QA results
-            QA.objects.filter(name=name).update(
-                job_id=job_id,
-                description='',
-                paname=paname,
-                metrics=metrics,
-                params=params,
-            )
-        else:
-            print(
-                "{} results already registered. "
-                "Use --force to overwrite.".format(name)
-            )
+        qa = QA(
+            name=name,
+            description='',
+            paname=paname,
+            metrics=metrics,
+            params=params,
+            job_id=job_id
+        )
+        qa.save()
 
     def get_expid_in_process(self, expid):
         """ gets process object by expid """
