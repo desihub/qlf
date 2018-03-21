@@ -135,24 +135,64 @@ class QLFModels(object):
     def update_job(self, job_id, end, status, output_path):
         """ Updates job with execution results. """
 
+        print('Q: {}'.format(django.db.connections.databases))
+        django.db.connection.close()
+
         try:
+            # Close the DB connections
+
+
+            # for name, info in django.db.connections.databases.items():
+            #     django.db.connection.close()
+
             Job.objects.filter(id=job_id).update(
                 end=end,
                 status=status
             )
 
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
+            # with concurrent.futures.ProcessPoolExecutor() as executor:
+            #     {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
+
+            qas = list()
+
+            for product in glob.glob(output_path):
+               qa = self.create_qa_bulk(product, job_id)
+               if qa:
+                   qas.append(qa)
+
+            QA.objects.bulk_create(qas)
 
             print('Job {} updated.'.format(job_id))
-        except:
+        except Exception as err:
             print('Job {} failed.'.format(job_id))
+            print(err)
 
-    def parallel_ingestion(self, product, job_id):
+    def create_qa_bulk(self, product, job_id):
         qa = yaml.load(open(product, 'r'))
         name = os.path.basename(product)
 
-        if 'PANAME' and 'METRICS' and 'PARAMS' in qa:
+        if 'PANAME' in qa and 'METRICS' in qa and 'PARAMS' in qa:
+            paname = qa['PANAME']
+            metrics = self.jsonify(qa['METRICS'])
+            params = self.jsonify(qa['PARAMS'])
+
+            return QA(
+                name=name,
+                description='',
+                paname=paname,
+                metrics=metrics,
+                params=params,
+                job_id=job_id
+            )
+
+        return None
+
+    def parallel_ingestion(self, product, job_id):
+
+        qa = yaml.load(open(product, 'r'))
+        name = os.path.basename(product)
+
+        if 'PANAME' in qa and 'METRICS' in qa and 'PARAMS' in qa:
             paname = qa['PANAME']
             metrics = self.jsonify(qa['METRICS'])
             params = self.jsonify(qa['PARAMS'])
@@ -161,15 +201,15 @@ class QLFModels(object):
             print("Type: {}".format(str(type(qa['METRICS']))))
             self.insert_qa(name, paname, metrics, params, job_id)
 
-
     def update_qa_tests(self, name, qa_tests):
         Camera.objects.filter(camera=name).update(
             qa_tests=qa_tests
         )
 
-    def insert_qa(self, name, paname, metrics, params, job_id):
+    def insert_qa(self, name, paname, metrics, params, job_id, force=False):
         """ Inserts or updates qa table """
 
+        # Register for QA results for the first time
         qa = QA(
             name=name,
             description='',
@@ -179,6 +219,32 @@ class QLFModels(object):
             job_id=job_id
         )
         qa.save()
+
+        # if not QA.objects.filter(name=name):
+        #     # Register for QA results for the first time
+        #     qa = QA(
+        #         name=name,
+        #         description='',
+        #         paname=paname,
+        #         metrics=metrics,
+        #         params=params,
+        #         job_id=job_id
+        #     )
+        #     qa.save()
+        # elif force:
+        #     # Overwrite QA results
+        #     QA.objects.filter(name=name).update(
+        #         job_id=job_id,
+        #         description='',
+        #         paname=paname,
+        #         metrics=metrics,
+        #         params=params,
+        #     )
+        # else:
+        #     print(
+        #         "{} results already registered. "
+        #         "Use --force to overwrite.".format(name)
+        #     )
 
     def get_qa(self, qa_name):
         """ gets qa """
