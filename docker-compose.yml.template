@@ -24,6 +24,10 @@ services:
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
       - POSTGRES_DB=dbqlf
+      - BOKEH_PORT=5006
+      - QLF_PORT=8000
+      - QLF_DAEMON_PORT=56005
+      - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8000 --host=localhost:5006
     volumes:
       - .:/app
     restart: always
