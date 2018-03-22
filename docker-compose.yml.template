@@ -8,12 +8,12 @@ services:
       - POSTGRES_USER=userqlf
       - POSTGRES_DB=dbqlf
     ports:
-      - "5432:5432"
+      - "5433:5432"
   qlf:
     build: .
     environment:
-      - QLF_API_URL=http://localhost:8000/dashboard/api
-      - QLF_BASE_URL=http://localhost:8000
+      - QLF_API_URL=http://localhost:8001/dashboard/api
+      - QLF_BASE_URL=http://localhost:8001
       - QLF_HOSTNAME=localhost
       - QLF_ROOT=/app/
       - DESI_SPECTRO_DATA=/app/spectro/data
@@ -24,19 +24,23 @@ services:
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
       - POSTGRES_DB=dbqlf
+      - BOKEH_PORT=5007
+      - QLF_PORT=8001
+      - QLF_DAEMON_PORT=56006
+      - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001 --host=localhost:5007
     volumes:
       - .:/app
     restart: always
     working_dir: /app/
     command: ./run.sh
     ports:
-      - "8000:8000"
-      - "5006:5006"
-      - "56005:56005"
+      - "8001:8001"
+      - "5007:5007"
+      - "56006:56006"
     depends_on:
       - redis
       - db
   redis:
     image: redis
     ports:
-      - "6379"
+      - "6380:6379"
