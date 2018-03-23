@@ -46,6 +46,8 @@ lm = LoadMetrics(cam, exp, night);
 metrics, tests  = lm.metrics, lm.tests 
 
 xwsigma   = metrics['xwsigma']
+snr       = metrics['snr'] #RA and DEC info
+skycont   = metrics['skycont']
 
 def palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 
