@@ -6,7 +6,7 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
-from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
 
@@ -62,7 +62,7 @@ dx = [0,1,0,1]
 dy = [1,1,0,0]
 dz = metr[name] #getbias['BIAS_AMP']
 
-mapper = LinearColorMapper(palette= Viridis256)
+mapper = LinearColorMapper(palette= Viridis256, low=min(dz),high=max(dz) )
 
 
 
@@ -75,7 +75,7 @@ source = ColumnDataSource(
 
         z = dz,
         amp = ['AMP %s'%i for i in range(1,5) ] ,
-        ztext = ['{:4.3e}'.format(i) for i in dz]
+        ztext = ['{:3.2e}'.format(i) for i in dz]
     )
 )
 
@@ -126,10 +126,12 @@ p.text(x="x", y="y_offset2", text="ztext",
        text_font_style="bold", text_font_size="20pt", **text_props)
 p.text(x="x", y="y_offset1", text="amp",
         text_font_size="18pt", **text_props)
+formatter = PrintfTickFormatter(format='%2.1e')
 color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                major_label_text_font_size='10pt', label_standoff=2,location=(1, 0))
+                major_label_text_font_size='10pt', label_standoff=2, location=(0, 0)
+                   ,formatter=formatter, title="(ADU)", title_text_baseline="alphabetic" )
 
-p.add_layout(color_bar, 'left')
+p.add_layout(color_bar, 'right')
 
 
 p.xaxis.major_label_text_font_size = '0pt'  # turn off x-axis tick labels
