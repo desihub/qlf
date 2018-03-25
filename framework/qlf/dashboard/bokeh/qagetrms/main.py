@@ -6,6 +6,7 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
+from bokeh.models.widgets import PreText
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
@@ -15,7 +16,7 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args
+from dashboard.bokeh.helper import get_url_args, write_info
 
 import numpy as np
 import logging
@@ -92,7 +93,7 @@ hover = HoverTool(tooltips=cmap_tooltip)
 p = figure(title=name, tools=[hover],
            x_range= list([-0.5,1.5]),           # length = 18
            y_range= list([-0.5,1.5]), #numeros romanos
-           plot_width=400, plot_height=400
+           plot_width=450, plot_height=400
           )
 
 
@@ -136,9 +137,13 @@ p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
 p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
 p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
+#infos
+info, nlines = write_info('getrms', tests['getrms'])
+txt = PreText(text=info, height=nlines*20, width=p.plot_width)
+ptxt = column(widgetbox(txt),p)
 
 
 
 # End of Bokeh Block
-curdoc().add_root(p)
+curdoc().add_root(ptxt)
 curdoc().title="GETRMS"

@@ -6,9 +6,15 @@ from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
 
+from bokeh.models.widgets import PreText
+from bokeh.models import PrintfTickFormatter
+from dashboard.bokeh.helper import write_info
+
+
 from dashboard.bokeh.helper import get_data, get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs
 import numpy as np
+
 
 QLF_API_URL = os.environ.get(
     'QLF_API_URL',
@@ -21,6 +27,16 @@ args = get_url_args(curdoc)
 selected_exposure = args['exposure']
 selected_arm = args['arm']
 selected_spectrograph = args['spectrograph']
+
+#load from scalar_metrics
+from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
+night = '20190101'
+
+cam = selected_arm+str(selected_spectrograph)
+exp = selected_exposure 
+lm = LoadMetrics(cam, exp, night);
+metrics, tests  = lm.metrics, lm.tests 
+
 
 def fit_func(xdata, coeff):
     a, b, c = coeff[0]
@@ -299,6 +315,14 @@ plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=True)
 #                 row(widgetbox(arm_select, width=130),
 #                     widgetbox(spectrograph_select, width=130)),
 #                 plot, responsive=True)
+
+
+
+#infos
+key_name = 'snr'
+info, nlines = write_info(key_name, tests[key_name])
+txt = PreText(text=info, height=nlines*20)
+#p2txt = column(widgetbox(txt),p2)
 
 layout = column(plot, responsive=True)
 

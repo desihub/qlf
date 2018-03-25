@@ -6,6 +6,11 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
+from bokeh.models.widgets import PreText
+from bokeh.models import PrintfTickFormatter
+
+from dashboard.bokeh.helper import write_info
+
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models import TapTool, OpenURL
@@ -123,12 +128,13 @@ source2_not = ColumnDataSource(data={
 mapper = LinearColorMapper(palette= my_palette,
                            low = np.min(qainteg), 
                            high = np.max(qainteg))
+
 p2 = figure(title='INTEG', 
             x_axis_label='RA', y_axis_label='DEC',
-            plot_width=750, plot_height=700,
+            plot_width=770, plot_height=700,
             tools= [hover, "pan,wheel_zoom,box_zoom,reset,tap"])
 
-radius = 0.011
+radius = 0.016
 
 # Gray Fibers:
 p2.circle('ra', 'dec', source= source2_not, radius= radius, 
@@ -166,9 +172,13 @@ p2.circle('ra','dec', source = source2, radius = 0.0186
 color_bar.formatter = formatter
 p2.add_layout(color_bar, 'left')
 
+#infos
+info, nlines = write_info('integ', tests['integ'])
+txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
+p2txt = column(widgetbox(txt),p2)
 
 
-layout = gridplot([[p2]], responsive=False)
+layout = gridplot([[p2txt]], responsive=False)
 
 # End of Bokeh Block
 curdoc().add_root(layout)

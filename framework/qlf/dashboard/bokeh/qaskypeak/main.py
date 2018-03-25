@@ -10,6 +10,9 @@ from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
+from bokeh.models.widgets import PreText
+from bokeh.models import PrintfTickFormatter
+from dashboard.bokeh.helper import write_info
 
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -120,9 +123,9 @@ mapper = LinearColorMapper(palette= my_palette,
 
 
 
-radius = 0.011
+radius = 0.016
 p = figure( title = 'SKYPEAK', x_axis_label='RA', y_axis_label='DEC'
-           , plot_width=750, plot_height=700
+           , plot_width=770, plot_height=700
            ## , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
            , tools= [peak_hover, "pan,box_zoom,reset,crosshair, tap"])
 
@@ -152,7 +155,13 @@ xcolor_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
                      location=(0, 0))
 
 p.add_layout(xcolor_bar, 'left')
-layout = gridplot([[p]]) 
+
+#infos
+info, nlines = write_info('skypeak', tests['skypeak'])
+txt = PreText(text=info, height=nlines*20, width=p.plot_width)
+p2txt = column(widgetbox(txt),p)
+
+layout = gridplot([[p2txt]]) 
 
 
 # End of Bokeh Block

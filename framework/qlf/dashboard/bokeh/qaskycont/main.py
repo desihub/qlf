@@ -10,6 +10,9 @@ from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
+from bokeh.models.widgets import PreText
+from bokeh.models import PrintfTickFormatter
+from dashboard.bokeh.helper import write_info
 
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -119,12 +122,14 @@ source2_not = ColumnDataSource(data={
 mapper = LinearColorMapper(palette= my_palette,
                            low = np.min(sky), 
                            high = np.max(sky))
+
+radius=0.016
 p2 = figure(title='SKY_CONT', 
             x_axis_label='RA', y_axis_label='DEC',
-            plot_width=700, plot_height=600,
+            plot_width=770, plot_height=700,
             tools= [hover, "pan,box_zoom,reset,tap"])
 
-p2.circle('ra','dec', source=source2, radius=0.016,
+p2.circle('ra','dec', source=source2, radius=radius,
         fill_color={'field': 'skycont', 'transform': mapper}, 
          line_color='black', line_width=0.1)
 
@@ -155,8 +160,12 @@ color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
 
 p2.add_layout(color_bar, 'left')
 
+#infos
+info, nlines = write_info('skycont', tests['skycont'])
+txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
+p2txt = column(widgetbox(txt),p2)
 
-layout = gridplot([[p2]], responsive=False)
+layout = gridplot([[p2txt]], responsive=False)
 
 
 # End of Bokeh Block
