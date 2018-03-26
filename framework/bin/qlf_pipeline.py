@@ -207,96 +207,13 @@ class Jobs(QLFProcess):
             camera['status'] = 1
 
         return_cameras.append(camera)
-
-        # self.logger.info('Begin ingestion of results...')
-        # start_ingestion = datetime.datetime.now().replace(microsecond=0)
-        #
-        # proc_qas = list()
-        #
-        # # TODO: refactor?
-        # camera_failed = 0
-        # for camera in self.data.get('cameras'):
-        #     output_path = os.path.join(
-        #         desi_spectro_redux,
-        #         self.data.get('output_dir'),
-        #         'ql-*-%s-%s.yaml' % (
-        #             camera.get('name'),
-        #             self.data.get('zfill')
-        #         )
-        #     )
-        #
-        #     if not camera.get('status') == 0:
-        #         camera_failed += 1
-        #
-        #     args = (
-        #         camera.get('job_id'),
-        #         camera.get('end'),
-        #         camera.get('status'),
-        #         output_path
-        #     )
-        #
-        #     proc = Process(target=self.models.update_job, args=args)
-        #     proc.start()
-        #     proc_qas.append(proc)
-        #
-        #     # self.models.update_job(
-        #     #    job_id=camera.get('job_id'),
-        #     #    end=camera.get('end'),
-        #     #    status=camera.get('status'),
-        #     #    output_path=output_path
-        #     # )
-        #
-        #     """
-        #     self.logger.info(os.getcwd())
-        #
-        #     qa_bulk_script = os.path.join(os.getenv('QLF_DAEMON'), "create_qa_bulk.py")
-        #
-        #     cmd = [
-        #         "python", qa_bulk_script,
-        #         str(camera.get('job_id')), str(camera.get('end')),
-        #         str(camera.get('status')), output_path
-        #     ]
-        #
-        #     logingest = os.path.join(
-        #         desi_spectro_redux,
-        #         self.data.get('output_dir'),
-        #         "ingest-%s.log" % camera.get('name')
-        #     )
-        #
-        #     self.logger.info(str(cmd))
-        #
-        #     subprocess.Popen(cmd, stdout=io.open(logingest, 'w'), stderr=subprocess.STDOUT)
-        #
-        #     """
-        #
-        # for proc in proc_qas:
-        #     proc.join()
-        #
-        # status = 0
-        #
-        # if camera_failed > 0:
-        #     status = 1
-        #
-        # self.data['status'] = status
-        #
-        # duration_ingestion = str(
-        #     datetime.datetime.now().replace(microsecond=0) - start_ingestion
-        # )
-        #
-        # # for camera in self.data.get('cameras'):
-        # #     lm = LoadMetrics(camera.get('name'), self.data.get('expid'), self.data.get('night'))
-        # #     lm.save_qa_tests()
-        #
-        # self.logger.info("Results ingestion complete in %s." % duration_ingestion)
-
+ 
     def ingest_parallel_qas(self):
         self.logger.info('Begin ingestion of results...')
         start_ingestion = datetime.datetime.now().replace(microsecond=0)
 
         proc_qas = list()
 
-        # TODO: refactor?
-        camera_failed = 0
         for camera in self.data.get('cameras'):
             output_path = os.path.join(
                 desi_spectro_redux,
@@ -306,9 +223,6 @@ class Jobs(QLFProcess):
                     self.data.get('zfill')
                 )
             )
-
-            if not camera.get('status') == 0:
-                camera_failed += 1
 
             args = (
                 camera.get('job_id'),
@@ -321,29 +235,6 @@ class Jobs(QLFProcess):
             proc.start()
             proc_qas.append(proc)
 
-            """
-            self.logger.info(os.getcwd())
-
-            qa_bulk_script = os.path.join(os.getenv('QLF_DAEMON'), "create_qa_bulk.py")
-
-            cmd = [
-                "python", qa_bulk_script,
-                str(camera.get('job_id')), str(camera.get('end')),
-                str(camera.get('status')), output_path
-            ]
-
-            logingest = os.path.join(
-                desi_spectro_redux,
-                self.data.get('output_dir'),
-                "ingest-%s.log" % camera.get('name')
-            )
-
-            self.logger.info(str(cmd))
-
-            subprocess.Popen(cmd, stdout=io.open(logingest, 'w'), stderr=subprocess.STDOUT)
-
-            """
-
         for proc in proc_qas:
             proc.join()
 
@@ -351,9 +242,9 @@ class Jobs(QLFProcess):
             datetime.datetime.now().replace(microsecond=0) - start_ingestion
         )
 
-        # for camera in self.data.get('cameras'):
-        #     lm = LoadMetrics(camera.get('name'), self.data.get('expid'), self.data.get('night'))
-        #     lm.save_qa_tests()
+        for camera in self.data.get('cameras'):
+             lm = LoadMetrics(camera.get('name'), self.data.get('expid'), self.data.get('night'))
+             lm.save_qa_tests()
 
         self.logger.info("Results ingestion complete in %s." % duration_ingestion)
 

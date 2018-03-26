@@ -135,32 +135,31 @@ class QLFModels(object):
     def update_job(self, job_id, end, status, output_path):
         """ Updates job with execution results. """
 
-        print('Q: {}'.format(django.db.connections.databases))
+        # Close the DB connections
         django.db.connection.close()
 
         try:
-            # Close the DB connections
-
-
-            # for name, info in django.db.connections.databases.items():
-            #     django.db.connection.close()
-
             Job.objects.filter(id=job_id).update(
                 end=end,
                 status=status
             )
 
-            # with concurrent.futures.ProcessPoolExecutor() as executor:
-            #     {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
 
+            """
             qas = list()
 
             for product in glob.glob(output_path):
-               qa = self.create_qa_bulk(product, job_id)
-               if qa:
-                   qas.append(qa)
+                qa = self.create_qa_bulk(product, job_id)
+                if not qa:
+                    print('Error to create QA: {}'.format(product))
+                    continue
+
+                qas.append(qa)
 
             QA.objects.bulk_create(qas)
+            """
 
             print('Job {} updated.'.format(job_id))
         except Exception as err:
@@ -188,6 +187,9 @@ class QLFModels(object):
         return None
 
     def parallel_ingestion(self, product, job_id):
+
+        # Close the DB connections
+        django.db.connection.close()
 
         qa = yaml.load(open(product, 'r'))
         name = os.path.basename(product)
@@ -219,32 +221,6 @@ class QLFModels(object):
             job_id=job_id
         )
         qa.save()
-
-        # if not QA.objects.filter(name=name):
-        #     # Register for QA results for the first time
-        #     qa = QA(
-        #         name=name,
-        #         description='',
-        #         paname=paname,
-        #         metrics=metrics,
-        #         params=params,
-        #         job_id=job_id
-        #     )
-        #     qa.save()
-        # elif force:
-        #     # Overwrite QA results
-        #     QA.objects.filter(name=name).update(
-        #         job_id=job_id,
-        #         description='',
-        #         paname=paname,
-        #         metrics=metrics,
-        #         params=params,
-        #     )
-        # else:
-        #     print(
-        #         "{} results already registered. "
-        #         "Use --force to overwrite.".format(name)
-        #     )
 
     def get_qa(self, qa_name):
         """ gets qa """
