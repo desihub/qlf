@@ -14,6 +14,8 @@ services:
     environment:
       - QLF_API_URL=http://localhost:8001/dashboard/api
       - QLF_BASE_URL=http://localhost:8001
+      - BOKEH_SERVER=loclahost
+      - QLF_DAEMON_HOST= localhost
       - QLF_HOSTNAME=localhost
       - QLF_ROOT=/app/
       - DESI_SPECTRO_DATA=/app/spectro/data
@@ -28,6 +30,8 @@ services:
       - QLF_PORT=8001
       - QLF_DAEMON_PORT=56006
       - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001 --host=localhost:5007
+      - DB_NAME=db
+      - REDIS_NAME=redis
     volumes:
       - .:/app
     restart: always

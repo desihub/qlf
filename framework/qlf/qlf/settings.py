@@ -96,7 +96,7 @@ DATABASES = {
         'NAME': os.environ.get('POSTGRES_DB', 'dbqlf'),
         'USER': os.environ.get('POSTGRES_USER', 'userqlf'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'qlfuser'),
-        'HOST': 'db',
+        'HOST': os.environ.get('DB_NAME', 'db'),
         'PORT': '',
     }
 }
@@ -124,7 +124,7 @@ if os.environ.get('QLF_REDIS', False):
         "default": {
             "BACKEND": "asgi_redis.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [("redis", 6379)],
+                "hosts": [(os.environ.get('REDIS_NAME', 'redis'), 6379)],
             },
             "ROUTING": "qlf.routing.channel_routing",
         },
