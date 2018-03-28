@@ -5,7 +5,6 @@ conda install -y --file requirements.txt
 pip install -r extras.txt
 
 export QLF_PROJECT=$(pwd)/framework/qlf
-export QLF_DAEMON=$(pwd)/framework/bin
 export QLF_ROOT=$(pwd)
 export QLF_REDIS=True
 
