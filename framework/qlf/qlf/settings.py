@@ -27,6 +27,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'channels',
     'ui_channel',
+    'corsheaders',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -39,7 +40,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  
 )
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 INTERNAL_IPS = '127.0.0.1'
 ROOT_URLCONF = 'dashboard.urls'
