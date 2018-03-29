@@ -387,5 +387,5 @@ def send_ticket_email(request):
     if email == None or name == None or message == None or subject == None or helpdesk == None:
         return JsonResponse({ 'status': 'Missing params' })
     else:
-        send_mail(subject, message, helpdesk, [email], fail_silently=False)
+        send_mail(subject, message, email, [helpdesk], fail_silently=False)
         return JsonResponse({ 'status': 'sent' })
