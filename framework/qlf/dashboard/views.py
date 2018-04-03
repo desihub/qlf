@@ -9,7 +9,8 @@ from django.db.models import Q
 from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
-    QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer
+    QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer,
+    ProcessingHistorySerializer
 )
 import Pyro4
 import datetime
@@ -134,6 +135,21 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 
     serializer_class = ProcessJobsSerializer
 
+class ProcessingHistoryViewSet(viewsets.ModelViewSet):
+    """API endpoint for listing processing history"""
+
+    # def get_queryset(self):
+    #     try:
+    #         process_id = Process.objects.latest('pk').id
+    #     except Process.DoesNotExist as error:
+    #         logger.debug(error)
+    #         process_id = None
+
+    #     return Exposures.objects.filter(id=process_id)
+    queryset = Exposure.objects.order_by('exposure_id')
+
+    serializer_class = ProcessingHistorySerializer
+
 
 class JobViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""
@@ -148,7 +164,7 @@ class ProcessViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Process.objects.order_by('start')
     serializer_class = ProcessSerializer
-    filter_fields = ('exposure__exposure_id',)
+    filter_fields = ('exposure',)
 
 
 class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
@@ -182,6 +198,7 @@ class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
+    filter_fields = ('exposure_id',)
 
 
 class DataTableExposureViewSet(viewsets.ModelViewSet):

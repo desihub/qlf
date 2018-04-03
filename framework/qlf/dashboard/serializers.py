@@ -144,4 +144,18 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
         model = Process
         fields = ('id', 'exposure', 'process_jobs')
 
+class ProcessingHistorySerializer(serializers.ModelSerializer):
+
+    exposure = ExposureSerializer(many=True, read_only=True)
+
+    runtime = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Exposure
+        fields = ('exposure', 'dateobs', 'exposure_id', 'tile', 'telra', 'teldec', 'airmass', 'exptime', 'runtime')
+
+    def get_runtime(self, obj):
+        process = Process.objects.filter(exposure=3)
+        return str(vars(process))
+
 
