@@ -6,7 +6,7 @@ import json
 import numpy
 import django
 import math
-import concurrent.futures
+import logging
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -21,6 +21,8 @@ django.setup()
 from dashboard.models import (
     Job, Exposure, Camera, QA, Process, Configuration
 )
+
+logger = logging.getLogger()
 
 
 class QLFModels(object):
@@ -135,84 +137,94 @@ class QLFModels(object):
     def update_job(self, job_id, end, status, output_path):
         """ Updates job with execution results. """
 
+        # Close the DB connections
+        django.db.connection.close()
+
         try:
             Job.objects.filter(id=job_id).update(
                 end=end,
                 status=status
             )
 
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                {executor.submit(self.parallel_ingestion, product, job_id): product for product in glob.glob(output_path)}
+            qas = list()
 
-            print('Job {} updated.'.format(job_id))
-        except:
-            print('Job {} failed.'.format(job_id))
+            for product in glob.glob(output_path):
+                qa = self.create_qa_bulk(product, job_id)
+                if not qa:
+                    logger.warning('Error to create QA: {}'.format(product))
+                    continue
 
-    def parallel_ingestion(self, product, job_id):
+                qas.append(qa)
+
+            QA.objects.bulk_create(qas)
+
+            logger.info('Job {} updated.'.format(job_id))
+        except Exception as err:
+            logger.error('Job {} failed.'.format(job_id))
+            logger.error(err)
+
+    def create_qa_bulk(self, product, job_id):
+        """ Creates QAs in bulk """
+        
         qa = yaml.load(open(product, 'r'))
         name = os.path.basename(product)
 
-        if 'PANAME' in qa and 'METRICS' in qa and 'PARAMS' in qa:
-            paname = qa['PANAME']
-            metrics = self.jsonify(qa['METRICS'])
-            params = self.jsonify(qa['PARAMS'])
+        for item in ('PANAME', 'METRICS', 'PARAMS'):
+            if item not in qa:
+                logger.warning('{} not found.'.format(item))
+                return None
+            
+        paname = qa['PANAME']
+        metrics = self.jsonify(qa['METRICS'])
+        params = self.jsonify(qa['PARAMS'])
 
-            print("Ingesting %s" % name)
-            print("Type: {}".format(str(type(qa['METRICS']))))
-            self.insert_qa(name, paname, metrics, params, job_id)
-
+        return QA(
+            name=name,
+            description='',
+            paname=paname,
+            metrics=metrics,
+            params=params,
+            job_id=job_id
+        )
 
     def update_qa_tests(self, name, qa_tests):
+        """ Update QA tests """
+        
         Camera.objects.filter(camera=name).update(
             qa_tests=qa_tests
         )
 
     def insert_qa(self, name, paname, metrics, params, job_id, force=False):
-        """ Inserts or updates qa table """
+        """ Inserts table """
 
-        if not QA.objects.filter(name=name):
-            # Register for QA results for the first time
-            qa = QA(
-                name=name,
-                description='',
-                paname=paname,
-                metrics=metrics,
-                params=params,
-                job_id=job_id
-            )
-            qa.save()
-        elif force:
-            # Overwrite QA results
-            QA.objects.filter(name=name).update(
-                job_id=job_id,
-                description='',
-                paname=paname,
-                metrics=metrics,
-                params=params,
-            )
-        else:
-            print(
-                "{} results already registered. "
-                "Use --force to overwrite.".format(name)
-            )
+        # Register for QA results for the first time
+        qa = QA(
+            name=name,
+            description='',
+            paname=paname,
+            metrics=metrics,
+            params=params,
+            job_id=job_id
+        )
+        qa.save()
 
     def get_qa(self, qa_name):
-        """ gets qa """
+        """ Gets QA """
 
         return QA.objects.get(name=qa_name)
 
     def get_cameras(self):
-        """ gets cameras """
+        """ Gets cameras """
 
         return Camera.objects.all()
 
     def get_expid_in_process(self, expid):
-        """ gets process object by expid """
+        """ Gets process object by expid """
 
         return Process.objects.filter(exposure_id=expid)
 
     def get_last_exposure(self):
-        """ gets last processed exposures """
+        """ Gets last processed exposures """
 
         try:
             exposure = Exposure.objects.latest('pk')
@@ -222,27 +234,27 @@ class QLFModels(object):
         return exposure
 
     def delete_all_processes(self):
-        """ delete all processes """
+        """ Delete all processes """
 
         Process.objects.all().delete()
 
     def delete_all_exposures(self):
-        """ delete all exposures """
+        """ Delete all exposures """
 
         Exposure.objects.all().delete()
 
     def delete_all_cameras(self):
-        """ delete all cameras """
+        """ Delete all cameras """
 
         Camera.objects.all().delete()
 
     def delete_process(self, process_id):
-        """ delete by process_id """
+        """ Delete by process_id """
 
         Process.objects.filter(id=process_id).delete()
 
     def delete_exposure(self, expid):
-        """ delete by exposure id """
+        """ Delete by exposure id """
 
         Exposure.objects.filter(exposure_id=expid).delete()
 
@@ -262,4 +274,3 @@ class QLFModels(object):
 
 if __name__ == '__main__':
     qlf = QLFModels()
-
