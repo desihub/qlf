@@ -27,6 +27,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'channels',
     'ui_channel',
+    'corsheaders',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -39,7 +40,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  
 )
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 INTERNAL_IPS = '127.0.0.1'
 ROOT_URLCONF = 'dashboard.urls'
@@ -133,3 +138,7 @@ if os.environ.get('QLF_REDIS', False):
 X_FRAME_OPTIONS = 'ALLOWALL'
 
 XS_SHARING_ALLOWED_METHODS = ['POST','GET','OPTIONS', 'PUT', 'DELETE']
+
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', None)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', 25)

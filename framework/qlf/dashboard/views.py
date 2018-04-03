@@ -24,6 +24,9 @@ from django.http import JsonResponse
 
 from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
 
+from django.core.mail import send_mail
+import os
+
 from django.contrib import messages
 import logging
 
@@ -374,3 +377,18 @@ def embed_bokeh(request, bokeh_app):
 
     response.set_cookie('django_full_path', request.get_full_path())
     return response
+
+def send_ticket_email(request):
+    email = request.GET.get('email')
+    name = request.GET.get('name')
+    message = request.GET.get('message')
+    subject = request.GET.get('subject')
+    helpdesk = os.environ.get('EMAIL_HELPDESK', None)
+    if email == None or name == None or message == None or subject == None or helpdesk == None:
+        return JsonResponse({ 'status': 'Missing params' })
+    else:
+        try:
+            send_mail(subject, message, email, [helpdesk], fail_silently=False)
+            return JsonResponse({ 'status': 'sent' })
+        except:
+            return JsonResponse({ 'status': 'send_mail fail' })

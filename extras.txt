@@ -11,6 +11,7 @@ furl==0.5.7
 Pyro4==4.59
 
 scipy==0.19.1
+django-cors-headers==2.2.0
 
 channels==1.1.8
 asgi_redis==1.4.3
