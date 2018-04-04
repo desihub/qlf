@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from .models import Job, Exposure, Camera, QA, Process, Configuration
-
+from astropy.time import Time
+from .utils import get_date
 
 # http://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -149,13 +150,20 @@ class ProcessingHistorySerializer(serializers.ModelSerializer):
     exposure = ExposureSerializer(many=True, read_only=True)
 
     runtime = serializers.SerializerMethodField()
+    datemjd = serializers.SerializerMethodField()
 
     class Meta:
         model = Exposure
-        fields = ('exposure', 'dateobs', 'exposure_id', 'tile', 'telra', 'teldec', 'airmass', 'exptime', 'runtime')
+        fields = ('exposure', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime')
 
     def get_runtime(self, obj):
-        process = Process.objects.filter(exposure=3)
-        return str(vars(process))
+        process = next(iter(obj.process_exposure.all() or []), None)
+        if process == None or process.start == None or process.end == None:
+            return None
+        return process.end - process.start
+
+    def get_datemjd(self, obj):
+        time = get_date(obj.exposure_id)
+        return time.mjd
 
 
