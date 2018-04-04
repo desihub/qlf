@@ -153,3 +153,65 @@ class LoadMetrics:
                 dic_met.update({i: aux['metrics']})
                 dic_tst.update({i: aux['params']})
         return dic_met, dic_tst
+
+    def step_color(self, step_name):
+        """ Reading step color produced in desispec 0.17.1
+       
+        Arguments
+        ---------
+        step_name: str
+            The abbreviated name of one of the four QA steps
+        Return
+        ------
+        color: str
+            Wedge color Alert
+        """
+        alert_keys = {'getrms': 'NOISE_STAT', 'countpix': 'NPIX_STAT',
+                      'getbias': 'BIAS_STAT', 'countbins': 'NGOODFIB_STAT', 'integ': 'MAGDIFF_STAT', 
+                      'xwsigma': 'XWSIGMA_STAT', 'snr': 'FIDSNR_STAT', 'skycont': 'SKYCONT_STAT', 
+                      'skypeak': 'PEAKCOUNT_STAT', 'skyresid': 'RESIDRMS_STAT'}
+        self.step_name = step_name
+        steps_list = ['preproc', 'extract', 'fiberfl', 'skysubs']
+        if not isinstance(self.step_name, str): 
+            return "{} is not a String".format(self.step_name)
+        if self.step_name not in steps_list:
+            return "Invalid step: please return a value in {}".format(steps_list)
+    
+        steps_dic = {'preproc':['countpix', 'getbias','getrms', 'xwsigma'],
+                     'extract':['countbins'],
+                     'fiberfl':['integ','skycont','skypeak','skyresid'],
+                     'skysubs':['snr']}
+        
+        # begin for desispec >= 0.17.1
+        steps_status = []
+
+        for i in steps_dic[self.step_name]:
+            #print('%13s %s' % (i, lm.metrics[i][alert_keys[i]]))
+            try:
+                #metric_aux = (self.metrics[i].replace(".nan","''")).replace("nan","''")
+                #aux1 = ast.literal_eval(metric_aux)[alert_keys[i]]
+                metric_aux = self.metrics[i]
+                aux1 = metric_aux[alert_keys[i]]
+            except Exception as e:
+                logger.error('Failed metric alert: '+ str(e))
+                aux1 = 'FAILURE'
+        
+            steps_status.append(aux1)
+        # end 
+        logger.info(steps_status)                   
+
+        if any(x=='FAILURE' for x in steps_status):
+            color = 'magenta' # Pick a color for failure case
+        
+        elif any( x == 'ALARM'  for x in steps_status):
+            color =  "red"
+            logger.info( color )
+        elif any( x == 'WARN'  for x in steps_status):
+            color =  "yellow"
+            logger.info( color )
+        elif all(x=='NORMAL' for x in steps_status):
+            color = "green"
+            logger.info( color )
+        result = {'color': color, 'steps_status': steps_status }
+        return result
+

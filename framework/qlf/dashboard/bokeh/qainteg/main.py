@@ -6,8 +6,15 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
+from bokeh.models.widgets import PreText
+from bokeh.models import PrintfTickFormatter
+
+from dashboard.bokeh.helper import write_info
+
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
+from bokeh.models import TapTool, OpenURL
+from bokeh.models.widgets import Select
 
 import ast
 
@@ -18,7 +25,7 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args
 
-import numpy as np
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -85,10 +92,13 @@ skc_tooltips = """
         </div>
     </div>
 """
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
+
 c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
 
 hover = HoverTool(tooltips=skc_tooltips)
+
 
 qainteg = integ['INTEG']
 fibers = integ['STD_FIBERID']
@@ -118,24 +128,16 @@ source2_not = ColumnDataSource(data={
 mapper = LinearColorMapper(palette= my_palette,
                            low = np.min(qainteg), 
                            high = np.max(qainteg))
+
 p2 = figure(title='INTEG', 
             x_axis_label='RA', y_axis_label='DEC',
-            plot_width=750, plot_height=700,
-            tools= [hover, "pan,box_zoom,reset"])
+            plot_width=770, plot_height=700,
+            tools= [hover, "pan,wheel_zoom,box_zoom,reset,tap"])
 
-p2.circle('ra','dec', source=source2, radius=0.016,
-        fill_color={'field': 'integ', 'transform': mapper}, 
-         line_color='black', line_width=0.1)
-
-# marking the Hover point
-p2.circle('ra','dec', source = source2, radius = 0.0186
-          , fill_color=None, line_color=None
-          , hover_fill_color={'field': 'integ', 'transform': mapper}
-          , line_width=3, hover_line_color='red')
-
+radius = 0.016
 
 # Gray Fibers:
-p2.circle('ra', 'dec', source= source2_not, radius=0.015, 
+p2.circle('ra', 'dec', source= source2_not, radius= radius, 
             fill_color = 'lightgray', line_color='black', line_width=0.3)
 
 # Gray Fibers: marking the Hover point
@@ -148,9 +150,36 @@ color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
                      major_label_text_align='right',
                      major_label_text_font_size="10pt",
                      location=(0, 0))
-color_bar.formatter = formatter
 
-p2.add_layout(color_bar)
+# Colored fibers
+p2.circle('ra','dec', source=source2, radius=radius,
+        fill_color={'field': 'integ', 'transform': mapper}, 
+         line_color='black', line_width=0.1)
+
+
+
+taptool = p2.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
+
+
+# marking the Hover point
+p2.circle('ra','dec', source = source2, radius = 0.0186
+          , fill_color=None, line_color=None
+          , hover_fill_color={'field': 'integ', 'transform': mapper}
+          , line_width=3, hover_line_color='red')
+
+
+color_bar.formatter = formatter
+p2.add_layout(color_bar, 'left')
+
+#infos
+info, nlines = write_info('integ', tests['integ'])
+txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
+p2txt = column(widgetbox(txt),p2)
+
+
+layout = gridplot([[p2txt]], responsive=False)
 
 # End of Bokeh Block
-curdoc().add_root(p2)
+curdoc().add_root(layout)
+curdoc().title ="INTEG"

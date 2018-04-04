@@ -170,5 +170,32 @@ def get_url_args(curdoc, defaults=None):
     return args
 
 
+def write_info(qa_name, params):
+    """
+    Writes informations in params as a string to be showed in dashboard"""
+    info =""""""
+    nlines=0
+    dict_test_keys=dict(
+        getrms =  ['NOISE_NORMAL_RANGE', 'NOISE_WARN_RANGE'],
+        skycont =  ['SKYCONT_NORMAL_RANGE', 'SKYCONT_WARN_RANGE', 'B_CONT', 'R_CONT', 'Z_CONT'],
+        xwsigma =  ['B_PEAKS', 'R_PEAKS', 'Z_PEAKS', 'XWSIGMA_NORMAL_RANGE', 'XWSIGMA_WARN_RANGE'],
+        skyresid =  ['PCHI_RESID', 'PER_RESID', 'RESID_NORMAL_RANGE', 'RESID_WARN_RANGE', 'BIN_SZ'],
+        countbins =  ['CUTHI', 'CUTMED', 'CUTLO', 'NGOODFIB_WARN_RANGE', 'NGOODFIB_NORMAL_RANGE'],
+        skypeak =  ['B_PEAKS', 'R_PEAKS', 'Z_PEAKS', 'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
+        getbias =  ['BIAS_NORMAL_RANGE',  'BIAS_WARN_RANGE', 'PERCENTILES'],
+        countpix =  ['NPIX_NORMAL_RANGE', 'NPIX_WARN_RANGE', 'CUTLO', 'CUTHI'],
+        integ =  ['MAGDIFF_WARN_RANGE', 'MAGDIFF_NORMAL_RANGE'],
+        snr =  ['FIDSNR_NORMAL_RANGE', 'FIDSNR_WARN_RANGE', 'FIDMAG'])
+
+    keys = dict_test_keys[qa_name]
+    for ii in keys:
+            info +="""{:>24}: {}\n""".format(ii, params[ii])
+            nlines +=1
+    return info, nlines
+
+
+
+
+
 if __name__ == '__main__':
     logger.info('Standalone execution...')

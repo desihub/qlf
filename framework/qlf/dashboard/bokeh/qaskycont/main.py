@@ -8,6 +8,12 @@ from bokeh.io import output_notebook, show, output_file
 
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
+from bokeh.models import TapTool, OpenURL
+from bokeh.models.widgets import Select
+from bokeh.models.widgets import PreText
+from bokeh.models import PrintfTickFormatter
+from dashboard.bokeh.helper import write_info
+
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
@@ -78,6 +84,8 @@ skc_tooltips = """
         </div>
     </div>
 """
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
+
 c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
 
@@ -114,12 +122,14 @@ source2_not = ColumnDataSource(data={
 mapper = LinearColorMapper(palette= my_palette,
                            low = np.min(sky), 
                            high = np.max(sky))
+
+radius=0.016
 p2 = figure(title='SKY_CONT', 
             x_axis_label='RA', y_axis_label='DEC',
-            plot_width=700, plot_height=600,
-            tools= [hover, "pan,box_zoom,reset"])
+            plot_width=770, plot_height=700,
+            tools= [hover, "pan,box_zoom,reset,tap"])
 
-p2.circle('ra','dec', source=source2, radius=0.016,
+p2.circle('ra','dec', source=source2, radius=radius,
         fill_color={'field': 'skycont', 'transform': mapper}, 
          line_color='black', line_width=0.1)
 
@@ -138,16 +148,26 @@ p2.circle('ra','dec', source = source2_not, radius = 0.0186
           , fill_color=None, line_color=None
           , line_width=3, hover_line_color='red', hover_fill_color='lightgrey')
 
+taptool = p2.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
 
 color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
                      major_label_text_font_style='bold', padding = 26,
                      major_label_text_align='right',
                      major_label_text_font_size="10pt",
                      location=(0, 0))
-p2.add_layout(color_bar, 'right')
 
 
+p2.add_layout(color_bar, 'left')
+
+#infos
+info, nlines = write_info('skycont', tests['skycont'])
+txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
+p2txt = column(widgetbox(txt),p2)
+
+layout = gridplot([[p2txt]], responsive=False)
 
 
 # End of Bokeh Block
-curdoc().add_root(p2)
+curdoc().add_root(layout)
+curdoc().title = "SKYCONT"

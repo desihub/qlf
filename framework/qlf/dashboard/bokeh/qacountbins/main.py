@@ -20,6 +20,10 @@ from dashboard.bokeh.helper import get_url_args
 import numpy as np
 import logging
 
+#Additional imports:
+from bokeh.models.widgets import Div
+
+
 logger = logging.getLogger(__name__)
 
 # =============================================
@@ -50,6 +54,8 @@ lm = LoadMetrics(cam, exp, night);
 metrics, tests  = lm.metrics, lm.tests 
 
 countbins = metrics['countbins']
+
+print('\n\n\n\n',tests.keys())
 
 # ============================================
 # THIS: Given the set up in the block above, 
@@ -145,10 +151,76 @@ plow = figure(title='NBINSLOW',tools=[hover3,"pan,wheel_zoom,box_zoom,reset"],
 plow.quad(top='hist', bottom='bottom', left='left', right='right',
        source=source_low, fill_color="tomato", line_color="black", alpha=0.8,
        hover_fill_color='red', hover_line_color='black', hover_alpha=0.8)
+# ------------------
+# Text Infos
+html_str="""
+<style>
+    table {
+        font-family: arial, sans-serif;
+        font-size: 12px;
+        border-collapse: collapse;
+        width: 100%;
+    }
 
-#plow.legend.location = "top_left"
-layout = gridplot( [phi,pmed,plow,None], ncols=2, plot_width=600, plot_height=600)
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 8px;
+    }
+    tr:nth-child(even) {
+        background-color: #dddddd;
+                text-align:center;
+    }
+    tr:{text-align:center;}
+</style>
 
+<div  style="text-align:center;">
+<table>
+  <tr>
+    <th>Parameter</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>CUT-OFF LOW</td>
+    <td> > param0</td>
+  </tr>
+  <tr>
+    <td>CUT-OFF MEDIUM</td>
+    <td> > param1</td>
+  </tr>
+  <tr>
+    <td>CUT-OFF HIGH</td>
+    <td> > param2</td>
+  </tr>
+    <tr>
+        <th colspan="2"; style="text-align:center">GOOD FIBERS RANGES:</th>
+    </tr>
+    <tr>
+        <td> NORMAL RANGE</td>
+        <td> param3</td>
+    </tr>
+    <tr>
+        <td> WARNING RANGE</td>
+        <td> param4</td>
+    </tr>
+
+</table>
+</div>
+
+"""
+txt_keys=['CUTLO','CUTMED','CUTHI','NGOODFIB_NORMAL_RANGE', 'NGOODFIB_WARN_RANGE']
+for i in range(5):
+    html_str=html_str.replace('%s%s'%("param",str(i)), str(tests['countbins'][txt_keys[i]]) )
+
+div=Div(text=html_str, 
+        width=500, height=200)
+# ---------
+
+
+# plow.legend.location = "top_left"
+# layout = gridplot( [phi,pmed,plow,None], ncols=2, plot_width=600, plot_height=600)
+layout = gridplot( [phi,pmed,plow,div], ncols=2, responsive=True, plot_width=600, plot_height=600)
 
 # End of Bokeh Block
 curdoc().add_root(layout)
+curdoc().title = "COUNTBINS"

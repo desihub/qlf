@@ -6,9 +6,15 @@ from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
 
+from bokeh.models.widgets import PreText
+from bokeh.models import PrintfTickFormatter
+from dashboard.bokeh.helper import write_info
+
+
 from dashboard.bokeh.helper import get_data, get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs
 import numpy as np
+
 
 QLF_API_URL = os.environ.get(
     'QLF_API_URL',
@@ -21,6 +27,16 @@ args = get_url_args(curdoc)
 selected_exposure = args['exposure']
 selected_arm = args['arm']
 selected_spectrograph = args['spectrograph']
+
+#load from scalar_metrics
+from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
+night = '20190101'
+
+cam = selected_arm+str(selected_spectrograph)
+exp = selected_exposure 
+lm = LoadMetrics(cam, exp, night);
+metrics, tests  = lm.metrics, lm.tests 
+
 
 def fit_func(xdata, coeff):
     a, b, c = coeff[0]
@@ -91,7 +107,7 @@ def update(arm, spectrograph, exposure_id):
         elg.data['fiber_id'] = elg_data.ELG_FIBERID.tolist()
         elg.data['ra'] = elg_data.RA.tolist()
         elg.data['dec'] = elg_data.DEC.tolist()
-        elg.stream(elg.data, 30)
+        ## elg.stream(elg.data, 30)
 
         # drop rows that have ELG_FIBERID null
         lrg_data = data[data.LRG_FIBERID.notnull()]
@@ -102,7 +118,7 @@ def update(arm, spectrograph, exposure_id):
         lrg.data['fiber_id'] = lrg_data.LRG_FIBERID.dropna().tolist()
         lrg.data['ra'] = lrg_data.RA.dropna().tolist()
         lrg.data['dec'] = lrg_data.DEC.dropna().tolist()
-        lrg.stream(lrg.data, 30)
+        ## lrg.stream(lrg.data, 30)
 
         # drop rows that have QSO_FIBERID null
         qso_data = data[data.QSO_FIBERID.notnull()]
@@ -113,7 +129,7 @@ def update(arm, spectrograph, exposure_id):
         qso.data['fiber_id'] = qso_data.QSO_FIBERID.dropna().tolist()
         qso.data['ra'] = qso_data.RA.dropna().tolist()
         qso.data['dec'] = qso_data.DEC.dropna().tolist()
-        qso.stream(qso.data, 30)
+        ## qso.stream(qso.data, 30)
 
         # drop rows that have STAR_FIBERID null
         star_data = data[data.STAR_FIBERID.notnull()]
@@ -124,7 +140,7 @@ def update(arm, spectrograph, exposure_id):
         star.data['fiber_id'] = star_data.STAR_FIBERID.dropna().tolist()
         star.data['ra'] = star_data.RA.dropna().tolist()
         star.data['dec'] = star_data.DEC.dropna().tolist()
-        star.stream(star.data, 30)
+        ## star.stream(star.data, 30)
 
     # fitting function
     data2 = get_data(qa_snr, params_fit)
@@ -236,7 +252,7 @@ html_tooltip = """
     </div>
 """
 
-url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr3"
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
 hover = HoverTool(tooltips=html_tooltip)
 elg_plot = init_xy_plot(hover=hover)
@@ -246,7 +262,6 @@ elg_plot.circle(x='x', y='y', source=elg, color="blue", size=8, line_color='blac
 
 elg_plot.xaxis.axis_label = "DECAM_R"
 elg_plot.yaxis.axis_label = "SNR"
-#elg_plot.yaxis.axis_label = "log10(SNR)"
 elg_plot.title.text = "ELG"
 
 taptool = elg_plot.select(type=TapTool)
@@ -260,7 +275,6 @@ lrg_plot.circle(x='x', y='y', source=lrg, color="red", size=8, line_color='black
 
 lrg_plot.xaxis.axis_label = "DECAM_R"
 lrg_plot.yaxis.axis_label = "SNR"
-#lrg_plot.yaxis.axis_label = "log10(SNR)"
 lrg_plot.title.text = "LRG"
 
 taptool = lrg_plot.select(type=TapTool)
@@ -274,7 +288,6 @@ qso_plot.circle(x='x', y='y', source=qso, color="green", size=8, line_color='bla
 
 qso_plot.xaxis.axis_label = "DECAM_R"
 qso_plot.yaxis.axis_label = "SNR"
-#qso_plot.yaxis.axis_label = "log10(SNR)"
 qso_plot.title.text = "QSO"
 
 taptool = qso_plot.select(type=TapTool)
@@ -288,7 +301,6 @@ star_plot.circle(x='x', y='y', source=star, color="orange", size=8, line_color='
 
 star_plot.xaxis.axis_label = "DECAM_R"
 star_plot.yaxis.axis_label = "SNR"
-#star_plot.yaxis.axis_label = "log10(SNR)"
 star_plot.title.text = "STAR"
 
 taptool = star_plot.select(type=TapTool)
@@ -303,6 +315,14 @@ plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=True)
 #                 row(widgetbox(arm_select, width=130),
 #                     widgetbox(spectrograph_select, width=130)),
 #                 plot, responsive=True)
+
+
+
+#infos
+key_name = 'snr'
+info, nlines = write_info(key_name, tests[key_name])
+txt = PreText(text=info, height=nlines*20)
+#p2txt = column(widgetbox(txt),p2)
 
 layout = column(plot, responsive=True)
 
