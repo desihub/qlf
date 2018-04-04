@@ -27,6 +27,7 @@ from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
 
 from django.core.mail import send_mail
 import os
+import operator
 
 from django.contrib import messages
 import logging
@@ -135,20 +136,32 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 
     serializer_class = ProcessJobsSerializer
 
-class ProcessingHistoryViewSet(viewsets.ModelViewSet):
+class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processing history"""
 
-    # def get_queryset(self):
-    #     try:
-    #         process_id = Process.objects.latest('pk').id
-    #     except Process.DoesNotExist as error:
-    #         logger.debug(error)
-    #         process_id = None
-
-    #     return Exposures.objects.filter(id=process_id)
     queryset = Exposure.objects.order_by('exposure_id')
-
     serializer_class = ProcessingHistorySerializer
+
+    # Added to order SerializerMethodFields
+    def list(self, request, *args, **kwargs):
+        response = super(ProcessingHistoryViewSet, self).list(
+            request, args, kwargs)
+        ordering = request.query_params.get('ordering')
+        if ordering[0] == '-':
+            standard_ordering = ordering[1:]
+        else:
+            standard_ordering = ordering
+        if standard_ordering not in ('dateobs', 'exposure_id', 'tile', 'telra',
+                                     'teldec', 'exptime', 'airmass'):
+            print(ordering)
+            response.data['results'] = sorted(response.data['results'], key=operator.itemgetter(ordering.replace('-',''),))
+
+            if "-" in ordering:
+                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering.replace('-','')], ), reverse=True)
+            else:
+                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering], ))
+
+        return response
 
 
 class JobViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
@@ -288,7 +301,7 @@ def start(request):
 
 def stop(request):
     qlf.stop()
-    
+
     return HttpResponseRedirect('dashboard/monitor')
 
 

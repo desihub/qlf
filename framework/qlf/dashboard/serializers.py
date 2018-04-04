@@ -145,7 +145,7 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
         model = Process
         fields = ('id', 'exposure', 'process_jobs')
 
-class ProcessingHistorySerializer(serializers.ModelSerializer):
+class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
     exposure = ExposureSerializer(many=True, read_only=True)
 
@@ -165,5 +165,3 @@ class ProcessingHistorySerializer(serializers.ModelSerializer):
     def get_datemjd(self, obj):
         time = get_date(obj.exposure_id)
         return time.mjd
-
-
