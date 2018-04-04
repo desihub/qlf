@@ -147,12 +147,13 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         response = super(ProcessingHistoryViewSet, self).list(
             request, args, kwargs)
         ordering = request.query_params.get('ordering')
-        if ordering[0] == '-':
+        if ordering and ordering[0] == '-':
             standard_ordering = ordering[1:]
         else:
             standard_ordering = ordering
-        if standard_ordering not in ('dateobs', 'exposure_id', 'tile', 'telra',
-                                     'teldec', 'exptime', 'airmass'):
+        if ordering and standard_ordering not in ('dateobs', 'exposure_id', 'tile',
+                                             'telra', 'teldec', 'exptime',
+                                             'airmass'):
             print(ordering)
             response.data['results'] = sorted(response.data['results'], key=operator.itemgetter(ordering.replace('-',''),))
 
