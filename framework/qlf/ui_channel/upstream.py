@@ -62,18 +62,15 @@ def get_camera_log(cam):
         print(e)
         return "Error"
 
-def get_ingestion_log(exp):
-    ingestionlog = None
-    log = str()
-    exp_zfill = str(exp).zfill(8)
+def get_pipeline_log():
+    """ Gets pipeline log """
 
-    ingestionlog = '{}/exposures/{}/{}/expid.{}.log'.format(desi_spectro_redux, night, exp_zfill, exp)
+    pipelinelog = cfg.get('main', 'logpipeline')
+
     try:
-        if ingestionlog:
-            arq = open(ingestionlog, 'r')
-            log = arq.readlines()
-            return log
-
+        arq = open(pipelinelog, 'r')
+        log = arq.readlines()
+        return log
     except Exception as e:
         print(e)
         return "Error"
@@ -112,13 +109,13 @@ def get_current_state():
     daemon_status = qlf.get_status()
 
     logfile = open_file('logfile')
-    ingestionlog = []
+    pipelinelog = str()
     mjd = str()
     date = dict()
     date_time = str()
     if len(process) > 0:
+        pipelinelog = get_pipeline_log()
         exposure = process[0].get("exposure")
-        ingestionlog = get_ingestion_log(exposure)
         date = get_date(exposure)
         date_time = date.value
         mjd = date.mjd
@@ -134,7 +131,7 @@ def get_current_state():
             "cameras": camera_status,
             "available_cameras": available_cameras,
             "qa_results": qa_results,
-            "ingestion": ingestionlog,
+            "ingestion": pipelinelog,
             "mjd": mjd,
             "date": date_time
         })
