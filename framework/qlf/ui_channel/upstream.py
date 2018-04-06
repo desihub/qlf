@@ -89,20 +89,14 @@ def avaiable_cameras(process):
 uri = settings.QLF_DAEMON_URL
 qlf = Pyro4.Proxy(uri)
 
-uri_manual = settings.QLF_MANUAL_URL
-qlf_manual = Pyro4.Proxy(uri_manual)
-
 def start_daemon():
-    start_url = settings.QLF_BASE_URL + '/start'
-    requests.get(start_url)
+    qlf.start()
 
 def stop_daemon():
-    stop_url = settings.QLF_BASE_URL + '/stop'
-    requests.get(stop_url)
+    qlf.stop()
 
 def reset_daemon():
-    reset_url = settings.QLF_BASE_URL + '/reset'
-    requests.get(reset_url)
+    qlf.reset()
 
 def get_current_state():
     camera_status = get_camera_status()
