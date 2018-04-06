@@ -18,6 +18,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 
 django.setup()
 
+from django import db
 from dashboard.models import (
     Job, Exposure, Camera, QA, Process, Configuration
 )
@@ -27,6 +28,13 @@ logger = logging.getLogger()
 
 class QLFModels(object):
     """ Class responsible by manage the database models from Quick Look pipeline. """
+
+    def __init__(self):
+        """ Due to the continuous processing of exposures and consequently the long
+        waiting period of Django's ORM. Whenever instantiated, the connection
+        is closed to be recreated when requested. """
+
+        db.connection.close()
 
     def insert_exposure(
             self, expid, night, telra=None, teldec=None,
@@ -165,7 +173,7 @@ class QLFModels(object):
 
     def create_qa_bulk(self, product, job_id):
         """ Creates QAs in bulk """
-        
+
         qa = yaml.load(open(product, 'r'))
         name = os.path.basename(product)
 
@@ -173,7 +181,7 @@ class QLFModels(object):
             if item not in qa:
                 logger.warning('{} not found.'.format(item))
                 return None
-            
+
         paname = qa['PANAME']
         metrics = self.jsonify(qa['METRICS'])
         params = self.jsonify(qa['PARAMS'])
@@ -189,7 +197,7 @@ class QLFModels(object):
 
     def update_qa_tests(self, name, qa_tests):
         """ Update QA tests """
-        
+
         Camera.objects.filter(camera=name).update(
             qa_tests=qa_tests
         )
@@ -210,8 +218,12 @@ class QLFModels(object):
 
     def get_qa(self, qa_name):
         """ Gets QA """
+        try:
+            qa = QA.objects.get(name=qa_name)
+        except QA.DoesNotExist:
+            qa = None
 
-        return QA.objects.get(name=qa_name)
+        return qa
 
     def get_cameras(self):
         """ Gets cameras """
@@ -228,7 +240,7 @@ class QLFModels(object):
 
         try:
             exposure = Exposure.objects.latest('pk')
-        except:
+        except Exposure.DoesNotExist:
             exposure = None
 
         return exposure
