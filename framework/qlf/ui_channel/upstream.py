@@ -13,7 +13,11 @@ import requests
 from ui_channel.camera_status import get_camera_status
 from dashboard.utils import get_date
 
-from dashboard.bokeh.helper import get_last_process, get_cameras
+from dashboard.bokeh.helper import get_last_process
+import Pyro4
+
+uri = settings.QLF_DAEMON_URL
+qlf = Pyro4.Proxy(uri)
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -89,8 +93,8 @@ def reset_daemon():
 
 def get_current_state():
     camera_status = get_camera_status()
-    qa_results = get_cameras()
     process = get_last_process()
+    qa_results = get_current_qa_tests(process)
     available_cameras = avaiable_cameras(process)
     daemon_status = qlf.get_status()
 
@@ -121,6 +125,13 @@ def get_current_state():
             "mjd": mjd,
             "date": date_time
         })
+
+def get_current_qa_tests(process):
+    if process != []:
+        qa_tests = qlf.qa_tests(process[0]['id'])
+        return { 'qa_tests': qa_tests }
+    else:
+        return { 'Error': 'Missing process_id' }
 
 def job():
     state = get_current_state()

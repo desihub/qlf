@@ -161,12 +161,6 @@ class QLFModels(object):
             print("Type: {}".format(str(type(qa['METRICS']))))
             self.insert_qa(name, paname, metrics, params, job_id)
 
-
-    def update_qa_tests(self, name, qa_tests):
-        Camera.objects.filter(camera=name).update(
-            qa_tests=qa_tests
-        )
-
     def insert_qa(self, name, paname, metrics, params, job_id, force=False):
         """ Inserts or updates qa table """
 
@@ -206,6 +200,14 @@ class QLFModels(object):
 
         return Camera.objects.all()
 
+    def get_jobs_by_process_id(self, process_id):
+        """ get cameras by job id """
+
+        jobs = list()
+        for job in Job.objects.filter(process=process_id):
+            jobs.append(job)
+        return jobs
+
     def get_expid_in_process(self, expid):
         """ gets process object by expid """
 
@@ -216,6 +218,16 @@ class QLFModels(object):
 
         try:
             exposure = Exposure.objects.latest('pk')
+        except:
+            exposure = None
+
+        return exposure
+
+    def get_job(self, job_id):
+        """ gets last processed exposures """
+
+        try:
+            exposure = Job.objects.filter(id=job_id)
         except:
             exposure = None
 

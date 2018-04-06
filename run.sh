@@ -16,7 +16,7 @@ done
 
 cd $QLF_ROOT
 echo "Initializing QLF Daemon..."
-
+# tail -f requirements.txt
 # Start QLF daemon
 python -Wi framework/bin/qlf_daemon.py &
 

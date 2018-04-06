@@ -348,13 +348,13 @@ class LoadMetrics:
         except:
             return None
 
-    def save_qa_tests(self):
+    def load_qa_tests(self):
         try:
             preproc = self.get_qa_metric_color('preproc')
             extract = self.get_qa_metric_color('extract')
             fiberfl = self.get_qa_metric_color('fiberfl')
             skysubs = self.get_qa_metric_color('skysubs')
             qa_tests = {'preproc': preproc, 'extract': extract, 'fiberfl': fiberfl, 'skysubs': skysubs }
-            self.models.update_qa_tests(self.cam, qa_tests)
+            return qa_tests
         except:
             logger.error('Camera not found %s' % (self.cam))

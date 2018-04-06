@@ -312,8 +312,12 @@ def reset(request):
     return HttpResponseRedirect('dashboard/monitor')
 
 def qa_tests(request):
-    qlf.qa_tests()
-    return JsonResponse({ 'status': 'Done' })
+    process_id = request.GET.get('process_id')
+    if process_id is not None:
+        qa_tests = qlf.qa_tests(process_id)
+        return JsonResponse({ 'status': qa_tests })
+    else:
+        return JsonResponse({ 'Error': 'Missing process_id' })
 
 def daemon_status(request):
     ql_status = True

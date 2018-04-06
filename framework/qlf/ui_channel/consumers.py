@@ -1,6 +1,7 @@
 from channels import Group
 import json
-from ui_channel.upstream import start_uptream, start_daemon, stop_daemon, reset_daemon, get_camera_log, job, get_current_state
+from ui_channel.upstream import start_uptream, start_daemon, stop_daemon,\
+    reset_daemon, get_camera_log, job, get_current_state, get_current_qa_tests
 
 # Connected to websocket.connect
 def ws_add(message):

@@ -111,7 +111,7 @@ class CameraSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Camera
-        fields = ('camera', 'spectrograph', 'arm', 'links', 'qa_tests')
+        fields = ('camera', 'spectrograph', 'arm', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
@@ -147,14 +147,14 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
 
 class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
-    exposure = ExposureSerializer(many=True, read_only=True)
+    process = ProcessSerializer(many=True, read_only=True)
 
     runtime = serializers.SerializerMethodField()
     datemjd = serializers.SerializerMethodField()
 
     class Meta:
         model = Exposure
-        fields = ('exposure', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime')
+        fields = ('process_exposure', 'process', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime')
 
     def get_runtime(self, obj):
         process = next(iter(obj.process_exposure.all() or []), None)
