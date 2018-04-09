@@ -10,7 +10,7 @@ from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer,
-    ProcessingHistorySerializer
+    ProcessingHistorySerializer, SingleQASerializer
 )
 import Pyro4
 import datetime
@@ -139,8 +139,10 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processing history"""
 
-    queryset = Exposure.objects.order_by('exposure_id')
+    queryset = Process.objects.order_by('exposure_id')
     serializer_class = ProcessingHistorySerializer
+    filter_fields = ('exposure_id',)
+    
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -151,10 +153,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
             standard_ordering = ordering[1:]
         else:
             standard_ordering = ordering
-        if ordering and standard_ordering not in ('dateobs', 'exposure_id', 'tile',
-                                             'telra', 'teldec', 'exptime',
-                                             'airmass'):
-            print(ordering)
+        if ordering and standard_ordering not in ('exposure_id'):
             response.data['results'] = sorted(response.data['results'], key=operator.itemgetter(ordering.replace('-',''),))
 
             if "-" in ordering:
@@ -164,6 +163,12 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
 
         return response
 
+class SingleQAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing qa"""
+    
+    queryset = Process.objects.order_by('exposure')
+    serializer_class = SingleQASerializer
+    filter_fields = ('exposure_id',)
 
 class JobViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""

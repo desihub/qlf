@@ -3,6 +3,11 @@ from rest_framework.reverse import reverse
 from .models import Job, Exposure, Camera, QA, Process, Configuration
 from astropy.time import Time
 from .utils import get_date
+from django.conf import settings
+import Pyro4
+
+uri = settings.QLF_DAEMON_URL
+qlf = Pyro4.Proxy(uri)
 
 # http://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -147,21 +152,61 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
 
 class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
-    process = ProcessSerializer(many=True, read_only=True)
-
     runtime = serializers.SerializerMethodField()
     datemjd = serializers.SerializerMethodField()
+    dateobs = serializers.SerializerMethodField()
+    tile = serializers.SerializerMethodField()
+    telra = serializers.SerializerMethodField()
+    teldec = serializers.SerializerMethodField()
+    exptime = serializers.SerializerMethodField()
+    airmass = serializers.SerializerMethodField()
 
     class Meta:
-        model = Exposure
-        fields = ('process_exposure', 'process', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime')
+        model = Process
+        fields = ('pk', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime')
 
     def get_runtime(self, obj):
-        process = next(iter(obj.process_exposure.all() or []), None)
-        if process == None or process.start == None or process.end == None:
-            return None
-        return process.end - process.start
+        return obj.end - obj.start
 
     def get_datemjd(self, obj):
         time = get_date(obj.exposure_id)
         return time.mjd
+
+    def get_dateobs(self, obj):
+        return obj.exposure.dateobs
+
+    def get_tile(self, obj):
+        return obj.exposure.tile
+
+    def get_telra(self, obj):
+        return obj.exposure.telra
+
+
+    def get_teldec(self, obj):
+        return obj.exposure.teldec
+
+    def get_exptime(self, obj):
+        return obj.exposure.exptime
+
+    def get_airmass(self, obj):
+        return obj.exposure.airmass
+
+class SingleQASerializer(DynamicFieldsModelSerializer):
+
+    datemjd = serializers.SerializerMethodField()
+    qa_tests = serializers.SerializerMethodField()
+    date = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Process
+        fields = ('pk', 'date', 'exposure_id', 'datemjd', 'qa_tests')
+
+    def get_datemjd(self, obj):
+        time = get_date(obj.exposure_id)
+        return time.mjd
+    
+    def get_date(self, obj):
+        return obj.exposure.dateobs
+
+    def get_qa_tests(self, obj):
+        return qlf.qa_tests(obj.pk)
