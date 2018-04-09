@@ -86,11 +86,11 @@ class QLFProcess(object):
 
         self.data['end'] = datetime.datetime.now().replace(microsecond=0)
 
-        self.data['duration'] = str(self.data.get('end') - self.data.get('start'))
+        self.data['duration'] = self.data.get('end') - self.data.get('start')
 
-        self.logger.info("<b>ExpID {} ended (runtime: {}).</b>".format(
+        self.logger.info("ExpID {} ended (runtime: {}).".format(
            self.data.get('expid'),
-           self.data.get('duration')
+           str(self.data.get('duration'))
         ))
 
         self.models.update_process(
@@ -99,6 +99,9 @@ class QLFProcess(object):
             process_dir=self.data.get('output_dir'),
             status=self.data.get('status')
         )
+
+        proc = Thread(target=self.ingest_parallel_qas)
+        proc.start()
 
 
 class Jobs(QLFProcess):
@@ -176,9 +179,6 @@ class Jobs(QLFProcess):
 
         self.data['cameras'] = return_cameras
 
-        proc = Thread(target=self.ingest_parallel_qas)
-        proc.start()
-
     def start_parallel_job(self, data, camera, return_cameras, lock):
         """ Execute QL Pipeline by camera """
 
@@ -229,7 +229,7 @@ class Jobs(QLFProcess):
         return_cameras.append(camera)
  
     def ingest_parallel_qas(self):
-        self.logger.info('Begin ingestion...')
+        self.logger.info('Ingesting QAs...')
         start_ingestion = datetime.datetime.now().replace(microsecond=0)
 
         proc_qas = list()
@@ -258,15 +258,15 @@ class Jobs(QLFProcess):
         for proc in proc_qas:
             proc.join()
 
-        duration_ingestion = str(
-            datetime.datetime.now().replace(microsecond=0) - start_ingestion
-        )
+        duration_ingestion = datetime.datetime.now().replace(microsecond=0) - start_ingestion
 
         for camera in self.data.get('cameras'):
              lm = LoadMetrics(camera.get('name'), self.data.get('expid'), self.data.get('night'))
              lm.save_qa_tests()
 
-        self.logger.info("Ingestion complete in %s." % duration_ingestion)
+        self.logger.info("Ingestion complete: %s." % str(duration_ingestion))
+        self.logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
+        self.logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
 
     def resume_log(self, line, camera, lock):
         """ """
@@ -278,9 +278,9 @@ class Jobs(QLFProcess):
             line_str = line.split(':')[-1]
 
             if line.find('ERROR') > -1:
-                self.logger.error("<b>ERROR: Camera {}: {}</b>".format(camera, line_str))
+                self.logger.error("ERROR: Camera {}: {}".format(camera, line_str))
             elif line.find('CRITICAL') > -1:
-                self.logger.critical("<b>CRITICAL: Camera {}: {}</b>".format(camera, line_str))
+                self.logger.critical("CRITICAL: Camera {}: {}".format(camera, line_str))
             else:
                 for stage in self.stages:
                     stage_start = stage.get('start')
@@ -292,7 +292,7 @@ class Jobs(QLFProcess):
                         if stage_end.get('count') == self.num_cameras:
                             stage_end['time'] = datetime.datetime.now().replace(microsecond=0)
                             self.logger.info(
-                                '<b>{} ended (runtime: {}).</b>'.format(
+                                '{} ended (runtime: {}).'.format(
                                     stage.get('display_name'),
                                     stage_end.get('time') - stage_start.get('time')
                                 )

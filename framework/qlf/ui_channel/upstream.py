@@ -8,16 +8,20 @@ from django.conf import settings
 from .views import open_file
 import subprocess
 import os
+import sys
 import configparser
 import requests
 from ui_channel.camera_status import get_camera_status
 from astropy.io import fits
 from astropy.time import Time
+import logging
 
 from dashboard.bokeh.helper import get_last_process, get_cameras
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
+
+logger = logging.getLogger()
 
 try:
     cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
@@ -27,6 +31,7 @@ try:
 except Exception as error:
     logger.error(error)
     logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
+
 
 def get_date(exp):
     # open file
@@ -44,10 +49,11 @@ def get_date(exp):
     # Convert to MJD
     return t
 
+
 def get_camera_log(cam):
     process = get_last_process()
     cameralog = None
-    log = str()
+
     try:
         for item in process[0].get("process_jobs"):
             if cam == item.get("camera"):
@@ -58,9 +64,10 @@ def get_camera_log(cam):
             log = arq.readlines()
             return log
 
-    except Exception as e:
-        print(e)
+    except Exception as err:
+        logger.error(err)
         return "Error"
+
 
 def get_pipeline_log():
     """ Gets pipeline log """
@@ -68,12 +75,37 @@ def get_pipeline_log():
     pipelinelog = cfg.get('main', 'logpipeline')
 
     try:
-        arq = open(pipelinelog, 'r')
-        log = arq.readlines()
-        return log
-    except Exception as e:
-        print(e)
+        return tail_file(pipelinelog, 100)
+    except Exception as err:
+        logger.error(err)
         return "Error"
+
+
+def tail_file(filename, number_lines):
+
+    with open(filename) as logfile:
+        logfile.seek(0, os.SEEK_END)
+        endf = position = logfile.tell()
+        linecnt = 0
+
+        while position >= 0:
+            logfile.seek(position)
+            next_char = logfile.read(1)
+
+            if next_char == "\n" and position != endf-1:
+                linecnt += 1
+
+            if linecnt == number_lines:
+                break
+            position -= 1
+
+        if position < 0:
+            logfile.seek(0)
+
+        log_lines = logfile.readlines()
+
+    return log_lines
+
 
 def avaiable_cameras(process):
     if len(process) != 0:
@@ -136,6 +168,7 @@ def get_current_state():
             "date": date_time
         })
 
+
 def job():
     state = get_current_state()
 
@@ -143,9 +176,11 @@ def job():
         "text": state
     })
 
+
 def run_threaded(job_func):
     job_thread = threading.Thread(target=job_func)
     job_thread.start()
+
 
 def start_uptream():
     jobs = schedule.jobs
@@ -153,6 +188,7 @@ def start_uptream():
         schedule.every(3).seconds.do(run_threaded, job)
         job_thread = threading.Thread(target=run_pending)
         job_thread.start()
+
 
 def run_pending():
     while 1:
