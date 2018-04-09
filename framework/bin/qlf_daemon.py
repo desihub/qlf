@@ -222,7 +222,7 @@ class QLFAutomatic(object):
                 process = job.process
                 exposure = process.exposure
                 lm = LoadMetrics(job.camera_id, process.exposure_id, exposure.night)
-                qa_tests.append(lm.load_qa_tests())
+                qa_tests.append({ job.camera_id: lm.load_qa_tests()})
             except:
                 logger.error('qa_tests error camera %s' % (camera.camera))
         return qa_tests
