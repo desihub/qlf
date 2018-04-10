@@ -21,7 +21,6 @@ logfile = cfg.get("main", "logfile")
 loglevel = cfg.get("main", "loglevel")
 
 logger = setup_logger("main_logger", logfile, loglevel)
-model = QLFModels()
 
 
 class QLFAutoRun(Process):
@@ -36,7 +35,7 @@ class QLFAutoRun(Process):
         self.last_night = None
         self.process_id = Value('i', 0)
 
-        exposure = model.get_last_exposure()
+        exposure = QLFModels().get_last_exposure()
 
         if exposure:
             self.last_night = exposure.night
@@ -187,13 +186,14 @@ class QLFAutomatic(object):
             kill_proc_tree(pid, include_parent=False)
 
             if process_id:
+                model = QLFModels()
                 model.delete_process(process_id)
         else:
             logger.info("Monitor is not initialized.")
 
     def reset(self):
         self.stop()
-        sleep(2)
+        model = QLFModels()
         model.delete_all_cameras()
         model.delete_all_processes()
         model.delete_all_exposures()
@@ -217,7 +217,7 @@ class QLFAutomatic(object):
 
     def qa_tests(self, process_id):
         qa_tests = list()
-        for job in model.get_jobs_by_process_id(process_id):
+        for job in QLFModels().get_jobs_by_process_id(process_id):
             try:
                 process = job.process
                 exposure = process.exposure

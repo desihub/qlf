@@ -37,6 +37,7 @@ rm 20190101_small.tar.gz
 #### Docker compose file
 
 ```
+cd ..
 cp docker-compose.yml.template docker-compose.yml
 ```
 
@@ -46,11 +47,11 @@ cp docker-compose.yml.template docker-compose.yml
 
 ## Starting Pipeline
 
-    http://localhost:8000/start
+    http://localhost:8001/start
 
 ## Stoping Pipeline
 
-    http://localhost:8000/stop
+    http://localhost:8001/stop
 
 ## Stoping QLF
 
@@ -61,8 +62,9 @@ OR
     docker ps
     docker stop REDIS_NAME
     docker stop QLF_NAME
+    docker stop DB_NAME
 
-_usually `docker stop qlf_qlf_1` and `docker stop qlf_redis_1`_
+_usually `docker stop qlf_qlf_1`, `docker stop qlf_redis_1` and `docker stop qlf_db_1`_
 
 ## FAQ
 
@@ -77,6 +79,6 @@ If it's at a non-standard location, specify the URL with the DOCKER_HOST environ
 
 Add your current user to docker group:
 
-`sudo usermod -aG docker YOUR_USERNAME`
+`sudo usermod -aG docker $USER`
 
 And make sure to log out of your terminal prompt and log back in in order for `usermod` change to take effect.

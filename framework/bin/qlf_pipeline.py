@@ -1,5 +1,4 @@
 import os
-import sys
 import io
 from log import setup_logger
 import subprocess
@@ -7,7 +6,7 @@ import datetime
 import configparser
 import shutil
 import logging
-from multiprocessing import Manager, Lock
+from multiprocessing import Manager, Lock, Process
 from threading import Thread
 from qlf_models import QLFModels
 
@@ -99,6 +98,7 @@ class QLFProcess(object):
 class Jobs(QLFProcess):
 
     def __init__(self, data):
+
         super().__init__(data)
         self.num_cameras = len(self.data.get('cameras'))
 
@@ -155,43 +155,8 @@ class Jobs(QLFProcess):
 
         self.data['cameras'] = return_cameras
 
-        self.logger.info('Begin ingestion of results...')
-        start_ingestion = datetime.datetime.now().replace(microsecond=0)
-
-        # TODO: refactor?
-        camera_failed = 0
-        for camera in self.data.get('cameras'):
-            output_path = os.path.join(
-                desi_spectro_redux,
-                self.data.get('output_dir'),
-                'ql-*-%s-%s.yaml' % (
-                    camera.get('name'),
-                    self.data.get('zfill')
-                )
-            )
-
-            self.models.update_job(
-                job_id=camera.get('job_id'),
-                end=camera.get('end'),
-                status=camera.get('status'),
-                output_path=output_path
-            )
-
-            if not camera.get('status') == 0:
-                camera_failed += 1
-
-        status = 0
-
-        if camera_failed > 0:
-            status = 1
-
-        self.data['status'] = status
-
-        duration_ingestion = str(
-            datetime.datetime.now().replace(microsecond=0) - start_ingestion
-        )
-
-        self.logger.info("Results ingestion complete in %s." % duration_ingestion)
+        proc = Thread(target=self.ingest_parallel_qas)
+        proc.start()
 
     def start_parallel_job(self, data, camera, return_cameras, lock):
         """ Execute QL Pipeline by camera """
@@ -206,8 +171,6 @@ class Jobs(QLFProcess):
             '--mergeQA',
             '--specprod_dir', desi_spectro_redux
         ]
-
-        log_path = os.path.join(desi_spectro_redux, camera.get('logname'))
 
         logname = io.open(os.path.join(
                 desi_spectro_redux,
@@ -225,7 +188,7 @@ class Jobs(QLFProcess):
                 line = process.stdout.readline()
                 if not line:
                     break
-                self.resume_log(line, camera.get('name'), data.get('expid'), lock)
+                self.resume_log(line, camera.get('name'), lock)
                 logname.write(line)
                 logname.flush()
 
@@ -243,8 +206,44 @@ class Jobs(QLFProcess):
             camera['status'] = 1
 
         return_cameras.append(camera)
+ 
+    def ingest_parallel_qas(self):
+        self.logger.info('Begin ingestion of results...')
+        start_ingestion = datetime.datetime.now().replace(microsecond=0)
 
-    def resume_log(self, line, camera, expid, lock):
+        proc_qas = list()
+
+        for camera in self.data.get('cameras'):
+            output_path = os.path.join(
+                desi_spectro_redux,
+                self.data.get('output_dir'),
+                'ql-*-%s-%s.yaml' % (
+                    camera.get('name'),
+                    self.data.get('zfill')
+                )
+            )
+
+            args = (
+                camera.get('job_id'),
+                camera.get('end'),
+                camera.get('status'),
+                output_path
+            )
+
+            proc = Process(target=self.models.update_job, args=args)
+            proc.start()
+            proc_qas.append(proc)
+
+        for proc in proc_qas:
+            proc.join()
+
+        duration_ingestion = str(
+            datetime.datetime.now().replace(microsecond=0) - start_ingestion
+        )
+
+        self.logger.info("Results ingestion complete in %s." % duration_ingestion)
+
+    def resume_log(self, line, camera, lock):
         """ """
 
         lock.acquire()

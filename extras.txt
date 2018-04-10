@@ -19,3 +19,4 @@ schedule==0.5.0
 pyyaml==3.12
 psutil
 psycopg2-binary
+django-postgrespool
