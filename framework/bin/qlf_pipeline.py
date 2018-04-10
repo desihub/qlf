@@ -51,12 +51,6 @@ class QLFProcess(object):
             'logpipeline', logpipeline
         )
 
-        #self.logger = setup_logger(
-        #    'pipe-{}'.format(self.data.get('expid')),
-        #    '{}/expid.{}.log'.format(output_full_dir,
-        #                             self.data.get('expid'))
-        #)
-
     def start_process(self):
         """ Start pipeline. """
 

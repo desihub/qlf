@@ -15,6 +15,7 @@ from ui_channel.camera_status import get_camera_status
 from astropy.io import fits
 from astropy.time import Time
 import logging
+import io
 
 from dashboard.bokeh.helper import get_last_process, get_cameras
 
@@ -83,7 +84,7 @@ def get_pipeline_log():
 
 def tail_file(filename, number_lines):
 
-    with open(filename) as logfile:
+    with io.open(filename) as logfile:
         logfile.seek(0, os.SEEK_END)
         endf = position = logfile.tell()
         linecnt = 0
