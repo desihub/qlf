@@ -141,7 +141,7 @@ def get_current_state():
     daemon_status = qlf.get_status()
 
     logfile = open_file('logfile')
-    pipelinelog = str()
+    pipelinelog = list()
     mjd = str()
     date = dict()
     date_time = str()
