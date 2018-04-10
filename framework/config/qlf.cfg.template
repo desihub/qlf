@@ -18,6 +18,7 @@ loglevel=INFO
 # Log file name, e.g. full/path/to/qlf.log this is the main place for following
 # the progress of the data reduction
 logfile=/app/qlf.log
+logpipeline=/app/pipeline.log
 
 # Configuration file for the quick look pipeline
 # e.g. full/path/to/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml

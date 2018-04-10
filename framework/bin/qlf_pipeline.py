@@ -17,6 +17,7 @@ cfg = configparser.ConfigParser()
 cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
 qlconfig = cfg.get('main', 'qlconfig')
 logmain = cfg.get('main', 'logfile')
+logpipeline = cfg.get('main', 'logpipeline')
 desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 
 logger = logging.getLogger("main_logger")
@@ -47,16 +48,13 @@ class QLFProcess(object):
 
         self.data['output_dir'] = output_dir
         self.logger = setup_logger(
-            'pipe-{}'.format(self.data.get('expid')),
-            '{}/expid.{}.log'.format(output_full_dir, self.data.get('expid'))
+            'logpipeline', logpipeline
         )
 
     def start_process(self):
         """ Start pipeline. """
 
-        self.logger.info('Started %s ...' % self.pipeline_name)
-        self.logger.info('Night: %s' % self.data.get('night'))
-        self.logger.info('Exposure: %s' % str(self.data.get('expid')))
+        self.logger.info('Night {}'.format(self.data.get('night')))
 
         self.data['start'] = datetime.datetime.now().replace(microsecond=0)
 
@@ -72,7 +70,8 @@ class QLFProcess(object):
         # TODO: ingest configuration file used, this should be done by process
         # self.models.insert_config(process.id)
 
-        self.logger.info('Process ID: %i' % process.id)
+        self.logger.info('Process ID {}'.format(process.id))
+        self.logger.info('ExpID {} started.'.format(self.data.get('expid')))
 
         return process.id
 
@@ -81,11 +80,11 @@ class QLFProcess(object):
 
         self.data['end'] = datetime.datetime.now().replace(microsecond=0)
 
-        self.data['duration'] = str(self.data.get('end') - self.data.get('start'))
+        self.data['duration'] = self.data.get('end') - self.data.get('start')
 
-        self.logger.info("Process with expID {} completed in {}.".format(
+        self.logger.info("ExpID {} ended (runtime: {}).".format(
            self.data.get('expid'),
-           self.data.get('duration')
+           str(self.data.get('duration'))
         ))
 
         self.models.update_process(
@@ -94,6 +93,9 @@ class QLFProcess(object):
             process_dir=self.data.get('output_dir'),
             status=self.data.get('status')
         )
+
+        proc = Thread(target=self.ingest_parallel_qas)
+        proc.start()
 
 
 class Jobs(QLFProcess):
@@ -105,11 +107,26 @@ class Jobs(QLFProcess):
 
         # TODO: improvements - get stages/steps in database
         self.stages = [
-            {"display_name": "Initialize", "regex": "Starting to run step Initialize", "count": 0},
-            {"display_name": "Preprocessing", "regex": "Starting to run step Preproc", "count": 0},
-            {"display_name": "Boxcar Extraction", "regex": "Starting to run step BoxcarExtract", "count": 0},
-            {"display_name": "Sky Subtraction", "regex": "Starting to run step SkySub", "count": 0},
-            {"display_name": "Pipeline completed", "regex": "Pipeline completed.", "count": 0}
+            {
+                "display_name": "Pre Processing",
+                "start": {"regex": "Starting to run step Preproc", "count": 0},
+                "end": {"regex": "Starting to run step BoxcarExtract", "count": 0}
+            },
+            {
+                "display_name": "Spectral Extraction",
+                "start": {"regex": "Starting to run step BoxcarExtract", "count": 0},
+                "end": {"regex": "Starting to run step ApplyFiberFlat_QL", "count": 0}
+            },
+            {
+                "display_name": "Fiber Flattening",
+                "start": {"regex": "Starting to run step ApplyFiberFlat_QL", "count": 0},
+                "end": {"regex": "Starting to run step SkySub", "count": 0}
+            },
+            {
+                "display_name": "Sky Subtraction",
+                "start": {"regex": "Starting to run step SkySub", "count": 0},
+                "end": {"regex": "Pipeline completed", "count": 0}
+            }
         ]
 
     def start_jobs(self):
@@ -155,9 +172,6 @@ class Jobs(QLFProcess):
             proc.join()
 
         self.data['cameras'] = return_cameras
-
-        proc = Thread(target=self.ingest_parallel_qas)
-        proc.start()
 
     def start_parallel_job(self, data, camera, return_cameras, lock):
         """ Execute QL Pipeline by camera """
@@ -209,7 +223,7 @@ class Jobs(QLFProcess):
         return_cameras.append(camera)
  
     def ingest_parallel_qas(self):
-        self.logger.info('Begin ingestion of results...')
+        self.logger.info('Ingesting QAs...')
         start_ingestion = datetime.datetime.now().replace(microsecond=0)
 
         proc_qas = list()
@@ -238,15 +252,15 @@ class Jobs(QLFProcess):
         for proc in proc_qas:
             proc.join()
 
-        duration_ingestion = str(
-            datetime.datetime.now().replace(microsecond=0) - start_ingestion
-        )
+        duration_ingestion = datetime.datetime.now().replace(microsecond=0) - start_ingestion
 
         for camera in self.data.get('cameras'):
              lm = LoadMetrics(camera.get('name'), self.data.get('expid'), self.data.get('night'))
              lm.save_qa_tests()
 
-        self.logger.info("Results ingestion complete in %s." % duration_ingestion)
+        self.logger.info("Ingestion complete: %s." % str(duration_ingestion))
+        self.logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
+        self.logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
 
     def resume_log(self, line, camera, lock):
         """ """
@@ -263,23 +277,28 @@ class Jobs(QLFProcess):
                 self.logger.critical("CRITICAL: Camera {}: {}".format(camera, line_str))
             else:
                 for stage in self.stages:
-                    if line.find(stage.get('regex')) > -1:
-                        stage['count'] += 1
-                        break
+                    stage_start = stage.get('start')
+                    stage_end = stage.get('end')
 
-                for stage in self.stages:
-                    if line.find(stage.get('regex')) > -1:
-                        last_stage = None
-                        index = self.stages.index(stage) - 1
-                        if index > -1:
-                            last_stage = self.stages[index]
+                    if line.find(stage_end.get('regex')) > -1:
+                        stage_end['count'] += 1
 
-                        if stage.get('count') == self.num_cameras:
-                            if last_stage and last_stage.get('count') != self.num_cameras:
-                                self.logger.error("ERROR: stage '{}' did not end as expected.".format(
-                                    last_stage.get("display_name")))
+                        if stage_end.get('count') == self.num_cameras:
+                            stage_end['time'] = datetime.datetime.now().replace(microsecond=0)
+                            self.logger.info(
+                                '{} ended (runtime: {}).'.format(
+                                    stage.get('display_name'),
+                                    stage_end.get('time') - stage_start.get('time')
+                                )
+                            )
 
-                            self.logger.info(stage.get('regex'))
+                    if line.find(stage_start.get('regex')) > -1:
+                        stage_start['count'] += 1
+
+                        if 'time' not in stage_start:
+                            stage_start['time'] = datetime.datetime.now().replace(microsecond=0)
+                            self.logger.info('{} started.'.format(stage.get('display_name')))
+
 
         except Exception as err:
             self.logger.info(err)
