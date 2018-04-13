@@ -6,29 +6,33 @@ QLF current version allows to follow the execution of QL pipeline, which process
 
 _Requires ~5 GB_
 
-# Install Docker
+### Install Docker
 
 - [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/)
 
 _Make sure `docker --version`, `docker-compose --version` and `docker ps` runs without error._
 
-# Install default qlf configuration
+### Clone Quick Look Framework Project
+
+    git clone https://github.com/desihub/qlf.git
+
+### Install default qlf configuration
 
     ./configure.sh
 
-## Starting QLF
+### Starting QLF
 
     ./start.sh
 
-## User Interface
+### User Interface
 
     http://localhost:3000/
 
-## API backend
+### API backend
 
     http://localhost:8001/
 
-## Stoping QLF
+### Stoping QLF
 
     ./stop.sh
 
