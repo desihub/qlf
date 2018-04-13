@@ -230,6 +230,14 @@ class QLFModels(object):
 
         return Camera.objects.all()
 
+    def get_jobs_by_process_id(self, process_id):
+        """ get cameras by job id """
+
+        jobs = list()
+        for job in Job.objects.filter(process=process_id):
+            jobs.append(job)
+        return jobs
+
     def get_expid_in_process(self, expid):
         """ Gets process object by expid """
 
@@ -241,6 +249,16 @@ class QLFModels(object):
         try:
             exposure = Exposure.objects.latest('pk')
         except Exposure.DoesNotExist:
+            exposure = None
+
+        return exposure
+
+    def get_job(self, job_id):
+        """ gets last processed exposures """
+
+        try:
+            exposure = Job.objects.filter(id=job_id)
+        except:
             exposure = None
 
         return exposure

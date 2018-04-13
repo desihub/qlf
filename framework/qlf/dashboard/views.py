@@ -9,7 +9,8 @@ from django.db.models import Q
 from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
-    QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer
+    QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer,
+    ProcessingHistorySerializer, SingleQASerializer
 )
 import Pyro4
 import datetime
@@ -26,6 +27,7 @@ from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
 
 from django.core.mail import send_mail
 import os
+import operator
 
 from django.contrib import messages
 import logging
@@ -134,6 +136,39 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 
     serializer_class = ProcessJobsSerializer
 
+class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing processing history"""
+
+    queryset = Process.objects.order_by('exposure_id')
+    serializer_class = ProcessingHistorySerializer
+    filter_fields = ('exposure_id',)
+    
+
+    # Added to order SerializerMethodFields
+    def list(self, request, *args, **kwargs):
+        response = super(ProcessingHistoryViewSet, self).list(
+            request, args, kwargs)
+        ordering = request.query_params.get('ordering')
+        if ordering and ordering[0] == '-':
+            standard_ordering = ordering[1:]
+        else:
+            standard_ordering = ordering
+        if ordering and standard_ordering not in ('exposure_id'):
+            response.data['results'] = sorted(response.data['results'], key=operator.itemgetter(ordering.replace('-',''),))
+
+            if "-" in ordering:
+                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering.replace('-','')], ), reverse=True)
+            else:
+                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering], ))
+
+        return response
+
+class SingleQAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing qa"""
+    
+    queryset = Process.objects.order_by('exposure')
+    serializer_class = SingleQASerializer
+    filter_fields = ('exposure_id',)
 
 class JobViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""
@@ -148,7 +183,7 @@ class ProcessViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Process.objects.order_by('start')
     serializer_class = ProcessSerializer
-    filter_fields = ('exposure__exposure_id',)
+    filter_fields = ('exposure',)
 
 
 class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
@@ -182,6 +217,7 @@ class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
+    filter_fields = ('exposure_id',)
 
 
 class DataTableExposureViewSet(viewsets.ModelViewSet):
@@ -271,7 +307,7 @@ def start(request):
 
 def stop(request):
     qlf.stop()
-    
+
     return HttpResponseRedirect('dashboard/monitor')
 
 
@@ -281,8 +317,12 @@ def reset(request):
     return HttpResponseRedirect('dashboard/monitor')
 
 def qa_tests(request):
-    qlf.qa_tests()
-    return JsonResponse({ 'status': 'Done' })
+    process_id = request.GET.get('process_id')
+    if process_id is not None:
+        qa_tests = qlf.qa_tests(process_id)
+        return JsonResponse({ 'status': qa_tests })
+    else:
+        return JsonResponse({ 'Error': 'Missing process_id' })
 
 def daemon_status(request):
     ql_status = True

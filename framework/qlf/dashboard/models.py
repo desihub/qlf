@@ -65,8 +65,6 @@ class Camera(models.Model):
                                     help_text='Spectrograph ID')
     arm = models.CharField(max_length=1,
                            help_text='Arm ID')
-    qa_tests = JSONField(blank=True, null=True,
-                         help_text='JSON structure with the QA tests results')
 
     def __str__(self):
         return str(self.camera)

@@ -9,7 +9,6 @@ import logging
 from multiprocessing import Manager, Lock, Process
 from threading import Thread
 from qlf_models import QLFModels
-from scalar_metrics import LoadMetrics
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()

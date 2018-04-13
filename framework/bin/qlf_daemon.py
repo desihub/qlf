@@ -215,15 +215,17 @@ class QLFAutomatic(object):
 
         return running
 
-    def qa_tests(self):
-        model = QLFModels()
-        for camera in model.get_cameras():
+    def qa_tests(self, process_id):
+        qa_tests = list()
+        for job in QLFModels().get_jobs_by_process_id(process_id):
             try:
-                exposure = model.get_last_exposure()
-                lm = LoadMetrics(camera.camera, exposure.exposure_id, exposure.night)
-                lm.save_qa_tests()
+                process = job.process
+                exposure = process.exposure
+                lm = LoadMetrics(job.camera_id, process.exposure_id, exposure.night)
+                qa_tests.append({ job.camera_id: lm.load_qa_tests()})
             except:
                 logger.error('qa_tests error camera %s' % (camera.camera))
+        return qa_tests
 
 # TODO: refactor QLFManual
 @Pyro4.expose

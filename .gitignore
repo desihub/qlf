@@ -63,3 +63,4 @@ spectro/
 .idea/
 
 docker-compose.yml
+.vscode/
