@@ -1,9 +1,0 @@
-#!/usr/bin/env python
-
-import desispec.scripts.mergebundles as mergebundles
-
-
-if __name__ == '__main__':
-    args = mergebundles.parse()
-    mergebundles.main(args)
-
