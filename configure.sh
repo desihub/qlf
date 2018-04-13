@@ -20,7 +20,7 @@ cp .env.template .env
 
 cd ..
 echo 'Checking spectro test data'
-if [ "$(ls -A backend/spectro)" ]; then
+if [ "$(ls -A backend/spectro/data)" ]; then
     echo "=> spectro test data check OK"
 else
     echo 'Downloading spectro test data'
