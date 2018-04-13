@@ -25,7 +25,7 @@ services:
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
       - POSTGRES_DB=dbqlf
-      - EMAIL_USE_TLS=False
+      - EMAIL_USE_TLS = False
       - EMAIL_HOST=localhost
       - EMAIL_PORT=25
       - EMAIL_HELPDESK=LIneA Science Server <helpdesk@linea.gov.br>

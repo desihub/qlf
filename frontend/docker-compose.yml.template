@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  qlf-ui:
+  frontend:
     build: .
     environment:
       - QLF_UI_PORT=3000

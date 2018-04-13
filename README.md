@@ -12,28 +12,25 @@ _Requires ~5 GB_
 
 _Make sure `docker --version`, `docker-compose --version` and `docker ps` runs without error._
 
-# Install default configuration
+# Install default qlf configuration
 
-
-```sh
-sh configure.sh
-```
+    ./configure.sh
 
 ## Starting QLF
 
-    sh start.sh
+    ./start.sh
 
-## Starting Pipeline
+## User Interface
 
-    http://localhost:8001/start
+    http://localhost:3000/
 
-## Stoping Pipeline
+## API backend
 
-    http://localhost:8001/stop
+    http://localhost:8001/
 
 ## Stoping QLF
 
-    sh stop.sh
+    ./stop.sh
 
 ## FAQ
 
