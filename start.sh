@@ -1,7 +1,8 @@
 
 #!/bin/sh
 if [ -z "$1" ]; then
-  docker-compose -f frontend/docker-compose.yml -f backend/docker-compose.yml up
+  docker-compose -f frontend/docker-compose.yml up -d
+  docker-compose -f backend/docker-compose.yml up
   exit 1
 fi
 
