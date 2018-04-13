@@ -1,13 +1,14 @@
 import logging
 
-# formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-formatter = logging.Formatter('%(asctime)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(message)s",
+                              "%Y-%m-%d %H:%M:%S")
 
-
-def setup_logger(name, log_file, level=logging.INFO):
+def setup_logger(name, log_file, level=logging.INFO, handler=False):
     """Function setup as many loggers as you want"""
 
-    handler = logging.FileHandler(log_file)
+    if not handler:
+        handler = logging.FileHandler(log_file)
+
     handler.setFormatter(formatter)
 
     log = logging.getLogger(name)
