@@ -1,69 +1,68 @@
 # Byte-compiled / optimized / DLL files
-backend/__pycache__/
-backend/*.py[cod]
+__pycache__/
+*.py[cod]
 
 # C extensions
-backend/*.so
+*.so
 
 # Distribution / packaging
-backend/.Python
-backend/env/
-backend/develop-eggs/
-backend/dist/
-backend/downloads/
-backend/eggs/
-backend/.eggs/
-backend/lib/
-backend/lib64/
-backend/parts/
-backend/sdist/
-backend/var/
-backend/*.egg-info/
-backend/.installed.cfg
-backend/*.egg
+.Python
+env/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
-backend/*.manifest
-backend/*.spec
+*.manifest
+*.spec
 
 # Installer logs
-backend/pip-log.txt
-backend/pip-delete-this-directory.txt
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Unit test / coverage reports
-backend/htmlcov/
-backend/.tox/
-backend/.coverage
-backend/.coverage.*
-backend/.cache
-backend/nosetests.xml
-backend/coverage.xml
-backend/*,cover
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
 
 # Translations
-backend/*.mo
-backend/*.pot
+*.mo
+*.pot
 
 # Django stuff:
-backend/*.log
+*.log
 
 # Sphinx documentation
-backend/docs/_build/
+docs/_build/
 
 # PyBuilder
-backend/target/
+target/
 
-backend/framework/qlf/db.sqlite3
 backend/framework/config/qlf.cfg
 backend/spectro/
 
 # PyCharm setting
-backend/.idea/
+.idea/
 
+backend/framework/qlf/db.sqlite3
 backend/docker-compose.yml
-docker-compose.yml
 .vscode/
 
 frontend/build/*
