@@ -18,6 +18,7 @@ _Make sure `docker --version`, `docker-compose --version` and `docker ps` runs w
 
 ### Install default qlf configuration
 
+    cd qlf
     ./configure.sh
 
 ### Starting QLF
