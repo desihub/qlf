@@ -22,7 +22,10 @@ class Connection extends Component {
       const state = {
         daemonStatus: result.daemon_status ? 'Running' : 'Not Running',
         mainTerminal: result.lines ? result.lines.reverse() : [],
-        ingestionTerminal: result.ingestion ? result.ingestion.reverse() : [],
+        ingestionTerminal:
+          result.ingestion && result.ingestion !== 'Error'
+            ? result.ingestion.reverse()
+            : [],
         exposure: result.exposure.toString(),
         camerasStages: result.cameras,
         availableCameras: result.available_cameras,
