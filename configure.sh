@@ -33,4 +33,4 @@ else
     rm 20190101_small.tar.gz
 fi
 
-echo 'To start run sh start.sh'
+echo 'To start run ./start.sh'
