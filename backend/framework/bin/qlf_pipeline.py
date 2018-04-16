@@ -253,10 +253,6 @@ class Jobs(QLFProcess):
 
         duration_ingestion = datetime.datetime.now().replace(microsecond=0) - start_ingestion
 
-        for camera in self.data.get('cameras'):
-             lm = LoadMetrics(camera.get('name'), self.data.get('expid'), self.data.get('night'))
-             lm.save_qa_tests()
-
         self.logger.info("Ingestion complete: %s." % str(duration_ingestion))
         self.logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
         self.logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
