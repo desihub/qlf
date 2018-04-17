@@ -1,6 +1,6 @@
-[submodule "desiutil"]
-	path = desiutil
+[submodule "backend/desiutil"]
+	path = backend/desiutil
 	url = https://github.com/desihub/desiutil.git
-[submodule "desispec"]
-	path = desispec
+[submodule "backend/desispec"]
+	path = backend/desispec
 	url = https://github.com/desihub/desispec.git

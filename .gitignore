@@ -55,12 +55,17 @@ docs/_build/
 # PyBuilder
 target/
 
-framework/qlf/db.sqlite3
-framework/config/qlf.cfg
-spectro/
+backend/framework/config/qlf.cfg
+backend/spectro/
 
 # PyCharm setting
 .idea/
 
-docker-compose.yml
+backend/framework/qlf/db.sqlite3
+backend/docker-compose.yml
 .vscode/
+
+frontend/build/*
+frontend/node_modules/*
+frontend/coverage/*
+frontend/dist/*

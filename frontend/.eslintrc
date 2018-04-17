@@ -1,0 +1,36 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:react/recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    },
+  },
+  "globals": {
+    "expect": false,
+    "mockServer": false,
+    "jest": false
+  },
+  "env": {
+    "browser": true,
+    "mocha": true,
+    "node": true
+  },
+  "rules": {
+    "prettier/prettier": ["error", {"singleQuote": true, "trailingComma": "es5"}],
+    "prefer-const": "error"
+  },
+  "plugins": [
+    "import",
+    "react",
+    "prettier"
+  ]
+}
