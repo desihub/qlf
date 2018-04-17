@@ -31,14 +31,16 @@ function updateQA(qaTests) {
 export function getProcessingHistory() {
   return async function(dispatch) {
     const processes = await QlfApi.getProcessingHistory();
-    if (processes) await dispatch(updateProcesses(processes.results));
+    if (processes && processes.results && processes.results.results)
+      await dispatch(updateProcesses(processes.results.results));
   };
 }
 
 export function getProcessingHistoryOrdered(ordering) {
   return async function(dispatch) {
     const processes = await QlfApi.getProcessingHistoryOrdered(ordering);
-    if (processes) dispatch(updateProcesses(processes.results));
+    if (processes && processes.results && processes.results.results)
+      await dispatch(updateProcesses(processes.results.results));
   };
 }
 
