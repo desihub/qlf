@@ -49,7 +49,12 @@ export function getProcessingHistory() {
       dispatch(updateProcesses(processes.results.results));
     }
 
-    if (processes.results.start_date && processes.results.end_date) {
+    if (
+      processes &&
+      processes.results &&
+      processes.results.start_date &&
+      processes.results.end_date
+    ) {
       dispatch(
         updateDateRange(
           processes.results.start_date,
