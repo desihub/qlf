@@ -17,7 +17,7 @@ export default class SelectDate extends React.Component {
   static propTypes = {
     startDate: Proptypes.string.isRequired,
     endDate: Proptypes.string.isRequired,
-    getProcessingHistoryRangeDate: Proptypes.func.isRequired,
+    getHistoryRangeDate: Proptypes.func.isRequired,
   };
 
   state = {
@@ -52,7 +52,7 @@ export default class SelectDate extends React.Component {
   };
 
   selectRange = () => {
-    this.props.getProcessingHistoryRangeDate(
+    this.props.getHistoryRangeDate(
       this.state.selectedStartDate,
       this.state.selectedEndDate
     );

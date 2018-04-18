@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ProcessingHistory from '../../screens/processing-history/processing-history';
+import History from '../../screens/history/history';
 import { Route } from 'react-router';
 import Metrics from '../../screens/metrics/metrics';
 import { connect } from 'react-redux';
@@ -89,18 +89,14 @@ class OfflineContainer extends Component {
         <Route
           path="/processing-history"
           render={() => (
-            <ProcessingHistory
-              getProcessingHistory={this.props.getProcessingHistory}
-              getProcessingHistoryOrdered={
-                this.props.getProcessingHistoryOrdered
-              }
+            <History
+              getHistory={this.props.getProcessingHistory}
+              getHistoryOrdered={this.props.getProcessingHistoryOrdered}
               processes={this.props.processes}
               startDate={this.props.startDate}
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
-              getProcessingHistoryRangeDate={
-                this.props.getProcessingHistoryRangeDate
-              }
+              getHistoryRangeDate={this.props.getProcessingHistoryRangeDate}
               lastProcess={this.props.lastProcess}
             />
           )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import TableHistory from '../../../../../src/screens/processing-history/widgets/table-history/table-history';
+import TableHistory from '../../../../../src/screens/history/widgets/table-history/table-history';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
@@ -36,8 +36,8 @@ const processes = [
 ];
 
 describe('TableHistory Controls', () => {
-  const getProcessingHistory = jest.fn(),
-    getProcessingHistoryOrdered = jest.fn(() => processes),
+  const getHistory = jest.fn(),
+    getHistoryOrdered = jest.fn(() => processes),
     navigateToQA = jest.fn();
   let wrapper;
   beforeEach(() => {
@@ -50,9 +50,9 @@ describe('TableHistory Controls', () => {
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
         <TableHistory
           processes={processes}
-          getProcessingHistory={getProcessingHistory}
+          getHistory={getHistory}
           navigateToQA={navigateToQA}
-          getProcessingHistoryOrdered={getProcessingHistoryOrdered}
+          getHistoryOrdered={getHistoryOrdered}
         />
       </MuiThemeProvider>
     );
@@ -60,7 +60,7 @@ describe('TableHistory Controls', () => {
   });
 
   it('mounts rendering table', () => {
-    expect(getProcessingHistory).toBeCalled();
+    expect(getHistory).toBeCalled();
     expect(
       wrapper
         .find('TableHeaderColumn')
@@ -80,18 +80,18 @@ describe('TableHistory Controls', () => {
       .find('span')
       .at(0)
       .simulate('click');
-    expect(getProcessingHistoryOrdered).toBeCalledWith('-pk');
+    expect(getHistoryOrdered).toBeCalledWith('-pk');
     wrapper
       .find('span')
       .at(0)
       .simulate('click');
-    expect(getProcessingHistoryOrdered).toBeCalledWith('-pk');
+    expect(getHistoryOrdered).toBeCalledWith('-pk');
   });
 
   it('calls navigateToQA', () => {
     wrapper
       .find('span')
-      .at(10)
+      .at(9)
       .simulate('click');
     expect(navigateToQA).toBeCalledWith(70);
   });

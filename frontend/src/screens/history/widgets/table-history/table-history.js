@@ -29,8 +29,8 @@ const styles = {
 
 export default class TableHistory extends Component {
   static propTypes = {
-    getProcessingHistory: Proptypes.func.isRequired,
-    getProcessingHistoryOrdered: Proptypes.func.isRequired,
+    getHistory: Proptypes.func.isRequired,
+    getHistoryOrdered: Proptypes.func.isRequired,
     processes: Proptypes.array.isRequired,
     navigateToQA: Proptypes.func.isRequired,
     lastProcess: Proptypes.number,
@@ -43,13 +43,13 @@ export default class TableHistory extends Component {
   };
 
   componentWillMount() {
-    this.props.getProcessingHistory();
+    this.props.getHistory();
   }
 
-  getProcessingHistoryOrdered = async ordering => {
+  getHistoryOrdered = async ordering => {
     const order = this.state.asc ? ordering : `-${ordering}`;
     this.setState({
-      processes: await this.props.getProcessingHistoryOrdered(order),
+      processes: await this.props.getHistoryOrdered(order),
       asc: !this.state.asc,
       ordering,
     });
@@ -108,10 +108,7 @@ export default class TableHistory extends Component {
   renderHeader = (id, name) => {
     return (
       <div style={styles.arrow}>
-        <span
-          style={styles.header}
-          onClick={() => this.getProcessingHistoryOrdered(id)}
-        >
+        <span style={styles.header} onClick={() => this.getHistoryOrdered(id)}>
           {name}
         </span>
         {this.renderArrow(id)}
@@ -139,9 +136,7 @@ export default class TableHistory extends Component {
               <TableHeaderColumn>
                 {this.renderHeader('dateobs', 'Date OBS')}
               </TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('datemjd', 'MJD')}
-              </TableHeaderColumn>
+              <TableHeaderColumn>MJD</TableHeaderColumn>
               <TableHeaderColumn>
                 {this.renderHeader('exposure_id', 'Exp ID')}
               </TableHeaderColumn>
