@@ -151,9 +151,9 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         ordering = request.query_params.get('ordering')
         datemin = request.query_params.get('datemin')
         datemax = request.query_params.get('datemax')
+        queryset = self.filter_queryset(self.get_queryset())
         if datemax and datemin:
             try:
-                queryset = self.filter_queryset(self.get_queryset())
                 datemin = datetime.strptime(datemin, "%Y-%m-%d")
                 datemax = datetime.strptime(datemax, "%Y-%m-%d") + timedelta(days=1)
                 queryset = queryset.filter(exposure__dateobs__gte=datemin)
@@ -164,20 +164,19 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
                 response.data['results'] = { "Error": 'wrong date format' }
                 return response
         if ordering and ordering[0] == '-':
+            prefix_order = '-'
             standard_ordering = ordering[1:]
         else:
+            prefix_order = ''
             standard_ordering = ordering
         if ordering and standard_ordering not in ('exposure_id'):
-            response.data['results'] = sorted(response.data['results'], key=operator.itemgetter(ordering.replace('-',''),))
-
-            if "-" in ordering:
-                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering.replace('-','')], ), reverse=True)
-            else:
-                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering], ))
+            order_by = '{}exposure__{}'.format(prefix_order,standard_ordering)
+            queryset = queryset.order_by(order_by)
+            serializer = self.get_serializer(queryset, many=True)
         exposure = Exposure.objects.all()
         start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']
         end_date = exposure.aggregate(Max('dateobs'))['dateobs__max']
-        response.data['results'] = { "start_date": start_date, "end_date": end_date, "results": response.data['results'] }
+        response.data['results'] = { "start_date": start_date, "end_date": end_date, "results": serializer.data }
         return response
 
 class SingleQAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
