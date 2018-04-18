@@ -49,6 +49,7 @@ class OfflineContainer extends Component {
     navigateToMetrics: PropTypes.func.isRequired,
     navigateToQA: PropTypes.func.isRequired,
     getProcessingHistoryRangeDate: PropTypes.func.isRequired,
+    lastProcess: PropTypes.number,
   };
 
   state = {
@@ -100,6 +101,7 @@ class OfflineContainer extends Component {
               getProcessingHistoryRangeDate={
                 this.props.getProcessingHistoryRangeDate
               }
+              lastProcess={this.props.lastProcess}
             />
           )}
         />
@@ -155,6 +157,7 @@ export default connect(
     time: state.qlfOffline.time,
     startDate: state.qlfOffline.startDate,
     endDate: state.qlfOffline.endDate,
+    lastProcess: state.qlfOffline.lastProcess,
   }),
   dispatch => ({
     getProcessingHistoryOrdered: ordering =>

@@ -24,6 +24,7 @@ const styles = {
     cursor: 'pointer',
     textDecoration: 'none',
   },
+  bold: { fontWeight: 900 },
 };
 
 export default class TableHistory extends Component {
@@ -32,6 +33,7 @@ export default class TableHistory extends Component {
     getProcessingHistoryOrdered: Proptypes.func.isRequired,
     processes: Proptypes.array.isRequired,
     navigateToQA: Proptypes.func.isRequired,
+    lastProcess: Proptypes.number,
   };
 
   state = {
@@ -61,8 +63,10 @@ export default class TableHistory extends Component {
     return (
       <TableBody showRowHover={true} displayRowCheckbox={false}>
         {this.props.processes.map((process, id) => {
+          const lastProcessStyle =
+            process.pk === this.props.lastProcess ? styles.bold : null;
           return (
-            <TableRow key={id}>
+            <TableRow style={lastProcessStyle} key={id}>
               <TableRowColumn>{process.pk}</TableRowColumn>
               <TableRowColumn>{process.dateobs}</TableRowColumn>
               <TableRowColumn>{process.datemjd.toFixed(5)}</TableRowColumn>

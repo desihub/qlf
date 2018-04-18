@@ -12,6 +12,7 @@ export default class ProcessingHistory extends Component {
     startDate: Proptypes.string,
     endDate: Proptypes.string,
     getProcessingHistoryRangeDate: Proptypes.func.isRequired,
+    lastProcess: Proptypes.number,
   };
 
   renderSelectDate = () => {
@@ -36,6 +37,7 @@ export default class ProcessingHistory extends Component {
           getProcessingHistoryOrdered={this.props.getProcessingHistoryOrdered}
           processes={this.props.processes}
           navigateToQA={this.props.navigateToQA}
+          lastProcess={this.props.lastProcess}
         />
       </div>
     );

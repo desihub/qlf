@@ -14,6 +14,9 @@ configure({ adapter: new Adapter() });
 
 jest.mock('../../../src/containers/offline/connection/qlf-api', () => {
   return {
+    getLastProcess: () => {
+      return [{ id: 69 }];
+    },
     getProcessingHistory: () => {
       return {
         results: {
@@ -80,8 +83,8 @@ describe('OfflineContainer', () => {
     expect(store.getState().router.location.pathname).toBe(
       '/processing-history'
     );
-    wrapper = mount(offline);
-    expect(wrapper.find('OfflineContainer').props().processes).toEqual([
+    wrapper = await mount(offline);
+    expect(store.getState().qlfOffline.processes).toEqual([
       {
         pk: 69,
         dateobs: '2019-01-01T22:00:00Z',

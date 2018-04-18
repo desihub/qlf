@@ -11,6 +11,7 @@ function defaultState() {
     qaTests: [],
     startDate: undefined,
     endDate: undefined,
+    lastProcess: undefined,
   };
 }
 
@@ -22,6 +23,11 @@ function updateProcesses(processes) {
 function updateDateRange(startDate, endDate) {
   const state = { startDate, endDate };
   return { type: 'UPDATE_DATE_RANGE', state };
+}
+
+function updateLastProcess(lastProcess) {
+  const state = { lastProcess };
+  return { type: 'UPDATE_LAST_PROCESS', state };
 }
 
 function updateQA(qaTests) {
@@ -38,14 +44,22 @@ function updateQA(qaTests) {
 export function getProcessingHistory() {
   return async function(dispatch) {
     const processes = await QlfApi.getProcessingHistory();
+    const lastProcess = await QlfApi.getLastProcess();
     if (processes && processes.results && processes.results.results) {
-      await dispatch(updateProcesses(processes.results.results));
-      await dispatch(
+      dispatch(updateProcesses(processes.results.results));
+    }
+
+    if (processes.results.start_date && processes.results.end_date) {
+      dispatch(
         updateDateRange(
           processes.results.start_date,
           processes.results.end_date
         )
       );
+    }
+
+    if (lastProcess[0] && lastProcess[0].id) {
+      dispatch(updateLastProcess(lastProcess[0].id));
     }
   };
 }
@@ -97,6 +111,10 @@ export function navigateToOfflineQA() {
 
 export function qlfOfflineReducers(state = defaultState(), action) {
   switch (action.type) {
+    case 'UPDATE_LAST_PROCESS':
+      return Object.assign({}, state, {
+        lastProcess: action.state.lastProcess,
+      });
     case 'UPDATE_DATE_RANGE':
       return Object.assign({}, state, {
         startDate: action.state.startDate,

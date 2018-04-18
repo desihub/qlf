@@ -21,6 +21,22 @@ export default class QlfApi {
     }
   }
 
+  static async getLastProcess() {
+    try {
+      const processes = await fetch(
+        `${apiUrl}dashboard/api/last_process/?format=json`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await processes.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getProcessingHistory() {
     try {
       const processes = await fetch(
