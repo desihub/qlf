@@ -4,12 +4,17 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building....'
+                dir('frontend') {
+                    sh 'yarn install'
+                }
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing....'
+                dir('frontend') {
+                    sh 'yarn lint'
+                    sh 'yarn test'
+                }
             }
         }
         stage('Deploy') {
