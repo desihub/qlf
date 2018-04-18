@@ -166,7 +166,10 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
         fields = ('pk', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime')
 
     def get_runtime(self, obj):
-        return obj.end - obj.start
+        if obj.end is not None and obj.start is not None:
+            return obj.end - obj.start
+        else:
+            return None
 
     def get_datemjd(self, obj):
         time = get_date(obj.exposure_id)
