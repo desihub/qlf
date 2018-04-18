@@ -55,6 +55,24 @@ export default class QlfApi {
     }
   }
 
+  static async getProcessingHistoryRangeDate(start, end) {
+    try {
+      const processes = await fetch(
+        `${apiUrl}dashboard/api/processing_history/?format=json&datemin=${
+          start
+        }&&datemax=${end}`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await processes.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async sendTicketMail(email, message, subject, name) {
     const ticket = await fetch(
       `${apiUrl}send_ticket_email/?format=json&email=${email}&message=${

@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import {
   getProcessingHistoryOrdered,
   getProcessingHistory,
+  getProcessingHistoryRangeDate,
   getQA,
   navigateToProcessingHistory,
   navigateToOfflineMetrics,
@@ -14,9 +15,21 @@ import {
 import PropTypes from 'prop-types';
 import QA from '../../screens/qa/qa';
 import _ from 'lodash';
+import { FadeLoader } from 'halogenium';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 9);
+
+const styles = {
+  loading: {
+    display: 'flex',
+    position: 'fixed',
+    width: '100%',
+    height: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+};
 
 class OfflineContainer extends Component {
   static propTypes = {
@@ -30,14 +43,23 @@ class OfflineContainer extends Component {
     mjd: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
     navigateToMetrics: PropTypes.func.isRequired,
     navigateToQA: PropTypes.func.isRequired,
+    getProcessingHistoryRangeDate: PropTypes.func.isRequired,
+  };
+
+  state = {
+    loading: false,
   };
 
   navigateToQA = async processId => {
+    this.setState({ loading: true });
     this.props.navigateToQA();
     await this.props.getQA(processId);
+    this.setState({ loading: false });
   };
 
   componentWillReceiveProps(nextProps) {
@@ -50,9 +72,19 @@ class OfflineContainer extends Component {
       this.props.getProcessingHistory();
   }
 
+  renderLoading = () => {
+    if (!this.state.loading) return null;
+    return (
+      <div style={{ ...styles.loading }}>
+        <FadeLoader color="teal" size="16px" margin="4px" />
+      </div>
+    );
+  };
+
   render() {
     return (
       <div>
+        {this.renderLoading()}
         <Route
           path="/processing-history"
           render={() => (
@@ -62,7 +94,12 @@ class OfflineContainer extends Component {
                 this.props.getProcessingHistoryOrdered
               }
               processes={this.props.processes}
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
+              getProcessingHistoryRangeDate={
+                this.props.getProcessingHistoryRangeDate
+              }
             />
           )}
         />
@@ -116,6 +153,8 @@ export default connect(
     mjd: state.qlfOffline.mjd,
     date: state.qlfOffline.date,
     time: state.qlfOffline.time,
+    startDate: state.qlfOffline.startDate,
+    endDate: state.qlfOffline.endDate,
   }),
   dispatch => ({
     getProcessingHistoryOrdered: ordering =>
@@ -125,5 +164,7 @@ export default connect(
     navigateToProcessingHistory: () => dispatch(navigateToProcessingHistory()),
     navigateToMetrics: () => dispatch(navigateToOfflineMetrics()),
     navigateToQA: () => dispatch(navigateToOfflineQA()),
+    getProcessingHistoryRangeDate: (start, end) =>
+      dispatch(getProcessingHistoryRangeDate(start, end)),
   })
 )(OfflineContainer);
