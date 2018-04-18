@@ -169,10 +169,10 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         else:
             prefix_order = ''
             standard_ordering = ordering
-        if ordering and standard_ordering not in ('exposure_id'):
+        if ordering and standard_ordering not in ('exposure_id', '-exposure_id'):
             order_by = '{}exposure__{}'.format(prefix_order,standard_ordering)
             queryset = queryset.order_by(order_by)
-            serializer = self.get_serializer(queryset, many=True)
+        serializer = self.get_serializer(queryset, many=True)
         exposure = Exposure.objects.all()
         start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']
         end_date = exposure.aggregate(Max('dateobs'))['dateobs__max']
