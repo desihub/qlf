@@ -1,5 +1,5 @@
 import React from 'react';
-import ProcessingHistory from '../../../src/screens/processing-history/processing-history';
+import History from '../../../src/screens/history/history';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
@@ -35,30 +35,30 @@ const processes = [
   },
 ];
 
-describe('ProcessingHistory Controls', () => {
-  const getProcessingHistory = jest.fn(),
-    getProcessingHistoryOrdered = jest.fn(() => processes),
+describe('History Controls', () => {
+  const getHistory = jest.fn(),
+    getHistoryOrdered = jest.fn(() => processes),
     navigateToQA = jest.fn();
-  let processingHistory;
+  let history;
   beforeEach(() => {
     window.getSelection = () => {
       return {
         removeAllRanges: () => {},
       };
     };
-    processingHistory = (
+    history = (
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-        <ProcessingHistory
+        <History
           processes={processes}
-          getProcessingHistory={getProcessingHistory}
+          getHistory={getHistory}
           navigateToQA={navigateToQA}
-          getProcessingHistoryOrdered={getProcessingHistoryOrdered}
+          getHistoryOrdered={getHistoryOrdered}
         />
       </MuiThemeProvider>
     );
   });
 
   it('mounts', () => {
-    mount(processingHistory);
+    mount(history);
   });
 });
