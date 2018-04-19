@@ -105,10 +105,7 @@ class OnlineContainer extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
-              navigateToMetrics={this.props.navigateToMetrics}
-              navigateToProcessingHistory={
-                this.props.navigateToProcessingHistory
-              }
+              petalSizeFactor={16}
             />
           )}
         />
