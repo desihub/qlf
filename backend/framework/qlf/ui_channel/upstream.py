@@ -140,32 +140,30 @@ def get_current_state():
     available_cameras = avaiable_cameras(process)
     daemon_status = qlf.get_status()
 
-    logfile = open_file('logfile')
     pipelinelog = list()
     mjd = str()
+    process_id = int()
     date = dict()
     date_time = str()
     if len(process) > 0:
         pipelinelog = get_pipeline_log()
         exposure = process[0].get("exposure")
+        process_id = process[0].get("id")
         date = get_date(exposure)
         date_time = date.value
         mjd = date.mjd
     else:
         exposure = ''
-
-    lines = subprocess.check_output(['tail', '-100', logfile])
-    lines_array = lines.strip().decode('utf-8').split("\n")
     return json.dumps({
             "daemon_status": daemon_status,
-            "lines": lines_array,
             "exposure": exposure,
             "cameras": camera_status,
             "available_cameras": available_cameras,
             "qa_results": qa_results,
             "ingestion": pipelinelog,
             "mjd": mjd,
-            "date": date_time
+            "date": date_time,
+            "process_id": process_id
         })
 
 def get_current_qa_tests(process):

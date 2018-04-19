@@ -5,6 +5,7 @@ import Terminal from './widgets/terminal/terminal';
 import Status from './widgets/status/status';
 import Dialog from './widgets/dialog/dialog';
 import PropTypes from 'prop-types';
+import QA from '../qa/qa';
 
 const styles = {
   topMenu: { marginTop: '1vh', marginRight: '1vw', marginLeft: '1vw' },
@@ -24,11 +25,13 @@ export default class Monitor extends Component {
     daemonStatus: PropTypes.string.isRequired,
     exposure: PropTypes.string.isRequired,
     date: PropTypes.string,
-    time: PropTypes.string,
-    mainTerminal: PropTypes.array.isRequired,
     ingestionTerminal: PropTypes.array.isRequired,
     cameraTerminal: PropTypes.array.isRequired,
     camerasStages: PropTypes.object.isRequired,
+    processId: PropTypes.number,
+    qaTests: PropTypes.array.isRequired,
+    arms: PropTypes.array.isRequired,
+    spectrographs: PropTypes.array.isRequired,
   };
 
   state = {
@@ -38,7 +41,6 @@ export default class Monitor extends Component {
     height: '0',
     openDialog: false,
     cameraIndex: 0,
-    mainTerminal: [],
     ingestionTerminal: [],
     cameraTerminal: [],
     layout: {},
@@ -90,32 +92,28 @@ export default class Monitor extends Component {
         />
         <div style={styles.topMenu}>
           <div style={this.state.layout}>
-            <Controls socket={this.props.socketRef} />
+            <Controls
+              daemonStatus={this.props.daemonStatus}
+              socket={this.props.socketRef}
+            />
             <Status
               exposure={this.state.exposure}
               daemonStatus={this.state.daemonStatus}
               layout={this.state.layout}
               mjd={this.state.mjd}
               date={this.props.date}
-              time={this.props.time}
+              processId={this.props.processId}
             />
           </div>
         </div>
         <div style={this.state.layout}>
           <div style={styles.leftCol}>
-            <div style={styles.singleCol}>
-              <Terminal height={'37vh'} lines={this.state.ingestionTerminal} />
-            </div>
-            <div style={styles.singleCol}>
-              <Terminal height={'37vh'} lines={this.state.mainTerminal} />
-            </div>
-          </div>
-          <div style={styles.rightCol}>
             <div style={this.state.layout}>
               <Stages
                 status={this.state.camerasStages.b}
                 arm={'b'}
                 openDialog={this.openDialog}
+                renderHeader={true}
               />
             </div>
             <div style={this.state.layout}>
@@ -123,6 +121,7 @@ export default class Monitor extends Component {
                 status={this.state.camerasStages.r}
                 arm={'r'}
                 openDialog={this.openDialog}
+                renderHeader={false}
               />
             </div>
             <div style={this.state.layout}>
@@ -130,8 +129,20 @@ export default class Monitor extends Component {
                 status={this.state.camerasStages.z}
                 arm={'z'}
                 openDialog={this.openDialog}
+                renderHeader={false}
               />
             </div>
+            <div style={styles.singleCol}>
+              <Terminal height={'37vh'} lines={this.state.ingestionTerminal} />
+            </div>
+          </div>
+          <div style={styles.rightCol}>
+            <QA
+              qaTests={this.props.qaTests}
+              arms={this.props.arms}
+              spectrographs={this.props.spectrographs}
+              petalSizeFactor={20}
+            />
           </div>
         </div>
       </div>

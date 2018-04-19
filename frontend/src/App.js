@@ -75,7 +75,7 @@ class App extends React.Component {
   };
 
   showMenuIcon = () => {
-    return history.location.pathname !== '/';
+    return false;
   };
 
   renderAppBar = () => {
