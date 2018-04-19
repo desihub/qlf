@@ -18,10 +18,9 @@ class Connection extends Component {
 
   handleData = data => {
     const result = JSON.parse(data);
-    if (result.lines) {
+    if (result.ingestion) {
       const state = {
         daemonStatus: result.daemon_status ? 'Running' : 'Not Running',
-        mainTerminal: result.lines ? result.lines.reverse() : [],
         ingestionTerminal:
           result.ingestion && result.ingestion !== 'Error'
             ? result.ingestion.reverse()
@@ -32,6 +31,7 @@ class Connection extends Component {
         mjd: result.mjd === '' ? '' : result.mjd.toFixed(5),
         date: result.date === '' ? '' : result.date.split('T')[0],
         time: result.date === '' ? '' : result.date.split('T')[1],
+        processId: result.process_id,
       };
       if (result.qa_results && result.qa_results.qa_tests) {
         this.props.updateQA({ qaTests: result.qa_results.qa_tests });

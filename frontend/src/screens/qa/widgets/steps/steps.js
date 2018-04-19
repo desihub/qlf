@@ -67,17 +67,17 @@ export default class Steps extends Component {
   static propTypes = {
     layout: PropTypes.object.isRequired,
     renderMetrics: PropTypes.func.isRequired,
-    exposure: PropTypes.string.isRequired,
+    exposure: PropTypes.string,
     qaTests: PropTypes.array.isRequired,
-    mjd: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
-    time: PropTypes.string.isRequired,
-    navigateToProcessingHistory: PropTypes.func.isRequired,
+    mjd: PropTypes.string,
+    date: PropTypes.string,
+    time: PropTypes.string,
+    navigateToProcessingHistory: PropTypes.func,
+    petalSizeFactor: PropTypes.number.isRequired,
   };
 
   state = {
     message: '',
-    showQaAlarms: false,
   };
 
   findQATest = arm => {
@@ -106,17 +106,26 @@ export default class Steps extends Component {
         });
       }
     }
-    this.setState({ showQaAlarms: true, message });
+    this.setState({ message });
   };
 
-  hideQaAlarms = () => {
-    this.setState({ showQaAlarms: false });
+  hideQaAlarms = () => {};
+
+  showStepName = name => {
+    this.setState({ message: name + '\n' });
   };
 
-  renderStep = (step, title) => {
+  renderStep = (step, title, name) => {
     return (
       <div style={{ ...styles.containerSteps, ...this.props.layout }}>
-        <span style={styles.step}>{title}</span>
+        <span
+          data-tip="true"
+          data-for="tooltip"
+          onMouseOver={() => this.showStepName(name)}
+          style={styles.step}
+        >
+          {title}
+        </span>
         <PieChart
           renderMetrics={this.props.renderMetrics}
           step={step}
@@ -176,32 +185,40 @@ export default class Steps extends Component {
     );
   };
 
+  renderHistoryControls = () => {
+    if (!this.props.navigateToProcessingHistory) return;
+    return (
+      <div style={styles.qaControls}>
+        <RaisedButton
+          label={'Processing History'}
+          secondary={true}
+          style={styles.processingHistoryButton}
+          labelStyle={styles.processingHistoryLabel}
+          onClick={this.props.navigateToProcessingHistory}
+        />
+        <Status
+          exposure={this.props.exposure}
+          mjd={this.props.mjd}
+          layout={this.props.layout}
+          date={this.props.date}
+          time={this.props.time}
+        />
+      </div>
+    );
+  };
+
   render() {
-    petalSize = (window.innerWidth + window.innerHeight) / 16;
+    petalSize =
+      (window.innerWidth + window.innerHeight) / this.props.petalSizeFactor;
     return (
       <div>
         {this.renderTooltip()}
-        <div style={styles.qaControls}>
-          <RaisedButton
-            label={'Processing History'}
-            secondary={true}
-            style={styles.processingHistoryButton}
-            labelStyle={styles.processingHistoryLabel}
-            onClick={this.props.navigateToProcessingHistory}
-          />
-          <Status
-            exposure={this.props.exposure}
-            mjd={this.props.mjd}
-            layout={this.props.layout}
-            date={this.props.date}
-            time={this.props.time}
-          />
-        </div>
+        {this.renderHistoryControls()}
         <Card style={styles.card}>
-          {this.renderStep(0, 'Pre Processing')}
-          {this.renderStep(1, 'Spectral Extraction')}
-          {this.renderStep(2, 'Fiber Flattening')}
-          {this.renderStep(3, 'Sky Subtraction')}
+          {this.renderStep(0, 'Step 1', 'Pre Processing')}
+          {this.renderStep(1, 'Step 2', 'Spectral Extraction')}
+          {this.renderStep(2, 'Step 3', 'Fiber Flattening')}
+          {this.renderStep(3, 'Step 4', 'Sky Subtraction')}
           {this.renderArms()}
         </Card>
       </div>

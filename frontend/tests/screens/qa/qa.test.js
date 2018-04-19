@@ -74,6 +74,8 @@ describe('QA', () => {
             navigateToMetrics={jest.fn()}
             isOnline={jest.fn()}
             isOffline={jest.fn()}
+            petalSizeFactor={16}
+            navigateToProcessingHistory={jest.fn()}
           />
         </MuiThemeProvider>
       </Provider>
