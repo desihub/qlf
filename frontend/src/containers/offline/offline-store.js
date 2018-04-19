@@ -43,7 +43,7 @@ function updateQA(qaTests) {
 
 function selectMetric(step, spectrograph, arm) {
   const state = { step, spectrograph, arm };
-  return { type: 'UPDATE_METRIC_SELECT', state };
+  return { type: 'UPDATE_METRIC_SELECT_OFFLINE', state };
 }
 
 export function getProcessingHistory() {
@@ -122,7 +122,7 @@ export function navigateToOfflineQA() {
 
 export function qlfOfflineReducers(state = defaultState(), action) {
   switch (action.type) {
-    case 'UPDATE_METRIC_SELECT':
+    case 'UPDATE_METRIC_SELECT_OFFLINE':
       return Object.assign({}, state, {
         step: action.state.step,
         spectrograph: action.state.spectrograph,
