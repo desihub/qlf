@@ -61,12 +61,15 @@ export default class Metrics extends Component {
     date: PropTypes.string,
     time: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
+    arm: PropTypes.number.isRequired,
+    step: PropTypes.number.isRequired,
+    spectrograph: PropTypes.number.isRequired,
   };
 
   state = {
-    step: 0,
-    spectrograph: 0,
-    arm: 0,
+    step: this.props.step,
+    spectrograph: this.props.spectrograph,
+    arm: this.props.arm,
     loading: false,
     qa: undefined,
   };

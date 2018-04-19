@@ -33,6 +33,9 @@ class OfflineContainer extends Component {
     navigateToProcessingHistory: PropTypes.func.isRequired,
     navigateToMetrics: PropTypes.func.isRequired,
     navigateToQA: PropTypes.func.isRequired,
+    arm: PropTypes.number.isRequired,
+    step: PropTypes.number.isRequired,
+    spectrograph: PropTypes.number.isRequired,
   };
 
   navigateToQA = async processId => {
@@ -99,6 +102,9 @@ class OfflineContainer extends Component {
                 this.props.navigateToProcessingHistory
               }
               navigateToQA={this.props.navigateToQA}
+              arm={this.props.arm}
+              step={this.props.step}
+              spectrograph={this.props.spectrograph}
             />
           )}
         />
@@ -116,6 +122,9 @@ export default connect(
     mjd: state.qlfOffline.mjd,
     date: state.qlfOffline.date,
     time: state.qlfOffline.time,
+    arm: state.qlfOffline.arm,
+    step: state.qlfOffline.step,
+    spectrograph: state.qlfOffline.spectrograph,
   }),
   dispatch => ({
     getProcessingHistoryOrdered: ordering =>
@@ -123,7 +132,8 @@ export default connect(
     getProcessingHistory: () => dispatch(getProcessingHistory()),
     getQA: processId => dispatch(getQA(processId)),
     navigateToProcessingHistory: () => dispatch(navigateToProcessingHistory()),
-    navigateToMetrics: () => dispatch(navigateToOfflineMetrics()),
+    navigateToMetrics: (step, spectrograph, arm) =>
+      dispatch(navigateToOfflineMetrics(step, spectrograph, arm)),
     navigateToQA: () => dispatch(navigateToOfflineQA()),
   })
 )(OfflineContainer);

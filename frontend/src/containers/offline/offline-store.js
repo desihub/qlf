@@ -9,6 +9,9 @@ function defaultState() {
     time: '',
     exposure: '',
     qaTests: [],
+    arm: 0,
+    spectrograph: 0,
+    step: 0,
   };
 }
 
@@ -26,6 +29,11 @@ function updateQA(qaTests) {
     exposure: qaTests.exposure_id.toString(),
   };
   return { type: 'UPDATE_OFFLINE_QA', state };
+}
+
+function selectMetric(step, spectrograph, arm) {
+  const state = { step, spectrograph, arm };
+  return { type: 'UPDATE_METRIC_SELECT', state };
 }
 
 export function getProcessingHistory() {
@@ -55,8 +63,9 @@ export function navigateToProcessingHistory() {
   };
 }
 
-export function navigateToOfflineMetrics() {
+export function navigateToOfflineMetrics(step, spectrograph, arm) {
   return function(dispatch) {
+    dispatch(selectMetric(step, spectrograph, arm));
     dispatch(push('/metrics'));
   };
 }
@@ -69,6 +78,12 @@ export function navigateToOfflineQA() {
 
 export function qlfOfflineReducers(state = defaultState(), action) {
   switch (action.type) {
+    case 'UPDATE_METRIC_SELECT':
+      return Object.assign({}, state, {
+        step: action.state.step,
+        spectrograph: action.state.spectrograph,
+        arm: action.state.arm,
+      });
     case 'UPDATE_PROCESSES':
       return Object.assign({}, state, {
         processes: action.state.processes,

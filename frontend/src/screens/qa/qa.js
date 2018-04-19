@@ -49,10 +49,12 @@ export default class QA extends Component {
   };
 
   renderMetrics = (step, spectrographNumber, arm) => {
-    const spectrograph = this.props.spectrographs.indexOf(
-      spectrographNumber.toString()
+    this.props.navigateToMetrics(
+      step,
+      spectrographNumber,
+      arm,
+      this.props.exposure
     );
-    this.props.navigateToMetrics(step, spectrograph, arm, this.props.exposure);
   };
 
   renderSteps = () => {
