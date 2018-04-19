@@ -56,7 +56,10 @@ export default class Home extends React.Component {
               subtitle="Control and monitor the execution of the Quick Look pipeline"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/qa')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/qa-realtime')}
+          >
             <Card
               icon="RemoveRedEye"
               title="QA"

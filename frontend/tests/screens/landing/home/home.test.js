@@ -111,7 +111,7 @@ describe('Landing Home', () => {
       .find('a')
       .at(1)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/qa');
+    expect(updateUrl).toBeCalledWith('/qa-realtime');
   });
 
   it('navigates to /processing-history', () => {
