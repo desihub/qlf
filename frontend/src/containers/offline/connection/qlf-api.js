@@ -21,6 +21,22 @@ export default class QlfApi {
     }
   }
 
+  static async getLastProcess() {
+    try {
+      const processes = await fetch(
+        `${apiUrl}dashboard/api/last_process/?format=json`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await processes.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getProcessingHistory() {
     try {
       const processes = await fetch(
@@ -43,6 +59,24 @@ export default class QlfApi {
         `${apiUrl}dashboard/api/processing_history/?format=json&ordering=${
           order
         }`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await processes.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static async getProcessingHistoryRangeDate(start, end) {
+    try {
+      const processes = await fetch(
+        `${apiUrl}dashboard/api/processing_history/?format=json&datemin=${
+          start
+        }&&datemax=${end}`,
         {
           method: 'GET',
           headers: headers,

@@ -14,15 +14,16 @@ const styles = {
 
 export default class QA extends Component {
   static propTypes = {
-    exposure: PropTypes.string.isRequired,
+    exposure: PropTypes.string,
     qaTests: PropTypes.array.isRequired,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
-    mjd: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
-    time: PropTypes.string.isRequired,
-    navigateToMetrics: PropTypes.func.isRequired,
+    mjd: PropTypes.string,
+    date: PropTypes.string,
+    time: PropTypes.string,
+    navigateToMetrics: PropTypes.func,
     navigateToProcessingHistory: PropTypes.func,
+    petalSizeFactor: PropTypes.number.isRequired,
   };
 
   state = {
@@ -49,12 +50,14 @@ export default class QA extends Component {
   };
 
   renderMetrics = (step, spectrographNumber, arm) => {
-    this.props.navigateToMetrics(
-      step,
-      spectrographNumber,
-      arm,
-      this.props.exposure
-    );
+    if (this.props.navigateToMetrics) {
+      this.props.navigateToMetrics(
+        step,
+        spectrographNumber,
+        arm,
+        this.props.exposure
+      );
+    }
   };
 
   renderSteps = () => {
@@ -68,6 +71,7 @@ export default class QA extends Component {
         exposure={this.props.exposure}
         date={this.props.date}
         time={this.props.time}
+        petalSizeFactor={this.props.petalSizeFactor}
       />
     );
   };

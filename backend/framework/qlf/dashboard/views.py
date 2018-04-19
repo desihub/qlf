@@ -3,6 +3,7 @@ from rest_framework import authentication, permissions, viewsets, filters, statu
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
+
 from django.db.models import Max, Min
 from django.db.models import Q
 
@@ -13,7 +14,7 @@ from .serializers import (
     ProcessingHistorySerializer, SingleQASerializer
 )
 import Pyro4
-import datetime
+from datetime import datetime, timedelta
 
 from django.http import HttpResponseRedirect
 from django.conf import settings
@@ -142,25 +143,40 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
     queryset = Process.objects.order_by('exposure_id')
     serializer_class = ProcessingHistorySerializer
     filter_fields = ('exposure_id',)
-    
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
         response = super(ProcessingHistoryViewSet, self).list(
             request, args, kwargs)
         ordering = request.query_params.get('ordering')
+        datemin = request.query_params.get('datemin')
+        datemax = request.query_params.get('datemax')
+        queryset = self.filter_queryset(self.get_queryset())
+        if datemax and datemin:
+            try:
+                datemin = datetime.strptime(datemin, "%Y-%m-%d")
+                datemax = datetime.strptime(datemax, "%Y-%m-%d") + timedelta(days=1)
+                queryset = queryset.filter(exposure__dateobs__gte=datemin)
+                queryset = queryset.filter(exposure__dateobs__lte=datemax)
+                serializer = self.get_serializer(queryset, many=True)
+                return Response(serializer.data)
+            except:
+                response.data['results'] = { "Error": 'wrong date format' }
+                return response
         if ordering and ordering[0] == '-':
+            prefix_order = '-'
             standard_ordering = ordering[1:]
         else:
+            prefix_order = ''
             standard_ordering = ordering
-        if ordering and standard_ordering not in ('exposure_id'):
-            response.data['results'] = sorted(response.data['results'], key=operator.itemgetter(ordering.replace('-',''),))
-
-            if "-" in ordering:
-                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering.replace('-','')], ), reverse=True)
-            else:
-                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering], ))
-
+        if ordering and standard_ordering not in ('exposure_id', '-exposure_id'):
+            order_by = '{}exposure__{}'.format(prefix_order,standard_ordering)
+            queryset = queryset.order_by(order_by)
+        serializer = self.get_serializer(queryset, many=True)
+        exposure = Exposure.objects.all()
+        start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']
+        end_date = exposure.aggregate(Max('dateobs'))['dateobs__max']
+        response.data['results'] = { "start_date": start_date, "end_date": end_date, "results": serializer.data }
         return response
 
 class SingleQAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):

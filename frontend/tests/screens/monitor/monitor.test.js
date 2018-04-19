@@ -7,7 +7,10 @@ import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { store } from '../../../src/store';
 import { Provider } from 'react-redux';
+import _ from 'lodash';
 
+const arms = ['b', 'r', 'z'];
+const spectrographs = _.range(0, 9);
 configure({ adapter: new Adapter() });
 
 function send(message) {
@@ -27,7 +30,17 @@ describe('Monitor', () => {
     const monitor = (
       <Provider store={store}>
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-          <Monitor socketRef={socket} />
+          <Monitor
+            exposure={'3'}
+            qaTests={[]}
+            cameraTerminal={[]}
+            ingestionTerminal={[]}
+            camerasStages={{}}
+            daemonStatus={'Running'}
+            arms={arms}
+            spectrographs={spectrographs}
+            socketRef={socket}
+          />
         </MuiThemeProvider>
       </Provider>
     );
@@ -38,7 +51,17 @@ describe('Monitor', () => {
     const monitor = (
       <Provider store={store}>
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-          <Monitor socketRef={socket} />
+          <Monitor
+            exposure={'3'}
+            qaTests={[]}
+            cameraTerminal={[]}
+            ingestionTerminal={[]}
+            camerasStages={{}}
+            daemonStatus={'Running'}
+            arms={arms}
+            spectrographs={spectrographs}
+            socketRef={socket}
+          />
         </MuiThemeProvider>
       </Provider>
     );

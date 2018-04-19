@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import ProcessingHistory from '../../screens/processing-history/processing-history';
+import History from '../../screens/history/history';
 import { Route } from 'react-router';
 import Metrics from '../../screens/metrics/metrics';
 import { connect } from 'react-redux';
 import {
   getProcessingHistoryOrdered,
   getProcessingHistory,
+  getProcessingHistoryRangeDate,
   getQA,
   navigateToProcessingHistory,
   navigateToOfflineMetrics,
@@ -14,9 +15,21 @@ import {
 import PropTypes from 'prop-types';
 import QA from '../../screens/qa/qa';
 import _ from 'lodash';
+import { FadeLoader } from 'halogenium';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 9);
+
+const styles = {
+  loading: {
+    display: 'flex',
+    position: 'fixed',
+    width: '100%',
+    height: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+};
 
 class OfflineContainer extends Component {
   static propTypes = {
@@ -30,17 +43,27 @@ class OfflineContainer extends Component {
     mjd: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
     navigateToMetrics: PropTypes.func.isRequired,
     navigateToQA: PropTypes.func.isRequired,
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
+    getProcessingHistoryRangeDate: PropTypes.func.isRequired,
+    lastProcess: PropTypes.number,
+  };
+
+  state = {
+    loading: false,
   };
 
   navigateToQA = async processId => {
+    this.setState({ loading: true });
     this.props.navigateToQA();
     await this.props.getQA(processId);
+    this.setState({ loading: false });
   };
 
   componentWillReceiveProps(nextProps) {
@@ -53,19 +76,31 @@ class OfflineContainer extends Component {
       this.props.getProcessingHistory();
   }
 
+  renderLoading = () => {
+    if (!this.state.loading) return null;
+    return (
+      <div style={{ ...styles.loading }}>
+        <FadeLoader color="teal" size="16px" margin="4px" />
+      </div>
+    );
+  };
+
   render() {
     return (
       <div>
+        {this.renderLoading()}
         <Route
           path="/processing-history"
           render={() => (
-            <ProcessingHistory
-              getProcessingHistory={this.props.getProcessingHistory}
-              getProcessingHistoryOrdered={
-                this.props.getProcessingHistoryOrdered
-              }
+            <History
+              getHistory={this.props.getProcessingHistory}
+              getHistoryOrdered={this.props.getProcessingHistoryOrdered}
               processes={this.props.processes}
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
+              getHistoryRangeDate={this.props.getProcessingHistoryRangeDate}
+              lastProcess={this.props.lastProcess}
             />
           )}
         />
@@ -84,6 +119,7 @@ class OfflineContainer extends Component {
                 this.props.navigateToProcessingHistory
               }
               navigateToMetrics={this.props.navigateToMetrics}
+              petalSizeFactor={16}
             />
           )}
         />
@@ -125,6 +161,9 @@ export default connect(
     arm: state.qlfOffline.arm,
     step: state.qlfOffline.step,
     spectrograph: state.qlfOffline.spectrograph,
+    startDate: state.qlfOffline.startDate,
+    endDate: state.qlfOffline.endDate,
+    lastProcess: state.qlfOffline.lastProcess,
   }),
   dispatch => ({
     getProcessingHistoryOrdered: ordering =>
@@ -135,5 +174,7 @@ export default connect(
     navigateToMetrics: (step, spectrograph, arm) =>
       dispatch(navigateToOfflineMetrics(step, spectrograph, arm)),
     navigateToQA: () => dispatch(navigateToOfflineQA()),
+    getProcessingHistoryRangeDate: (start, end) =>
+      dispatch(getProcessingHistoryRangeDate(start, end)),
   })
 )(OfflineContainer);
