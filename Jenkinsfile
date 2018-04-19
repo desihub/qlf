@@ -17,7 +17,8 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy to Staging') {
+            when { branch "master" }
             steps {
                 sh 'curl -D - -X "POST" -H "Accept: application/json" \
                     -H "Content-Type: application/json" \
