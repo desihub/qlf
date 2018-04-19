@@ -5,7 +5,6 @@ function defaultState() {
   return {
     daemonStatus: 'idle',
     exposure: 'none',
-    mainTerminal: [],
     ingestionTerminal: [],
     cameraTerminal: [],
     camerasStages: { b: [], r: [], z: [] },
@@ -15,6 +14,7 @@ function defaultState() {
     mjd: '',
     date: '',
     time: '',
+    processId: undefined,
   };
 }
 
@@ -65,7 +65,7 @@ export function qlfOnlineReducers(state = defaultState(), action) {
     case 'UPDATE_MONITOR_STATE':
       return Object.assign({}, state, {
         daemonStatus: action.state.daemonStatus,
-        mainTerminal: action.state.mainTerminal,
+        processId: action.state.processId,
         ingestionTerminal: action.state.ingestionTerminal,
         exposure: action.state.exposure,
         camerasStages: action.state.camerasStages,

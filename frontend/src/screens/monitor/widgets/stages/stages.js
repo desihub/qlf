@@ -26,7 +26,6 @@ const styles = {
     borderLeft: 'solid 4px green',
     flex: '1',
     marginRight: '1vw',
-    marginBottom: '1vh',
   },
   arm: {
     color: '#9E9E9E',
@@ -39,6 +38,7 @@ export default class Stages extends Component {
     arm: PropTypes.string.isRequired,
     openDialog: PropTypes.func.isRequired,
     status: PropTypes.array.isRequired,
+    renderHeader: PropTypes.bool.isRequired,
   };
 
   state = {
@@ -51,7 +51,7 @@ export default class Stages extends Component {
     enableSelectAll: false,
     deselectOnClickaway: true,
     showCheckboxes: false,
-    columnHeight: '1vh',
+    columnHeight: '0.7vh',
     openDialog: true,
   };
 
@@ -76,6 +76,68 @@ export default class Stages extends Component {
       default:
         return {};
     }
+  };
+
+  renderTableHeader = () => {
+    if (!this.props.renderHeader) return;
+    return (
+      <TableHeader
+        displaySelectAll={this.state.showCheckboxes}
+        adjustForCheckbox={this.state.showCheckboxes}
+        enableSelectAll={this.state.enableSelectAll}
+      >
+        <TableRow style={{ height: this.state.columnHeight }}>
+          <TableHeaderColumn
+            style={{
+              fontSize: headerSize,
+              height: this.state.columnHeight,
+              whiteSpace: 'normal',
+            }}
+            tooltip={'Pre Processing'}
+          >
+            Step 1
+          </TableHeaderColumn>
+          <TableHeaderColumn
+            style={{
+              fontSize: headerSize,
+              height: this.state.columnHeight,
+              whiteSpace: 'normal',
+            }}
+            tooltip={'Spectral Extraction'}
+          >
+            Step 2
+          </TableHeaderColumn>
+          <TableHeaderColumn
+            style={{
+              fontSize: headerSize,
+              height: this.state.columnHeight,
+              whiteSpace: 'normal',
+            }}
+            tooltip={'Fiber Flattening'}
+          >
+            Step 3
+          </TableHeaderColumn>
+          <TableHeaderColumn
+            style={{
+              fontSize: headerSize,
+              height: this.state.columnHeight,
+              whiteSpace: 'normal',
+            }}
+            tooltip={'Sky Subtraction'}
+          >
+            Step 4
+          </TableHeaderColumn>
+          <TableHeaderColumn
+            style={{
+              fontSize: this.state.columnHeight,
+              height: this.state.columnHeight,
+              whiteSpace: 'normal',
+              width: '1px',
+            }}
+          />
+        </TableRow>
+      </TableHeader>
+    );
   };
 
   render() {
@@ -110,58 +172,7 @@ export default class Stages extends Component {
                   selectable={this.state.selectable}
                   multiSelectable={this.state.multiSelectable}
                 >
-                  <TableHeader
-                    displaySelectAll={this.state.showCheckboxes}
-                    adjustForCheckbox={this.state.showCheckboxes}
-                    enableSelectAll={this.state.enableSelectAll}
-                  >
-                    <TableRow style={{ height: this.state.columnHeight }}>
-                      <TableHeaderColumn
-                        style={{
-                          fontSize: headerSize,
-                          height: this.state.columnHeight,
-                          whiteSpace: 'normal',
-                        }}
-                      >
-                        Pre Processing
-                      </TableHeaderColumn>
-                      <TableHeaderColumn
-                        style={{
-                          fontSize: headerSize,
-                          height: this.state.columnHeight,
-                          whiteSpace: 'normal',
-                        }}
-                      >
-                        Spectral Extraction
-                      </TableHeaderColumn>
-                      <TableHeaderColumn
-                        style={{
-                          fontSize: headerSize,
-                          height: this.state.columnHeight,
-                          whiteSpace: 'normal',
-                        }}
-                      >
-                        Fiber Flattening
-                      </TableHeaderColumn>
-                      <TableHeaderColumn
-                        style={{
-                          fontSize: headerSize,
-                          height: this.state.columnHeight,
-                          whiteSpace: 'normal',
-                        }}
-                      >
-                        Sky Subtraction
-                      </TableHeaderColumn>
-                      <TableHeaderColumn
-                        style={{
-                          fontSize: this.state.columnHeight,
-                          height: this.state.columnHeight,
-                          whiteSpace: 'normal',
-                          width: '1px',
-                        }}
-                      />
-                    </TableRow>
-                  </TableHeader>
+                  {this.renderTableHeader()}
                   <TableBody
                     displayRowCheckbox={this.state.showCheckboxes}
                     deselectOnClickaway={this.state.deselectOnClickaway}

@@ -10,14 +10,14 @@ const styles = {
     marginRight: '1vw',
   },
   button: { height: 'calc(1em + 2vh)' },
-  buttonStyle: { padding: '1vh 0vw 0vw 0vh' },
-  buttonLabel: { fontSize: 'calc(5px + 1vh)' },
+  buttonLabel: { fontSize: 'calc(5px + 1vh)', top: '0.5vh' },
   white: { color: 'white' },
 };
 
 export default class Controls extends Component {
   static propTypes = {
     socket: PropTypes.object,
+    daemonStatus: PropTypes.string,
   };
 
   startPipeline = () => {
@@ -32,30 +32,34 @@ export default class Controls extends Component {
     this.props.socket.state.ws.send('resetPipeline');
   };
 
+  renderStartOrStop = () => {
+    return this.props.daemonStatus === 'Running' ? (
+      <RaisedButton
+        label="Stop"
+        style={styles.button}
+        labelStyle={{ ...styles.buttonLabel, ...styles.white }}
+        backgroundColor={'#ff0000'}
+        fullWidth={true}
+        onMouseDown={this.stopPipeline}
+      />
+    ) : (
+      <RaisedButton
+        label="Start"
+        style={styles.button}
+        labelStyle={{ ...styles.buttonLabel, ...styles.white }}
+        backgroundColor={'#00C853'}
+        fullWidth={true}
+        onMouseDown={this.startPipeline}
+      />
+    );
+  };
+
   render() {
     return (
       <div style={styles.controls}>
-        <RaisedButton
-          label="Start"
-          style={styles.button}
-          buttonStyle={styles.buttonStyle}
-          labelStyle={{ ...styles.buttonLabel, ...styles.white }}
-          backgroundColor={'#00C853'}
-          fullWidth={true}
-          onMouseDown={this.startPipeline}
-        />
-        <RaisedButton
-          label="Stop"
-          style={styles.button}
-          buttonStyle={styles.buttonStyle}
-          labelStyle={{ ...styles.buttonLabel, ...styles.white }}
-          backgroundColor={'#ff0000'}
-          fullWidth={true}
-          onMouseDown={this.stopPipeline}
-        />
+        {this.renderStartOrStop()}
         <RaisedButton
           label="reset"
-          buttonStyle={styles.buttonStyle}
           style={styles.button}
           labelStyle={styles.buttonLabel}
           fullWidth={true}

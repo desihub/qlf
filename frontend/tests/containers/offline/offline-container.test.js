@@ -53,7 +53,7 @@ jest.mock('../../../src/containers/offline/connection/qlf-api', () => {
 });
 
 describe('OfflineContainer', () => {
-  let offline, wrapper;
+  let offline;
   it('renders without crashing', () => {
     offline = (
       <Provider store={store}>
@@ -73,7 +73,7 @@ describe('OfflineContainer', () => {
   });
 
   it('navigates to process-history', async () => {
-    wrapper = mount(offline);
+    mount(offline);
     await store.dispatch({
       type: LOCATION_CHANGE,
       payload: {
@@ -83,7 +83,7 @@ describe('OfflineContainer', () => {
     expect(store.getState().router.location.pathname).toBe(
       '/processing-history'
     );
-    wrapper = await mount(offline);
+    await mount(offline);
     expect(store.getState().qlfOffline.processes).toEqual([
       {
         pk: 69,
