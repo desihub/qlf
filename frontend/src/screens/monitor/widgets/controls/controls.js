@@ -10,8 +10,7 @@ const styles = {
     marginRight: '1vw',
   },
   button: { height: 'calc(1em + 2vh)' },
-  buttonStyle: { padding: '1vh 0vw 0vw 0vh' },
-  buttonLabel: { fontSize: 'calc(5px + 1vh)' },
+  buttonLabel: { fontSize: 'calc(5px + 1vh)', top: '0.5vh' },
   white: { color: 'white' },
 };
 
@@ -38,7 +37,6 @@ export default class Controls extends Component {
       <RaisedButton
         label="Stop"
         style={styles.button}
-        buttonStyle={styles.buttonStyle}
         labelStyle={{ ...styles.buttonLabel, ...styles.white }}
         backgroundColor={'#ff0000'}
         fullWidth={true}
@@ -48,7 +46,6 @@ export default class Controls extends Component {
       <RaisedButton
         label="Start"
         style={styles.button}
-        buttonStyle={styles.buttonStyle}
         labelStyle={{ ...styles.buttonLabel, ...styles.white }}
         backgroundColor={'#00C853'}
         fullWidth={true}
@@ -63,7 +60,6 @@ export default class Controls extends Component {
         {this.renderStartOrStop()}
         <RaisedButton
           label="reset"
-          buttonStyle={styles.buttonStyle}
           style={styles.button}
           labelStyle={styles.buttonLabel}
           fullWidth={true}
