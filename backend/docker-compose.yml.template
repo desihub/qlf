@@ -35,6 +35,7 @@ services:
       - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001 --host=localhost:5007
       - DB_NAME=db
       - REDIS_NAME=redis
+      - BOKEH_TEST=false
     volumes:
       - .:/app
     restart: always
