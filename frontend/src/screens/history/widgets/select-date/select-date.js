@@ -58,6 +58,12 @@ export default class SelectDate extends React.Component {
     );
   };
 
+  formatDate = date => {
+    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
+    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
+    return month + '/' + day + '/' + date.getFullYear();
+  };
+
   render() {
     return (
       <div style={styles.container}>
@@ -69,6 +75,7 @@ export default class SelectDate extends React.Component {
           maxDate={this.state.selectedEndDate || this.state.rangeEndDate}
           value={this.state.selectedStartDate}
           onChange={this.changeStart}
+          formatDate={this.formatDate}
         />
         <DatePicker
           hintText="End Date"
@@ -77,6 +84,7 @@ export default class SelectDate extends React.Component {
           maxDate={this.state.rangeEndDate}
           value={this.state.selectedEndDate}
           onChange={this.changeEnd}
+          formatDate={this.formatDate}
         />
       </div>
     );

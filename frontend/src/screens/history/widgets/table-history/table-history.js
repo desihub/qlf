@@ -31,13 +31,14 @@ export default class TableHistory extends Component {
   static propTypes = {
     getHistory: Proptypes.func.isRequired,
     getHistoryOrdered: Proptypes.func.isRequired,
-    processes: Proptypes.array.isRequired,
+    rows: Proptypes.array.isRequired,
     navigateToQA: Proptypes.func.isRequired,
     lastProcess: Proptypes.number,
+    type: Proptypes.string.isRequired,
   };
 
   state = {
-    processes: undefined,
+    rows: undefined,
     asc: undefined,
     ordering: undefined,
   };
@@ -49,7 +50,7 @@ export default class TableHistory extends Component {
   getHistoryOrdered = async ordering => {
     const order = this.state.asc ? ordering : `-${ordering}`;
     this.setState({
-      processes: await this.props.getHistoryOrdered(order),
+      rows: await this.props.getHistoryOrdered(order),
       asc: !this.state.asc,
       ordering,
     });
@@ -62,27 +63,46 @@ export default class TableHistory extends Component {
   renderBody = () => {
     return (
       <TableBody showRowHover={true} displayRowCheckbox={false}>
-        {this.props.processes.map((process, id) => {
+        {this.props.rows.map((process, id) => {
           const lastProcessStyle =
             process.pk === this.props.lastProcess ? styles.bold : null;
+          const processId = this.props.type === 'process' ? process.pk : process.last_exposure_process_id;
           return (
             <TableRow style={lastProcessStyle} key={id}>
-              <TableRowColumn>{process.pk}</TableRowColumn>
-              <TableRowColumn>{process.dateobs}</TableRowColumn>
-              <TableRowColumn>{process.datemjd.toFixed(5)}</TableRowColumn>
-              <TableRowColumn>{process.exposure_id}</TableRowColumn>
+              <TableRowColumn />
+              {this.props.type === 'process' ? (
+                <TableRowColumn>{process.pk}</TableRowColumn>
+              ) : null}
+              {this.props.type === 'process' ? (
+                <TableRowColumn>
+                  {this.formatDate(process.start)}
+                </TableRowColumn>
+              ) : null}
+              {this.props.type === 'process' ? (
+                <TableRowColumn>{process.runtime}</TableRowColumn>
+              ) : null}
+              <TableRowColumn>
+                {this.props.type === 'process'
+                  ? process.exposure_id
+                  : process.pk}
+              </TableRowColumn>
               <TableRowColumn>{process.tile}</TableRowColumn>
+              <TableRowColumn>
+                {this.formatDate(process.dateobs)}
+              </TableRowColumn>
+              <TableRowColumn>
+                {this.formatTime(process.dateobs)}
+              </TableRowColumn>
+              <TableRowColumn>{process.datemjd.toFixed(2)}</TableRowColumn>
               <TableRowColumn>{process.telra}</TableRowColumn>
               <TableRowColumn>{process.teldec}</TableRowColumn>
-              <TableRowColumn />
               <TableRowColumn>{process.exptime}</TableRowColumn>
               <TableRowColumn>{process.airmass}</TableRowColumn>
               <TableRowColumn />
-              <TableRowColumn>{process.runtime}</TableRowColumn>
               <TableRowColumn>
                 <span
                   style={styles.link}
-                  onClick={() => this.selectProcessQA(process.pk)}
+                  onClick={() => this.selectProcessQA(processId)}
                 >
                   View
                 </span>
@@ -116,6 +136,21 @@ export default class TableHistory extends Component {
     );
   };
 
+  formatDate = dateString => {
+    const date = new Date(dateString);
+    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
+    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
+    return month + '/' + day + '/' + date.getFullYear();
+  };
+
+  formatTime = dateString => {
+    const time = new Date(dateString);
+    const hour = (time.getHours() + 1 < 10 ? '0' : '') + time.getHours();
+    const minutes = (time.getMinutes() + 1 < 10 ? '0' : '') + time.getMinutes();
+    const seconds = (time.getSeconds() + 1 < 10 ? '0' : '') + time.getDate();
+    return hour + ':' + minutes + ':' + seconds;
+  };
+
   render() {
     return (
       <Card style={styles.card}>
@@ -130,34 +165,45 @@ export default class TableHistory extends Component {
             enableSelectAll={false}
           >
             <TableRow>
+              <TableHeaderColumn>Program</TableHeaderColumn>
+              {this.props.type === 'process' ? (
+                <TableHeaderColumn>
+                  {this.renderHeader('pk', 'Process ID')}
+                </TableHeaderColumn>
+              ) : null}
+              {this.props.type === 'process' ? (
+                <TableHeaderColumn>
+                  {this.renderHeader('start', 'Process Date')}
+                </TableHeaderColumn>
+              ) : null}
+              {this.props.type === 'process' ? (
+                <TableHeaderColumn>Process Time</TableHeaderColumn>
+              ) : null}
               <TableHeaderColumn>
-                {this.renderHeader('pk', 'Process ID')}
-              </TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('dateobs', 'Date OBS')}
-              </TableHeaderColumn>
-              <TableHeaderColumn>MJD</TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('exposure_id', 'Exp ID')}
+                {this.renderHeader(
+                  this.props.type === 'process' ? 'exposure_id' : 'pk',
+                  'Exp ID'
+                )}
               </TableHeaderColumn>
               <TableHeaderColumn>
                 {this.renderHeader('tile', 'Tile ID')}
               </TableHeaderColumn>
+              <TableHeaderColumn>
+                {this.renderHeader('dateobs', 'OBS Date')}
+              </TableHeaderColumn>
+              <TableHeaderColumn>OBS Time</TableHeaderColumn>
+              <TableHeaderColumn>MJD</TableHeaderColumn>
               <TableHeaderColumn>
                 {this.renderHeader('telra', 'RA (hms)')}
               </TableHeaderColumn>
               <TableHeaderColumn>
                 {this.renderHeader('teldec', 'Dec (dms)')}
               </TableHeaderColumn>
-              <TableHeaderColumn>Program</TableHeaderColumn>
               <TableHeaderColumn>
                 {this.renderHeader('exptime', 'Exp Time(s)')}
               </TableHeaderColumn>
               <TableHeaderColumn>Airmass</TableHeaderColumn>
               <TableHeaderColumn>FWHM (arcsec)</TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('runtime', 'Run time')}
-              </TableHeaderColumn>
               <TableHeaderColumn>QA</TableHeaderColumn>
               <TableHeaderColumn>View</TableHeaderColumn>
             </TableRow>
