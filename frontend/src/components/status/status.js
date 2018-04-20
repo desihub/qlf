@@ -9,24 +9,31 @@ const styles = {
   },
 };
 
-export default class QAStatus extends Component {
+export default class Status extends Component {
   static propTypes = {
+    daemonStatus: PropTypes.string,
     exposure: PropTypes.string.isRequired,
-    mjd: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
-    time: PropTypes.string.isRequired,
+    mjd: PropTypes.string,
+    date: PropTypes.string,
+    processId: PropTypes.number,
   };
 
   render() {
     const mjd = parseFloat(this.props.mjd)
       ? parseFloat(this.props.mjd).toFixed(5)
       : '';
+    const processId = this.props.processId
+      ? this.props.processId.toString()
+      : '';
     return (
       <div style={{ ...styles.container }}>
+        {this.props.daemonStatus ? (
+          <Cards title={'Status'} subtitle={this.props.daemonStatus} />
+        ) : null}
+        <Cards title={'Process Id'} subtitle={processId} />
         <Cards title={'Exposure Id'} subtitle={this.props.exposure} />
         <Cards title={'MJD'} subtitle={mjd} />
         <Cards title={'Date'} subtitle={this.props.date} />
-        <Cards title={'Time'} subtitle={this.props.time} />
       </div>
     );
   }

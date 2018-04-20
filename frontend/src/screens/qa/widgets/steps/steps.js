@@ -74,6 +74,7 @@ export default class Steps extends Component {
     time: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func,
     petalSizeFactor: PropTypes.number.isRequired,
+    processId: PropTypes.number,
   };
 
   state = {
@@ -202,6 +203,7 @@ export default class Steps extends Component {
           layout={this.props.layout}
           date={this.props.date}
           time={this.props.time}
+          processId={this.props.processId}
         />
       </div>
     );

@@ -8,6 +8,8 @@ function defaultState() {
     date: '',
     time: '',
     exposure: '',
+    processId: undefined,
+    lastProcess: undefined,
     qaTests: [],
     arm: 0,
     spectrograph: 0,
@@ -36,6 +38,7 @@ function updateQA(qaTests) {
     qaTests: qaTests.qa_tests,
     date: qaTests.date.split('T')[0],
     time: qaTests.date.split('T')[1],
+    processId: qaTests.pk,
     exposure: qaTests.exposure_id.toString(),
   };
   return { type: 'UPDATE_OFFLINE_QA', state };
@@ -63,7 +66,7 @@ export function getProcessingHistory() {
       dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
     }
 
-    if (lastProcess[0] && lastProcess[0].id) {
+    if (lastProcess && lastProcess[0] && lastProcess[0].id) {
       dispatch(updateLastProcess(lastProcess[0].id));
     }
   };
@@ -107,7 +110,7 @@ export function getObservingHistory() {
       dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
     }
 
-    if (lastProcess[0] && lastProcess[0].id) {
+    if (lastProcess && lastProcess[0] && lastProcess[0].id) {
       dispatch(updateLastProcess(lastProcess[0].id));
     }
   };
@@ -186,6 +189,7 @@ export function qlfOfflineReducers(state = defaultState(), action) {
         mjd: action.state.mjd,
         date: action.state.date,
         time: action.state.time,
+        processId: action.state.processId,
         qaTests: action.state.qaTests,
         exposure: action.state.exposure,
       });

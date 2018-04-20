@@ -21,7 +21,7 @@ import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
 
 const arms = ['b', 'r', 'z'];
-const spectrographs = _.range(0, 9);
+const spectrographs = _.range(0, 10);
 
 const styles = {
   loading: {
@@ -59,6 +59,7 @@ class OfflineContainer extends Component {
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
     lastProcess: PropTypes.number,
+    processId: PropTypes.number,
   };
 
   state = {
@@ -143,6 +144,7 @@ class OfflineContainer extends Component {
               }
               navigateToMetrics={this.props.navigateToMetrics}
               petalSizeFactor={16}
+              processId={this.props.processId}
             />
           )}
         />
@@ -164,6 +166,7 @@ class OfflineContainer extends Component {
               arm={this.props.arm}
               step={this.props.step}
               spectrograph={this.props.spectrograph}
+              processId={this.props.processId}
             />
           )}
         />
@@ -187,6 +190,7 @@ export default connect(
     startDate: state.qlfOffline.startDate,
     endDate: state.qlfOffline.endDate,
     lastProcess: state.qlfOffline.lastProcess,
+    processId: state.qlfOffline.processId,
   }),
   dispatch => ({
     getQA: processId => dispatch(getQA(processId)),
