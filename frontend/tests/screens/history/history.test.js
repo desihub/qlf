@@ -8,7 +8,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 configure({ adapter: new Adapter() });
 
-const processes = [
+const rows = [
   {
     pk: 69,
     dateobs: '2019-01-01T22:00:00Z',
@@ -37,7 +37,7 @@ const processes = [
 
 describe('History Controls', () => {
   const getHistory = jest.fn(),
-    getHistoryOrdered = jest.fn(() => processes),
+    getHistoryOrdered = jest.fn(() => rows),
     navigateToQA = jest.fn();
   let history;
   beforeEach(() => {
@@ -49,10 +49,11 @@ describe('History Controls', () => {
     history = (
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
         <History
-          processes={processes}
+          rows={rows}
           getHistory={getHistory}
           navigateToQA={navigateToQA}
           getHistoryOrdered={getHistoryOrdered}
+          type={'process'}
         />
       </MuiThemeProvider>
     );
