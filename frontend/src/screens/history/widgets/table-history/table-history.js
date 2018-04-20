@@ -61,30 +61,31 @@ export default class TableHistory extends Component {
   };
 
   renderBody = () => {
+    const isProcessHistory = this.props.type === 'process';
     return (
-      <TableBody showRowHover={true} displayRowCheckbox={false}>
+      <TableBody showRowHover={true} displayRowCheckbox={!isProcessHistory}>
         {this.props.rows.map((process, id) => {
           const lastProcessStyle =
             process.pk === this.props.lastProcess ? styles.bold : null;
-          const processId = this.props.type === 'process' ? process.pk : process.last_exposure_process_id;
+          const processId = isProcessHistory
+            ? process.pk
+            : process.last_exposure_process_id;
           return (
             <TableRow style={lastProcessStyle} key={id}>
               <TableRowColumn />
-              {this.props.type === 'process' ? (
+              {isProcessHistory ? (
                 <TableRowColumn>{process.pk}</TableRowColumn>
               ) : null}
-              {this.props.type === 'process' ? (
+              {isProcessHistory ? (
                 <TableRowColumn>
                   {this.formatDate(process.start)}
                 </TableRowColumn>
               ) : null}
-              {this.props.type === 'process' ? (
+              {isProcessHistory ? (
                 <TableRowColumn>{process.runtime}</TableRowColumn>
               ) : null}
               <TableRowColumn>
-                {this.props.type === 'process'
-                  ? process.exposure_id
-                  : process.pk}
+                {isProcessHistory ? process.exposure_id : process.pk}
               </TableRowColumn>
               <TableRowColumn>{process.tile}</TableRowColumn>
               <TableRowColumn>
@@ -152,36 +153,39 @@ export default class TableHistory extends Component {
   };
 
   render() {
+    const isProcessHistory = this.props.type === 'process';
     return (
       <Card style={styles.card}>
         <Table
           fixedHeader={false}
           style={{ width: 'auto', tableLayout: 'auto' }}
           bodyStyle={{ overflow: 'visible' }}
+          selectable={!isProcessHistory}
+          multiSelectable={true}
         >
           <TableHeader
-            displaySelectAll={false}
+            displaySelectAll={!isProcessHistory}
             adjustForCheckbox={false}
-            enableSelectAll={false}
+            enableSelectAll={!isProcessHistory}
           >
             <TableRow>
               <TableHeaderColumn>Program</TableHeaderColumn>
-              {this.props.type === 'process' ? (
+              {isProcessHistory ? (
                 <TableHeaderColumn>
                   {this.renderHeader('pk', 'Process ID')}
                 </TableHeaderColumn>
               ) : null}
-              {this.props.type === 'process' ? (
+              {isProcessHistory ? (
                 <TableHeaderColumn>
                   {this.renderHeader('start', 'Process Date')}
                 </TableHeaderColumn>
               ) : null}
-              {this.props.type === 'process' ? (
+              {isProcessHistory ? (
                 <TableHeaderColumn>Process Time</TableHeaderColumn>
               ) : null}
               <TableHeaderColumn>
                 {this.renderHeader(
-                  this.props.type === 'process' ? 'exposure_id' : 'pk',
+                  isProcessHistory ? 'exposure_id' : 'pk',
                   'Exp ID'
                 )}
               </TableHeaderColumn>

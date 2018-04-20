@@ -158,8 +158,6 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
                 datemax = datetime.strptime(datemax, "%Y-%m-%d") + timedelta(days=1)
                 queryset = queryset.filter(exposure__dateobs__gte=datemin)
                 queryset = queryset.filter(exposure__dateobs__lte=datemax)
-                serializer = self.get_serializer(queryset, many=True)
-                return Response(serializer.data)
             except:
                 response.data['results'] = { "Error": 'wrong date format' }
                 return response

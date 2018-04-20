@@ -75,8 +75,9 @@ export function getProcessingHistoryRangeDate(start, end) {
       start.toISOString().split('T')[0],
       end.toISOString().split('T')[0]
     );
-    if (rows) {
-      await dispatch(updateRows(rows));
+
+    if (rows && rows.results && rows.results.results) {
+      await dispatch(updateRows(rows.results.results));
     }
   };
 }
@@ -118,8 +119,9 @@ export function getObservingHistoryRangeDate(start, end) {
       start.toISOString().split('T')[0],
       end.toISOString().split('T')[0]
     );
-    if (rows) {
-      await dispatch(updateRows(rows));
+
+    if (rows && rows.results && rows.results.results) {
+      await dispatch(updateRows(rows.results.results));
     }
   };
 }
