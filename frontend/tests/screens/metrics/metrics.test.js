@@ -40,6 +40,9 @@ describe('Metric Controls', () => {
           time={'22:00:00'}
           date={'2019-01-01'}
           navigateToProcessingHistory={navigateToProcessingHistory}
+          step={0}
+          arm={0}
+          spectrograph={0}
         />
       </MuiThemeProvider>
     );

@@ -124,7 +124,7 @@ export default class Steps extends Component {
           onMouseOver={() => this.showStepName(name)}
           style={styles.step}
         >
-          {title}
+          {this.props.navigateToProcessingHistory ? name : title}
         </span>
         <PieChart
           renderMetrics={this.props.renderMetrics}

@@ -52,6 +52,10 @@ describe('Websocket', () => {
       mjd: '58484.91667',
       time: 'time',
       date: 'date',
+      arm: 0,
+      step: 0,
+      spectrograph: 0,
+      processId: undefined,
     });
   });
 
@@ -76,6 +80,10 @@ describe('Websocket', () => {
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
       qaTests: [],
+      arm: 0,
+      spectrograph: 0,
+      step: 0,
+      processId: undefined,
     });
   });
 });

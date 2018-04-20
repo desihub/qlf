@@ -32,6 +32,9 @@ class OnlineContainer extends Component {
     pathname: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
     processId: PropTypes.number,
+    arm: PropTypes.number.isRequired,
+    step: PropTypes.number.isRequired,
+    spectrograph: PropTypes.number.isRequired,
   };
 
   state = {
@@ -105,10 +108,11 @@ class OnlineContainer extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
-              navigateToMetrics={this.props.navigateToMetrics}
               navigateToProcessingHistory={
                 this.props.navigateToProcessingHistory
               }
+              navigateToMetrics={this.props.navigateToMetrics}
+              petalSizeFactor={16}
             />
           )}
         />
@@ -125,6 +129,12 @@ class OnlineContainer extends Component {
               time={this.props.time}
               navigateToMetrics={this.props.navigateToMetrics}
               navigateToQA={this.props.navigateToQA}
+              navigateToProcessingHistory={
+                this.props.navigateToProcessingHistory
+              }
+              arm={this.props.arm}
+              step={this.props.step}
+              spectrograph={this.props.spectrograph}
             />
           )}
         />
@@ -148,6 +158,9 @@ export default connect(
     camerasStages: state.qlfOnline.camerasStages,
     pathname: state.router.location ? state.router.location.pathname : null,
     processId: state.qlfOnline.processId,
+    arm: state.qlfOnline.arm,
+    step: state.qlfOnline.step,
+    spectrograph: state.qlfOnline.spectrograph,
   }),
   dispatch => ({
     navigateToMetrics: (step, spectrograph, arm, exp) =>
