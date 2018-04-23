@@ -36,11 +36,13 @@ const styles = {
   },
 };
 
+console.log(process.env.IS_ELECTRON)
+
 class App extends React.Component {
   state = {
     openDrawer: false,
     url: '/',
-    displayHeaders: true,
+    displayHeaders: !process.env.IS_ELECTRON,
   };
 
   renderRouteName = () => {
@@ -117,9 +119,11 @@ class App extends React.Component {
         <span
           style={{
             color: 'gray',
-            margin: '1em',
+            marginRight: '1em',
             cursor: 'pointer',
             fontSize: '10px',
+            display: 'flex',
+            justifyContent: 'flex-end',
           }}
           onClick={this.toggleHeader}
         >

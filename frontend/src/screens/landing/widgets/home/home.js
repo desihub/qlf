@@ -22,7 +22,7 @@ export default class Home extends React.Component {
 
   navigateTo = route => {
     this.props.updateUrl(route);
-    window.open(route);
+    window.open(route, null, 'width=850, height=650');
   };
 
   componentDidMount() {
