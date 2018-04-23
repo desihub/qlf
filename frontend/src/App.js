@@ -36,13 +36,11 @@ const styles = {
   },
 };
 
-console.log(process.env.IS_ELECTRON)
-
 class App extends React.Component {
   state = {
     openDrawer: false,
     url: '/',
-    displayHeaders: !process.env.IS_ELECTRON,
+    displayHeaders: true,
   };
 
   renderRouteName = () => {
