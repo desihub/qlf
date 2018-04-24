@@ -5,7 +5,6 @@ from astropy.time import Time
 from .utils import get_date
 from django.conf import settings
 import Pyro4
-import time
 
 uri = settings.QLF_DAEMON_URL
 qlf = Pyro4.Proxy(uri)
