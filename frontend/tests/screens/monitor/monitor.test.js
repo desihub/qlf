@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 import _ from 'lodash';
 
 const arms = ['b', 'r', 'z'];
-const spectrographs = _.range(0, 9);
+const spectrographs = _.range(0, 10);
 configure({ adapter: new Adapter() });
 
 function send(message) {

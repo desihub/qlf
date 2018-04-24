@@ -58,25 +58,37 @@ export default class SelectDate extends React.Component {
     );
   };
 
+  formatDate = date => {
+    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
+    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
+    return month + '/' + day + '/' + date.getFullYear();
+  };
+
   render() {
     return (
       <div style={styles.container}>
         <DatePicker
+          autoOK={true}
           style={styles.space}
+          floatingLabelText="Start Date"
           hintText="Start Date"
           container="inline"
           minDate={this.state.rangeStartDate}
           maxDate={this.state.selectedEndDate || this.state.rangeEndDate}
           value={this.state.selectedStartDate}
           onChange={this.changeStart}
+          formatDate={this.formatDate}
         />
         <DatePicker
+          autoOK={true}
+          floatingLabelText="End Date"
           hintText="End Date"
           container="inline"
           minDate={this.state.selectedStartDate || this.state.rangeStartDate}
           maxDate={this.state.rangeEndDate}
           value={this.state.selectedEndDate}
           onChange={this.changeEnd}
+          formatDate={this.formatDate}
         />
       </div>
     );

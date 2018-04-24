@@ -1,5 +1,5 @@
 import React from 'react';
-import Status from '../../../../../src/screens/monitor/widgets/status/status';
+import Status from '../../../src/components/status/status';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';

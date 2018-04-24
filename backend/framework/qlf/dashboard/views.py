@@ -11,7 +11,7 @@ from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer,
-    ProcessingHistorySerializer, SingleQASerializer
+    ProcessingHistorySerializer, SingleQASerializer, ObservingHistorySerializer
 )
 import Pyro4
 from datetime import datetime, timedelta
@@ -140,7 +140,7 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processing history"""
 
-    queryset = Process.objects.order_by('exposure_id')
+    queryset = Process.objects.order_by('-pk')
     serializer_class = ProcessingHistorySerializer
     filter_fields = ('exposure_id',)
 
@@ -158,8 +158,6 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
                 datemax = datetime.strptime(datemax, "%Y-%m-%d") + timedelta(days=1)
                 queryset = queryset.filter(exposure__dateobs__gte=datemin)
                 queryset = queryset.filter(exposure__dateobs__lte=datemax)
-                serializer = self.get_serializer(queryset, many=True)
-                return Response(serializer.data)
             except:
                 response.data['results'] = { "Error": 'wrong date format' }
                 return response
@@ -169,9 +167,41 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         else:
             prefix_order = ''
             standard_ordering = ordering
-        if ordering and standard_ordering not in ('exposure_id', '-exposure_id'):
+        if ordering and standard_ordering not in ('exposure_id', '-exposure_id', 'start', '-start'):
             order_by = '{}exposure__{}'.format(prefix_order,standard_ordering)
             queryset = queryset.order_by(order_by)
+        serializer = self.get_serializer(queryset, many=True)
+        exposure = Exposure.objects.all()
+        start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']
+        end_date = exposure.aggregate(Max('dateobs'))['dateobs__max']
+        response.data['results'] = { "start_date": start_date, "end_date": end_date, "results": serializer.data }
+        return response
+
+class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing processing history"""
+
+    queryset = Exposure.objects.order_by('-pk')
+    serializer_class = ObservingHistorySerializer
+    filter_fields = ('exposure_id',)
+
+    # Added to order SerializerMethodFields
+    def list(self, request, *args, **kwargs):
+        response = super(ObservingHistoryViewSet, self).list(
+            request, args, kwargs)
+        ordering = request.query_params.get('ordering')
+        datemin = request.query_params.get('datemin')
+        datemax = request.query_params.get('datemax')
+        queryset = self.filter_queryset(self.get_queryset())
+        if datemax and datemin:
+            try:
+                datemin = datetime.strptime(datemin, "%Y-%m-%d")
+                datemax = datetime.strptime(datemax, "%Y-%m-%d") + timedelta(days=1)
+                queryset = queryset.filter(dateobs__gte=datemin)
+                queryset = queryset.filter(dateobs__lte=datemax)
+            except:
+                response.data['results'] = { "Error": 'wrong date format' }
+                return response
+
         serializer = self.get_serializer(queryset, many=True)
         exposure = Exposure.objects.all()
         start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']

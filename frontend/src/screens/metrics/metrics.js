@@ -64,6 +64,7 @@ export default class Metrics extends Component {
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
+    processId: PropTypes.number,
   };
 
   state = {
@@ -192,6 +193,7 @@ export default class Metrics extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
+              processId={this.props.processId}
             />
             <div style={{ ...styles.controls }}>
               <Control

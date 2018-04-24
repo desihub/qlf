@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Controls from './widgets/controls/controls';
 import Stages from './widgets/stages/stages';
 import Terminal from './widgets/terminal/terminal';
-import Status from './widgets/status/status';
+import Status from '../../components/status/status';
 import Dialog from './widgets/dialog/dialog';
 import PropTypes from 'prop-types';
 import QA from '../qa/qa';

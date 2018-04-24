@@ -8,11 +8,12 @@ export default class History extends Component {
     getHistory: Proptypes.func.isRequired,
     getHistoryOrdered: Proptypes.func.isRequired,
     navigateToQA: Proptypes.func.isRequired,
-    processes: Proptypes.array.isRequired,
+    rows: Proptypes.array.isRequired,
     startDate: Proptypes.string,
     endDate: Proptypes.string,
     getHistoryRangeDate: Proptypes.func.isRequired,
     lastProcess: Proptypes.number,
+    type: Proptypes.string.isRequired,
   };
 
   renderSelectDate = () => {
@@ -33,9 +34,10 @@ export default class History extends Component {
         <TableHistory
           getHistory={this.props.getHistory}
           getHistoryOrdered={this.props.getHistoryOrdered}
-          processes={this.props.processes}
+          rows={this.props.rows}
           navigateToQA={this.props.navigateToQA}
           lastProcess={this.props.lastProcess}
+          type={this.props.type}
         />
       </div>
     );

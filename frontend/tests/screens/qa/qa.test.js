@@ -91,7 +91,7 @@ describe('QA', () => {
     expect(
       wrapper
         .find('Cards')
-        .at(0)
+        .at(1)
         .props().subtitle
     ).toBe('3');
     expect(

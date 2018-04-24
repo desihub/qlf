@@ -163,11 +163,11 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Process
-        fields = ('pk', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime')
+        fields = ('pk', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime', 'start', 'end')
 
     def get_runtime(self, obj):
         if obj.end is not None and obj.start is not None:
-            return obj.end - obj.start
+            return str(obj.end.replace(microsecond=0) - obj.start.replace(microsecond=0))
         else:
             return None
 
@@ -213,3 +213,19 @@ class SingleQASerializer(DynamicFieldsModelSerializer):
 
     def get_qa_tests(self, obj):
         return qlf.qa_tests(obj.pk)
+
+class ObservingHistorySerializer(DynamicFieldsModelSerializer):
+
+    datemjd = serializers.SerializerMethodField()
+    last_exposure_process_id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Exposure
+        fields = ('pk', 'dateobs', 'datemjd', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'last_exposure_process_id')
+
+    def get_datemjd(self, obj):
+        time = get_date(obj.pk)
+        return time.mjd
+
+    def get_last_exposure_process_id(self, obj):
+        return Process.objects.all().filter(exposure=obj.pk).last().pk
