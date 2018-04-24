@@ -29,7 +29,7 @@ export default class History extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{ '-webkit-app-region': 'no-drag' }}>
         {this.renderSelectDate()}
         <TableHistory
           getHistory={this.props.getHistory}
