@@ -71,6 +71,18 @@ export default class TableHistory extends Component {
     );
   };
 
+  renderSubmit = () => {
+    if (this.props.type === 'process') return;
+    return (
+      <RaisedButton
+        label="Submit"
+        backgroundColor={'#00C853'}
+        labelStyle={{ color: 'white' }}
+        fullWidth={true}
+      />
+    );
+  };
+
   render() {
     const isProcessHistory = this.props.type === 'process';
     return (
@@ -90,12 +102,7 @@ export default class TableHistory extends Component {
           />
           {this.renderBody()}
         </Table>
-        <RaisedButton
-          label="Submit"
-          backgroundColor={'#00C853'}
-          labelStyle={{ color: 'white' }}
-          fullWidth={true}
-        />
+        {this.renderSubmit()}
       </Card>
     );
   }
