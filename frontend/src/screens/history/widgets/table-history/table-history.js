@@ -1,30 +1,17 @@
 import React, { Component } from 'react';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
-import { ArrowDropDown, ArrowDropUp } from 'material-ui-icons';
+import { Table, TableBody } from 'material-ui/Table';
 import Proptypes from 'prop-types';
 import { Card } from 'material-ui/Card';
+import HistoryHeader from './history-header/history-header';
+import HistoryData from './history-data/history-data';
 
 const styles = {
-  arrow: { display: 'flex', alignItems: 'center' },
-  header: { cursor: 'pointer' },
   card: {
     borderLeft: 'solid 4px teal',
     flex: '1',
     height: '90%',
     margin: '1em',
   },
-  link: {
-    cursor: 'pointer',
-    textDecoration: 'none',
-  },
-  bold: { fontWeight: 900 },
 };
 
 export default class TableHistory extends Component {
@@ -64,92 +51,23 @@ export default class TableHistory extends Component {
     const isProcessHistory = this.props.type === 'process';
     return (
       <TableBody showRowHover={true} displayRowCheckbox={!isProcessHistory}>
-        {this.props.rows.map((process, id) => {
-          const lastProcessStyle =
-            process.pk === this.props.lastProcess ? styles.bold : null;
+        {this.props.rows.map((row, id) => {
           const processId = isProcessHistory
-            ? process.pk
-            : process.last_exposure_process_id;
+            ? row.pk
+            : row.last_exposure_process_id;
           return (
-            <TableRow style={lastProcessStyle} key={id}>
-              <TableRowColumn />
-              {isProcessHistory ? (
-                <TableRowColumn>{process.pk}</TableRowColumn>
-              ) : null}
-              {isProcessHistory ? (
-                <TableRowColumn>
-                  {this.formatDate(process.start)}
-                </TableRowColumn>
-              ) : null}
-              {isProcessHistory ? (
-                <TableRowColumn>{process.runtime}</TableRowColumn>
-              ) : null}
-              <TableRowColumn>
-                {isProcessHistory ? process.exposure_id : process.pk}
-              </TableRowColumn>
-              <TableRowColumn>{process.tile}</TableRowColumn>
-              <TableRowColumn>
-                {this.formatDate(process.dateobs)}
-              </TableRowColumn>
-              <TableRowColumn>
-                {this.formatTime(process.dateobs)}
-              </TableRowColumn>
-              <TableRowColumn>{process.datemjd.toFixed(2)}</TableRowColumn>
-              <TableRowColumn>{process.telra}</TableRowColumn>
-              <TableRowColumn>{process.teldec}</TableRowColumn>
-              <TableRowColumn>{process.exptime}</TableRowColumn>
-              <TableRowColumn>{process.airmass}</TableRowColumn>
-              <TableRowColumn />
-              <TableRowColumn>
-                <span
-                  style={styles.link}
-                  onClick={() => this.selectProcessQA(processId)}
-                >
-                  View
-                </span>
-              </TableRowColumn>
-              <TableRowColumn />
-            </TableRow>
+            <HistoryData
+              key={id}
+              processId={processId}
+              lastProcess={this.props.lastProcess}
+              row={row}
+              selectProcessQA={this.selectProcessQA}
+              type={this.props.type}
+            />
           );
         })}
       </TableBody>
     );
-  };
-
-  renderArrow = id => {
-    if (this.state.ordering === id) {
-      if (this.state.asc) {
-        return <ArrowDropUp />;
-      } else {
-        return <ArrowDropDown />;
-      }
-    }
-  };
-
-  renderHeader = (id, name) => {
-    return (
-      <div style={styles.arrow}>
-        <span style={styles.header} onClick={() => this.getHistoryOrdered(id)}>
-          {name}
-        </span>
-        {this.renderArrow(id)}
-      </div>
-    );
-  };
-
-  formatDate = dateString => {
-    const date = new Date(dateString);
-    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
-    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
-    return month + '/' + day + '/' + date.getFullYear();
-  };
-
-  formatTime = dateString => {
-    const time = new Date(dateString);
-    const hour = (time.getHours() + 1 < 10 ? '0' : '') + time.getHours();
-    const minutes = (time.getMinutes() + 1 < 10 ? '0' : '') + time.getMinutes();
-    const seconds = (time.getSeconds() + 1 < 10 ? '0' : '') + time.getDate();
-    return hour + ':' + minutes + ':' + seconds;
   };
 
   render() {
@@ -163,55 +81,12 @@ export default class TableHistory extends Component {
           selectable={!isProcessHistory}
           multiSelectable={true}
         >
-          <TableHeader
-            displaySelectAll={!isProcessHistory}
-            adjustForCheckbox={false}
-            enableSelectAll={!isProcessHistory}
-          >
-            <TableRow>
-              <TableHeaderColumn>Program</TableHeaderColumn>
-              {isProcessHistory ? (
-                <TableHeaderColumn>
-                  {this.renderHeader('pk', 'Process ID')}
-                </TableHeaderColumn>
-              ) : null}
-              {isProcessHistory ? (
-                <TableHeaderColumn>
-                  {this.renderHeader('start', 'Process Date')}
-                </TableHeaderColumn>
-              ) : null}
-              {isProcessHistory ? (
-                <TableHeaderColumn>Process Time</TableHeaderColumn>
-              ) : null}
-              <TableHeaderColumn>
-                {this.renderHeader(
-                  isProcessHistory ? 'exposure_id' : 'pk',
-                  'Exp ID'
-                )}
-              </TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('tile', 'Tile ID')}
-              </TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('dateobs', 'OBS Date')}
-              </TableHeaderColumn>
-              <TableHeaderColumn>OBS Time</TableHeaderColumn>
-              <TableHeaderColumn>MJD</TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('telra', 'RA (hms)')}
-              </TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('teldec', 'Dec (dms)')}
-              </TableHeaderColumn>
-              <TableHeaderColumn>
-                {this.renderHeader('exptime', 'Exp Time(s)')}
-              </TableHeaderColumn>
-              <TableHeaderColumn>Airmass</TableHeaderColumn>
-              <TableHeaderColumn>FWHM (arcsec)</TableHeaderColumn>
-              <TableHeaderColumn>QA</TableHeaderColumn>
-              <TableHeaderColumn>View</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
+          <HistoryHeader
+            getHistoryOrdered={this.getHistoryOrdered}
+            type={this.props.type}
+            asc={this.state.asc}
+            ordering={this.state.ordering}
+          />
           {this.renderBody()}
         </Table>
       </Card>
