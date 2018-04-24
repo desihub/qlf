@@ -4,6 +4,7 @@ import Proptypes from 'prop-types';
 import { Card } from 'material-ui/Card';
 import HistoryHeader from './history-header/history-header';
 import HistoryData from './history-data/history-data';
+import RaisedButton from 'material-ui/RaisedButton';
 
 const styles = {
   card: {
@@ -89,6 +90,12 @@ export default class TableHistory extends Component {
           />
           {this.renderBody()}
         </Table>
+        <RaisedButton
+          label="Submit"
+          backgroundColor={'#00C853'}
+          labelStyle={{ color: 'white' }}
+          fullWidth={true}
+        />
       </Card>
     );
   }
