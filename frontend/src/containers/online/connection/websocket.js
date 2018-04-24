@@ -18,6 +18,10 @@ class Connection extends Component {
 
   handleData = data => {
     const result = JSON.parse(data);
+    console.log(result)
+    if (result.status === 'connected' && window.location.search) {
+      this.socket.state.ws.send(window.location.search);
+    }
     if (result.ingestion) {
       const state = {
         daemonStatus: result.daemon_status ? 'Running' : 'Not Running',
@@ -43,6 +47,7 @@ class Connection extends Component {
   };
 
   storeWebsocketRef = socket => {
+    this.socket = socket;
     this.props.getWebsocketRef(socket);
   };
 
