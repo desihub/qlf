@@ -117,9 +117,11 @@ class App extends React.Component {
         <span
           style={{
             color: 'gray',
-            margin: '1em',
+            marginRight: '1em',
             cursor: 'pointer',
             fontSize: '10px',
+            display: 'flex',
+            justifyContent: 'flex-end',
           }}
           onClick={this.toggleHeader}
         >
