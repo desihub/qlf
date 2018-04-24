@@ -2,7 +2,6 @@ version: '3'
 services:
   db:
     image: postgres
-    restart: always
     environment:
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
@@ -38,7 +37,6 @@ services:
       - BOKEH_TEST=false
     volumes:
       - .:/app
-    restart: always
     working_dir: /app/
     command: ./run.sh
     ports:
