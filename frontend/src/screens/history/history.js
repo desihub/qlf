@@ -52,6 +52,19 @@ export default class History extends Component {
         rows={lastProcess}
         navigateToQA={this.props.navigateToQA}
         type={this.props.type}
+        selectable={false}
+      />
+    );
+  };
+
+  renderSubmit = () => {
+    if (this.props.type === 'process') return;
+    return (
+      <RaisedButton
+        label="Submit"
+        backgroundColor={'#00C853'}
+        labelStyle={{ color: 'white' }}
+        fullWidth={true}
       />
     );
   };
@@ -65,6 +78,7 @@ export default class History extends Component {
           rows={this.props.rows}
           navigateToQA={this.props.navigateToQA}
           type={this.props.type}
+          selectable={true}
         />
       );
     }
@@ -88,6 +102,7 @@ export default class History extends Component {
                 onClick={this.props.getHistory}
               />
               {this.renderRows()}
+              {this.renderSubmit()}
             </Tab>
           </Tabs>
         </Card>

@@ -15,6 +15,7 @@ export default class HistoryHeader extends React.Component {
     getHistoryOrdered: PropTypes.func.isRequired,
     asc: PropTypes.bool,
     ordering: PropTypes.string,
+    selectable: PropTypes.bool,
   };
 
   renderArrow = id => {
@@ -89,9 +90,9 @@ export default class HistoryHeader extends React.Component {
   renderObservingHistoryHeader = () => {
     return (
       <TableHeader
-        displaySelectAll={true}
+        displaySelectAll={true && this.props.selectable}
         adjustForCheckbox={false}
-        enableSelectAll={true}
+        enableSelectAll={true && this.props.selectable}
         {...this.props}
       >
         <TableRow>
