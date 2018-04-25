@@ -32,6 +32,13 @@ function updateLastProcess(lastProcess) {
   return { type: 'UPDATE_LAST_PROCESS', state };
 }
 
+export function fetchLastProcess(processId) {
+  return async function(dispatch) {
+    const lastProcess = await QlfApi.getProcessingHistoryById(processId);
+    if (!lastProcess.detail) dispatch(updateLastProcess(lastProcess));
+  };
+}
+
 function updateQA(qaTests) {
   const state = {
     mjd: qaTests.datemjd.toFixed(5),
@@ -52,7 +59,6 @@ function selectMetric(step, spectrograph, arm) {
 export function getProcessingHistory() {
   return async function(dispatch) {
     const rows = await QlfApi.getProcessingHistory();
-    const lastProcess = await QlfApi.getLastProcess();
     if (rows && rows.results && rows.results.results) {
       dispatch(updateRows(rows.results.results));
     }
@@ -64,10 +70,6 @@ export function getProcessingHistory() {
       rows.results.end_date
     ) {
       dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
-    }
-
-    if (lastProcess && lastProcess[0] && lastProcess[0].id) {
-      dispatch(updateLastProcess(lastProcess[0].id));
     }
   };
 }
@@ -96,7 +98,6 @@ export function getProcessingHistoryOrdered(ordering) {
 export function getObservingHistory() {
   return async function(dispatch) {
     const rows = await QlfApi.getObservingHistory();
-    const lastProcess = await QlfApi.getLastProcess();
     if (rows && rows.results && rows.results.results) {
       dispatch(updateRows(rows.results.results));
     }
@@ -108,10 +109,6 @@ export function getObservingHistory() {
       rows.results.end_date
     ) {
       dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
-    }
-
-    if (lastProcess && lastProcess[0] && lastProcess[0].id) {
-      dispatch(updateLastProcess(lastProcess[0].id));
     }
   };
 }

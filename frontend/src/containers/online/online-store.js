@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { push } from 'react-router-redux';
+import { fetchLastProcess } from '../offline/offline-store';
 
 function defaultState() {
   return {
@@ -21,7 +22,7 @@ function defaultState() {
   };
 }
 
-export function updateMonitorState(state) {
+function updateMonitorState(state) {
   return { type: 'UPDATE_MONITOR_STATE', state };
 }
 
@@ -36,6 +37,18 @@ export function updateQA(state) {
 function selectMetric(step, spectrograph, arm) {
   const state = { step, spectrograph, arm };
   return { type: 'UPDATE_METRIC_SELECT_ONLINE', state };
+}
+
+export function updateLastProcessAndMonitor(state) {
+  return function(dispatch, getState) {
+    if (
+      !getState().qlfOffline.lastProcess ||
+      getState().qlfOnline.processId !== state.processId
+    ) {
+      dispatch(fetchLastProcess(state.processId));
+    }
+    dispatch(updateMonitorState(state));
+  };
 }
 
 export function navigateToOnlineMetrics(step, spectrograph, arm) {

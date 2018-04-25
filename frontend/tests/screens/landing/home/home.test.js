@@ -40,17 +40,11 @@ describe('Landing Home', () => {
         .find('a')
         .at(1)
         .text()
-    ).toBe('QAMonitor QA metrics and provide access to diagnostic plots');
-    expect(
-      wrapper
-        .find('a')
-        .at(2)
-        .text()
     ).toBe('Processing HistoryList exposures that have been processed');
     expect(
       wrapper
         .find('a')
-        .at(3)
+        .at(2)
         .text()
     ).toBe(
       'Observing HistoryDisplay time series plots for QA metrics, list of exposures and observed targets for the current night of for a range of nights'
@@ -58,7 +52,7 @@ describe('Landing Home', () => {
     expect(
       wrapper
         .find('a')
-        .at(4)
+        .at(3)
         .text()
     ).toBe(
       'Afternoon PlanningBrowse QA results for exposures processed by the offline pipeline at NERSC'
@@ -66,7 +60,7 @@ describe('Landing Home', () => {
     expect(
       wrapper
         .find('a')
-        .at(5)
+        .at(4)
         .text()
     ).toBe(
       'Trend AnalysisSimple plots using quantities stored in the database'
@@ -74,7 +68,7 @@ describe('Landing Home', () => {
     expect(
       wrapper
         .find('a')
-        .at(6)
+        .at(5)
         .text()
     ).toBe(
       'Sky ConditionsDisplay sky conditions such as atmospheric transparency, seeing, and sky background from the GFA camera'
@@ -82,13 +76,13 @@ describe('Landing Home', () => {
     expect(
       wrapper
         .find('a')
-        .at(7)
+        .at(6)
         .text()
     ).toBe('Survey ReportsShow the overall progress and performance of survey');
     expect(
       wrapper
         .find('a')
-        .at(8)
+        .at(7)
         .text()
     ).toBe('ConfigurationConfiguration of initial settings for execution');
   });
@@ -106,18 +100,10 @@ describe('Landing Home', () => {
     expect(updateUrl).toBeCalledWith('/monitor-realtime');
   });
 
-  it('navigates to /qa', () => {
-    wrapper
-      .find('a')
-      .at(1)
-      .simulate('click');
-    expect(updateUrl).toBeCalledWith('/qa-realtime');
-  });
-
   it('navigates to /processing-history', () => {
     wrapper
       .find('a')
-      .at(2)
+      .at(1)
       .simulate('click');
     expect(updateUrl).toBeCalledWith('/processing-history');
   });
@@ -125,7 +111,7 @@ describe('Landing Home', () => {
   it('navigates to /observing-history', () => {
     wrapper
       .find('a')
-      .at(3)
+      .at(2)
       .simulate('click');
     expect(updateUrl).toBeCalledWith('/observing-history');
   });
@@ -152,12 +138,6 @@ describe('Landing Home', () => {
     wrapper
       .find('a')
       .at(7)
-      .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
-    updateUrl.mockReset();
-    wrapper
-      .find('a')
-      .at(8)
       .simulate('click');
     expect(updateUrl).toBeCalledWith('/');
   });

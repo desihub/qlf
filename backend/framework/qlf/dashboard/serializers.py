@@ -221,7 +221,7 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Exposure
-        fields = ('pk', 'dateobs', 'datemjd', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'last_exposure_process_id')
+        fields = ('exposure_id', 'dateobs', 'datemjd', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'last_exposure_process_id')
 
     def get_datemjd(self, obj):
         time = get_date(obj.pk)

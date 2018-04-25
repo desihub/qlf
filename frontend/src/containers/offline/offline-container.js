@@ -58,8 +58,9 @@ class OfflineContainer extends Component {
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
-    lastProcess: PropTypes.number,
+    lastProcess: PropTypes.object,
     processId: PropTypes.number,
+    toggleHeader: PropTypes.func.isRequired,
   };
 
   state = {
@@ -67,10 +68,8 @@ class OfflineContainer extends Component {
   };
 
   navigateToQA = async processId => {
-    this.setState({ loading: true });
-    this.props.navigateToQA();
-    await this.props.getQA(processId);
-    this.setState({ loading: false });
+    const urlProcessId = 'qa?process_id=' + processId;
+    window.open(urlProcessId, 'qa', 'width=850, height=650');
   };
 
   componentWillReceiveProps(nextProps) {
@@ -81,6 +80,23 @@ class OfflineContainer extends Component {
       this.props.pathname !== '/processing-history'
     )
       this.props.getProcessingHistory();
+  }
+
+  searchQA = async processId => {
+    this.setState({ loading: true });
+    await this.props.getQA(processId);
+    this.setState({ loading: false });
+  };
+
+  componentWillMount() {
+    if (
+      window.location.pathname === '/qa' &&
+      window.location.search.includes('process_id=')
+    ) {
+      this.props.toggleHeader();
+      const processId = window.location.search.split('process_id=')[1];
+      this.searchQA(processId);
+    }
   }
 
   renderLoading = () => {

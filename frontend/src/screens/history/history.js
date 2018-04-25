@@ -2,6 +2,18 @@ import React, { Component } from 'react';
 import Proptypes from 'prop-types';
 import TableHistory from './widgets/table-history/table-history';
 import SelectDate from './widgets/select-date/select-date';
+import { Tabs, Tab } from 'material-ui/Tabs';
+import { Card } from 'material-ui/Card';
+import RaisedButton from 'material-ui/RaisedButton';
+
+const styles = {
+  card: {
+    borderLeft: 'solid 4px teal',
+    flex: '1',
+    height: '90%',
+    margin: '1em',
+  },
+};
 
 export default class History extends Component {
   static propTypes = {
@@ -12,7 +24,7 @@ export default class History extends Component {
     startDate: Proptypes.string,
     endDate: Proptypes.string,
     getHistoryRangeDate: Proptypes.func.isRequired,
-    lastProcess: Proptypes.number,
+    lastProcess: Proptypes.object,
     type: Proptypes.string.isRequired,
   };
 
@@ -27,18 +39,73 @@ export default class History extends Component {
       );
   };
 
-  render() {
+  state = {
+    tab: 'history',
+  };
+
+  renderLastProcess = () => {
+    const lastProcess = this.props.lastProcess ? [this.props.lastProcess] : [];
     return (
-      <div style={{ '-webkit-app-region': 'no-drag' }}>
-        {this.renderSelectDate()}
+      <TableHistory
+        getHistory={this.props.getHistory}
+        getHistoryOrdered={this.props.getHistoryOrdered}
+        rows={lastProcess}
+        navigateToQA={this.props.navigateToQA}
+        type={this.props.type}
+        selectable={false}
+      />
+    );
+  };
+
+  renderSubmit = () => {
+    if (this.props.type === 'process') return;
+    return (
+      <RaisedButton
+        label="Submit"
+        backgroundColor={'#00C853'}
+        labelStyle={{ color: 'white' }}
+        fullWidth={true}
+      />
+    );
+  };
+
+  renderRows = () => {
+    if (this.props.rows) {
+      return (
         <TableHistory
           getHistory={this.props.getHistory}
           getHistoryOrdered={this.props.getHistoryOrdered}
           rows={this.props.rows}
           navigateToQA={this.props.navigateToQA}
-          lastProcess={this.props.lastProcess}
           type={this.props.type}
+          selectable={true}
         />
+      );
+    }
+  };
+
+  render() {
+    return (
+      <div style={{ '-webkit-app-region': 'no-drag' }}>
+        {this.renderSelectDate()}
+        <Card style={styles.card}>
+          <Tabs value={this.state.value} onChange={this.handleChange}>
+            <Tab label="Last Process" value="last">
+              {this.renderLastProcess()}
+            </Tab>
+            <Tab label="History" value="history">
+              <RaisedButton
+                label="Refresh"
+                backgroundColor={'#2196F3'}
+                labelStyle={{ color: 'white' }}
+                fullWidth={true}
+                onClick={this.props.getHistory}
+              />
+              {this.renderRows()}
+              {this.renderSubmit()}
+            </Tab>
+          </Tabs>
+        </Card>
       </div>
     );
   }

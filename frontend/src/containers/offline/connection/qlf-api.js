@@ -53,6 +53,22 @@ export default class QlfApi {
     }
   }
 
+  static async getProcessingHistoryById(processId) {
+    try {
+      const processes = await fetch(
+        `${apiUrl}dashboard/api/processing_history/${processId}/?format=json`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await processes.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getProcessingHistoryOrdered(order) {
     try {
       const processes = await fetch(

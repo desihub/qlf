@@ -39,10 +39,20 @@ def ws_message(message):
             "text": get_current_state()
         })
         return
+    # Get Single Camera
     if "camera" in message.content['text']:
         message.reply_channel.send({
             "text": json.dumps({
                 "cameralog": get_camera_log(str(message.content['text'].split(":")[1]))
+            })
+        })
+    # User Channel
+    if "uuid" in message.content['text']:
+        Group(str(message.content['text'].split("uuid=")[1])).add(message.reply_channel)
+
+        Group(str(message.content['text'].split("uuid=")[1])).send({
+            "text": json.dumps({
+                "text": "Test single channel"
             })
         })
 

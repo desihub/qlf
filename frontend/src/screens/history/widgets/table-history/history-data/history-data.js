@@ -13,7 +13,6 @@ const styles = {
 export default class HistoryData extends React.Component {
   static muiName = 'TableRow';
   static propTypes = {
-    lastProcess: PropTypes.number,
     processId: PropTypes.number,
     row: PropTypes.object,
     type: PropTypes.string,
@@ -37,10 +36,8 @@ export default class HistoryData extends React.Component {
   };
 
   renderProcessingHistory = () => {
-    const lastProcessStyle =
-      process.pk === this.props.lastProcess ? styles.bold : null;
     return (
-      <TableRow style={lastProcessStyle}>
+      <TableRow>
         <TableRowColumn />
         <TableRowColumn>{this.props.row.pk}</TableRowColumn>
         <TableRowColumn>{this.formatDate(this.props.row.start)}</TableRowColumn>
@@ -73,20 +70,12 @@ export default class HistoryData extends React.Component {
   };
 
   renderObservingHistory = () => {
-    const {
-      processId,
-      lastProcess,
-      selectProcessQA,
-      row,
-      ...otherProps
-    } = this.props;
-    const lastProcessStyle =
-      this.props.row.pk === lastProcess ? styles.bold : null;
+    const { processId, selectProcessQA, row, ...otherProps } = this.props;
     return (
-      <TableRow style={lastProcessStyle} {...otherProps}>
+      <TableRow {...otherProps}>
         {this.props.children[0]}
         <TableRowColumn />
-        <TableRowColumn>{row.pk}</TableRowColumn>
+        <TableRowColumn>{row.exposure_id}</TableRowColumn>
         <TableRowColumn>{row.tile}</TableRowColumn>
         <TableRowColumn>{this.formatDate(row.dateobs)}</TableRowColumn>
         <TableRowColumn>{this.formatTime(row.dateobs)}</TableRowColumn>
