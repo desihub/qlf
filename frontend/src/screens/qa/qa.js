@@ -6,7 +6,7 @@ const styles = {
   container: {
     display: 'flex',
     justifyContent: 'space-around',
-    padding: '1vh 1vw 1vh 1vw',
+    //padding: '1vh 1vw 1vh 1vw',
     flexDirection: 'column',
     marginBottom: '1vh',
   },

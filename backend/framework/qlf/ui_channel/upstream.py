@@ -139,6 +139,7 @@ def get_current_state():
     qa_results = get_current_qa_tests(process)
     available_cameras = avaiable_cameras(process)
     daemon_status = qlf.get_status()
+    logfile = tail_file(open_file('logfile'), 100)
 
     pipelinelog = list()
     mjd = str()
@@ -160,6 +161,7 @@ def get_current_state():
             "cameras": camera_status,
             "available_cameras": available_cameras,
             "qa_results": qa_results,
+            "lines": logfile,
             "ingestion": pipelinelog,
             "mjd": mjd,
             "date": date_time,

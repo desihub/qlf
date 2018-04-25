@@ -12,6 +12,13 @@ const styles = {
   leftCol: { flex: 1, marginRight: '1vw', marginLeft: '1vw' },
   rightCol: { flex: 1, marginLeft: '1vw', marginRight: '1vw' },
   singleCol: { marginBottom: '1vh' },
+  container: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    //padding: '1vh 1vw 1vh 1vw',
+    flexDirection: 'column',
+    marginBottom: '1vh',
+  },
 };
 
 export default class Monitor extends Component {
@@ -25,6 +32,7 @@ export default class Monitor extends Component {
     daemonStatus: PropTypes.string.isRequired,
     exposure: PropTypes.string.isRequired,
     date: PropTypes.string,
+    mainTerminal: PropTypes.array.isRequired,
     ingestionTerminal: PropTypes.array.isRequired,
     cameraTerminal: PropTypes.array.isRequired,
     camerasStages: PropTypes.object.isRequired,
@@ -41,6 +49,7 @@ export default class Monitor extends Component {
     height: '0',
     openDialog: false,
     cameraIndex: 0,
+    mainTerminal: [],
     ingestionTerminal: [],
     cameraTerminal: [],
     layout: {},
@@ -108,41 +117,54 @@ export default class Monitor extends Component {
         </div>
         <div style={this.state.layout}>
           <div style={styles.leftCol}>
-            <div style={this.state.layout}>
-              <Stages
-                status={this.state.camerasStages.b}
-                arm={'b'}
-                openDialog={this.openDialog}
-                renderHeader={true}
-              />
+            <div style={styles.container}>
+                <div style={this.state.layout}>
+                  <Stages
+                    status={this.state.camerasStages.b}
+                    arm={'b'}
+                    openDialog={this.openDialog}
+                    renderHeader={true}
+                  />
+                </div>
+                <div style={this.state.layout}>
+                  <Stages
+                    status={this.state.camerasStages.r}
+                    arm={'r'}
+                    openDialog={this.openDialog}
+                    renderHeader={false}
+                  />
+                </div>
+                <div style={this.state.layout}>
+                  <Stages
+                    status={this.state.camerasStages.z}
+                    arm={'z'}
+                    openDialog={this.openDialog}
+                    renderHeader={false}
+                  />
+                </div>
             </div>
-            <div style={this.state.layout}>
-              <Stages
-                status={this.state.camerasStages.r}
-                arm={'r'}
-                openDialog={this.openDialog}
-                renderHeader={false}
-              />
-            </div>
-            <div style={this.state.layout}>
-              <Stages
-                status={this.state.camerasStages.z}
-                arm={'z'}
-                openDialog={this.openDialog}
-                renderHeader={false}
-              />
-            </div>
-            <div style={styles.singleCol}>
-              <Terminal height={'37vh'} lines={this.state.ingestionTerminal} />
+            <div>
+                <div style={styles.singleCol}>
+                  <Terminal height={'20vh'} lines={this.state.ingestionTerminal} />
+                </div>
             </div>
           </div>
           <div style={styles.rightCol}>
-            <QA
-              qaTests={this.props.qaTests}
-              arms={this.props.arms}
-              spectrographs={this.props.spectrographs}
-              petalSizeFactor={20}
-            />
+            <div style={styles.singleCol}>
+
+                <QA
+                  qaTests={this.props.qaTests}
+                  arms={this.props.arms}
+                  spectrographs={this.props.spectrographs}
+                  petalSizeFactor={40}
+                />
+
+            </div>
+            <div>
+                <div style={styles.singleCol}>
+    ￼               <Terminal height={'20vh'} lines={this.state.mainTerminal} />
+    ￼          </div>
+￼          </div>
           </div>
         </div>
       </div>

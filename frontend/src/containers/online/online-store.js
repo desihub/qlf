@@ -5,6 +5,7 @@ function defaultState() {
   return {
     daemonStatus: 'idle',
     exposure: 'none',
+    mainTerminal: [],
     ingestionTerminal: [],
     cameraTerminal: [],
     camerasStages: { b: [], r: [], z: [] },
@@ -81,6 +82,7 @@ export function qlfOnlineReducers(state = defaultState(), action) {
       return Object.assign({}, state, {
         daemonStatus: action.state.daemonStatus,
         processId: action.state.processId,
+        mainTerminal: action.state.mainTerminal,
         ingestionTerminal: action.state.ingestionTerminal,
         exposure: action.state.exposure,
         camerasStages: action.state.camerasStages,

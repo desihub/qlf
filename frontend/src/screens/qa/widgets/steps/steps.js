@@ -35,7 +35,7 @@ const styles = {
   },
   arm: {
     fontWeight: 'bold',
-    fontSize: 'calc(1.2vh + 1.2vw)',
+    fontSize: 'calc(1vh + 1vw)',
     textAlign: 'center',
     flex: 1,
   },
