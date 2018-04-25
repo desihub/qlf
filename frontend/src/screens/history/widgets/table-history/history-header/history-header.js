@@ -97,7 +97,7 @@ export default class HistoryHeader extends React.Component {
         <TableRow>
           <TableHeaderColumn>Program</TableHeaderColumn>
           <TableHeaderColumn>
-            {this.renderHeader('pk', 'Exp ID')}
+            {this.renderHeader('exposure_id', 'Exp ID')}
           </TableHeaderColumn>
           <TableHeaderColumn>
             {this.renderHeader('tile', 'Tile ID')}

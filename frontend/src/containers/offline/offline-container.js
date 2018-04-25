@@ -58,7 +58,7 @@ class OfflineContainer extends Component {
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
-    lastProcess: PropTypes.number,
+    lastProcess: PropTypes.object,
     processId: PropTypes.number,
     toggleHeader: PropTypes.func.isRequired,
   };

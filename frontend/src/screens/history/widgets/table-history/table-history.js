@@ -1,19 +1,9 @@
 import React, { Component } from 'react';
 import { Table, TableBody } from 'material-ui/Table';
 import Proptypes from 'prop-types';
-import { Card } from 'material-ui/Card';
 import HistoryHeader from './history-header/history-header';
 import HistoryData from './history-data/history-data';
 import RaisedButton from 'material-ui/RaisedButton';
-
-const styles = {
-  card: {
-    borderLeft: 'solid 4px teal',
-    flex: '1',
-    height: '90%',
-    margin: '1em',
-  },
-};
 
 export default class TableHistory extends Component {
   static propTypes = {
@@ -53,14 +43,14 @@ export default class TableHistory extends Component {
     return (
       <TableBody showRowHover={true} displayRowCheckbox={!isProcessHistory}>
         {this.props.rows.map((row, id) => {
-          const processId = isProcessHistory
-            ? row.pk
-            : row.last_exposure_process_id;
+          const processId =
+            isProcessHistory || !row.last_exposure_process_id
+              ? row.pk
+              : row.last_exposure_process_id;
           return (
             <HistoryData
               key={id}
               processId={processId}
-              lastProcess={this.props.lastProcess}
               row={row}
               selectProcessQA={this.selectProcessQA}
               type={this.props.type}
@@ -86,7 +76,7 @@ export default class TableHistory extends Component {
   render() {
     const isProcessHistory = this.props.type === 'process';
     return (
-      <Card style={styles.card}>
+      <div>
         <Table
           fixedHeader={false}
           style={{ width: 'auto', tableLayout: 'auto' }}
@@ -103,7 +93,7 @@ export default class TableHistory extends Component {
           {this.renderBody()}
         </Table>
         {this.renderSubmit()}
-      </Card>
+      </div>
     );
   }
 }
