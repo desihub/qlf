@@ -31,7 +31,6 @@
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
     "serve": "^6.4.8",
-    "uuid": "^3.2.1",
     "victory": "^0.24.2"
   },
   "scripts": {

@@ -1,7 +1,6 @@
 import React from 'react';
 import Card from '../card/card';
 import PropTypes from 'prop-types';
-import uuid from 'uuid/v4';
 
 const styles = {
   singleCol: {
@@ -19,13 +18,11 @@ export default class Home extends React.Component {
 
   state = {
     layout: { flexDirection: 'row' },
-    uuid: uuid(),
   };
 
   navigateTo = route => {
     this.props.updateUrl(route);
-    const urlUUID = route + '?uuid=' + this.state.uuid;
-    window.open(urlUUID, '_blank', 'width=850, height=650');
+    window.open(route, '_blank', 'width=850, height=650');
   };
 
   componentDidMount() {
