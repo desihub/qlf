@@ -1,6 +1,6 @@
 import sys
 
-from bokeh.plotting import figure
+from bokeh.plotting import Figure
 from bokeh.layouts import row, column, widgetbox, gridplot
 
 from bokeh.io import curdoc
@@ -8,6 +8,11 @@ from bokeh.io import output_notebook, show, output_file
 
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
+from bokeh.models import TapTool, OpenURL
+from bokeh.models.widgets import Select
+from bokeh.models.widgets import PreText, Div
+from bokeh.models import PrintfTickFormatter
+from dashboard.bokeh.helper import write_info
 
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -15,7 +20,7 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args
+from dashboard.bokeh.helper import get_url_args, write_description
 
 import numpy as np
 import logging
@@ -26,6 +31,7 @@ logger = logging.getLogger(__name__)
 # THIS comes from INTERFACE
 #
 args = get_url_args(curdoc)
+
 
 try:
     selected_exposure = args['exposure']
@@ -89,6 +95,7 @@ peak_tooltip = """
         </div>
     </div>
 """
+url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
 c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
@@ -115,15 +122,17 @@ mapper = LinearColorMapper(palette= my_palette,
                            high=1.02*np.max(peakcount))
 
 
+
+radius = 0.016
 # ======
 # XSIGMA
-p = figure( title = 'SKYPEAK', x_axis_label='RA', y_axis_label='DEC'
-           , plot_width=750, plot_height=700
+p = Figure( title = 'SKYPEAK', x_axis_label='RA', y_axis_label='DEC'
+           , plot_width=770, plot_height=700
            ## , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-           , tools= [peak_hover, "pan,box_zoom,reset,crosshair"])
+           , tools= [peak_hover, "pan,box_zoom,reset,crosshair, tap"])
 
 # Color Map
-p.circle('x1','y1', source = source, name="data", radius = 0.018,
+p.circle('x1','y1', source = source, name="data", radius = radius,
         fill_color={'field': 'peakcount', 'transform': mapper}, 
          line_color='black', line_width=0.1,
          hover_line_color='red')
@@ -133,6 +142,9 @@ p.circle('x1','y1', source = source, name="data", radius = 0.0186
           , hover_fill_color={'field': 'peakcount', 'transform': mapper}
           , fill_color=None, line_color=None
           , line_width=3, hover_line_color='red')
+
+taptool = p.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
 
 ## px.circle('x1','y1', source = source_comp, radius = 0.015,
 ##         fill_color = 'lightgray', line_color='black', line_width=0.3)
@@ -146,7 +158,16 @@ xcolor_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
 
 p.add_layout(xcolor_bar, 'left')
 
+#infos
+info, nlines = write_info('skypeak', tests['skypeak'])
+txt = PreText(text=info, height=nlines*20, width=p.plot_width)
+info_col=Div(text=write_description('skypeak'), width=p.plot_width)
+p2txt = column(widgetbox(info_col),p)
+
+
+layout = gridplot([[p2txt]]) 
 
 
 # End of Bokeh Block
-curdoc().add_root(p)
+curdoc().add_root(layout)
+curdoc().title= "SKYPEAK"
