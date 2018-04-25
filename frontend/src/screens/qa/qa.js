@@ -24,6 +24,7 @@ export default class QA extends Component {
     navigateToMetrics: PropTypes.func,
     navigateToProcessingHistory: PropTypes.func,
     petalSizeFactor: PropTypes.number.isRequired,
+    processId: PropTypes.number,
   };
 
   state = {
@@ -72,6 +73,7 @@ export default class QA extends Component {
         date={this.props.date}
         time={this.props.time}
         petalSizeFactor={this.props.petalSizeFactor}
+        processId={this.props.processId}
       />
     );
   };

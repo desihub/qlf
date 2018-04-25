@@ -12,7 +12,7 @@ import { navigateToProcessingHistory } from '../offline/offline-store';
 import _ from 'lodash';
 
 const arms = ['b', 'r', 'z'];
-const spectrographs = _.range(0, 9);
+const spectrographs = _.range(0, 10);
 
 class OnlineContainer extends Component {
   static propTypes = {

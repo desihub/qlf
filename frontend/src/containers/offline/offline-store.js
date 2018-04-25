@@ -3,11 +3,13 @@ import { push } from 'react-router-redux';
 
 function defaultState() {
   return {
-    processes: [],
+    rows: [],
     mjd: '',
     date: '',
     time: '',
     exposure: '',
+    processId: undefined,
+    lastProcess: undefined,
     qaTests: [],
     arm: 0,
     spectrograph: 0,
@@ -15,9 +17,9 @@ function defaultState() {
   };
 }
 
-function updateProcesses(processes) {
-  const state = { processes };
-  return { type: 'UPDATE_PROCESSES', state };
+function updateRows(rows) {
+  const state = { rows };
+  return { type: 'UPDATE_ROWS', state };
 }
 
 function updateDateRange(startDate, endDate) {
@@ -36,6 +38,7 @@ function updateQA(qaTests) {
     qaTests: qaTests.qa_tests,
     date: qaTests.date.split('T')[0],
     time: qaTests.date.split('T')[1],
+    processId: qaTests.pk,
     exposure: qaTests.exposure_id.toString(),
   };
   return { type: 'UPDATE_OFFLINE_QA', state };
@@ -48,27 +51,22 @@ function selectMetric(step, spectrograph, arm) {
 
 export function getProcessingHistory() {
   return async function(dispatch) {
-    const processes = await QlfApi.getProcessingHistory();
+    const rows = await QlfApi.getProcessingHistory();
     const lastProcess = await QlfApi.getLastProcess();
-    if (processes && processes.results && processes.results.results) {
-      dispatch(updateProcesses(processes.results.results));
+    if (rows && rows.results && rows.results.results) {
+      dispatch(updateRows(rows.results.results));
     }
 
     if (
-      processes &&
-      processes.results &&
-      processes.results.start_date &&
-      processes.results.end_date
+      rows &&
+      rows.results &&
+      rows.results.start_date &&
+      rows.results.end_date
     ) {
-      dispatch(
-        updateDateRange(
-          processes.results.start_date,
-          processes.results.end_date
-        )
-      );
+      dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
     }
 
-    if (lastProcess[0] && lastProcess[0].id) {
+    if (lastProcess && lastProcess[0] && lastProcess[0].id) {
       dispatch(updateLastProcess(lastProcess[0].id));
     }
   };
@@ -76,21 +74,66 @@ export function getProcessingHistory() {
 
 export function getProcessingHistoryRangeDate(start, end) {
   return async function(dispatch) {
-    const processes = await QlfApi.getProcessingHistoryRangeDate(
+    const rows = await QlfApi.getProcessingHistoryRangeDate(
       start.toISOString().split('T')[0],
       end.toISOString().split('T')[0]
     );
-    if (processes) {
-      await dispatch(updateProcesses(processes));
+
+    if (rows && rows.results && rows.results.results) {
+      await dispatch(updateRows(rows.results.results));
     }
   };
 }
 
 export function getProcessingHistoryOrdered(ordering) {
   return async function(dispatch) {
-    const processes = await QlfApi.getProcessingHistoryOrdered(ordering);
-    if (processes && processes.results && processes.results.results)
-      await dispatch(updateProcesses(processes.results.results));
+    const rows = await QlfApi.getProcessingHistoryOrdered(ordering);
+    if (rows && rows.results && rows.results.results)
+      await dispatch(updateRows(rows.results.results));
+  };
+}
+
+export function getObservingHistory() {
+  return async function(dispatch) {
+    const rows = await QlfApi.getObservingHistory();
+    const lastProcess = await QlfApi.getLastProcess();
+    if (rows && rows.results && rows.results.results) {
+      dispatch(updateRows(rows.results.results));
+    }
+
+    if (
+      rows &&
+      rows.results &&
+      rows.results.start_date &&
+      rows.results.end_date
+    ) {
+      dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
+    }
+
+    if (lastProcess && lastProcess[0] && lastProcess[0].id) {
+      dispatch(updateLastProcess(lastProcess[0].id));
+    }
+  };
+}
+
+export function getObservingHistoryRangeDate(start, end) {
+  return async function(dispatch) {
+    const rows = await QlfApi.getObservingHistoryRangeDate(
+      start.toISOString().split('T')[0],
+      end.toISOString().split('T')[0]
+    );
+
+    if (rows && rows.results && rows.results.results) {
+      await dispatch(updateRows(rows.results.results));
+    }
+  };
+}
+
+export function getObservingHistoryOrdered(ordering) {
+  return async function(dispatch) {
+    const rows = await QlfApi.getObservingHistoryOrdered(ordering);
+    if (rows && rows.results && rows.results.results)
+      await dispatch(updateRows(rows.results.results));
   };
 }
 
@@ -137,15 +180,16 @@ export function qlfOfflineReducers(state = defaultState(), action) {
         startDate: action.state.startDate,
         endDate: action.state.endDate,
       });
-    case 'UPDATE_PROCESSES':
+    case 'UPDATE_ROWS':
       return Object.assign({}, state, {
-        processes: action.state.processes,
+        rows: action.state.rows,
       });
     case 'UPDATE_OFFLINE_QA':
       return Object.assign({}, state, {
         mjd: action.state.mjd,
         date: action.state.date,
         time: action.state.time,
+        processId: action.state.processId,
         qaTests: action.state.qaTests,
         exposure: action.state.exposure,
       });

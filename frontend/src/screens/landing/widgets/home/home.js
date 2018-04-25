@@ -22,7 +22,7 @@ export default class Home extends React.Component {
 
   navigateTo = route => {
     this.props.updateUrl(route);
-    window.open(route);
+    window.open(route, '_blank', 'width=850, height=650');
   };
 
   componentDidMount() {
@@ -78,7 +78,10 @@ export default class Home extends React.Component {
           </a>
         </div>
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/observing-history')}
+          >
             <Card
               icon="History"
               title="Observing History"

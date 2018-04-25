@@ -84,7 +84,7 @@ describe('OfflineContainer', () => {
       '/processing-history'
     );
     await mount(offline);
-    expect(store.getState().qlfOffline.processes).toEqual([
+    expect(store.getState().qlfOffline.rows).toEqual([
       {
         pk: 69,
         dateobs: '2019-01-01T22:00:00Z',

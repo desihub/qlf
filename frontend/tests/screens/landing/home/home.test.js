@@ -122,13 +122,15 @@ describe('Landing Home', () => {
     expect(updateUrl).toBeCalledWith('/processing-history');
   });
 
-  it('navigates to /', () => {
+  it('navigates to /observing-history', () => {
     wrapper
       .find('a')
       .at(3)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
-    updateUrl.mockReset();
+    expect(updateUrl).toBeCalledWith('/observing-history');
+  });
+
+  it('navigates to /', () => {
     wrapper
       .find('a')
       .at(4)

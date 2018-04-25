@@ -1,4 +1,5 @@
 import os
+import sys
 
 HOSTNAME = os.environ.get('QLF_HOSTNAME', 'localhost')
 
@@ -107,6 +108,9 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+if 'test' in sys.argv or 'test_coverage' in sys.argv:
+    DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
 
 DATABASE_POOL_ARGS = {
     'max_overflow': 30,

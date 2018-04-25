@@ -1,7 +1,12 @@
 import sys
 
-from bokeh.plotting import figure
+from bokeh.plotting import Figure
 from bokeh.layouts import row, column, widgetbox, gridplot
+
+from bokeh.models.widgets import PreText, Div
+from bokeh.models import PrintfTickFormatter
+from dashboard.bokeh.helper import write_info
+
 
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
@@ -9,7 +14,7 @@ from bokeh.io import output_notebook, show, output_file
 from bokeh.models import ColumnDataSource, HoverTool, TapTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
-from dashboard.bokeh.helper import get_url_args
+from dashboard.bokeh.helper import get_url_args, write_description
 
 import numpy as np
 import logging
@@ -40,7 +45,7 @@ from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
 
 cam = selected_arm+str(selected_spectrograph)
 exp = selected_exposure # intentionaly redundant
-lm = LoadMetrics(cam, exp, night)
+lm = LoadMetrics(cam, exp, night);
 metrics, tests  = lm.metrics, lm.tests 
 
 skyresid  = metrics['skyresid']
@@ -85,14 +90,14 @@ skyres_source = ColumnDataSource(
                       'wavg_resid':  skyresid['WAVG_RES_WAVE']
                      })
 
-p1 = figure(title= 'MED_RESID_WAVE', 
+p1 = Figure(title= 'MED_RESID_WAVE', 
             x_axis_label='Angstrom',
             plot_width = 720, plot_height = 240,
           tools=[skr_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
 p1.line('wl', 'med_resid', source=skyres_source)
 
-p2 = figure(title= 'WAVG_RESID_WAVE', 
+p2 = Figure(title= 'WAVG_RESID_WAVE', 
             x_axis_label='Angstrom',
             plot_width = 720, plot_height = 240,
           tools=[wavg_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
@@ -111,5 +116,13 @@ p2.line('wl', 'wavg_resid', source=skyres_source)
 
 
 p1.x_range = p2.x_range
-layout=column(p1,p2)
-curdoc().add_root(layout)
+
+info, nlines = write_info('skyresid', tests['skyresid'])
+
+txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
+info_col=Div(text=write_description('skyresid'), width=p2.plot_width)
+p2txt = column(widgetbox(info_col), p1, p2)
+
+#layout=column(p1,p2)
+curdoc().add_root(p2txt)
+curdoc().title = "SKYRESID"
