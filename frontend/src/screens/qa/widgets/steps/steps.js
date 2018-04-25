@@ -4,7 +4,6 @@ import { Card } from 'material-ui/Card';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import Status from '../../../../components/status/status';
-import RaisedButton from 'material-ui/RaisedButton';
 
 const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
 const stepsQa = {
@@ -190,13 +189,6 @@ export default class Steps extends Component {
     if (!this.props.navigateToProcessingHistory) return;
     return (
       <div style={styles.qaControls}>
-        <RaisedButton
-          label={'Processing History'}
-          secondary={true}
-          style={styles.processingHistoryButton}
-          labelStyle={styles.processingHistoryLabel}
-          onClick={this.props.navigateToProcessingHistory}
-        />
         <Status
           exposure={this.props.exposure}
           mjd={this.props.mjd}

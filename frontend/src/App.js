@@ -48,9 +48,9 @@ class App extends React.Component {
       case '/monitor-realtime':
         return '- Monitor';
       case '/qa':
-        return '- Processing History';
+        return '- QA';
       case '/metrics':
-        return '- Processing History';
+        return '- Metrics';
       case '/qa-realtime':
         return '- QA Realtime';
       case '/metrics-realtime':
@@ -173,7 +173,7 @@ class App extends React.Component {
                 />
               ))}
               <OnlineContainer />
-              <OfflineContainer />
+              <OfflineContainer toggleHeader={this.toggleHeader} />
               {this.renderBottomBar()}
             </div>
           </MuiThemeProvider>
