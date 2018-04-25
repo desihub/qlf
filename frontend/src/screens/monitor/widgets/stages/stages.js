@@ -220,7 +220,11 @@ export default class Stages extends Component {
                           }}
                         >
                           <span
-                            style={{ cursor: 'pointer', color: '#9E9E9E', with: '100%' }}
+                            style={{
+                              cursor: 'pointer',
+                              color: '#9E9E9E',
+                              with: '100%',
+                            }}
                             onClick={() =>
                               this.props.openDialog(index, this.props.arm)
                             }
