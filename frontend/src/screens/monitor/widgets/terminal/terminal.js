@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 const styles = {
   terminal: {
     display: 'flex',
+    flex: 1,
     margin: '0 auto',
     borderRadius: '3px',
     background: 'rgba(0, 0, 0, 1)',

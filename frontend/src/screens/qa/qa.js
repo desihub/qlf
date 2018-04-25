@@ -67,7 +67,6 @@ export default class QA extends Component {
         navigateToProcessingHistory={this.props.navigateToProcessingHistory}
         qaTests={this.props.qaTests}
         renderMetrics={this.renderMetrics}
-        layout={this.state.layout}
         mjd={this.props.mjd}
         exposure={this.props.exposure}
         date={this.props.date}

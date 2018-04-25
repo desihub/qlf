@@ -8,25 +8,44 @@ import PropTypes from 'prop-types';
 import QA from '../qa/qa';
 
 const styles = {
-  topMenu: { marginTop: '1vh', marginRight: '1vw', marginLeft: '1vw' },
-  leftCol: { flex: 1, marginRight: '1vw', marginLeft: '1vw' },
-  rightCol: { flex: 1, marginLeft: '1vw', marginRight: '1vw' },
-  singleCol: { marginBottom: '1vh' },
-  container: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    //padding: '1vh 1vw 1vh 1vw',
-    flexDirection: 'column',
+  topMenu: {
+    marginTop: '1vh',
+    marginRight: '1vw',
+    marginLeft: '1vw',
+  },
+  grid: {
+    flex: 1,
+    display: 'grid',
     marginBottom: '1vh',
+    flexDirection: 'row',
+    gridTemplateColumns: '50% 50%',
+  },
+  gridItem: {
+    paddingTop: '1vh',
+    paddingLeft: '1vw',
+    paddingRight: '1vw',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menu: {
+    flex: 1,
+    display: 'flex',
+    marginBottom: '1vh',
+    flexDirection: 'row',
+    gridTemplateColumns: 'auto auto',
+  },
+  column: {
+    flexDirection: 'column',
+    padding: '0vh 1vw',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: '1vh',
   },
 };
 
 export default class Monitor extends Component {
-  constructor(props) {
-    super(props);
-    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-  }
-
   static propTypes = {
     socketRef: PropTypes.object,
     daemonStatus: PropTypes.string.isRequired,
@@ -57,28 +76,8 @@ export default class Monitor extends Component {
     mjd: '',
   };
 
-  componentDidMount() {
-    this.updateWindowDimensions();
-    window.addEventListener('resize', this.updateWindowDimensions);
-  }
-
   componentWillReceiveProps(nextProps) {
     this.setState({ ...nextProps });
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateWindowDimensions);
-  }
-
-  updateWindowDimensions() {
-    this.setState({
-      layout: {
-        flex: 1,
-        display: 'flex',
-        marginBottom: '1vh',
-        flexDirection: window.innerWidth < 800 ? 'row' : 'row',
-      },
-    });
   }
 
   openDialog = (cameraIndex, arm) => {
@@ -100,7 +99,7 @@ export default class Monitor extends Component {
           closeDialog={this.closeDialog}
         />
         <div style={styles.topMenu}>
-          <div style={this.state.layout}>
+          <div style={styles.menu}>
             <Controls
               daemonStatus={this.props.daemonStatus}
               socket={this.props.socketRef}
@@ -108,63 +107,47 @@ export default class Monitor extends Component {
             <Status
               exposure={this.state.exposure}
               daemonStatus={this.state.daemonStatus}
-              layout={this.state.layout}
+              layout={styles.layout}
               mjd={this.state.mjd}
               date={this.props.date}
               processId={this.props.processId}
             />
           </div>
         </div>
-        <div style={this.state.layout}>
-          <div style={styles.leftCol}>
-            <div style={styles.container}>
-                <div style={this.state.layout}>
-                  <Stages
-                    status={this.state.camerasStages.b}
-                    arm={'b'}
-                    openDialog={this.openDialog}
-                    renderHeader={true}
-                  />
-                </div>
-                <div style={this.state.layout}>
-                  <Stages
-                    status={this.state.camerasStages.r}
-                    arm={'r'}
-                    openDialog={this.openDialog}
-                    renderHeader={false}
-                  />
-                </div>
-                <div style={this.state.layout}>
-                  <Stages
-                    status={this.state.camerasStages.z}
-                    arm={'z'}
-                    openDialog={this.openDialog}
-                    renderHeader={false}
-                  />
-                </div>
-            </div>
-            <div>
-                <div style={styles.singleCol}>
-                  <Terminal height={'20vh'} lines={this.state.ingestionTerminal} />
-                </div>
-            </div>
+        <div style={styles.grid}>
+          <div style={styles.column}>
+            <Stages
+              status={this.state.camerasStages.b}
+              arm={'b'}
+              openDialog={this.openDialog}
+              renderHeader={true}
+            />
+            <Stages
+              status={this.state.camerasStages.r}
+              arm={'r'}
+              openDialog={this.openDialog}
+              renderHeader={false}
+            />
+            <Stages
+              status={this.state.camerasStages.z}
+              arm={'z'}
+              openDialog={this.openDialog}
+              renderHeader={false}
+            />
           </div>
-          <div style={styles.rightCol}>
-            <div style={styles.singleCol}>
-
-                <QA
-                  qaTests={this.props.qaTests}
-                  arms={this.props.arms}
-                  spectrographs={this.props.spectrographs}
-                  petalSizeFactor={40}
-                />
-
-            </div>
-            <div>
-                <div style={styles.singleCol}>
-    ￼               <Terminal height={'20vh'} lines={this.state.mainTerminal} />
-    ￼          </div>
-￼          </div>
+          <div style={styles.gridItem}>
+            <QA
+              qaTests={this.props.qaTests}
+              arms={this.props.arms}
+              spectrographs={this.props.spectrographs}
+              petalSizeFactor={20}
+            />
+          </div>
+          <div style={styles.gridItem}>
+            <Terminal height={'20vh'} lines={this.state.ingestionTerminal} />
+          </div>
+          <div style={styles.gridItem}>
+            ￼ <Terminal height={'20vh'} lines={this.state.mainTerminal} />
           </div>
         </div>
       </div>
