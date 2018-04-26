@@ -48,7 +48,7 @@ describe('Websocket', () => {
       ingestionTerminal: [
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
-      mainTerminal: ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"],
+      mainTerminal: ['2017-11-23 12:59:04 [INFO]: QLF Daemon status: False'],
       qaTests: [],
       mjd: '58484.91667',
       time: 'time',
@@ -80,7 +80,7 @@ describe('Websocket', () => {
       ingestionTerminal: [
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
-      mainTerminal: ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"],
+      mainTerminal: ['2017-11-23 12:59:04 [INFO]: QLF Daemon status: False'],
       qaTests: [],
       arm: 0,
       spectrograph: 0,
