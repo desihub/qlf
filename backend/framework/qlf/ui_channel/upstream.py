@@ -140,6 +140,10 @@ def get_current_state():
     available_cameras = avaiable_cameras(process)
     daemon_status = qlf.get_status()
 
+    if daemon_status:
+        if not qlf.is_running():
+            daemon_status = None
+
     pipelinelog = list()
     mjd = str()
     process_id = int()

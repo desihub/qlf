@@ -20,7 +20,7 @@ class Connection extends Component {
     const result = JSON.parse(data);
     if (result.ingestion) {
       const state = {
-        daemonStatus: result.daemon_status ? 'Running' : 'Not Running',
+        daemonStatus: result.daemon_status ? 'Running' : result.daemon_status === false ? 'Not Running' : 'Idle',
         ingestionTerminal:
           result.ingestion && result.ingestion !== 'Error'
             ? result.ingestion.reverse()

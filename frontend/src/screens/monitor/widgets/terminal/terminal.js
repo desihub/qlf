@@ -26,13 +26,15 @@ export default class Terminal extends Component {
   };
 
   renderLines = () => {
-    return this.props.lines.map((line, index) => {
-      return (
-        <div key={index}>
-          <span>{line}</span>
-        </div>
-      );
-    });
+
+    return (
+      <div>
+        <pre>
+          { this.props.lines.join("") }
+        </pre>
+      </div>
+    );
+
   };
 
   render() {
