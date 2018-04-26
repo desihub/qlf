@@ -26,15 +26,11 @@ export default class Terminal extends Component {
   };
 
   renderLines = () => {
-
     return (
       <div>
-        <pre>
-          { this.props.lines.join("") }
-        </pre>
+        <pre>{this.props.lines.join('')}</pre>
       </div>
     );
-
   };
 
   render() {
