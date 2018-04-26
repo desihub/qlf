@@ -107,13 +107,13 @@ export default class PieChart extends Component {
                       mutation: props => {
                         const camera = arms[this.props.arm] + props.index;
                         this.props.showQaAlarms(camera, this.props.step);
-                        return { style: { fill: 'gray' } };
+                        return { style: { fill: 'gray', cursor: 'pointer' } };
                       },
                     },
                     {
                       target: 'labels',
                       mutation: () => {
-                        return { style: { fill: 'gray' } };
+                        return { style: { display: 'none' } };
                       },
                     },
                   ];

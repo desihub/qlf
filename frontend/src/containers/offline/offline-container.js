@@ -58,7 +58,7 @@ class OfflineContainer extends Component {
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
-    lastProcess: PropTypes.object,
+    lastProcesses: PropTypes.array,
     processId: PropTypes.number,
     toggleHeader: PropTypes.func.isRequired,
   };
@@ -123,7 +123,7 @@ class OfflineContainer extends Component {
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
               getHistoryRangeDate={this.props.getProcessingHistoryRangeDate}
-              lastProcess={this.props.lastProcess}
+              lastProcesses={this.props.lastProcesses}
               type={'process'}
             />
           )}
@@ -139,7 +139,7 @@ class OfflineContainer extends Component {
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
               getHistoryRangeDate={this.props.getObservingHistoryRangeDate}
-              lastProcess={this.props.lastProcess}
+              lastProcesses={this.props.lastProcesses}
               type={'exposure'}
             />
           )}
@@ -205,7 +205,7 @@ export default connect(
     spectrograph: state.qlfOffline.spectrograph,
     startDate: state.qlfOffline.startDate,
     endDate: state.qlfOffline.endDate,
-    lastProcess: state.qlfOffline.lastProcess,
+    lastProcesses: state.qlfOffline.lastProcesses,
     processId: state.qlfOffline.processId,
   }),
   dispatch => ({

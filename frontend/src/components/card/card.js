@@ -9,7 +9,7 @@ const styles = {
     margin: '1.5vh 1vw 1vh 1vw',
   },
   titleStyle: {
-    fontSize: 'calc(0.7vh + 0.7vw)',
+    fontSize: '13px',
     color: 'rgba(0, 0, 0, 0.6)',
     lineHeight: '3vh',
   },

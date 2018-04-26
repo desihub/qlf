@@ -69,6 +69,24 @@ export default class QlfApi {
     }
   }
 
+  static async getProcessingHistoryLimit() {
+    try {
+      const processes = await fetch(
+        `${
+          apiUrl
+        }dashboard/api/processing_history/?format=json&limit=10&ordering=-pk`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await processes.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getProcessingHistoryOrdered(order) {
     try {
       const processes = await fetch(
@@ -114,6 +132,19 @@ export default class QlfApi {
           headers: headers,
         }
       );
+      const responseJson = await exposures.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static async getExposuresDateRange() {
+    try {
+      const exposures = await fetch(`${apiUrl}get_exposures_date_range`, {
+        method: 'GET',
+        headers: headers,
+      });
       const responseJson = await exposures.json();
       return responseJson;
     } catch (e) {

@@ -9,11 +9,13 @@ function defaultState() {
     time: '',
     exposure: '',
     processId: undefined,
-    lastProcess: undefined,
+    lastProcesses: undefined,
     qaTests: [],
     arm: 0,
     spectrograph: 0,
     step: 0,
+    startDate: undefined,
+    endDate: undefined,
   };
 }
 
@@ -27,15 +29,16 @@ function updateDateRange(startDate, endDate) {
   return { type: 'UPDATE_DATE_RANGE', state };
 }
 
-function updateLastProcess(lastProcess) {
-  const state = { lastProcess };
-  return { type: 'UPDATE_LAST_PROCESS', state };
+function updateLastProcess(lastProcesses) {
+  const state = { lastProcesses };
+  return { type: 'UPDATE_LAST_PROCESSES', state };
 }
 
-export function fetchLastProcess(processId) {
+export function fetchLastProcess() {
   return async function(dispatch) {
-    const lastProcess = await QlfApi.getProcessingHistoryById(processId);
-    if (!lastProcess.detail) dispatch(updateLastProcess(lastProcess));
+    const lastProcesses = await QlfApi.getProcessingHistoryLimit();
+    if (!lastProcesses.detail && lastProcesses && lastProcesses.results)
+      dispatch(updateLastProcess(lastProcesses.results));
   };
 }
 
@@ -59,17 +62,13 @@ function selectMetric(step, spectrograph, arm) {
 export function getProcessingHistory() {
   return async function(dispatch) {
     const rows = await QlfApi.getProcessingHistory();
-    if (rows && rows.results && rows.results.results) {
-      dispatch(updateRows(rows.results.results));
+    const dateRange = await QlfApi.getExposuresDateRange();
+    if (rows && rows.results) {
+      dispatch(updateRows(rows.results));
     }
 
-    if (
-      rows &&
-      rows.results &&
-      rows.results.start_date &&
-      rows.results.end_date
-    ) {
-      dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
+    if (dateRange && dateRange.end_date && dateRange.start_date) {
+      dispatch(updateDateRange(dateRange.start_date, dateRange.end_date));
     }
   };
 }
@@ -81,8 +80,8 @@ export function getProcessingHistoryRangeDate(start, end) {
       end.toISOString().split('T')[0]
     );
 
-    if (rows && rows.results && rows.results.results) {
-      await dispatch(updateRows(rows.results.results));
+    if (rows && rows.results) {
+      await dispatch(updateRows(rows.results));
     }
   };
 }
@@ -90,25 +89,20 @@ export function getProcessingHistoryRangeDate(start, end) {
 export function getProcessingHistoryOrdered(ordering) {
   return async function(dispatch) {
     const rows = await QlfApi.getProcessingHistoryOrdered(ordering);
-    if (rows && rows.results && rows.results.results)
-      await dispatch(updateRows(rows.results.results));
+    if (rows && rows.results) await dispatch(updateRows(rows.results));
   };
 }
 
 export function getObservingHistory() {
   return async function(dispatch) {
     const rows = await QlfApi.getObservingHistory();
-    if (rows && rows.results && rows.results.results) {
-      dispatch(updateRows(rows.results.results));
+    const dateRange = await QlfApi.getExposuresDateRange();
+    if (rows && rows.results) {
+      dispatch(updateRows(rows.results));
     }
 
-    if (
-      rows &&
-      rows.results &&
-      rows.results.start_date &&
-      rows.results.end_date
-    ) {
-      dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
+    if (dateRange && dateRange.end_date && dateRange.start_date) {
+      dispatch(updateDateRange(dateRange.start_date, dateRange.end_date));
     }
   };
 }
@@ -120,8 +114,8 @@ export function getObservingHistoryRangeDate(start, end) {
       end.toISOString().split('T')[0]
     );
 
-    if (rows && rows.results && rows.results.results) {
-      await dispatch(updateRows(rows.results.results));
+    if (rows && rows.results && rows.results) {
+      await dispatch(updateRows(rows.results));
     }
   };
 }
@@ -129,8 +123,8 @@ export function getObservingHistoryRangeDate(start, end) {
 export function getObservingHistoryOrdered(ordering) {
   return async function(dispatch) {
     const rows = await QlfApi.getObservingHistoryOrdered(ordering);
-    if (rows && rows.results && rows.results.results)
-      await dispatch(updateRows(rows.results.results));
+    if (rows && rows.results && rows.results)
+      await dispatch(updateRows(rows.results));
   };
 }
 
@@ -168,9 +162,9 @@ export function qlfOfflineReducers(state = defaultState(), action) {
         spectrograph: action.state.spectrograph,
         arm: action.state.arm,
       });
-    case 'UPDATE_LAST_PROCESS':
+    case 'UPDATE_LAST_PROCESSES':
       return Object.assign({}, state, {
-        lastProcess: action.state.lastProcess,
+        lastProcesses: action.state.lastProcesses,
       });
     case 'UPDATE_DATE_RANGE':
       return Object.assign({}, state, {
