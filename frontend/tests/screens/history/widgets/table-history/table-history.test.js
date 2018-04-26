@@ -79,7 +79,7 @@ describe('TableHistory Controls', () => {
   it('orders table', () => {
     wrapper
       .find('span')
-      .at(0)
+      .at(1)
       .simulate('click');
     expect(getHistoryOrdered).toBeCalledWith('-pk');
     wrapper
@@ -92,8 +92,8 @@ describe('TableHistory Controls', () => {
   it('calls navigateToQA', () => {
     wrapper
       .find('span')
-      .at(9)
+      .at(16)
       .simulate('click');
-    expect(navigateToQA).toBeCalledWith(70);
+    expect(navigateToQA).toBeCalledWith(69);
   });
 });
