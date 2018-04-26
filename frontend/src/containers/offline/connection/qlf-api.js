@@ -139,6 +139,19 @@ export default class QlfApi {
     }
   }
 
+  static async getExposuresDateRange() {
+    try {
+      const exposures = await fetch(`${apiUrl}get_exposures_date_range`, {
+        method: 'GET',
+        headers: headers,
+      });
+      const responseJson = await exposures.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getObservingHistoryOrdered(order) {
     try {
       const exposures = await fetch(

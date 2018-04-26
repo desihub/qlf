@@ -12,6 +12,7 @@ export default class TableHistory extends Component {
     navigateToQA: Proptypes.func.isRequired,
     type: Proptypes.string.isRequired,
     selectable: Proptypes.bool,
+    orderable: Proptypes.bool,
   };
 
   state = {
@@ -80,6 +81,7 @@ export default class TableHistory extends Component {
             asc={this.state.asc}
             ordering={this.state.ordering}
             selectable={this.props.selectable}
+            orderable={this.props.orderable}
           />
           {this.renderBody()}
         </Table>

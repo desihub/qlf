@@ -17,36 +17,40 @@ jest.mock('../../../src/containers/offline/connection/qlf-api', () => {
     getLastProcess: () => {
       return [{ id: 69 }];
     },
+    getExposuresDateRange: () => {
+      return {
+        start_date: '2019-01-01T22:00:00Z',
+        end_date: '2019-01-01T22:00:00Z',
+      };
+    },
     getProcessingHistory: () => {
       return {
-        results: {
-          results: [
-            {
-              pk: 69,
-              dateobs: '2019-01-01T22:00:00Z',
-              datemjd: 58484.916666666664,
-              exposure_id: 3,
-              tile: 6,
-              telra: 333.22,
-              teldec: 14.84,
-              exptime: 1000,
-              airmass: null,
-              runtime: '110.648429',
-            },
-            {
-              pk: 70,
-              dateobs: '2019-01-01T22:00:00Z',
-              datemjd: 58484.916666666664,
-              exposure_id: 4,
-              tile: 7,
-              telra: 332.35,
-              teldec: 12.32,
-              exptime: 1000,
-              airmass: null,
-              runtime: '96.254038',
-            },
-          ],
-        },
+        results: [
+          {
+            pk: 69,
+            dateobs: '2019-01-01T22:00:00Z',
+            datemjd: 58484.916666666664,
+            exposure_id: 3,
+            tile: 6,
+            telra: 333.22,
+            teldec: 14.84,
+            exptime: 1000,
+            airmass: null,
+            runtime: '110.648429',
+          },
+          {
+            pk: 70,
+            dateobs: '2019-01-01T22:00:00Z',
+            datemjd: 58484.916666666664,
+            exposure_id: 4,
+            tile: 7,
+            telra: 332.35,
+            teldec: 12.32,
+            exptime: 1000,
+            airmass: null,
+            runtime: '96.254038',
+          },
+        ],
       };
     },
   };

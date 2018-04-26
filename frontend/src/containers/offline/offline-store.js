@@ -14,6 +14,8 @@ function defaultState() {
     arm: 0,
     spectrograph: 0,
     step: 0,
+    startDate: undefined,
+    endDate: undefined,
   };
 }
 
@@ -60,17 +62,13 @@ function selectMetric(step, spectrograph, arm) {
 export function getProcessingHistory() {
   return async function(dispatch) {
     const rows = await QlfApi.getProcessingHistory();
-    if (rows && rows.results && rows.results) {
+    const dateRange = await QlfApi.getExposuresDateRange();
+    if (rows && rows.results) {
       dispatch(updateRows(rows.results));
     }
 
-    if (
-      rows &&
-      rows.results &&
-      rows.results.start_date &&
-      rows.results.end_date
-    ) {
-      dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
+    if (dateRange && dateRange.end_date && dateRange.start_date) {
+      dispatch(updateDateRange(dateRange.start_date, dateRange.end_date));
     }
   };
 }
@@ -82,8 +80,8 @@ export function getProcessingHistoryRangeDate(start, end) {
       end.toISOString().split('T')[0]
     );
 
-    if (rows && rows.results && rows.results.results) {
-      await dispatch(updateRows(rows.results.results));
+    if (rows && rows.results) {
+      await dispatch(updateRows(rows.results));
     }
   };
 }
@@ -91,25 +89,20 @@ export function getProcessingHistoryRangeDate(start, end) {
 export function getProcessingHistoryOrdered(ordering) {
   return async function(dispatch) {
     const rows = await QlfApi.getProcessingHistoryOrdered(ordering);
-    if (rows && rows.results && rows.results.results)
-      await dispatch(updateRows(rows.results.results));
+    if (rows && rows.results) await dispatch(updateRows(rows.results));
   };
 }
 
 export function getObservingHistory() {
   return async function(dispatch) {
     const rows = await QlfApi.getObservingHistory();
-    if (rows && rows.results && rows.results.results) {
-      dispatch(updateRows(rows.results.results));
+    const dateRange = await QlfApi.getExposuresDateRange();
+    if (rows && rows.results) {
+      dispatch(updateRows(rows.results));
     }
 
-    if (
-      rows &&
-      rows.results &&
-      rows.results.start_date &&
-      rows.results.end_date
-    ) {
-      dispatch(updateDateRange(rows.results.start_date, rows.results.end_date));
+    if (dateRange && dateRange.end_date && dateRange.start_date) {
+      dispatch(updateDateRange(dateRange.start_date, dateRange.end_date));
     }
   };
 }
@@ -121,8 +114,8 @@ export function getObservingHistoryRangeDate(start, end) {
       end.toISOString().split('T')[0]
     );
 
-    if (rows && rows.results && rows.results.results) {
-      await dispatch(updateRows(rows.results.results));
+    if (rows && rows.results && rows.results) {
+      await dispatch(updateRows(rows.results));
     }
   };
 }
@@ -130,8 +123,8 @@ export function getObservingHistoryRangeDate(start, end) {
 export function getObservingHistoryOrdered(ordering) {
   return async function(dispatch) {
     const rows = await QlfApi.getObservingHistoryOrdered(ordering);
-    if (rows && rows.results && rows.results.results)
-      await dispatch(updateRows(rows.results.results));
+    if (rows && rows.results && rows.results)
+      await dispatch(updateRows(rows.results));
   };
 }
 

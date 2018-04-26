@@ -55,6 +55,7 @@ export default class History extends Component {
         navigateToQA={this.props.navigateToQA}
         type={this.props.type}
         selectable={false}
+        orderable={false}
       />
     );
   };
@@ -81,6 +82,7 @@ export default class History extends Component {
           navigateToQA={this.props.navigateToQA}
           type={this.props.type}
           selectable={true}
+          orderable={true}
         />
       );
     }
@@ -92,7 +94,7 @@ export default class History extends Component {
         {this.renderSelectDate()}
         <Card style={styles.card}>
           <Tabs value={this.state.value} onChange={this.handleChange}>
-            <Tab label="Last Process" value="last">
+            <Tab label="Most Recent" value="last">
               {this.renderLastProcesses()}
             </Tab>
             <Tab label="History" value="history">
