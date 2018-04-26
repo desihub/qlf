@@ -70,8 +70,7 @@ class OnlineContainer extends Component {
   }
 
   startWebsocket = () => {
-    if (this.state.isOnline)
-      return <Websocket getWebsocketRef={this.getWebsocketRef} />;
+    return <Websocket getWebsocketRef={this.getWebsocketRef} />;
   };
 
   render() {

@@ -1,19 +1,8 @@
 import React, { Component } from 'react';
 import { Table, TableBody } from 'material-ui/Table';
 import Proptypes from 'prop-types';
-import { Card } from 'material-ui/Card';
 import HistoryHeader from './history-header/history-header';
 import HistoryData from './history-data/history-data';
-import RaisedButton from 'material-ui/RaisedButton';
-
-const styles = {
-  card: {
-    borderLeft: 'solid 4px teal',
-    flex: '1',
-    height: '90%',
-    margin: '1em',
-  },
-};
 
 export default class TableHistory extends Component {
   static propTypes = {
@@ -23,6 +12,7 @@ export default class TableHistory extends Component {
     navigateToQA: Proptypes.func.isRequired,
     lastProcess: Proptypes.number,
     type: Proptypes.string.isRequired,
+    selectable: Proptypes.bool,
   };
 
   state = {
@@ -51,16 +41,19 @@ export default class TableHistory extends Component {
   renderBody = () => {
     const isProcessHistory = this.props.type === 'process';
     return (
-      <TableBody showRowHover={true} displayRowCheckbox={!isProcessHistory}>
+      <TableBody
+        showRowHover={true}
+        displayRowCheckbox={!isProcessHistory && this.props.selectable}
+      >
         {this.props.rows.map((row, id) => {
-          const processId = isProcessHistory
-            ? row.pk
-            : row.last_exposure_process_id;
+          const processId =
+            isProcessHistory || !row.last_exposure_process_id
+              ? row.pk
+              : row.last_exposure_process_id;
           return (
             <HistoryData
               key={id}
               processId={processId}
-              lastProcess={this.props.lastProcess}
               row={row}
               selectProcessQA={this.selectProcessQA}
               type={this.props.type}
@@ -71,27 +64,15 @@ export default class TableHistory extends Component {
     );
   };
 
-  renderSubmit = () => {
-    if (this.props.type === 'process') return;
-    return (
-      <RaisedButton
-        label="Submit"
-        backgroundColor={'#00C853'}
-        labelStyle={{ color: 'white' }}
-        fullWidth={true}
-      />
-    );
-  };
-
   render() {
     const isProcessHistory = this.props.type === 'process';
     return (
-      <Card style={styles.card}>
+      <div>
         <Table
           fixedHeader={false}
           style={{ width: 'auto', tableLayout: 'auto' }}
           bodyStyle={{ overflow: 'visible' }}
-          selectable={!isProcessHistory}
+          selectable={!isProcessHistory && this.props.selectable}
           multiSelectable={true}
         >
           <HistoryHeader
@@ -99,11 +80,11 @@ export default class TableHistory extends Component {
             type={this.props.type}
             asc={this.state.asc}
             ordering={this.state.ordering}
+            selectable={this.props.selectable}
           />
           {this.renderBody()}
         </Table>
-        {this.renderSubmit()}
-      </Card>
+      </div>
     );
   }
 }

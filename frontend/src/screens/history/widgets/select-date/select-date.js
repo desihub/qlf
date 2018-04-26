@@ -68,7 +68,7 @@ export default class SelectDate extends React.Component {
     return (
       <div style={styles.container}>
         <DatePicker
-          autoOK={true}
+          autoOk={true}
           style={styles.space}
           floatingLabelText="Start Date"
           hintText="Start Date"
@@ -80,7 +80,7 @@ export default class SelectDate extends React.Component {
           formatDate={this.formatDate}
         />
         <DatePicker
-          autoOK={true}
+          autoOk={true}
           floatingLabelText="End Date"
           hintText="End Date"
           container="inline"
