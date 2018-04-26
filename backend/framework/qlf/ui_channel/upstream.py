@@ -141,6 +141,10 @@ def get_current_state():
     daemon_status = qlf.get_status()
     logfile = tail_file(open_file('logfile'), 100)
 
+    if daemon_status:
+        if not qlf.is_running():
+            daemon_status = None
+
     pipelinelog = list()
     mjd = str()
     process_id = int()
