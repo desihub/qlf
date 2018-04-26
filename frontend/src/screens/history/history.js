@@ -24,7 +24,7 @@ export default class History extends Component {
     startDate: Proptypes.string,
     endDate: Proptypes.string,
     getHistoryRangeDate: Proptypes.func.isRequired,
-    lastProcess: Proptypes.object,
+    lastProcesses: Proptypes.array,
     type: Proptypes.string.isRequired,
   };
 
@@ -43,13 +43,15 @@ export default class History extends Component {
     tab: 'history',
   };
 
-  renderLastProcess = () => {
-    const lastProcess = this.props.lastProcess ? [this.props.lastProcess] : [];
+  renderLastProcesses = () => {
+    const lastProcesses = this.props.lastProcesses
+      ? this.props.lastProcesses
+      : [];
     return (
       <TableHistory
         getHistory={this.props.getHistory}
         getHistoryOrdered={this.props.getHistoryOrdered}
-        rows={lastProcess}
+        rows={lastProcesses}
         navigateToQA={this.props.navigateToQA}
         type={this.props.type}
         selectable={false}
@@ -91,7 +93,7 @@ export default class History extends Component {
         <Card style={styles.card}>
           <Tabs value={this.state.value} onChange={this.handleChange}>
             <Tab label="Last Process" value="last">
-              {this.renderLastProcess()}
+              {this.renderLastProcesses()}
             </Tab>
             <Tab label="History" value="history">
               <RaisedButton

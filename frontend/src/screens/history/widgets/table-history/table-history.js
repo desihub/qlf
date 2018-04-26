@@ -10,7 +10,6 @@ export default class TableHistory extends Component {
     getHistoryOrdered: Proptypes.func.isRequired,
     rows: Proptypes.array.isRequired,
     navigateToQA: Proptypes.func.isRequired,
-    lastProcess: Proptypes.number,
     type: Proptypes.string.isRequired,
     selectable: Proptypes.bool,
   };
