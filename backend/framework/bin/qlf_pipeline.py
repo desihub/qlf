@@ -20,9 +20,7 @@ logpipeline = cfg.get('main', 'logpipeline')
 desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 
 logger = logging.getLogger("main_logger")
-pipe_logger = setup_logger(
-    'logpipeline', logpipeline
-)
+pipe_logger = setup_logger('logpipeline', logpipeline)
 
 
 class QLFProcess(object):
@@ -53,8 +51,6 @@ class QLFProcess(object):
     def start_process(self):
         """ Start pipeline. """
 
-        pipe_logger.info('Night {}'.format(self.data.get('night')))
-
         self.data['start'] = datetime.datetime.now().replace(microsecond=0)
 
         # create process in database and obtain the process id
@@ -69,6 +65,7 @@ class QLFProcess(object):
         # TODO: ingest configuration file used, this should be done by process
         # self.models.insert_config(process.id)
 
+        pipe_logger.info('\n' * 100)
         pipe_logger.info('Process ID {}'.format(process.id))
         pipe_logger.info('ExpID {} started.'.format(self.data.get('expid')))
 
@@ -294,7 +291,6 @@ class Jobs(QLFProcess):
                         if 'time' not in stage_start:
                             stage_start['time'] = datetime.datetime.now().replace(microsecond=0)
                             pipe_logger.info('{} started.'.format(stage.get('display_name')))
-
 
         except Exception as err:
             pipe_logger.info(err)
