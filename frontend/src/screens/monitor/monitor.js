@@ -25,7 +25,7 @@ const styles = {
     paddingLeft: '1vw',
     paddingRight: '1vw',
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'left',
     alignItems: 'center',
   },
   menu: {
@@ -140,7 +140,7 @@ export default class Monitor extends Component {
               qaTests={this.props.qaTests}
               arms={this.props.arms}
               spectrographs={this.props.spectrographs}
-              petalSizeFactor={20}
+              petalSizeFactor={22}
             />
           </div>
           <div style={styles.gridItem}>

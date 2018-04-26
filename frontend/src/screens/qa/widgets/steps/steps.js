@@ -24,8 +24,7 @@ const styles = {
     gridTemplateColumns: 'auto auto auto auto auto',
   },
   gridItem: {
-    display: 'flex',
-    justifyContent: 'center',
+    textAlign: 'center',
     alignItems: 'center',
     paddingBottom: '0.5vh',
   },
@@ -39,7 +38,6 @@ const styles = {
     borderLeft: 'solid 4px teal',
     flex: '1',
     height: '90%',
-    paddingBottom: '1em',
   },
   containerSteps: {
     display: 'flex',
@@ -93,6 +91,20 @@ export default class Steps extends Component {
 
   state = {
     message: '',
+  };
+
+  componentWillMount() {
+    window.addEventListener('resize', this.updatePetalSize);
+    this.updatePetalSize();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updatePetalSize);
+  }
+
+  updatePetalSize = () => {
+    petalSize =
+      (window.outerWidth + window.outerHeight) / this.props.petalSizeFactor;
   };
 
   findQATest = arm => {
@@ -197,8 +209,6 @@ export default class Steps extends Component {
   };
 
   render() {
-    petalSize =
-      (window.innerWidth + window.innerHeight) / this.props.petalSizeFactor;
     return (
       <div>
         {this.renderTooltip()}

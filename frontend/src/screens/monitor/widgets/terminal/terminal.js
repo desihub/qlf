@@ -16,7 +16,7 @@ const styles = {
     padding: '10px',
     lineHeight: '1.5',
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: '14px',
+    fontSize: '13px',
     fontFamily: 'Source Code Pro',
   },
 };

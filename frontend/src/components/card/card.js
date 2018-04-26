@@ -14,7 +14,7 @@ const styles = {
     lineHeight: '3vh',
   },
   subtitleStyle: {
-    fontSize: 'calc(0.9vw + 0.9vh)',
+    fontSize: '13px',
     float: 'right',
     paddingBottom: '8px',
     paddingRight: '8px',
