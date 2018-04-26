@@ -51,7 +51,7 @@ export default class Stages extends Component {
     enableSelectAll: false,
     deselectOnClickaway: true,
     showCheckboxes: false,
-    columnHeight: '0.7vh',
+    columnHeight: '0.8vh',
     openDialog: true,
   };
 
@@ -220,7 +220,11 @@ export default class Stages extends Component {
                           }}
                         >
                           <span
-                            style={{ cursor: 'pointer', color: '#9E9E9E' }}
+                            style={{
+                              cursor: 'pointer',
+                              color: '#9E9E9E',
+                              with: '100%',
+                            }}
                             onClick={() =>
                               this.props.openDialog(index, this.props.arm)
                             }

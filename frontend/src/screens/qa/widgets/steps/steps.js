@@ -14,33 +14,46 @@ const stepsQa = {
 };
 
 let petalSize = window.innerWidth + window.innerHeight;
+const arms = ['b', 'r', 'z'];
 
 const styles = {
   container: {
     flex: 1,
+    display: 'grid',
+    gridTemplateColumns: 'auto auto auto auto auto',
+  },
+  gridItem: {
+    textAlign: 'center',
+    alignItems: 'center',
+    paddingBottom: '0.5vh',
+  },
+  gridArm: {
+    paddingLeft: '1vw',
     display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   card: {
     borderLeft: 'solid 4px teal',
     flex: '1',
     height: '90%',
-    paddingBottom: '1em',
   },
   containerSteps: {
     display: 'flex',
     justifyContent: 'space-around',
     paddingTop: '1em',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   arm: {
     fontWeight: 'bold',
-    fontSize: 'calc(1.2vh + 1.2vw)',
+    fontSize: 'calc(1vh + 1vw)',
     textAlign: 'center',
     flex: 1,
   },
   step: {
     width: 100,
-    fontSize: 'calc(1vh + 1vw)',
+    fontSize: '12px',
     textAlign: 'center',
   },
   space: {
@@ -64,7 +77,6 @@ const styles = {
 
 export default class Steps extends Component {
   static propTypes = {
-    layout: PropTypes.object.isRequired,
     renderMetrics: PropTypes.func.isRequired,
     exposure: PropTypes.string,
     qaTests: PropTypes.array.isRequired,
@@ -78,6 +90,20 @@ export default class Steps extends Component {
 
   state = {
     message: '',
+  };
+
+  componentWillMount() {
+    window.addEventListener('resize', this.updatePetalSize);
+    this.updatePetalSize();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updatePetalSize);
+  }
+
+  updatePetalSize = () => {
+    petalSize =
+      (window.outerWidth + window.outerHeight) / this.props.petalSizeFactor;
   };
 
   findQATest = arm => {
@@ -115,57 +141,31 @@ export default class Steps extends Component {
     this.setState({ message: name + '\n' });
   };
 
-  renderStep = (step, title, name) => {
+  renderPieChart = (arm, step) => {
     return (
-      <div style={{ ...styles.containerSteps, ...this.props.layout }}>
-        <span
-          data-tip="true"
-          data-for="tooltip"
-          onMouseOver={() => this.showStepName(name)}
-          style={styles.step}
-        >
-          {this.props.navigateToProcessingHistory ? name : title}
-        </span>
-        <PieChart
-          renderMetrics={this.props.renderMetrics}
-          step={step}
-          arm={0}
-          size={petalSize}
-          showQaAlarms={this.showQaAlarms}
-          hideQaAlarms={this.hideQaAlarms}
-          qaTests={this.findQATest('b')}
-        />
-        <PieChart
-          renderMetrics={this.props.renderMetrics}
-          step={step}
-          arm={1}
-          size={petalSize}
-          showQaAlarms={this.showQaAlarms}
-          hideQaAlarms={this.hideQaAlarms}
-          qaTests={this.findQATest('r')}
-        />
-        <PieChart
-          renderMetrics={this.props.renderMetrics}
-          step={step}
-          arm={2}
-          size={petalSize}
-          showQaAlarms={this.showQaAlarms}
-          hideQaAlarms={this.hideQaAlarms}
-          qaTests={this.findQATest('z')}
-        />
-      </div>
+      <PieChart
+        renderMetrics={this.props.renderMetrics}
+        step={step}
+        arm={arm}
+        size={petalSize}
+        showQaAlarms={this.showQaAlarms}
+        hideQaAlarms={this.hideQaAlarms}
+        qaTests={this.findQATest(arms[arm])}
+      />
     );
   };
 
-  renderArms = () => {
-    return this.props.layout.flexDirection === 'row' ? (
-      <div style={{ ...styles.containerSteps, ...this.props.layout }}>
-        <span style={styles.space}> </span>
-        <span style={styles.arm}>b</span>
-        <span style={styles.arm}>r</span>
-        <span style={styles.arm}>z</span>
-      </div>
-    ) : null;
+  renderStepName = (title, name) => {
+    return (
+      <span
+        data-tip="true"
+        data-for="tooltip"
+        onMouseOver={() => this.showStepName(name)}
+        style={styles.step}
+      >
+        {this.props.navigateToProcessingHistory ? name : title}
+      </span>
+    );
   };
 
   renderTooltipContent = () => {
@@ -192,7 +192,6 @@ export default class Steps extends Component {
         <Status
           exposure={this.props.exposure}
           mjd={this.props.mjd}
-          layout={this.props.layout}
           date={this.props.date}
           time={this.props.time}
           processId={this.props.processId}
@@ -202,18 +201,47 @@ export default class Steps extends Component {
   };
 
   render() {
-    petalSize =
-      (window.innerWidth + window.innerHeight) / this.props.petalSizeFactor;
     return (
       <div>
         {this.renderTooltip()}
         {this.renderHistoryControls()}
         <Card style={styles.card}>
-          {this.renderStep(0, 'Step 1', 'Pre Processing')}
-          {this.renderStep(1, 'Step 2', 'Spectral Extraction')}
-          {this.renderStep(2, 'Step 3', 'Fiber Flattening')}
-          {this.renderStep(3, 'Step 4', 'Sky Subtraction')}
-          {this.renderArms()}
+          <div style={styles.container}>
+            <div />
+            <div style={styles.gridItem}>
+              {this.renderStepName('Step 1', 'Pre Processing')}
+            </div>
+            <div style={styles.gridItem}>
+              {this.renderStepName('Step 2', 'Spectral Extraction')}
+            </div>
+            <div style={styles.gridItem}>
+              {this.renderStepName('Step 3', 'Fiber Flattening')}
+            </div>
+            <div style={styles.gridItem}>
+              {this.renderStepName('Step 4', 'Sky Subtraction')}
+            </div>
+            <div style={styles.gridArm}>
+              <span style={styles.arm}>b</span>
+            </div>
+            <div style={styles.gridItem}>{this.renderPieChart(0, 0)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(0, 1)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(0, 2)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(0, 3)}</div>
+            <div style={styles.gridArm}>
+              <span style={styles.arm}>r</span>
+            </div>
+            <div style={styles.gridItem}>{this.renderPieChart(1, 0)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(1, 1)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(1, 2)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(1, 3)}</div>
+            <div style={styles.gridArm}>
+              <span style={styles.arm}>z</span>
+            </div>
+            <div style={styles.gridItem}>{this.renderPieChart(2, 0)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(2, 1)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(2, 2)}</div>
+            <div style={styles.gridItem}>{this.renderPieChart(2, 3)}</div>
+          </div>
         </Card>
       </div>
     );

@@ -34,6 +34,10 @@ const styles = {
   spanTitle: {
     alignSelf: 'flex-end',
   },
+  bottom: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
 };
 
 class App extends React.Component {
@@ -114,6 +118,20 @@ class App extends React.Component {
   };
 
   renderTopBar = () => {
+    if (!this.state.displayHeaders) return;
+    const homeAppleTitleStyle =
+      this.renderRouteName() === '' ? styles.headerTop : null;
+    return (
+      <AppBar
+        titleStyle={homeAppleTitleStyle}
+        showMenuIconButton={this.showMenuIcon()}
+        onLeftIconButtonTouchTap={this.openDrawer}
+        title={this.renderAppBar()}
+      />
+    );
+  };
+
+  renderBottomBar = () => {
     if (!this.state.displayHeaders)
       return (
         <span
@@ -130,26 +148,26 @@ class App extends React.Component {
           Show Menu
         </span>
       );
-    const homeAppleTitleStyle =
-      this.renderRouteName() === '' ? styles.headerTop : null;
-    return (
-      <AppBar
-        titleStyle={homeAppleTitleStyle}
-        showMenuIconButton={this.showMenuIcon()}
-        onLeftIconButtonTouchTap={this.openDrawer}
-        title={this.renderAppBar()}
-      />
-    );
-  };
 
-  renderBottomBar = () => {
-    if (!this.state.displayHeaders) return;
     return (
       <AppBar
         showMenuIconButton={false}
         titleStyle={styles.headerBottom}
-        title="© Copyright 2018, LIneA/DESI"
+        title={this.renderBottomBarTitle()}
       />
+    );
+  };
+
+  renderBottomBarTitle = () => {
+    return (
+      <div style={styles.bottom}>
+        <span>© Copyright 2018, LIneA/DESI</span>
+        <span>
+          {process.env.REACT_APP_VERSION
+            ? `v${process.env.REACT_APP_VERSION.substring(0, 7)}`
+            : ''}
+        </span>
+      </div>
     );
   };
 

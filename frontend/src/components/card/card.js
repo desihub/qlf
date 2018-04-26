@@ -9,12 +9,12 @@ const styles = {
     margin: '1.5vh 1vw 1vh 1vw',
   },
   titleStyle: {
-    fontSize: 'calc(1vh + 1vw)',
-    color: 'rgba(0, 0, 0, 0.32)',
-    lineHeight: '4vh',
+    fontSize: 'calc(0.7vh + 0.7vw)',
+    color: 'rgba(0, 0, 0, 0.6)',
+    lineHeight: '3vh',
   },
   subtitleStyle: {
-    fontSize: 'calc(1vw + 1vh)',
+    fontSize: '13px',
     float: 'right',
     paddingBottom: '8px',
     paddingRight: '8px',

@@ -25,6 +25,7 @@ class OnlineContainer extends Component {
     time: PropTypes.string.isRequired,
     navigateToMetrics: PropTypes.func.isRequired,
     daemonStatus: PropTypes.string.isRequired,
+    mainTerminal: PropTypes.array.isRequired,
     ingestionTerminal: PropTypes.array.isRequired,
     cameraTerminal: PropTypes.array.isRequired,
     camerasStages: PropTypes.object.isRequired,
@@ -86,6 +87,7 @@ class OnlineContainer extends Component {
               date={this.props.date}
               time={this.props.time}
               daemonStatus={this.props.daemonStatus}
+              mainTerminal={this.props.mainTerminal}
               ingestionTerminal={this.props.ingestionTerminal}
               cameraTerminal={this.props.cameraTerminal}
               camerasStages={this.props.camerasStages}
@@ -152,6 +154,7 @@ export default connect(
     date: state.qlfOnline.date,
     time: state.qlfOnline.time,
     daemonStatus: state.qlfOnline.daemonStatus,
+    mainTerminal: state.qlfOnline.mainTerminal,
     ingestionTerminal: state.qlfOnline.ingestionTerminal,
     cameraTerminal: state.qlfOnline.cameraTerminal,
     camerasStages: state.qlfOnline.camerasStages,
