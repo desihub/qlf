@@ -38,7 +38,7 @@ const styles = {
     fontSize: '2vw',
   },
   subtitle: {
-    fontSize: '1vw',
+    fontSize: '1.2vw',
     padding: '1vw',
   },
 };
