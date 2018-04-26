@@ -6,7 +6,6 @@ services:
     environment:
       - QLF_UI_PORT=3000
       - DEV=true
-      - GIT_VERSION="${git rev-parse HEAD}"
     entrypoint: sh entrypoint.sh
     working_dir: /home/node
     ports:
