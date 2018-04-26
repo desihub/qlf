@@ -14,20 +14,20 @@ const styles = {
     paddingLeft: '1vw',
   },
   title: {
-    fontSize: 'calc(1vw + 1vh)',
+    fontSize: '14px',
     color: 'rgba(0, 0, 0, 0.54)',
   },
   buttons: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    fontSize: 'calc(1vw + 1vh)',
+    fontSize: '14px',
   },
   selected: {
     fontWeight: 'bold',
   },
   metricLabel: {
-    fontSize: 'calc(1vw + 1vh)',
+    fontSize: '14px',
   },
   failure: {
     color: 'red',

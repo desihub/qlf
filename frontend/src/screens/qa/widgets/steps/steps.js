@@ -47,7 +47,7 @@ const styles = {
   },
   arm: {
     fontWeight: 'bold',
-    fontSize: 'calc(1vh + 1vw)',
+    fontSize: '14px',
     textAlign: 'center',
     flex: 1,
   },
@@ -66,7 +66,7 @@ const styles = {
   processingHistoryLabel: {
     paddingTop: '1vh',
     fontWeight: '900',
-    fontSize: 'calc(0.6vh + 0.6vw)',
+    fontSize: '14px',
   },
   qaControls: {
     flexDirection: 'row',

@@ -7,6 +7,7 @@ const styles = {
   card: {
     borderLeft: 'solid 4px teal',
     flex: 1,
+    margin: '1vw',
   },
   select: {
     flex: 1,
@@ -22,15 +23,15 @@ const styles = {
   },
   value: {
     flex: 1,
-    fontSize: 'calc(1vw + 1vh)',
+    fontSize: '14px',
     textAlign: 'center',
   },
   titleContainer: {
-    padding: '0px',
+    padding: '5px',
     paddingLeft: '10px',
   },
   title: {
-    fontSize: 'calc(5px + 1vh)',
+    fontSize: '14px',
     color: 'rgba(0, 0, 0, 0.54)',
   },
 };
