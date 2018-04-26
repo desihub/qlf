@@ -15,7 +15,7 @@ const tableData = _.map(_.range(10), function() {
   return { pre: '', spec: '', fib: '', sky: '' };
 });
 
-const headerSize = 'calc(1px + 0.6vh + 0.6vw)';
+const headerSize = '11px';
 
 const styles = {
   flex: { display: 'flex', flexDirection: 'row', alignItems: 'center' },
@@ -92,6 +92,7 @@ export default class Stages extends Component {
               fontSize: headerSize,
               height: this.state.columnHeight,
               whiteSpace: 'normal',
+              paddingRight: '0px',
             }}
             tooltip={'Pre Processing'}
           >
@@ -102,6 +103,7 @@ export default class Stages extends Component {
               fontSize: headerSize,
               height: this.state.columnHeight,
               whiteSpace: 'normal',
+              paddingRight: '0px',
             }}
             tooltip={'Spectral Extraction'}
           >
@@ -112,6 +114,7 @@ export default class Stages extends Component {
               fontSize: headerSize,
               height: this.state.columnHeight,
               whiteSpace: 'normal',
+              paddingRight: '0px',
             }}
             tooltip={'Fiber Flattening'}
           >
@@ -122,6 +125,7 @@ export default class Stages extends Component {
               fontSize: headerSize,
               height: this.state.columnHeight,
               whiteSpace: 'normal',
+              paddingRight: '0px',
             }}
             tooltip={'Sky Subtraction'}
           >
