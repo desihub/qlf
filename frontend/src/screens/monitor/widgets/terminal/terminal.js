@@ -28,7 +28,7 @@ export default class Terminal extends Component {
   renderLines = () => {
     return (
       <div>
-        <pre>{this.props.lines.join('')}</pre>
+        <pre style={{ margin: 0 }}>{this.props.lines.join('')}</pre>
       </div>
     );
   };
