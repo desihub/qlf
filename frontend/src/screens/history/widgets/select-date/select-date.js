@@ -13,7 +13,7 @@ const styles = {
   },
   label: {
     color: 'black',
-  }
+  },
 };
 
 export default class SelectDate extends React.Component {
