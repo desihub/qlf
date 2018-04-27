@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Proptypes from 'prop-types';
+import PropTypes from 'prop-types';
 import TableHistory from './widgets/table-history/table-history';
 import SelectDate from './widgets/select-date/select-date';
 import { Tabs, Tab } from 'material-ui/Tabs';
@@ -17,15 +17,16 @@ const styles = {
 
 export default class History extends Component {
   static propTypes = {
-    getHistory: Proptypes.func.isRequired,
-    getHistoryOrdered: Proptypes.func.isRequired,
-    navigateToQA: Proptypes.func.isRequired,
-    rows: Proptypes.array.isRequired,
-    startDate: Proptypes.string,
-    endDate: Proptypes.string,
-    getHistoryRangeDate: Proptypes.func.isRequired,
-    lastProcesses: Proptypes.array,
-    type: Proptypes.string.isRequired,
+    getHistory: PropTypes.func.isRequired,
+    getHistoryOrdered: PropTypes.func.isRequired,
+    navigateToQA: PropTypes.func.isRequired,
+    rows: PropTypes.array.isRequired,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    getHistoryRangeDate: PropTypes.func.isRequired,
+    lastProcesses: PropTypes.array,
+    type: PropTypes.string.isRequired,
+    lastProcessedId: PropTypes.number,
   };
 
   renderSelectDate = () => {
@@ -56,6 +57,7 @@ export default class History extends Component {
         type={this.props.type}
         selectable={false}
         orderable={false}
+        lastProcessedId={this.props.lastProcessedId}
       />
     );
   };
@@ -83,6 +85,7 @@ export default class History extends Component {
           type={this.props.type}
           selectable={true}
           orderable={true}
+          lastProcessedId={this.props.lastProcessedId}
         />
       );
     }
@@ -90,7 +93,7 @@ export default class History extends Component {
 
   render() {
     return (
-      <div style={{ '-webkit-app-region': 'no-drag' }}>
+      <div style={{ WebkitAppRegion: 'no-drag' }}>
         {this.renderSelectDate()}
         <Card style={styles.card}>
           <Tabs value={this.state.value} onChange={this.handleChange}>

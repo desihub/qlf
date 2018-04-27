@@ -229,3 +229,9 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
 
     def get_last_exposure_process_id(self, obj):
         return Process.objects.all().filter(exposure=obj.pk).last().pk
+
+class ExposuresDateRangeSerializer(DynamicFieldsModelSerializer):
+
+    class Meta:
+        model = Exposure
+        fields = ('exposure_id', 'dateobs')

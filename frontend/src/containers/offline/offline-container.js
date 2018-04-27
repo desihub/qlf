@@ -61,6 +61,7 @@ class OfflineContainer extends Component {
     lastProcesses: PropTypes.array,
     processId: PropTypes.number,
     toggleHeader: PropTypes.func.isRequired,
+    lastProcessedId: PropTypes.number,
   };
 
   state = {
@@ -125,6 +126,7 @@ class OfflineContainer extends Component {
               getHistoryRangeDate={this.props.getProcessingHistoryRangeDate}
               lastProcesses={this.props.lastProcesses}
               type={'process'}
+              lastProcessedId={this.props.lastProcessedId}
             />
           )}
         />
@@ -141,6 +143,7 @@ class OfflineContainer extends Component {
               getHistoryRangeDate={this.props.getObservingHistoryRangeDate}
               lastProcesses={this.props.lastProcesses}
               type={'exposure'}
+              lastProcessedId={this.props.lastProcessedId}
             />
           )}
         />
@@ -207,6 +210,7 @@ export default connect(
     endDate: state.qlfOffline.endDate,
     lastProcesses: state.qlfOffline.lastProcesses,
     processId: state.qlfOffline.processId,
+    lastProcessedId: state.qlfOnline.processId,
   }),
   dispatch => ({
     getQA: processId => dispatch(getQA(processId)),

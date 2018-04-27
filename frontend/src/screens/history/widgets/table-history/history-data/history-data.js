@@ -14,6 +14,7 @@ export default class HistoryData extends React.Component {
   static muiName = 'TableRow';
   static propTypes = {
     processId: PropTypes.number,
+    lastProcessedId: PropTypes.number,
     row: PropTypes.object,
     type: PropTypes.string,
     children: PropTypes.array,
@@ -36,8 +37,10 @@ export default class HistoryData extends React.Component {
   };
 
   renderProcessingHistory = () => {
+    const lastProcessed =
+      this.props.lastProcessedId === this.props.row.pk ? styles.bold : null;
     return (
-      <TableRow>
+      <TableRow style={lastProcessed}>
         <TableRowColumn />
         <TableRowColumn>{this.props.row.pk}</TableRowColumn>
         <TableRowColumn>{this.formatDate(this.props.row.start)}</TableRowColumn>
@@ -70,9 +73,16 @@ export default class HistoryData extends React.Component {
   };
 
   renderObservingHistory = () => {
-    const { processId, selectProcessQA, row, ...otherProps } = this.props;
+    const {
+      processId,
+      selectProcessQA,
+      row,
+      lastProcessedId,
+      ...otherProps
+    } = this.props;
+    const lastProcessed = lastProcessedId === processId ? styles.bold : null;
     return (
-      <TableRow {...otherProps}>
+      <TableRow style={lastProcessed} {...otherProps}>
         {this.props.children[0]}
         <TableRowColumn />
         <TableRowColumn>{row.exposure_id}</TableRowColumn>

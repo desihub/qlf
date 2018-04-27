@@ -164,7 +164,7 @@ class App extends React.Component {
         <span>© Copyright 2018, LIneA/DESI</span>
         <span>
           {process.env.REACT_APP_VERSION
-            ? `v${process.env.REACT_APP_VERSION.substring(0, 7)}`
+            ? process.env.REACT_APP_VERSION.substring(0, 7)
             : ''}
         </span>
       </div>
