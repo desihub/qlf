@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import { Table, TableBody } from 'material-ui/Table';
-import Proptypes from 'prop-types';
+import PropTypes from 'prop-types';
 import HistoryHeader from './history-header/history-header';
 import HistoryData from './history-data/history-data';
 
 export default class TableHistory extends Component {
   static propTypes = {
-    getHistory: Proptypes.func.isRequired,
-    getHistoryOrdered: Proptypes.func.isRequired,
-    rows: Proptypes.array.isRequired,
-    navigateToQA: Proptypes.func.isRequired,
-    type: Proptypes.string.isRequired,
-    selectable: Proptypes.bool,
-    orderable: Proptypes.bool,
+    getHistory: PropTypes.func.isRequired,
+    getHistoryOrdered: PropTypes.func.isRequired,
+    rows: PropTypes.array.isRequired,
+    navigateToQA: PropTypes.func.isRequired,
+    type: PropTypes.string.isRequired,
+    selectable: PropTypes.bool,
+    orderable: PropTypes.bool,
+    processId: PropTypes.number,
+    lastProcessedId: PropTypes.number,
   };
 
   state = {
@@ -57,6 +59,7 @@ export default class TableHistory extends Component {
               row={row}
               selectProcessQA={this.selectProcessQA}
               type={this.props.type}
+              lastProcessedId={this.props.lastProcessedId}
             />
           );
         })}
