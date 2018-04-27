@@ -19,6 +19,7 @@ api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
 api_router.register(r'datatable_exposures', views.DataTableExposureViewSet, 'datatable_exposures')
 api_router.register(r'camera', views.CameraViewSet)
+api_router.register(r'exposures_date_range', views.ExposuresDateRange, 'exposures_date_range')
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -26,7 +27,6 @@ urlpatterns = [
     url(r'^stop', views.stop, name='stop'),
     url(r'^reset', views.reset, name='reset'),
     url(r'^qa_tests', views.qa_tests, name='qa_tests'),
-    url(r'^get_exposures_date_range', views.get_exposures_date_range, name='get_exposures_date_range'),
     url(r'^send_ticket_email', views.send_ticket_email, name='send_ticket_email'),
     url(r'^send_message', WebsocketView.send_message, name='send_message'),
     url(r'^daemon_status', views.daemon_status, name='daemon_status'),

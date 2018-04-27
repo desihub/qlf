@@ -141,10 +141,13 @@ export default class QlfApi {
 
   static async getExposuresDateRange() {
     try {
-      const exposures = await fetch(`${apiUrl}get_exposures_date_range`, {
-        method: 'GET',
-        headers: headers,
-      });
+      const exposures = await fetch(
+        `${apiUrl}dashboard/api/exposures_date_range/`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
       const responseJson = await exposures.json();
       return responseJson;
     } catch (e) {

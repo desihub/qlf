@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import authentication, permissions, viewsets, filters, status
+from rest_framework import authentication, permissions, viewsets, filters, status, views
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
@@ -11,7 +11,8 @@ from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer,
-    ProcessingHistorySerializer, SingleQASerializer, ObservingHistorySerializer
+    ProcessingHistorySerializer, SingleQASerializer, ObservingHistorySerializer,
+    ExposuresDateRangeSerializer
 )
 import Pyro4
 from datetime import datetime, timedelta
@@ -269,6 +270,20 @@ class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = ExposureSerializer
     filter_fields = ('exposure_id',)
 
+class ExposuresDateRange(viewsets.ReadOnlyModelViewSet):
+    """API endpoint for listing exposures date range"""
+    queryset = Exposure.objects.order_by('exposure_id')
+
+    def list(self, request, *args, **kwargs):
+        response = super(ExposuresDateRange, self).list(
+            request, args, kwargs)
+        queryset = self.get_queryset()
+        start_date = queryset.aggregate(Min('dateobs'))['dateobs__min']
+        end_date = queryset.aggregate(Max('dateobs'))['dateobs__max']
+        response.data = { "start_date": start_date, "end_date": end_date }
+        return response
+
+    serializer_class = ExposuresDateRangeSerializer
 
 class DataTableExposureViewSet(viewsets.ModelViewSet):
     queryset = Exposure.objects.order_by('exposure_id')
@@ -482,13 +497,3 @@ def send_ticket_email(request):
             return JsonResponse({ 'status': 'sent' })
         except:
             return JsonResponse({ 'status': 'send_mail fail' })
-
-def get_exposures_date_range(request):
-    exposure = Exposure.objects.all()
-    start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']
-    end_date = exposure.aggregate(Max('dateobs'))['dateobs__max']
-
-    return JsonResponse({
-        "start_date": start_date, 
-        "end_date": end_date,
-    })

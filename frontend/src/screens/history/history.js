@@ -90,7 +90,7 @@ export default class History extends Component {
 
   render() {
     return (
-      <div style={{ '-webkit-app-region': 'no-drag' }}>
+      <div style={{ WebkitAppRegion: 'no-drag' }}>
         {this.renderSelectDate()}
         <Card style={styles.card}>
           <Tabs value={this.state.value} onChange={this.handleChange}>
