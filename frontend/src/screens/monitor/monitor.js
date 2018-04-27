@@ -19,6 +19,7 @@ const styles = {
     marginBottom: '1vh',
     flexDirection: 'row',
     gridTemplateColumns: '50% 50%',
+    gridTemplateRows: 'auto 32vh',
   },
   gridItem: {
     paddingTop: '1vh',
@@ -143,10 +144,10 @@ export default class Monitor extends Component {
             />
           </div>
           <div style={styles.gridItem}>
-            <Terminal height={'20vh'} lines={this.state.ingestionTerminal} />
+            <Terminal height={'100%'} lines={this.state.ingestionTerminal} />
           </div>
           <div style={styles.gridItem}>
-            ￼ <Terminal height={'20vh'} lines={this.state.mainTerminal} />
+            ￼ <Terminal height={'100%'} lines={this.state.mainTerminal} />
           </div>
         </div>
       </div>
