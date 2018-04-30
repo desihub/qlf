@@ -65,7 +65,7 @@ class QLFProcess(object):
         # TODO: ingest configuration file used, this should be done by process
         # self.models.insert_config(process.id)
 
-        pipe_logger.info('...'.format('\n' * 10))
+        pipe_logger.info('...{}'.format('\n' * 20))
         pipe_logger.info('Process ID {}'.format(process.id))
         pipe_logger.info('ExpID {} started.'.format(self.data.get('expid')))
 
