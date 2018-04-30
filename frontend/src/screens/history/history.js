@@ -111,7 +111,6 @@ export default class History extends Component {
   };
 
   renderToolbar = () => {
-    if (this.props.type === 'process') return;
     return (
       <Toolbar>
         <ToolbarGroup firstChild={true}>
