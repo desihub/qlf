@@ -37,6 +37,22 @@ export default class QlfApi {
     }
   }
 
+  static reprocessExposure(exposure) {
+    console.log(exposure); // eslint-disable-line
+    // const processes = await fetch(
+    //   `${apiUrl}dashboard/api/reprocess_exposure/${exposure}/?format=json`,
+    //     {
+    //       method: 'GET',
+    //       headers: headers,
+    //     }
+    //   );
+    //   const responseJson = await processes.json();
+    //   return responseJson;
+    // } catch (e) {
+    //   return null;
+    // }
+  }
+
   static async getProcessingHistory() {
     try {
       const processes = await fetch(

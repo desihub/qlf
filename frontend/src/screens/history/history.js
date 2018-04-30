@@ -8,6 +8,7 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 import FontIcon from 'material-ui/FontIcon';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import QlfApi from '../../containers/offline/connection/qlf-api';
 
 const styles = {
   card: {
@@ -125,12 +126,22 @@ export default class History extends Component {
             refresh
           </FontIcon>
         </ToolbarGroup>
-        {this.renderReprocessButtom()}
+        {this.renderReprocessButton()}
       </Toolbar>
     );
   };
 
-  renderReprocessButtom = () => {
+  reprocessExposure = () => {
+    const exposures = this.state.selectedExposures.map(
+      exposure => this.props.rows[exposure].exposure_id
+    );
+    exposures.forEach(async exp => {
+      await QlfApi.reprocessExposure(exp);
+    });
+    this.setState({ confirmDialog: false });
+  };
+
+  renderReprocessButton = () => {
     if (this.state.selectedExposures.length < 1) return;
     return (
       <ToolbarGroup>
@@ -173,7 +184,7 @@ export default class History extends Component {
         key={1}
         label="Submit"
         primary={true}
-        onClick={this.handleCloseDialog}
+        onClick={this.reprocessExposure}
       />,
     ];
 
