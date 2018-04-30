@@ -65,7 +65,7 @@ class QLFProcess(object):
         # TODO: ingest configuration file used, this should be done by process
         # self.models.insert_config(process.id)
 
-        pipe_logger.info('\n' * 100)
+        pipe_logger.info('...{}'.format('\n' * 20))
         pipe_logger.info('Process ID {}'.format(process.id))
         pipe_logger.info('ExpID {} started.'.format(self.data.get('expid')))
 
@@ -82,13 +82,6 @@ class QLFProcess(object):
            self.data.get('expid'),
            str(self.data.get('duration'))
         ))
-
-        self.models.update_process(
-            process_id=self.data.get('process_id'),
-            end=self.data.get('end'),
-            process_dir=self.data.get('output_dir'),
-            status=self.data.get('status')
-        )
 
         proc = Thread(target=self.ingest_parallel_qas)
         proc.start()
@@ -217,7 +210,7 @@ class Jobs(QLFProcess):
             camera['status'] = 1
 
         return_cameras.append(camera)
- 
+
     def ingest_parallel_qas(self):
         pipe_logger.info('Ingesting QAs...')
         start_ingestion = datetime.datetime.now().replace(microsecond=0)
@@ -247,6 +240,13 @@ class Jobs(QLFProcess):
 
         for proc in proc_qas:
             proc.join()
+
+        self.models.update_process(
+            process_id=self.data.get('process_id'),
+            end=self.data.get('end'),
+            process_dir=self.data.get('output_dir'),
+            status=self.data.get('status')
+        )
 
         duration_ingestion = datetime.datetime.now().replace(microsecond=0) - start_ingestion
 
