@@ -43,6 +43,7 @@ describe('Metric Controls', () => {
           step={0}
           arm={0}
           spectrograph={0}
+          processId={59}
         />
       </MuiThemeProvider>
     );
@@ -72,8 +73,9 @@ describe('Metric Controls', () => {
     const countpixQa = wrapper.find('FlatButton').at(0);
     expect(countpixQa.text()).toBe('COUNTPIX ✓');
     countpixQa.simulate('click');
+    console.log(wrapper.find('Iframe'))
     expect(wrapper.find('Iframe').props().url).toBe(
-      'http://localhost:8001/dashboard/qacountpix/?exposure=3&arm=b&spectrograph=0'
+      'http://localhost:8001/dashboard/qacountpix/?process_id=59&arm=b&spectrograph=0'
     );
   });
 });
