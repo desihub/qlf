@@ -125,6 +125,15 @@ def get_cameras():
 
     return requests.get(api['camera'], params={'paginate': 'null'}).json()
 
+def get_scalar_metrics(process_id, cam):
+    """
+    Returns cam scalar metrics
+    """
+
+    api = requests.get(QLF_API_URL).json()
+
+    return requests.get(api['load_scalar_metrics'], params={'process_id': process_id, 'cam': cam}).json()
+
 
 def init_xy_plot(hover):
     """

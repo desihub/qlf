@@ -25,8 +25,6 @@ from django.template import loader
 from django.http import HttpResponse
 from django.http import JsonResponse
 
-from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
-
 from django.core.mail import send_mail
 import os
 import operator
@@ -141,9 +139,8 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processing history"""
 
-    queryset = Process.objects.order_by('-exposure_id')
+    queryset = Process.objects.order_by('-pk')
     serializer_class = ProcessingHistorySerializer
-    filter_fields = ('exposure_id',)
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -168,7 +165,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         else:
             prefix_order = ''
             standard_ordering = ordering
-        if ordering and standard_ordering not in ('exposure_id', '-exposure_id', 'start', '-start'):
+        if ordering and standard_ordering not in ('-pk', 'pk', 'exposure_id', '-exposure_id', 'start', '-start'):
             order_by = '{}exposure__{}'.format(prefix_order,standard_ordering)
             queryset = queryset.order_by(order_by)
         if self.pagination_class:
@@ -269,6 +266,16 @@ class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
     filter_fields = ('exposure_id',)
+
+class LoadScalarMetrics(viewsets.ReadOnlyModelViewSet):
+    def list(self, request, *args, **kwargs):
+        process_id = request.GET.get('process_id')
+        cam = request.GET.get('cam')
+        if process_id is not None:
+            load_scalar_metrics = qlf.load_scalar_metrics(process_id, cam)
+            return JsonResponse({ 'results': load_scalar_metrics })
+        else:
+            return JsonResponse({ 'Error': 'Missing process_id' })
 
 class ExposuresDateRange(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing exposures date range"""
