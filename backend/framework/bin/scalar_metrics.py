@@ -334,7 +334,7 @@ class LoadMetrics:
             try:
                 aux1 = self.metrics[i][alert_keys[i]]
             except Exception as e:
-                logger.error('Failed metric alert: '+ str(e)[:20])
+                # logger.error('Failed metric alert: '+ str(e)[:20])
                 aux1 = 'None'
         
             steps_status.append(aux1)
