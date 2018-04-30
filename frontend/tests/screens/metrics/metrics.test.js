@@ -73,7 +73,6 @@ describe('Metric Controls', () => {
     const countpixQa = wrapper.find('FlatButton').at(0);
     expect(countpixQa.text()).toBe('COUNTPIX ✓');
     countpixQa.simulate('click');
-    console.log(wrapper.find('Iframe'))
     expect(wrapper.find('Iframe').props().url).toBe(
       'http://localhost:8001/dashboard/qacountpix/?process_id=59&arm=b&spectrograph=0'
     );
