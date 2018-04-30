@@ -139,9 +139,8 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processing history"""
 
-    queryset = Process.objects.order_by('-exposure_id')
+    queryset = Process.objects.order_by('-pk')
     serializer_class = ProcessingHistorySerializer
-    filter_fields = ('exposure_id',)
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -166,7 +165,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         else:
             prefix_order = ''
             standard_ordering = ordering
-        if ordering and standard_ordering not in ('exposure_id', '-exposure_id', 'start', '-start'):
+        if ordering and standard_ordering not in ('-pk', 'pk', 'exposure_id', '-exposure_id', 'start', '-start'):
             order_by = '{}exposure__{}'.format(prefix_order,standard_ordering)
             queryset = queryset.order_by(order_by)
         if self.pagination_class:
