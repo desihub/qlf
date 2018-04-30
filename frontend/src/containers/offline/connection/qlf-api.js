@@ -72,9 +72,7 @@ export default class QlfApi {
   static async getProcessingHistoryLimit() {
     try {
       const processes = await fetch(
-        `${
-          apiUrl
-        }dashboard/api/processing_history/?format=json&limit=10&ordering=-pk`,
+        `${apiUrl}dashboard/api/processing_history/?format=json&limit=10`,
         {
           method: 'GET',
           headers: headers,

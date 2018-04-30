@@ -218,12 +218,23 @@ class QLFAutomatic(object):
             try:
                 process = job.process
                 exposure = process.exposure
-                lm = LoadMetrics(job.camera_id, process.exposure_id, exposure.night)
+                lm = LoadMetrics(process_id, job.camera_id, process.exposure_id, exposure.night)
                 qa_tests.append({job.camera_id: lm.load_qa_tests()})
             except:
                 mainlogger.error('qa_tests error camera %s' % job.camera)
         return qa_tests
 
+    def load_scalar_metrics(self, process_id, cam):
+        scalar_metrics = dict()
+        try:
+            process = QLFModels().get_process_by_process_id(process_id)
+            exposure = process.exposure
+            lm = LoadMetrics(process_id, cam, process.exposure_id, exposure.night)
+            scalar_metrics['metrics'] = lm.metrics
+            scalar_metrics['tests'] = lm.tests
+        except:
+            print('load_scalar_metrics error')
+        return scalar_metrics
 
 # TODO: refactor QLFManual
 @Pyro4.expose

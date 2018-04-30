@@ -216,14 +216,23 @@ class QLFModels(object):
         )
         qa.save()
 
-    def get_qa(self, qa_name):
+    def get_qa(self, process_id, cam, qa_name):
         """ Gets QA """
         try:
-            qa = QA.objects.get(name=qa_name)
+            qa = Process.objects.get(pk=process_id).process_jobs.get(camera_id=cam).job_qas.get(name=qa_name)
         except QA.DoesNotExist:
             qa = None
 
         return qa
+
+    def get_process_by_process_id(self, process_id):
+        """ Gets Process using process_id"""
+        try:
+            process = Process.objects.get(pk=process_id)
+        except Process.DoesNotExist:
+            process = None
+
+        return process
 
     def get_cameras(self):
         """ Gets cameras """

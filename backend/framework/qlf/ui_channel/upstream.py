@@ -38,169 +38,171 @@ except Exception as error:
     logger.error(error)
     logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
 
+class Upstream:
+    def __init__(self):
+        self.startedUpStreamJob = False
 
-def get_date(exp):
-    # open file
-    exp_zfill = str(exp).zfill(8)
-    fits_file = '{}/{}/desi-{}.fits.fz'.format(desi_spectro_data, night, exp_zfill)
+    def get_date(self, exp):
+        # open file
+        exp_zfill = str(exp).zfill(8)
+        fits_file = '{}/{}/desi-{}.fits.fz'.format(desi_spectro_data, night, exp_zfill)
 
-    f = fits.open(fits_file)
+        f = fits.open(fits_file)
 
-    # read the time in isot
-    time = f[0].header['DATE-OBS']
+        # read the time in isot
+        time = f[0].header['DATE-OBS']
 
-    # declare the format
-    t = Time(time, format='isot', scale='utc')
+        # declare the format
+        t = Time(time, format='isot', scale='utc')
 
-    # Convert to MJD
-    return t
-
-
-def get_camera_log(cam):
-    process = get_last_process()
-    cameralog = None
-
-    try:
-        for item in process[0].get("process_jobs"):
-            if cam == item.get("camera"):
-                cameralog = os.path.join(desi_spectro_redux, item.get('logname'))
-                break
-        if cameralog:
-            arq = open(cameralog, 'r')
-            log = arq.readlines()
-            return log
-
-    except Exception as err:
-        logger.error(err)
-        return "Error"
+        # Convert to MJD
+        return t
 
 
-def get_pipeline_log():
-    """ Gets pipeline log """
+    def get_camera_log(self, cam):
+        process = get_last_process()
+        cameralog = None
 
-    pipelinelog = cfg.get('main', 'logpipeline')
+        try:
+            for item in process[0].get("process_jobs"):
+                if cam == item.get("camera"):
+                    cameralog = os.path.join(desi_spectro_redux, item.get('logname'))
+                    break
+            if cameralog:
+                arq = open(cameralog, 'r')
+                log = arq.readlines()
+                return log
 
-    try:
-        return tail_file(pipelinelog, 100)
-    except Exception as err:
-        logger.error(err)
-        return "Error"
-
-
-def tail_file(filename, number_lines):
-
-    with io.open(filename) as logfile:
-        logfile.seek(0, os.SEEK_END)
-        endf = position = logfile.tell()
-        linecnt = 0
-
-        while position >= 0:
-            logfile.seek(position)
-            next_char = logfile.read(1)
-
-            if next_char == "\n" and position != endf-1:
-                linecnt += 1
-
-            if linecnt == number_lines:
-                break
-            position -= 1
-
-        if position < 0:
-            logfile.seek(0)
-
-        log_lines = logfile.readlines()
-
-    return log_lines
+        except Exception as err:
+            logger.error(err)
+            return "Error"
 
 
-def avaiable_cameras(process):
-    if len(process) != 0:
-        cams = list()
-        for job in process[0]['process_jobs']:
-            cams.append(job['camera'])
-        return cams
-    return list()
+    def get_pipeline_log(self):
+        """ Gets pipeline log """
 
-uri = settings.QLF_DAEMON_URL
-qlf = Pyro4.Proxy(uri)
+        pipelinelog = cfg.get('main', 'logpipeline')
 
-def start_daemon():
-    qlf.start()
+        try:
+            return self.tail_file(pipelinelog, 100)
+        except Exception as err:
+            logger.error(err)
+            return "Error"
 
-def stop_daemon():
-    qlf.stop()
 
-def reset_daemon():
-    qlf.reset()
+    def tail_file(self, filename, number_lines):
 
-def get_current_state():
-    camera_status = get_camera_status()
-    process = get_last_process()
-    qa_results = get_current_qa_tests(process)
-    available_cameras = avaiable_cameras(process)
-    daemon_status = qlf.get_status()
-    logfile = tail_file(open_file('logfile'), 100)
+        with io.open(filename) as logfile:
+            logfile.seek(0, os.SEEK_END)
+            endf = position = logfile.tell()
+            linecnt = 0
 
-    if daemon_status:
-        if not qlf.is_running():
-            daemon_status = None
+            while position >= 0:
+                logfile.seek(position)
+                next_char = logfile.read(1)
 
-    pipelinelog = list()
-    mjd = str()
-    process_id = int()
-    date = dict()
-    date_time = str()
-    if len(process) > 0:
-        pipelinelog = get_pipeline_log()
-        exposure = process[0].get("exposure")
-        process_id = process[0].get("id")
-        date = get_date(exposure)
-        date_time = date.value
-        mjd = date.mjd
-    else:
-        exposure = ''
-    return json.dumps({
-            "daemon_status": daemon_status,
-            "exposure": exposure,
-            "cameras": camera_status,
-            "available_cameras": available_cameras,
-            "qa_results": qa_results,
-            "lines": logfile,
-            "ingestion": pipelinelog,
-            "mjd": mjd,
-            "date": date_time,
-            "process_id": process_id
+                if next_char == "\n" and position != endf-1:
+                    linecnt += 1
+
+                if linecnt == number_lines:
+                    break
+                position -= 1
+
+            if position < 0:
+                logfile.seek(0)
+
+            log_lines = logfile.readlines()
+
+        return log_lines
+
+
+    def avaiable_cameras(self, process):
+        if len(process) != 0:
+            cams = list()
+            for job in process[0]['process_jobs']:
+                cams.append(job['camera'])
+            return cams
+        return list()
+
+    uri = settings.QLF_DAEMON_URL
+    qlf = Pyro4.Proxy(uri)
+
+    def start_daemon(self):
+        qlf.start()
+
+    def stop_daemon(self):
+        qlf.stop()
+
+    def reset_daemon(self):
+        qlf.reset()
+
+    def get_current_state(self):
+        camera_status = get_camera_status()
+        process = get_last_process()
+        qa_results = self.get_current_qa_tests(process)
+        available_cameras = self.avaiable_cameras(process)
+        daemon_status = qlf.get_status()
+        logfile = self.tail_file(open_file('logfile'), 100)
+
+        if daemon_status:
+            if not qlf.is_running():
+                daemon_status = None
+
+        pipelinelog = list()
+        mjd = str()
+        process_id = int()
+        date = dict()
+        date_time = str()
+        if len(process) > 0:
+            pipelinelog = self.get_pipeline_log()
+            exposure = process[0].get("exposure")
+            process_id = process[0].get("id")
+            date = self.get_date(exposure)
+            date_time = date.value
+            mjd = date.mjd
+        else:
+            exposure = ''
+        return json.dumps({
+                "daemon_status": daemon_status,
+                "exposure": exposure,
+                "cameras": camera_status,
+                "available_cameras": available_cameras,
+                "qa_results": qa_results,
+                "lines": logfile,
+                "ingestion": pipelinelog,
+                "mjd": mjd,
+                "date": date_time,
+                "process_id": process_id
+            })
+
+    def get_current_qa_tests(self, process):
+        if process != []:
+            qa_tests = qlf.qa_tests(process[0]['id'])
+            return { 'qa_tests': qa_tests }
+        else:
+            return { 'Error': 'Missing process_id' }
+
+    def job(self):
+        state = self.get_current_state()
+
+        Group("monitor").send({
+            "text": state
         })
 
-def get_current_qa_tests(process):
-    if process != []:
-        qa_tests = qlf.qa_tests(process[0]['id'])
-        return { 'qa_tests': qa_tests }
-    else:
-        return { 'Error': 'Missing process_id' }
 
-def job():
-    state = get_current_state()
-
-    Group("monitor").send({
-        "text": state
-    })
-
-
-def run_threaded(job_func):
-    job_thread = threading.Thread(target=job_func)
-    job_thread.start()
-
-
-def start_uptream():
-    jobs = schedule.jobs
-    if jobs == []:
-        schedule.every(3).seconds.do(run_threaded, job)
-        job_thread = threading.Thread(target=run_pending)
+    def run_threaded(self, job_func):
+        job_thread = threading.Thread(target=job_func)
         job_thread.start()
 
 
-def run_pending():
-    while 1:
-        schedule.run_pending()
-        time.sleep(3)
+    def start_uptream(self):
+        if self.startedUpStreamJob == False:
+            schedule.every(3).seconds.do(self.run_threaded, self.job)
+            job_thread = threading.Thread(target=self.run_pending)
+            job_thread.start()
+        self.startedUpStreamJob = True
+
+    def run_pending(self):
+        while 1:
+            schedule.run_pending()
+            time.sleep(3)

@@ -5,6 +5,7 @@ import SelectDate from './widgets/select-date/select-date';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import { Card } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
+import _ from 'lodash';
 
 const styles = {
   card: {
@@ -45,9 +46,13 @@ export default class History extends Component {
   };
 
   renderLastProcesses = () => {
-    const lastProcesses = this.props.lastProcesses
+    let lastProcesses = this.props.lastProcesses
       ? this.props.lastProcesses
       : [];
+    if (this.props.type === 'exposure')
+      lastProcesses = _.uniq(lastProcesses.map(lp => lp.exposure_id)).map(exp =>
+        _.maxBy(lastProcesses.filter(lp => lp.exposure_id === exp), 'pk')
+      );
     return (
       <TableHistory
         getHistory={this.props.getHistory}

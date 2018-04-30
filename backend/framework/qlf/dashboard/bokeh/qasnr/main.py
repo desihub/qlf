@@ -28,15 +28,6 @@ selected_exposure = args['exposure']
 selected_arm = args['arm']
 selected_spectrograph = args['spectrograph']
 
-#load from scalar_metrics
-from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
-night = '20190101'
-
-cam = selected_arm+str(selected_spectrograph)
-exp = selected_exposure 
-lm = LoadMetrics(cam, exp, night);
-metrics, tests  = lm.metrics, lm.tests 
-
 
 def fit_func(xdata, coeff):
     a, b, c = coeff[0]
