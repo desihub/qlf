@@ -185,11 +185,6 @@ class QLFAutomatic(object):
         with open(logpipeline, 'r+') as pipeline:
             pipeline.truncate()
 
-        model = QLFModels()
-        model.delete_all_cameras()
-        model.delete_all_processes()
-        model.delete_all_exposures()
-
     def add_exposures(self, exposures):
 
         if not isinstance(exposures, list):
