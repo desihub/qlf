@@ -20,6 +20,7 @@ api_router.register(r'exposure', views.ExposureViewSet)
 api_router.register(r'datatable_exposures', views.DataTableExposureViewSet, 'datatable_exposures')
 api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'exposures_date_range', views.ExposuresDateRange, 'exposures_date_range')
+api_router.register(r'load_scalar_metrics', views.LoadScalarMetrics, 'load_scalar_metrics')
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),

@@ -25,8 +25,6 @@ from django.template import loader
 from django.http import HttpResponse
 from django.http import JsonResponse
 
-from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
-
 from django.core.mail import send_mail
 import os
 import operator
@@ -269,6 +267,16 @@ class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
     filter_fields = ('exposure_id',)
+
+class LoadScalarMetrics(viewsets.ReadOnlyModelViewSet):
+    def list(self, request, *args, **kwargs):
+        process_id = request.GET.get('process_id')
+        cam = request.GET.get('cam')
+        if process_id is not None:
+            load_scalar_metrics = qlf.load_scalar_metrics(process_id, cam)
+            return JsonResponse({ 'results': load_scalar_metrics })
+        else:
+            return JsonResponse({ 'Error': 'Missing process_id' })
 
 class ExposuresDateRange(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing exposures date range"""

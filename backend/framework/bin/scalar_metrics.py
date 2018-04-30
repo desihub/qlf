@@ -59,10 +59,11 @@ class LoadMetrics:
  
     
 
-    def __init__(self, cam, exp, night):
+    def __init__(self, process_id, cam, exp, night):
         self.cam   = cam
         self.exp   = exp
         self.night = night
+        self.process_id = process_id
         # This is True if the pipeline didn't generate some yaml file
         self.error = dict(zip(self.qa_name, ['False']*len(self.qa_name)) )
         
@@ -97,12 +98,12 @@ class LoadMetrics:
         y2: list
         """
         import yaml
-        cam, exp, night = self.cam, self.exp, self.night
+        cam, exp, night, process_id = self.cam, self.exp, self.night, self.process_id
 
         exp_zfill = str(exp).zfill(8)
         qa_name = '{}{}-{}-{}.yaml'.format(self.prfx, qa, cam, exp_zfill)
 
-        data = self.models.get_qa(qa_name)
+        data = self.models.get_qa(process_id, cam, qa_name)
 
         if str(data) != []:
             self.error.update({ qa: False })
