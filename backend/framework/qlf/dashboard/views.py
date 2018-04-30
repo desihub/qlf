@@ -277,6 +277,15 @@ class LoadScalarMetrics(viewsets.ReadOnlyModelViewSet):
         else:
             return JsonResponse({ 'Error': 'Missing process_id' })
 
+class AddExposure(viewsets.ReadOnlyModelViewSet):
+    def list(self, request, *args, **kwargs):
+        exposure_id = request.GET.get('exposure_id')
+        if exposure_id is not None:
+            load_scalar_metrics = qlf.add_exposures([exposure_id])
+            return JsonResponse({ 'status': 'Exposure added to queue' })
+        else:
+            return JsonResponse({ 'Error': 'Missing exposure_id' })
+
 class ExposuresDateRange(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing exposures date range"""
     queryset = Exposure.objects.order_by('exposure_id')
