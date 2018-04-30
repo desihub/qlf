@@ -8,6 +8,8 @@ const styles = {
     minWidth: '5em',
     width: '12vw',
     marginRight: '1vw',
+    display: 'flex',
+    alignItems: 'center',
   },
   button: { height: 'calc(1em + 2vh)' },
   buttonLabel: { fontSize: 'calc(5px + 1vh)', top: '0.5vh' },
@@ -55,17 +57,6 @@ export default class Controls extends Component {
   };
 
   render() {
-    return (
-      <div style={styles.controls}>
-        {this.renderStartOrStop()}
-        <RaisedButton
-          label="reset"
-          style={styles.button}
-          labelStyle={styles.buttonLabel}
-          fullWidth={true}
-          onMouseDown={this.resetPipeline}
-        />
-      </div>
-    );
+    return <div style={styles.controls}>{this.renderStartOrStop()}</div>;
   }
 }

@@ -37,7 +37,7 @@ function updateLastProcess(lastProcesses) {
 export function fetchLastProcess() {
   return async function(dispatch) {
     const lastProcesses = await QlfApi.getProcessingHistoryLimit();
-    if (!lastProcesses.detail && lastProcesses && lastProcesses.results)
+    if (lastProcesses && !lastProcesses.detail && lastProcesses.results)
       dispatch(updateLastProcess(lastProcesses.results));
   };
 }
