@@ -111,7 +111,8 @@ export default class Metrics extends Component {
     }
   };
 
-  changeQA = qa => {
+  changeQA = async qa => {
+    await this.setState({ qa: '' });
     this.setState({ qa, loading: true });
   };
 
