@@ -51,7 +51,7 @@ export default class Stages extends Component {
     enableSelectAll: false,
     deselectOnClickaway: true,
     showCheckboxes: false,
-    columnHeight: '0.8vh',
+    columnHeight: '0.6vh',
     openDialog: true,
   };
 
