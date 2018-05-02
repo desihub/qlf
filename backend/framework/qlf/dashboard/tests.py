@@ -1,6 +1,8 @@
 from rest_framework.test import APITestCase
 from dashboard.models import Exposure, Process, Job, Camera
 from rest_framework import status
+from unittest.mock import patch
+import datetime
 
 
 class ExposureTest(APITestCase):
@@ -200,8 +202,7 @@ class ProcessingHistoryTest(APITestCase):
         self.assertEqual(response.data['results'][0]['pk'], 8)
         self.assertIsNotNone(response.data['results']
                          [0]['dateobs'])
-        self.assertEqual(response.data['results']
-                         [0]['datemjd'], 58484.916666666664)
+        self.assertEqual(response.data['results'][0]['datemjd'], None)
         self.assertEqual(response.data['results'][0]['exposure_id'], 3)
         self.assertEqual(response.data['results'][0]['tile'], 6)
         self.assertEqual(response.data['results'][0]['telra'], 333.22)
@@ -223,8 +224,7 @@ class ObservingHistoryTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response.data['results']
                              [0]['dateobs'])
-        self.assertEqual(response.data['results']
-                         [0]['datemjd'], 58484.916666666664)
+        self.assertEqual(response.data['results'][0]['datemjd'], None)
         self.assertEqual(response.data['results'][0]['exposure_id'], 3)
         self.assertEqual(response.data['results'][0]['tile'], 6)
         self.assertEqual(response.data['results'][0]['telra'], 333.22)
