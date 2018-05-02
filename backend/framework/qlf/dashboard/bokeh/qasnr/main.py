@@ -8,7 +8,8 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import  write_description, write_info
+from dashboard.bokeh.helper import write_description, write_info, \
+    get_scalar_metrics
 
 
 from dashboard.bokeh.helper import get_data, get_exposure_ids, \
@@ -24,23 +25,36 @@ QLF_API_URL = os.environ.get(
 # Get url query args
 args = get_url_args(curdoc)
 
-selected_exposure = args['exposure']
-selected_arm = args['arm']
-selected_spectrograph = args['spectrograph']
+try:
+    selected_process_id = args['process_id']
+    selected_arm = args['arm']
+    selected_spectrograph = args['spectrograph']
+except:
+    sys.exit('Invalid args')
 
+# ============================================
+#  THIS READ yaml files
+#
+
+cam = selected_arm+str(selected_spectrograph)
+try:
+    lm = get_scalar_metrics(selected_process_id, cam)
+    metrics, tests = lm['results']['metrics'], lm['results']['tests']
+except:
+    sys.exit('Could not load metrics')
+
+snr = metrics['snr']
 
 def fit_func(xdata, coeff):
     a, b, c = coeff[0]
-    x = np.linspace( min(xdata), max(xdata), 1000)
-    
+    x = np.linspace(min(xdata), max(xdata), 1000)
     y = a + b*x + c*x**2
     return x, y
-    
 
 data_model = {
     'x': [],
     'y': [],
-    'logy':[],
+    'logy': [],
     'fiber_id': [],
     'ra': [],
     'dec': []
@@ -51,171 +65,79 @@ lrg = ColumnDataSource(data=data_model.copy())
 qso = ColumnDataSource(data=data_model.copy())
 star = ColumnDataSource(data=data_model.copy())
 
-
-params = [
-    'ELG_SNR_MAG', 'ELG_FIBERID',
-    'LRG_SNR_MAG', 'LRG_FIBERID',
-    'QSO_SNR_MAG', 'QSO_FIBERID',
-    'STAR_SNR_MAG', 'STAR_FIBERID',
-    'RA', 'DEC'
-]
-
-
 data_fit = {
     'x': [],
     'y': [],
-    'logy':[],
+    'logy': [],
     'fiber_id': [],
     'ra': [],
     'dec': []
 }
-elg_fit = ColumnDataSource(data = data_fit.copy() )
-lrg_fit = ColumnDataSource(data = data_fit.copy() )
-qso_fit = ColumnDataSource(data = data_fit.copy() )
-star_fit = ColumnDataSource(data = data_fit.copy() )
-params_fit = ['ELG_FITRESULTS', 'LRG_FITRESULTS', 'QSO_FITRESULTS', 'STAR_FITRESULTS']
+elg_fit = ColumnDataSource(data=data_fit.copy())
+lrg_fit = ColumnDataSource(data=data_fit.copy())
+qso_fit = ColumnDataSource(data=data_fit.copy())
+star_fit = ColumnDataSource(data=data_fit.copy())
+
+elg.data['x'] = snr['ELG_SNR_MAG'][1]
+elg.data['y'] = snr['ELG_SNR_MAG'][0]
+elg.data['logy'] = np.log10(np.array(snr['ELG_SNR_MAG'][0]))
+elg.data['fiber_id'] = snr['ELG_FIBERID']
+elg.data['ra'] = snr['RA']
+elg.data['dec'] = snr['DEC']
 
 
-def update(arm, spectrograph, exposure_id):
-    exp_zfill = str(exposure_id).zfill(8)
+lrg.data['x'] = snr['LRG_SNR_MAG'][1]
+lrg.data['y'] = snr['LRG_SNR_MAG'][0]
+lrg.data['logy'] = np.log10(np.array(snr['LRG_SNR_MAG'][0]))
+lrg.data['fiber_id'] = snr['LRG_FIBERID']
+lrg.data['ra'] = snr['RA']
+lrg.data['dec'] = snr['DEC']
 
-    # get the data
-    qa_snr = 'ql-snr-{}-{}.yaml'.format(arm + spectrograph, exp_zfill)
-    try:
-        data = get_data(qa_snr, params)
-    except:
-        sys.exit('Could not load snr metrics')
+qso.data['x'] = snr['QSO_SNR_MAG'][1]
+qso.data['y'] = snr['QSO_SNR_MAG'][0]
+qso.data['logy'] = np.log10(np.array(snr['QSO_SNR_MAG'][0]))
+qso.data['fiber_id'] = snr['QSO_FIBERID']
+qso.data['ra'] = snr['RA']
+qso.data['dec'] = snr['DEC']
 
+star.data['x'] = snr['STAR_SNR_MAG'][1]
+star.data['y'] = snr['STAR_SNR_MAG'][0]
+star.data['logy'] = np.log10(np.array(snr['STAR_SNR_MAG'][0]))
+star.data['fiber_id'] = snr['STAR_FIBERID']
+star.data['ra'] = snr['RA']
+star.data['dec'] = snr['DEC']
 
-    if not data.empty:
-        # drop rows that have ELG_FIBERID null
-        elg_data = data[data.ELG_FIBERID.notnull()]
+xfit, yfit = fit_func(snr['ELG_SNR_MAG'][1], snr['ELG_FITRESULTS'])
+elg_fit.data['x'] = xfit
+elg_fit.data['logy'] = yfit
+elg_fit.data['y'] = 10**(yfit)
+for key in ['fiber_id', 'ra', 'dec']:
+    elg_fit.data[key] = ['']*len(yfit)
+#elg_fit.stream(elg_fit.data, 30)
 
-        # create the bokeh column data sources
-        elg.data['x'] = elg_data.ELG_SNR_MAG[1]
-        elg.data['y'] = elg_data.ELG_SNR_MAG[0]
-        elg.data['logy'] = np.log10(np.array( elg_data.ELG_SNR_MAG[0]))
-        elg.data['fiber_id'] = elg_data.ELG_FIBERID.tolist()
-        elg.data['ra'] = elg_data.RA.tolist()
-        elg.data['dec'] = elg_data.DEC.tolist()
-        ## elg.stream(elg.data, 30)
+xfit, yfit = fit_func(snr['LRG_SNR_MAG'][1], snr['LRG_FITRESULTS'])
+lrg_fit.data['x'] = xfit
+lrg_fit.data['logy'] = yfit
+lrg_fit.data['y'] = 10**(yfit)
+for key in ['fiber_id', 'ra', 'dec']:
+    lrg_fit.data[key] = ['']*len(yfit)
+#lrg_fit.stream(lrg_fit.data, 30)
 
-        # drop rows that have ELG_FIBERID null
-        lrg_data = data[data.LRG_FIBERID.notnull()]
+xfit, yfit = fit_func(snr['QSO_SNR_MAG'][1], snr['QSO_FITRESULTS'])
+qso_fit.data['x'] = xfit
+qso_fit.data['logy'] = yfit
+qso_fit.data['y'] = 10**(yfit)
+for key in ['fiber_id', 'ra', 'dec']:
+    qso_fit.data[key] = ['']*len(yfit)
+#qso_fit.stream(qso_fit.data, 30)
 
-        lrg.data['x'] = lrg_data.LRG_SNR_MAG[1]
-        lrg.data['y'] = lrg_data.LRG_SNR_MAG[0]
-        lrg.data['logy'] = np.log10(np.array( lrg_data.LRG_SNR_MAG[0]))
-        lrg.data['fiber_id'] = lrg_data.LRG_FIBERID.dropna().tolist()
-        lrg.data['ra'] = lrg_data.RA.dropna().tolist()
-        lrg.data['dec'] = lrg_data.DEC.dropna().tolist()
-        ## lrg.stream(lrg.data, 30)
-
-        # drop rows that have QSO_FIBERID null
-        qso_data = data[data.QSO_FIBERID.notnull()]
-
-        qso.data['x'] = qso_data.QSO_SNR_MAG[1]
-        qso.data['y'] = qso_data.QSO_SNR_MAG[0]
-        qso.data['logy'] = np.log10(np.array( qso_data.QSO_SNR_MAG[0]))
-        qso.data['fiber_id'] = qso_data.QSO_FIBERID.dropna().tolist()
-        qso.data['ra'] = qso_data.RA.dropna().tolist()
-        qso.data['dec'] = qso_data.DEC.dropna().tolist()
-        ## qso.stream(qso.data, 30)
-
-        # drop rows that have STAR_FIBERID null
-        star_data = data[data.STAR_FIBERID.notnull()]
-
-        star.data['x'] = star_data.STAR_SNR_MAG[1]
-        star.data['y'] = star_data.STAR_SNR_MAG[0]
-        star.data['logy'] = np.log10(np.array( star_data.STAR_SNR_MAG[0]))
-        star.data['fiber_id'] = star_data.STAR_FIBERID.dropna().tolist()
-        star.data['ra'] = star_data.RA.dropna().tolist()
-        star.data['dec'] = star_data.DEC.dropna().tolist()
-        ## star.stream(star.data, 30)
-
-    # fitting function
-    data2 = get_data(qa_snr, params_fit)
-    if not data2.empty:
-
-        xfit, yfit = fit_func(elg_data.ELG_SNR_MAG[1], data2['ELG_FITRESULTS'])
-        elg_fit.data['x'] = xfit 
-        elg_fit.data['logy'] = yfit 
-        elg_fit.data['y'] = 10**(yfit) 
-        for key in ['fiber_id', 'ra', 'dec']:
-            elg_fit.data[key] = ['']*len(yfit) 
-        #elg_fit.stream(elg_fit.data, 30)
-
-        xfit, yfit = fit_func(lrg_data.LRG_SNR_MAG[1], data2['LRG_FITRESULTS'])
-        lrg_fit.data['x'] = xfit 
-        lrg_fit.data['logy'] = yfit 
-        lrg_fit.data['y'] = 10**(yfit) 
-        for key in ['fiber_id', 'ra', 'dec']:
-            lrg_fit.data[key] = ['']*len(yfit) 
-        #lrg_fit.stream(lrg_fit.data, 30)
-
-        xfit, yfit = fit_func(qso_data.QSO_SNR_MAG[1], data2['QSO_FITRESULTS'])
-        qso_fit.data['x'] = xfit 
-        qso_fit.data['logy'] = yfit 
-        qso_fit.data['y'] = 10**(yfit) 
-        for key in ['fiber_id', 'ra', 'dec']:
-            qso_fit.data[key] = ['']*len(yfit) 
-        #qso_fit.stream(qso_fit.data, 30)
-
-        xfit, yfit = fit_func(star_data.STAR_SNR_MAG[1], data2['STAR_FITRESULTS'])
-        star_fit.data['x'] = xfit 
-        star_fit.data['logy'] = yfit 
-        star_fit.data['y'] = 10**(yfit) 
-        for key in ['fiber_id', 'ra', 'dec']:
-            star_fit.data[key] = ['']*len(yfit) 
-        #star_fit.stream(star_fit.data, 30)
-
-# configure bokeh widgets
-# exposure = get_exposure_ids()
-
-# if not exposure:
-#     exposure.append(int(selected_exposure))
-
-# exposure = sorted(exposure)
-
-# exp_slider = Slider(
-#     start=int(exposure[0]), end=int(exposure[-1]),
-#     value=int(selected_exposure), step=1,
-#     title="Exposure ID")
-
-# cameras = get_arms_and_spectrographs()
-
-# if not cameras["spectrographs"]:
-#     cameras["spectrographs"].append(selected_spectrograph)
-
-# if not cameras["arms"]:
-#     cameras["arms"].append(selected_arm)
-
-# # we can filter by spectrograph
-# spectrograph_select = Select(
-#     title="Spectrograph:",
-#     value=selected_spectrograph,
-#     options=cameras["spectrographs"],
-#     width=100)
-
-# # and arm
-# arm_select = Select(
-#     title="Arm:",
-#     options=cameras['arms'],
-#     value=selected_arm,
-#     width=100)
-
-# def arm_handler(attr, old, value):
-#     update(value, spectrograph_select.value, exp_slider.value)
-
-# def spectrograph_handler(attr, old, value):
-#     update(arm_select.value, value, exp_slider.value)
-
-# def exposure_handler(attr, old, value):
-#     update(arm_select.value, spectrograph_select.value, value)
-
-# arm_select.on_change("value", arm_handler)
-# spectrograph_select.on_change("value", spectrograph_handler)
-# exp_slider.on_change("value", exposure_handler)
+xfit, yfit = fit_func(
+    snr['STAR_SNR_MAG'][1], snr['STAR_FITRESULTS'])
+star_fit.data['x'] = xfit
+star_fit.data['logy'] = yfit
+star_fit.data['y'] = 10**(yfit)
+for key in ['fiber_id', 'ra', 'dec']:
+    star_fit.data[key] = ['']*len(yfit)
 
 # here we make the plots
 html_tooltip = """
@@ -297,25 +219,15 @@ star_plot.title.text = "STAR"
 taptool = star_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
 
-update(selected_arm, selected_spectrograph, selected_exposure)
-
 plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=False)
 
-# and create the final layout
-# layout = column(widgetbox(exp_slider, responsive=True),
-#                 row(widgetbox(arm_select, width=130),
-#                     widgetbox(spectrograph_select, width=130)),
-#                 plot, responsive=True)
-
-
-
-#infos
+# infos
 key_name = 'snr'
 info, nlines = write_info(key_name, tests[key_name])
 txt = PreText(text=info, height=nlines*20)
-#p2txt = column(widgetbox(txt),p2)
-info_col=Div(text=write_description('snr'), width=2*star_plot.plot_width)
-layout = column( widgetbox(info_col), plot)
+# p2txt = column(widgetbox(txt),p2)
+info_col = Div(text=write_description('snr'), width=2*star_plot.plot_width)
+layout = column(widgetbox(info_col), plot)
 
 curdoc().add_root(layout)
 curdoc().title = "SNR"

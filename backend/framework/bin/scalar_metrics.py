@@ -41,7 +41,14 @@ class LoadMetrics:
                , ['SKYCONT_ALARM_RANGE', 'SKYCONT_WARN_RANGE', 'B_CONT', 'Z_CONT', 'R_CONT']
                , ['B_PEAKS', 'R_PEAKS', 'SUMCOUNT_WARN_RANGE', 'SUMCOUNT_ALARM_RANGE', 'Z_PEAKS']
                , ['PCHI_RESID', 'PER_RESID', 'SKY_ALARM_RANGE', 'SKY_WARN_RANGE', 'BIN_SZ']
-               , ['FIDSNR_WARN_RANGE', 'FIDSNR_ALARM_RANGE', 'FIDMAG']]
+               , ['FIDSNR_WARN_RANGE', 'FIDSNR_ALARM_RANGE',
+                  'FIDMAG', 'ELG_FITRESULTS',
+                  'LRG_FITRESULTS', 'QSO_FITRESULTS',
+                  'STAR_FITRESULTS', 'ELG_SNR_MAG',
+                  'ELG_FIBERID', 'LRG_SNR_MAG',
+                  'LRG_FIBERID', 'QSO_SNR_MAG',
+                  'QSO_FIBERID', 'STAR_SNR_MAG',
+                  'STAR_FIBERID', 'RA', 'DEC']]
     
     params_dict = {'countbins': ['CUTHI', 'CUTLO', 'CUTMED', 'NGOOD_ALARM_RANGE', 'NGOOD_WARN_RANGE'],
                 'countpix': ['NPIX_ALARM_RANGE', 'CUTHI', 'NPIX_WARN_RANGE', 'CUTLO'],
@@ -51,8 +58,21 @@ class LoadMetrics:
                 'skycont': ['SKYCONT_ALARM_RANGE', 'SKYCONT_WARN_RANGE', 'B_CONT', 'Z_CONT', 'R_CONT'],
                 'skypeak': ['B_PEAKS', 'R_PEAKS', 'SUMCOUNT_WARN_RANGE'
                              , 'SUMCOUNT_ALARM_RANGE',  'Z_PEAKS'],
-                'skyresid': ['PCHI_RESID',  'PER_RESID', 'SKY_ALARM_RANGE', 'SKY_WARN_RANGE', 'BIN_SZ'],
-                'snr': ['FIDSNR_WARN_RANGE', 'FIDSNR_ALARM_RANGE', 'FIDMAG'],
+                'skyresid': [
+                                'PCHI_RESID',  'PER_RESID',
+                                'SKY_ALARM_RANGE', 'SKY_WARN_RANGE',
+                                'BIN_SZ'
+                            ],
+                'snr': [
+                            'FIDSNR_WARN_RANGE', 'FIDSNR_ALARM_RANGE',
+                            'FIDMAG', 'ELG_FITRESULTS',
+                            'LRG_FITRESULTS', 'QSO_FITRESULTS',
+                            'STAR_FITRESULTS', 'ELG_SNR_MAG',
+                            'ELG_FIBERID', 'LRG_SNR_MAG',
+                            'LRG_FIBERID', 'QSO_SNR_MAG',
+                            'QSO_FIBERID', 'STAR_SNR_MAG',
+                            'STAR_FIBERID', 'RA', 'DEC'
+                        ],
                 'xwsigma':  ['B_PEAKS',  'R_PEAKS',  'XSHIFT_ALARM_RANGE', 'WSHIFT_ALARM_RANGE'
                              ,  'Z_PEAKS',  'WSHIFT_WARN_RANGE',  'XSHIFT_WARN_RANGE']}
     

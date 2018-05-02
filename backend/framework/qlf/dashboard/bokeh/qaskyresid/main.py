@@ -12,9 +12,10 @@ from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
 from bokeh.models import ColumnDataSource, HoverTool, TapTool, Range1d, OpenURL
-from bokeh.models import LinearColorMapper , ColorBar
+from bokeh.models import LinearColorMapper, ColorBar
 from bokeh.models.widgets import Select, Slider
-from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
+from dashboard.bokeh.helper import get_url_args, write_description, \
+    get_scalar_metrics
 
 import numpy as np
 import logging
@@ -40,7 +41,7 @@ except:
 cam = selected_arm+str(selected_spectrograph)
 try:
     lm = get_scalar_metrics(selected_process_id, cam)
-    metrics, tests  = lm['results']['metrics'], lm['results']['tests']
+    metrics, tests = lm['results']['metrics'], lm['results']['tests']
 except:
     sys.exit('Could not load metrics')
 
