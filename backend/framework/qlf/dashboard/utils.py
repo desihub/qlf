@@ -15,6 +15,7 @@ except Exception as error:
     logger.error(error)
     logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
 
+
 def get_date(exp):
     try:
         # open file
