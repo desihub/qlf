@@ -37,6 +37,24 @@ export default class QlfApi {
     }
   }
 
+  static async reprocessExposure(exposure) {
+    try {
+      const processes = await fetch(
+        `${apiUrl}dashboard/api/add_exposure/?format=json&exposure_id=${
+          exposure
+        }`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await processes.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getProcessingHistory() {
     try {
       const processes = await fetch(

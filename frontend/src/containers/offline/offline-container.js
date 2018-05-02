@@ -69,7 +69,7 @@ class OfflineContainer extends Component {
   };
 
   navigateToQA = async processId => {
-    const urlProcessId = 'qa?process_id=' + processId;
+    const urlProcessId = processId ? 'qa?process_id=' + processId : 'qa';
     window.open(urlProcessId, 'qa', 'width=850, height=650');
   };
 
@@ -90,13 +90,12 @@ class OfflineContainer extends Component {
   };
 
   componentWillMount() {
-    if (
-      window.location.pathname === '/qa' &&
-      window.location.search.includes('process_id=')
-    ) {
+    if (window.location.pathname === '/qa') {
       this.props.toggleHeader();
-      const processId = window.location.search.split('process_id=')[1];
-      this.searchQA(processId);
+      if (window.location.search.includes('process_id=')) {
+        const processId = window.location.search.split('process_id=')[1];
+        this.searchQA(processId);
+      }
     }
   }
 

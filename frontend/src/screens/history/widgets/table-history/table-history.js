@@ -10,11 +10,13 @@ export default class TableHistory extends Component {
     getHistoryOrdered: PropTypes.func.isRequired,
     rows: PropTypes.array.isRequired,
     navigateToQA: PropTypes.func.isRequired,
+    onRowSelection: PropTypes.func,
     type: PropTypes.string.isRequired,
     selectable: PropTypes.bool,
     orderable: PropTypes.bool,
     processId: PropTypes.number,
     lastProcessedId: PropTypes.number,
+    selectedExposures: PropTypes.array,
   };
 
   state = {
@@ -60,6 +62,7 @@ export default class TableHistory extends Component {
               selectProcessQA={this.selectProcessQA}
               type={this.props.type}
               lastProcessedId={this.props.lastProcessedId}
+              selectedExposures={this.props.selectedExposures}
             />
           );
         })}
@@ -77,6 +80,7 @@ export default class TableHistory extends Component {
           bodyStyle={{ overflow: 'visible' }}
           selectable={!isProcessHistory && this.props.selectable}
           multiSelectable={true}
+          onRowSelection={this.props.onRowSelection}
         >
           <HistoryHeader
             getHistoryOrdered={this.getHistoryOrdered}

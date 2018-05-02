@@ -1,6 +1,7 @@
 import React from 'react';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import PropTypes from 'prop-types';
+import Checkbox from 'material-ui/Checkbox';
 
 const styles = {
   link: {
@@ -8,6 +9,10 @@ const styles = {
     textDecoration: 'none',
   },
   bold: { fontWeight: 900 },
+  checkbox: {
+    marginTop: '12px',
+    marginLeft: '24px',
+  },
 };
 
 export default class HistoryData extends React.Component {
@@ -19,6 +24,16 @@ export default class HistoryData extends React.Component {
     type: PropTypes.string,
     children: PropTypes.array,
     selectProcessQA: PropTypes.func.isRequired,
+    selectedExposures: PropTypes.array,
+    onCellClick: PropTypes.func,
+    onCellHover: PropTypes.func,
+    onCellHoverExit: PropTypes.func,
+    onRowClick: PropTypes.func,
+    onRowHover: PropTypes.func,
+    onRowHoverExit: PropTypes.func,
+    rowNumber: PropTypes.number,
+    displayBorder: PropTypes.bool,
+    striped: PropTypes.bool,
   };
 
   formatDate = dateString => {
@@ -78,12 +93,39 @@ export default class HistoryData extends React.Component {
       selectProcessQA,
       row,
       lastProcessedId,
-      ...otherProps
+      selectedExposures,
+      children,
+      onCellClick,
+      onCellHover,
+      onCellHoverExit,
+      onRowClick,
+      onRowHover,
+      onRowHoverExit,
+      rowNumber,
+      displayBorder,
+      striped,
     } = this.props;
     const lastProcessed = lastProcessedId === processId ? styles.bold : null;
+    const selectedExposure =
+      selectedExposures && selectedExposures.includes(rowNumber);
     return (
-      <TableRow style={lastProcessed} {...otherProps}>
-        {this.props.children[0]}
+      <TableRow
+        style={lastProcessed}
+        onCellClick={onCellClick}
+        onCellHover={onCellHover}
+        onCellHoverExit={onCellHoverExit}
+        onRowClick={onRowClick}
+        onRowHover={onRowHover}
+        onRowHoverExit={onRowHoverExit}
+        rowNumber={rowNumber}
+        displayBorder={displayBorder}
+        striped={striped}
+      >
+        {children[0] ? (
+          <Checkbox checked={selectedExposure} style={styles.checkbox} />
+        ) : (
+          children[0]
+        )}
         <TableRowColumn />
         <TableRowColumn>{row.exposure_id}</TableRowColumn>
         <TableRowColumn>{row.tile}</TableRowColumn>
