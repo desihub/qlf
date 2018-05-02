@@ -12,7 +12,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info
+from dashboard.bokeh.helper import write_info, get_scalar_metrics
 
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -32,28 +32,23 @@ logger = logging.getLogger(__name__)
 #
 args = get_url_args(curdoc)
 
-
 try:
-    selected_exposure = args['exposure']
+    selected_process_id = args['process_id']
     selected_arm = args['arm']
     selected_spectrograph = args['spectrograph']
 except:
     sys.exit('Invalid args')
 
-# =============================================
-# THIS comes from QLF.CFG
-#
-night = '20190101'
-
 # ============================================
 #  THIS READ yaml files
 #
-from dashboard.bokeh.utils.scalar_metrics import LoadMetrics
 
 cam = selected_arm+str(selected_spectrograph)
-exp = selected_exposure # intentionaly redundant
-lm = LoadMetrics(cam, exp, night);
-metrics, tests  = lm.metrics, lm.tests 
+try:
+    lm = get_scalar_metrics(selected_process_id, cam)
+    metrics, tests  = lm['results']['metrics'], lm['results']['tests']
+except:
+    sys.exit('Could not load metrics')
 
 skypeak   = metrics['skypeak']
 

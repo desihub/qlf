@@ -30,9 +30,4 @@ describe('Controls', () => {
     controls.at(0).simulate('mousedown');
     expect(result).toEqual('startPipeline');
   });
-
-  it('stops pipeline', () => {
-    controls.at(1).simulate('mousedown');
-    expect(result).toEqual('resetPipeline');
-  });
 });
