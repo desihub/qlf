@@ -10,5 +10,10 @@ for package in desispec desiutil; do
 	export PATH=$QLF_ROOT/$package/bin:$PATH
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
 done
-
-python framework/qlf/manage.py test dashboard
+if [ -z $1 ]; then
+    python framework/qlf/manage.py test dashboard
+else
+    pip install coverage
+    coverage run --source='.' framework/qlf/manage.py test dashboard
+    coverage report
+fi
