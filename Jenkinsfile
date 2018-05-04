@@ -4,6 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                sh './configure.sh ci'
                 dir('frontend') {
                     sh 'yarn install'
                 }
