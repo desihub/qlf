@@ -169,21 +169,14 @@ class QLFAutomatic(object):
             pid = self.process.pid
 
             kill_proc_tree(pid, include_parent=False)
+            truncate_logs([logpipeline, logfile])
 
-            if process_id:
-                model = QLFModels()
-                model.delete_process(process_id)
         else:
             mainlogger.info("Monitor is not initialized.")
 
     def reset(self):
         self.stop()
-
-        with open(logfile, 'r+') as ics:
-            ics.truncate()
-
-        with open(logpipeline, 'r+') as pipeline:
-            pipeline.truncate()
+        truncate_logs([logpipeline, logfile])
 
     def add_exposures(self, exposures):
 
@@ -272,6 +265,12 @@ class QLFManual(object):
 
     def get_current_run(self):
         return self.process.current_exposure
+
+
+def truncate_logs(logs):
+    for log in logs:
+        with open(log, 'r+') as filelog:
+            filelog.truncate()
 
 
 def main():

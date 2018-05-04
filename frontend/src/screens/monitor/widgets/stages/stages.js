@@ -42,7 +42,6 @@ export default class Stages extends Component {
   };
 
   state = {
-    fixedHeader: false,
     fixedFooter: true,
     stripedRows: true,
     showRowHover: true,
@@ -171,9 +170,7 @@ export default class Stages extends Component {
                   id="stages"
                   height={this.state.height}
                   width={'10px'}
-                  fixedHeader={this.state.fixedHeader}
                   fixedFooter={this.state.fixedFooter}
-                  selectable={this.state.selectable}
                   multiSelectable={this.state.multiSelectable}
                 >
                   {this.renderTableHeader()}

@@ -23,15 +23,14 @@ const styles = {
 export default class History extends Component {
   static propTypes = {
     getHistory: PropTypes.func.isRequired,
-    getHistoryOrdered: PropTypes.func.isRequired,
     navigateToQA: PropTypes.func.isRequired,
     rows: PropTypes.array.isRequired,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
-    getHistoryRangeDate: PropTypes.func.isRequired,
     lastProcesses: PropTypes.array,
     type: PropTypes.string.isRequired,
     lastProcessedId: PropTypes.number,
+    rowsCount: PropTypes.number,
   };
 
   renderSelectDate = () => {
@@ -40,16 +39,36 @@ export default class History extends Component {
         <SelectDate
           startDate={this.props.startDate}
           endDate={this.props.endDate}
-          getHistoryRangeDate={this.props.getHistoryRangeDate}
+          setHistoryRangeDate={this.setHistoryRangeDate}
         />
       );
+  };
+
+  setHistoryRangeDate = (startDate, endDate) => {
+    this.setState({ startDate, endDate });
   };
 
   state = {
     tab: 'history',
     confirmDialog: false,
     selectedExposures: [],
+    startDate: this.props.startDate,
+    endDate: this.props.endDate,
+    limit: 10,
   };
+
+  changeLimit = limit => {
+    this.setState({ limit });
+  };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.startDate && nextProps.endDate) {
+      this.setState({
+        startDate: nextProps.startDate,
+        endDate: nextProps.endDate,
+      });
+    }
+  }
 
   renderLastProcesses = () => {
     let lastProcesses = this.props.lastProcesses
@@ -62,25 +81,28 @@ export default class History extends Component {
     return (
       <TableHistory
         getHistory={this.props.getHistory}
-        getHistoryOrdered={this.props.getHistoryOrdered}
         rows={lastProcesses}
         navigateToQA={this.props.navigateToQA}
         type={this.props.type}
         selectable={false}
         orderable={false}
+        startDate={this.state.startDate}
+        endDate={this.state.endDate}
         lastProcessedId={this.props.lastProcessedId}
+        changeLimit={this.changeLimit}
+        limit={this.state.limit}
       />
     );
   };
 
-  onRowSelection = rows => {
-    if (rows === 'all') {
+  selectExposure = rows => {
+    if (rows === true) {
       const selectedExposures = this.props.rows.map((row, id) => id);
       this.setState({ selectedExposures });
       return;
     }
 
-    if (rows === 'none') {
+    if (rows === false) {
       this.setState({ selectedExposures: [] });
       return;
     }
@@ -96,15 +118,19 @@ export default class History extends Component {
       return (
         <TableHistory
           getHistory={this.props.getHistory}
-          getHistoryOrdered={this.props.getHistoryOrdered}
+          startDate={this.state.startDate}
+          endDate={this.state.endDate}
           rows={this.props.rows}
           navigateToQA={this.props.navigateToQA}
           type={this.props.type}
           selectable={true}
           orderable={true}
           lastProcessedId={this.props.lastProcessedId}
-          onRowSelection={this.onRowSelection}
+          selectExposure={this.selectExposure}
           selectedExposures={this.state.selectedExposures}
+          rowsCount={this.props.rowsCount}
+          changeLimit={this.changeLimit}
+          limit={this.state.limit}
         />
       );
     }
@@ -125,10 +151,20 @@ export default class History extends Component {
           <FontIcon
             className="material-icons"
             title="Refresh"
-            onClick={this.props.getHistory}
+            onClick={() =>
+              this.props.getHistory(
+                this.props.startDate,
+                this.props.endDate,
+                '-pk',
+                0,
+                this.state.limit
+              )
+            }
           >
             refresh
           </FontIcon>
+          <ToolbarSeparator />
+          {this.renderSelectDate()}
         </ToolbarGroup>
         {this.renderReprocessButton()}
       </Toolbar>
@@ -152,10 +188,10 @@ export default class History extends Component {
         <ToolbarSeparator />
         <FontIcon
           className="material-icons"
-          title="Replay"
+          title="Reprocess"
           onClick={this.handleOpenDialog}
         >
-          replay
+          play_arrow
         </FontIcon>
       </ToolbarGroup>
     );
@@ -202,7 +238,6 @@ export default class History extends Component {
         >
           Reprocess {this.exposuresToReprocess()}?
         </Dialog>
-        {this.renderSelectDate()}
         <Card style={styles.card}>
           <Tabs value={this.state.value} onChange={this.handleChange}>
             <Tab label="Most Recent" value="last">

@@ -55,22 +55,6 @@ export default class QlfApi {
     }
   }
 
-  static async getProcessingHistory() {
-    try {
-      const processes = await fetch(
-        `${apiUrl}dashboard/api/processing_history/?format=json`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await processes.json();
-      return responseJson;
-    } catch (e) {
-      return null;
-    }
-  }
-
   static async getProcessingHistoryById(processId) {
     try {
       const processes = await fetch(
@@ -81,74 +65,6 @@ export default class QlfApi {
         }
       );
       const responseJson = await processes.json();
-      return responseJson;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static async getProcessingHistoryLimit() {
-    try {
-      const processes = await fetch(
-        `${apiUrl}dashboard/api/processing_history/?format=json&limit=10`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await processes.json();
-      return responseJson;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static async getProcessingHistoryOrdered(order) {
-    try {
-      const processes = await fetch(
-        `${apiUrl}dashboard/api/processing_history/?format=json&ordering=${
-          order
-        }`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await processes.json();
-      return responseJson;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static async getProcessingHistoryRangeDate(start, end) {
-    try {
-      const processes = await fetch(
-        `${apiUrl}dashboard/api/processing_history/?format=json&datemin=${
-          start
-        }&&datemax=${end}`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await processes.json();
-      return responseJson;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static async getObservingHistory() {
-    try {
-      const exposures = await fetch(
-        `${apiUrl}dashboard/api/observing_history/?format=json`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await exposures.json();
       return responseJson;
     } catch (e) {
       return null;
@@ -171,30 +87,36 @@ export default class QlfApi {
     }
   }
 
-  static async getObservingHistoryOrdered(order) {
+  static async getProcessingHistory(start, end, order, offset, limit) {
+    if (!start && !end) return;
     try {
-      const exposures = await fetch(
-        `${apiUrl}dashboard/api/observing_history/?format=json&ordering=${
-          order
-        }`,
+      const processes = await fetch(
+        `${apiUrl}dashboard/api/processing_history/?format=json&limit=${
+          limit
+        }&offset=${offset}&ordering=${order}&datemin=${
+          start.split('T')[0]
+        }&&datemax=${end.split('T')[0]}`,
         {
           method: 'GET',
           headers: headers,
         }
       );
-      const responseJson = await exposures.json();
+      const responseJson = await processes.json();
       return responseJson;
     } catch (e) {
       return null;
     }
   }
 
-  static async getObservingHistoryRangeDate(start, end) {
+  static async getObservingHistory(start, end, order, offset, limit) {
+    if (!start && !end) return;
     try {
       const exposures = await fetch(
-        `${apiUrl}dashboard/api/observing_history/?format=json&datemin=${
-          start
-        }&&datemax=${end}`,
+        `${apiUrl}dashboard/api/observing_history/?format=json&limit=${
+          limit
+        }&offset=${offset}&ordering=${order}&datemin=${
+          start.split('T')[0]
+        }&&datemax=${end.split('T')[0]}`,
         {
           method: 'GET',
           headers: headers,

@@ -1,40 +1,65 @@
 import React, { Component } from 'react';
-import { Table, TableBody } from 'material-ui/Table';
 import PropTypes from 'prop-types';
 import HistoryHeader from './history-header/history-header';
 import HistoryData from './history-data/history-data';
+import { withStyles } from 'material-ui-next/styles';
+import Table, { TableBody, TablePagination } from 'material-ui-next/Table';
 
-export default class TableHistory extends Component {
+class TableHistory extends Component {
   static propTypes = {
     getHistory: PropTypes.func.isRequired,
-    getHistoryOrdered: PropTypes.func.isRequired,
     rows: PropTypes.array.isRequired,
     navigateToQA: PropTypes.func.isRequired,
-    onRowSelection: PropTypes.func,
+    selectExposure: PropTypes.func,
     type: PropTypes.string.isRequired,
     selectable: PropTypes.bool,
     orderable: PropTypes.bool,
     processId: PropTypes.number,
     lastProcessedId: PropTypes.number,
     selectedExposures: PropTypes.array,
+    rowsCount: PropTypes.number,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    classes: PropTypes.object.isRequired,
+    changeLimit: PropTypes.func.isRequired,
+    limit: PropTypes.number.isRequired,
   };
 
   state = {
-    rows: undefined,
     asc: undefined,
-    ordering: undefined,
+    ordering: '-pk',
+    offset: 0,
   };
 
-  componentWillMount() {
-    this.props.getHistory();
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.startDate &&
+      nextProps.endDate &&
+      this.props.endDate !== nextProps.endDate
+    ) {
+      this.props.getHistory(
+        nextProps.startDate,
+        nextProps.endDate,
+        this.state.ordering,
+        this.state.offset,
+        this.props.limit
+      );
+    }
   }
 
-  getHistoryOrdered = async ordering => {
+  getHistory = async ordering => {
     const order = this.state.asc ? ordering : `-${ordering}`;
+    this.props.getHistory(
+      this.props.startDate,
+      this.props.endDate,
+      order,
+      this.state.offset,
+      this.props.limit
+    );
     this.setState({
-      rows: await this.props.getHistoryOrdered(order),
       asc: !this.state.asc,
       ordering,
+      offset: 0,
     });
   };
 
@@ -45,10 +70,7 @@ export default class TableHistory extends Component {
   renderBody = () => {
     const isProcessHistory = this.props.type === 'process';
     return (
-      <TableBody
-        showRowHover={true}
-        displayRowCheckbox={!isProcessHistory && this.props.selectable}
-      >
+      <TableBody>
         {this.props.rows.map((row, id) => {
           const processId =
             isProcessHistory || !row.last_exposure_process_id
@@ -59,10 +81,13 @@ export default class TableHistory extends Component {
               key={id}
               processId={processId}
               row={row}
+              rowNumber={id}
               selectProcessQA={this.selectProcessQA}
               type={this.props.type}
               lastProcessedId={this.props.lastProcessedId}
               selectedExposures={this.props.selectedExposures}
+              selectExposure={this.props.selectExposure}
+              selectable={this.props.selectable}
             />
           );
         })}
@@ -70,29 +95,74 @@ export default class TableHistory extends Component {
     );
   };
 
-  render() {
-    const isProcessHistory = this.props.type === 'process';
+  handleChangePage = (evt, offset) => {
+    this.props.getHistory(
+      this.props.startDate,
+      this.props.endDate,
+      this.state.ordering,
+      offset * this.props.limit,
+      this.props.limit
+    );
+    this.setState({ offset });
+  };
+
+  handleChangeRowsPerPage = event => {
+    this.props.getHistory(
+      this.props.startDate,
+      this.props.endDate,
+      this.state.ordering,
+      this.state.offset * this.props.limit,
+      event.target.value
+    );
+    this.props.changeLimit(event.target.value);
+  };
+
+  renderPagination = () => {
+    if (!this.props.rowsCount) return;
     return (
-      <div>
-        <Table
-          fixedHeader={false}
-          style={{ width: 'auto', tableLayout: 'auto' }}
-          bodyStyle={{ overflow: 'visible' }}
-          selectable={!isProcessHistory && this.props.selectable}
-          multiSelectable={true}
-          onRowSelection={this.props.onRowSelection}
-        >
+      <TablePagination
+        component="div"
+        count={this.props.rowsCount}
+        rowsPerPage={this.props.limit}
+        page={this.state.offset}
+        backIconButtonProps={{
+          'aria-label': 'Previous Page',
+        }}
+        nextIconButtonProps={{
+          'aria-label': 'Next Page',
+        }}
+        onChangePage={this.handleChangePage}
+        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+      />
+    );
+  };
+
+  render() {
+    return (
+      <div className={this.props.classes.root}>
+        <Table style={{ width: 'auto', tableLayout: 'auto' }}>
           <HistoryHeader
-            getHistoryOrdered={this.getHistoryOrdered}
+            getHistory={this.getHistory}
             type={this.props.type}
             asc={this.state.asc}
             ordering={this.state.ordering}
             selectable={this.props.selectable}
             orderable={this.props.orderable}
+            selectExposure={this.props.selectExposure}
           />
           {this.renderBody()}
         </Table>
+        {this.renderPagination()}
       </div>
     );
   }
 }
+
+const styles = {
+  root: {
+    width: '100%',
+    overflowX: 'auto',
+  },
+};
+
+export default withStyles(styles)(TableHistory);

@@ -1,7 +1,8 @@
 import React from 'react';
-import { TableHeaderColumn, TableRow, TableHeader } from 'material-ui/Table';
 import PropTypes from 'prop-types';
 import { ArrowDropDown, ArrowDropUp } from 'material-ui-icons';
+import { TableCell, TableHead, TableRow } from 'material-ui-next/Table';
+import Checkbox from 'material-ui-next/Checkbox';
 
 const styles = {
   arrow: { display: 'flex', alignItems: 'center' },
@@ -9,14 +10,15 @@ const styles = {
 };
 
 export default class HistoryHeader extends React.Component {
-  static muiName = 'TableHeader';
+  static muiName = 'TableHead';
   static propTypes = {
     type: PropTypes.string.isRequired,
-    getHistoryOrdered: PropTypes.func.isRequired,
+    getHistory: PropTypes.func.isRequired,
     asc: PropTypes.bool,
     ordering: PropTypes.string,
     orderable: PropTypes.bool,
     selectable: PropTypes.bool,
+    selectExposure: PropTypes.func,
   };
 
   renderArrow = id => {
@@ -31,7 +33,7 @@ export default class HistoryHeader extends React.Component {
 
   fetchOrder = id => {
     if (!id) return;
-    this.props.getHistoryOrdered(id);
+    this.props.getHistory(id);
   };
 
   renderHeader = (id, name) => {
@@ -47,103 +49,60 @@ export default class HistoryHeader extends React.Component {
 
   renderProcessingHistoryHeader = () => {
     return (
-      <TableHeader
-        displaySelectAll={false}
-        adjustForCheckbox={false}
-        enableSelectAll={false}
-      >
+      <TableHead>
         <TableRow>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'Program')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('pk', 'Process ID')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('start', 'Process Date')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'Process Time')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('exposure_id', 'Exp ID')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('tile', 'Tile ID')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('dateobs', 'OBS Date')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'OBS Time')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>{this.renderHeader('', 'MJD')}</TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('telra', 'RA (hms)')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('teldec', 'Dec (dms)')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('exptime', 'Exp Time(s)')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'Airmass')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'FWHM (arcsec)')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>{this.renderHeader('', 'QA')}</TableHeaderColumn>
-          <TableHeaderColumn>{this.renderHeader('', 'View')}</TableHeaderColumn>
+          <TableCell>{this.renderHeader('', 'Program')}</TableCell>
+          <TableCell>{this.renderHeader('pk', 'Process ID')}</TableCell>
+          <TableCell>{this.renderHeader('start', 'Process Date')}</TableCell>
+          <TableCell>{this.renderHeader('', 'Process Time')}</TableCell>
+          <TableCell>{this.renderHeader('exposure_id', 'Exp ID')}</TableCell>
+          <TableCell>{this.renderHeader('tile', 'Tile ID')}</TableCell>
+          <TableCell>{this.renderHeader('dateobs', 'OBS Date')}</TableCell>
+          <TableCell>{this.renderHeader('', 'OBS Time')}</TableCell>
+          <TableCell>{this.renderHeader('', 'MJD')}</TableCell>
+          <TableCell>{this.renderHeader('telra', 'RA (hms)')}</TableCell>
+          <TableCell>{this.renderHeader('teldec', 'Dec (dms)')}</TableCell>
+          <TableCell>{this.renderHeader('exptime', 'Exp Time(s)')}</TableCell>
+          <TableCell>{this.renderHeader('', 'Airmass')}</TableCell>
+          <TableCell>{this.renderHeader('', 'FWHM (arcsec)')}</TableCell>
+          <TableCell>{this.renderHeader('', 'QA')}</TableCell>
+          <TableCell>{this.renderHeader('', 'View')}</TableCell>
         </TableRow>
-      </TableHeader>
+      </TableHead>
+    );
+  };
+
+  renderCheckbox = () => {
+    if (!this.props.selectable) return;
+    return (
+      <TableCell padding="checkbox">
+        <Checkbox
+          onChange={(evt, checked) => this.props.selectExposure(checked)}
+        />
+      </TableCell>
     );
   };
 
   renderObservingHistoryHeader = () => {
     return (
-      <TableHeader
-        displaySelectAll={true && this.props.selectable}
-        adjustForCheckbox={false}
-        enableSelectAll={true && this.props.selectable}
-        {...this.props}
-      >
+      <TableHead>
         <TableRow>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'Program')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('exposure_id', 'Exp ID')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('tile', 'Tile ID')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('dateobs', 'OBS Date')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'OBS Time')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>{this.renderHeader('', 'MJD')}</TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('telra', 'RA (hms)')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('teldec', 'Dec (dms)')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('exptime', 'Exp Time(s)')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'Airmass')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>
-            {this.renderHeader('', 'FWHM (arcsec)')}
-          </TableHeaderColumn>
-          <TableHeaderColumn>{this.renderHeader('', 'QA')}</TableHeaderColumn>
-          <TableHeaderColumn>{this.renderHeader('', 'View')}</TableHeaderColumn>
+          {this.renderCheckbox()}
+          <TableCell>{this.renderHeader('', 'Program')}</TableCell>
+          <TableCell>{this.renderHeader('exposure_id', 'Exp ID')}</TableCell>
+          <TableCell>{this.renderHeader('tile', 'Tile ID')}</TableCell>
+          <TableCell>{this.renderHeader('dateobs', 'OBS Date')}</TableCell>
+          <TableCell>{this.renderHeader('', 'OBS Time')}</TableCell>
+          <TableCell>{this.renderHeader('', 'MJD')}</TableCell>
+          <TableCell>{this.renderHeader('telra', 'RA (hms)')}</TableCell>
+          <TableCell>{this.renderHeader('teldec', 'Dec (dms)')}</TableCell>
+          <TableCell>{this.renderHeader('exptime', 'Exp Time(s)')}</TableCell>
+          <TableCell>{this.renderHeader('', 'Airmass')}</TableCell>
+          <TableCell>{this.renderHeader('', 'FWHM (arcsec)')}</TableCell>
+          <TableCell>{this.renderHeader('', 'QA')}</TableCell>
+          <TableCell>{this.renderHeader('', 'View')}</TableCell>
         </TableRow>
-      </TableHeader>
+      </TableHead>
     );
   };
   render() {

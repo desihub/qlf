@@ -139,6 +139,25 @@ class LastProcessViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessJobsSerializer
 
 
+class CurrentProcessViewSet(viewsets.ModelViewSet):
+    """API endpoint listing current process"""
+
+    def get_queryset(self):
+        try:
+            process = Process.objects.latest('pk')
+            if process.end is None:
+                process_id = process.id
+            else:
+                process_id = None
+        except Process.DoesNotExist as error:
+            logger.debug(error)
+            process_id = None
+
+        return Process.objects.filter(id=process_id)
+
+    serializer_class = ProcessJobsSerializer
+
+
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processing history"""
 

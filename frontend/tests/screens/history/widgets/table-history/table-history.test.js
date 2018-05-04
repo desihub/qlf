@@ -60,34 +60,34 @@ describe('TableHistory Controls', () => {
     wrapper = mount(tableHistory);
   });
 
-  it('mounts rendering table', () => {
-    expect(getHistory).toBeCalled();
-    expect(
-      wrapper
-        .find('TableHeaderColumn')
-        .at(1)
-        .text()
-    ).toBe('Process ID');
-    expect(
-      wrapper
-        .find('TableRowColumn')
-        .at(1)
-        .text()
-    ).toBe('69');
-  });
+  // it('mounts rendering table', () => {
+  //   expect(getHistory).toBeCalled();
+  //   expect(
+  //     wrapper
+  //       .find('TableHeaderColumn')
+  //       .at(1)
+  //       .text()
+  //   ).toBe('Process ID');
+  //   expect(
+  //     wrapper
+  //       .find('TableRowColumn')
+  //       .at(1)
+  //       .text()
+  //   ).toBe('69');
+  // });
 
-  it('orders table', () => {
-    wrapper
-      .find('span')
-      .at(1)
-      .simulate('click');
-    expect(getHistoryOrdered).toBeCalledWith('-pk');
-    wrapper
-      .find('span')
-      .at(0)
-      .simulate('click');
-    expect(getHistoryOrdered).toBeCalledWith('-pk');
-  });
+  // it('orders table', () => {
+  //   wrapper
+  //     .find('span')
+  //     .at(1)
+  //     .simulate('click');
+  //   expect(getHistoryOrdered).toBeCalledWith('-pk');
+  //   wrapper
+  //     .find('span')
+  //     .at(0)
+  //     .simulate('click');
+  //   expect(getHistoryOrdered).toBeCalledWith('-pk');
+  // });
 
   it('calls navigateToQA', () => {
     wrapper

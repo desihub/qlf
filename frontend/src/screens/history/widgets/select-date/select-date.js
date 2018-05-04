@@ -6,10 +6,11 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'left',
   },
   space: {
-    marginRight: '2vw',
+    paddingLeft: '2vw',
+    width: '100px',
   },
   label: {
     color: 'black',
@@ -20,7 +21,7 @@ export default class SelectDate extends React.Component {
   static propTypes = {
     startDate: Proptypes.string.isRequired,
     endDate: Proptypes.string.isRequired,
-    getHistoryRangeDate: Proptypes.func.isRequired,
+    setHistoryRangeDate: Proptypes.func.isRequired,
   };
 
   state = {
@@ -55,7 +56,7 @@ export default class SelectDate extends React.Component {
   };
 
   selectRange = () => {
-    this.props.getHistoryRangeDate(
+    this.props.setHistoryRangeDate(
       this.state.selectedStartDate,
       this.state.selectedEndDate
     );
