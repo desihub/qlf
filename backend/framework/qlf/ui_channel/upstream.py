@@ -159,7 +159,7 @@ class Upstream:
             process_id = process[0].get("id")
             date = self.get_date(exposure)
             date_time = date.value
-            mjd = date.mjd
+            mjd = date.mjd if date is not None else None
         else:
             exposure = ''
         return json.dumps({

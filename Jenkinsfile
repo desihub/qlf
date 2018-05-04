@@ -9,7 +9,14 @@ pipeline {
                 }
             }
         }
-        stage('Test') {
+        stage('Test Backend') {
+            steps {
+                dir('backend'){
+                    sh 'docker run -v $(pwd):/app backend_qlf ./test.sh coverage'
+                }
+            }
+        }
+        stage('Test Frontend') {
             steps {
                 dir('frontend') {
                     sh 'yarn lint'
