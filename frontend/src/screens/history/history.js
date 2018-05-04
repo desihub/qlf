@@ -54,6 +54,11 @@ export default class History extends Component {
     selectedExposures: [],
     startDate: this.props.startDate,
     endDate: this.props.endDate,
+    limit: 10,
+  };
+
+  changeLimit = limit => {
+    this.setState({ limit });
   };
 
   componentWillReceiveProps(nextProps) {
@@ -84,19 +89,20 @@ export default class History extends Component {
         startDate={this.state.startDate}
         endDate={this.state.endDate}
         lastProcessedId={this.props.lastProcessedId}
-        rowsCount={this.props.rowsCount}
+        changeLimit={this.changeLimit}
+        limit={this.state.limit}
       />
     );
   };
 
-  onRowSelection = rows => {
-    if (rows === 'all') {
+  selectExposure = rows => {
+    if (rows === true) {
       const selectedExposures = this.props.rows.map((row, id) => id);
       this.setState({ selectedExposures });
       return;
     }
 
-    if (rows === 'none') {
+    if (rows === false) {
       this.setState({ selectedExposures: [] });
       return;
     }
@@ -120,9 +126,11 @@ export default class History extends Component {
           selectable={true}
           orderable={true}
           lastProcessedId={this.props.lastProcessedId}
-          onRowSelection={this.onRowSelection}
+          selectExposure={this.selectExposure}
           selectedExposures={this.state.selectedExposures}
           rowsCount={this.props.rowsCount}
+          changeLimit={this.changeLimit}
+          limit={this.state.limit}
         />
       );
     }
@@ -148,7 +156,8 @@ export default class History extends Component {
                 this.props.startDate,
                 this.props.endDate,
                 '-pk',
-                0
+                0,
+                this.state.limit
               )
             }
           >
@@ -179,10 +188,10 @@ export default class History extends Component {
         <ToolbarSeparator />
         <FontIcon
           className="material-icons"
-          title="Replay"
+          title="Reprocess"
           onClick={this.handleOpenDialog}
         >
-          replay
+          play_arrow
         </FontIcon>
       </ToolbarGroup>
     );

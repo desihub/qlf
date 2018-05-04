@@ -47,7 +47,8 @@ export function fetchLastProcess() {
       startDate,
       endDate,
       '-pk',
-      0
+      0,
+      10
     );
     if (lastProcesses && !lastProcesses.detail && lastProcesses.results)
       dispatch(updateLastProcess(lastProcesses.results));
@@ -80,9 +81,15 @@ export function getHistoryDateRange() {
   };
 }
 
-export function getProcessingHistory(start, end, order, offset) {
+export function getProcessingHistory(start, end, order, offset, limit) {
   return async function(dispatch) {
-    const rows = await QlfApi.getProcessingHistory(start, end, order, offset);
+    const rows = await QlfApi.getProcessingHistory(
+      start,
+      end,
+      order,
+      offset,
+      limit
+    );
     if (rows && rows.results) {
       dispatch(updateRowsCount(rows.count));
       dispatch(updateRows(rows.results));
@@ -90,9 +97,15 @@ export function getProcessingHistory(start, end, order, offset) {
   };
 }
 
-export function getObservingHistory(start, end, order, offset) {
+export function getObservingHistory(start, end, order, offset, limit) {
   return async function(dispatch) {
-    const rows = await QlfApi.getObservingHistory(start, end, order, offset);
+    const rows = await QlfApi.getObservingHistory(
+      start,
+      end,
+      order,
+      offset,
+      limit
+    );
     if (rows && rows.results) {
       dispatch(updateRowsCount(rows.count));
       dispatch(updateRows(rows.results));

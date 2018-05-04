@@ -212,10 +212,10 @@ export default connect(
     navigateToMetrics: (step, spectrograph, arm) =>
       dispatch(navigateToOfflineMetrics(step, spectrograph, arm)),
     navigateToQA: () => dispatch(navigateToOfflineQA()),
-    getProcessingHistory: (start, end, order, offset) =>
-      dispatch(getProcessingHistory(start, end, order, offset)),
-    getObservingHistory: (start, end, order, offset) =>
-      dispatch(getObservingHistory(start, end, order, offset)),
+    getProcessingHistory: (start, end, order, offset, limit) =>
+      dispatch(getProcessingHistory(start, end, order, offset, limit)),
+    getObservingHistory: (start, end, order, offset, limit) =>
+      dispatch(getObservingHistory(start, end, order, offset, limit)),
     getHistoryDateRange: () => dispatch(getHistoryDateRange()),
   })
 )(OfflineContainer);
