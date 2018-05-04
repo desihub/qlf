@@ -8,6 +8,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+
 def open_file(filename):
     qlf_root = os.getenv('QLF_ROOT')
     cfg = configparser.ConfigParser()
@@ -24,6 +25,7 @@ def open_file(filename):
 
     except Exception as e:
         logger.warn(e)
+
 
 def send_message(request):
     logfile = open_file('logfile')

@@ -9,6 +9,7 @@ import Pyro4
 uri = settings.QLF_DAEMON_URL
 qlf = Pyro4.Proxy(uri)
 
+
 # http://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
@@ -150,6 +151,7 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
         model = Process
         fields = ('id', 'exposure', 'process_jobs')
 
+
 class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
     runtime = serializers.SerializerMethodField()
@@ -173,7 +175,10 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
     def get_datemjd(self, obj):
         time = get_date(obj.exposure_id)
-        return time.mjd
+        if time is None:
+            return None
+        else:
+            return time.mjd
 
     def get_dateobs(self, obj):
         return obj.exposure.dateobs
@@ -184,7 +189,6 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
     def get_telra(self, obj):
         return obj.exposure.telra
 
-
     def get_teldec(self, obj):
         return obj.exposure.teldec
 
@@ -193,6 +197,7 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
     def get_airmass(self, obj):
         return obj.exposure.airmass
+
 
 class SingleQASerializer(DynamicFieldsModelSerializer):
 
@@ -206,13 +211,17 @@ class SingleQASerializer(DynamicFieldsModelSerializer):
 
     def get_datemjd(self, obj):
         time = get_date(obj.exposure_id)
-        return time.mjd
-    
+        if time is None:
+            return None
+        else:
+            return time.mjd
+
     def get_date(self, obj):
         return obj.exposure.dateobs
 
     def get_qa_tests(self, obj):
         return qlf.qa_tests(obj.pk)
+
 
 class ObservingHistorySerializer(DynamicFieldsModelSerializer):
 
@@ -225,10 +234,14 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
 
     def get_datemjd(self, obj):
         time = get_date(obj.pk)
-        return time.mjd
+        if time is None:
+            return None
+        else:
+            return time.mjd
 
     def get_last_exposure_process_id(self, obj):
         return Process.objects.all().filter(exposure=obj.pk).last().pk
+
 
 class ExposuresDateRangeSerializer(DynamicFieldsModelSerializer):
 
