@@ -1,5 +1,5 @@
 from rest_framework.test import APITestCase
-from dashboard.models import Exposure, Process, Job, Camera
+from dashboard.models import Exposure, Process, Job, Camera, Configuration
 from rest_framework import status
 from unittest.mock import patch
 import datetime
@@ -52,6 +52,9 @@ class ProcessTest(APITestCase):
             night="20190101",
             airmass=None,
         )
+        self.configuration = Configuration.objects.create(
+            name="qltest"
+        )
         self.process = Process.objects.create(
             pk=7,
             pipeline_name="Quick Look",
@@ -61,6 +64,7 @@ class ProcessTest(APITestCase):
             version="",
             process_dir="exposures/20190101/00000003",
             exposure=self.exposure,
+            configuration=self.configuration
         )
 
     def test_get_process(self):
@@ -101,6 +105,9 @@ class JobTest(APITestCase):
             night="20190101",
             airmass=None,
         )
+        self.configuration = Configuration.objects.create(
+            name="qltest"
+        )
         self.process = Process.objects.create(
             pk=7,
             pipeline_name="Quick Look",
@@ -110,6 +117,7 @@ class JobTest(APITestCase):
             version="",
             process_dir="exposures/20190101/00000003",
             exposure=self.exposure,
+            configuration=self.configuration,
         )
         self.camera = Camera.objects.create(
             camera="b3",
@@ -148,6 +156,9 @@ def mock_pipeline(self):
             night="20190101",
             airmass=None,
         )
+        self.configuration = Configuration.objects.create(
+            name="qltest"
+        )
         self.process = Process.objects.create(
             pk=8,
             pipeline_name="Quick Look",
@@ -157,6 +168,7 @@ def mock_pipeline(self):
             version="",
             process_dir="exposures/20190101/00000003",
             exposure=self.exposure,
+            configuration=self.configuration
         )
         self.camera = Camera.objects.create(
             camera="b3",

@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+import sys
 
 
 class Exposure(models.Model):
@@ -33,7 +34,7 @@ class Configuration(models.Model):
     name = models.CharField(max_length=45, default='QLF',
                             help_text='Name of the configuration.',
                             primary_key=True)
-    configuration = JSONField(help_text='Configuration used.')
+    configuration = JSONField(default={}, help_text='Configuration used.')
     creation_date = models.DateTimeField(auto_now=True,
                                          help_text='Datetime when the configuration was created')
 
