@@ -216,6 +216,9 @@ class QLFModels(object):
         )
         qa.save()
 
+    def get_last_configuration(self):
+        return Configuration.objects.latest('pk')
+
     def get_qa(self, process_id, cam, qa_name):
         """ Gets QA """
         try:

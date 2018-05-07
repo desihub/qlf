@@ -11,6 +11,7 @@ from log import setup_logger
 from procutil import kill_proc_tree
 from qlf_pipeline import Jobs as QLFPipeline
 from scalar_metrics import LoadMetrics
+from qlf_configuration import QLFConfiguration
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -22,6 +23,8 @@ loglevel = cfg.get("main", "loglevel")
 
 logger = setup_logger("icslogger", logfile, loglevel)
 mainlogger = setup_logger("main_logger", "main_daemon.log", loglevel)
+
+QLFConfiguration = QLFConfiguration()
 
 
 class QLFAutoRun(Process):
@@ -228,6 +231,18 @@ class QLFAutomatic(object):
         except:
             print('load_scalar_metrics error')
         return scalar_metrics
+
+    def get_last_configuration(self):
+        return QLFConfiguration.get_last_configuration()
+
+    def get_current_configuration(self):
+        return QLFConfiguration.get_current_configuration()
+
+    def get_default_configuration(self):
+        return QLFConfiguration.get_default_configuration()
+
+    def set_current_configuration(self, configuration):
+        return QLFConfiguration.set_current_configuration(configuration)
 
 # TODO: refactor QLFManual
 @Pyro4.expose
