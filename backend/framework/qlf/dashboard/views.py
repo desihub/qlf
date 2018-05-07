@@ -306,7 +306,7 @@ class LoadScalarMetrics(viewsets.ReadOnlyModelViewSet):
         cam = request.GET.get('cam')
         if process_id is not None:
             load_scalar_metrics = qlf.load_scalar_metrics(process_id, cam)
-            reponse.data = {'results': load_scalar_metrics}
+            response.data = {'results': load_scalar_metrics}
             return response
         else:
             response.data = {'Error': 'Missing process_id'}
