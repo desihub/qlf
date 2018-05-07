@@ -61,6 +61,8 @@ class App extends React.Component {
         return '- Metrics Realtime';
       case '/processing-history':
         return '- Processing History';
+      case '/configuration':
+        return '- Configuration';
       case '/observing-history':
         return '- Observing History';
       default:

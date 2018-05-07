@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import History from '../../screens/history/history';
 import { Route } from 'react-router';
+import Configuration from '../../screens/configuration/configuration';
 import Metrics from '../../screens/metrics/metrics';
 import { connect } from 'react-redux';
 import {
@@ -182,6 +183,7 @@ class OfflineContainer extends Component {
             />
           )}
         />
+        <Route path="/configuration" render={() => <Configuration />} />
       </div>
     );
   }

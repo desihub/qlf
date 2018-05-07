@@ -106,7 +106,10 @@ export default class Home extends React.Component {
               subtitle="Show the overall progress and performance of survey"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/configuration')}
+          >
             <Card
               icon="ViewModule"
               title="Configuration"

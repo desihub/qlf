@@ -71,6 +71,22 @@ export default class QlfApi {
     }
   }
 
+  static async getCurrentConfiguration() {
+    try {
+      const configuration = await fetch(
+        `${apiUrl}dashboard/api/current_configuration/?format=json`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await configuration.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getExposuresDateRange() {
     try {
       const exposures = await fetch(
