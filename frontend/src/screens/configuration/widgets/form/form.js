@@ -141,6 +141,7 @@ export default class Form extends React.Component {
   getDefaultConfiguration = async () => {
     this.setState({ loading: true });
     const configuration = await QLFApi.getDefaultConfiguration();
+    this.setState({ loading: false });
     this.updateConfiguration(configuration);
   };
 

@@ -139,6 +139,6 @@ describe('Landing Home', () => {
       .find('a')
       .at(7)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/configuration');
   });
 });
