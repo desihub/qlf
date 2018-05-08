@@ -236,7 +236,7 @@ class QLFAutomatic(object):
         return QLFConfiguration.get_last_configuration()
 
     def get_current_configuration(self):
-        return QLFConfiguration.get_current_configuration()
+        return QLFConfiguration.get_current_configuration().configuration
 
     def get_default_configuration(self):
         return QLFConfiguration.get_default_configuration()
@@ -246,7 +246,7 @@ class QLFAutomatic(object):
 
     def get_qlconfig(self):
         try:
-            file = open(QLFConfiguration.get_current_configuration()['qlconfig'])
+            file = open(QLFConfiguration.get_current_configuration().configuration['qlconfig'])
             return file.read()
         except:
             return 'Error reading qlconfig'
