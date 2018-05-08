@@ -2,6 +2,7 @@ import React from 'react';
 import { TableRow, TableCell } from 'material-ui-next/Table';
 import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
+import { CircularProgress } from 'material-ui-next/Progress';
 
 const styles = {
   link: {
@@ -47,6 +48,19 @@ export default class HistoryData extends React.Component {
     return hour + ':' + minutes + ':' + seconds;
   };
 
+  renderViewQA = (lastProcessed, runtime) => {
+    if (lastProcessed && !runtime) return <CircularProgress size={20} />;
+    if (!runtime) return;
+    return (
+      <span
+        style={styles.link}
+        onClick={() => this.props.selectProcessQA(this.props.processId)}
+      >
+        View
+      </span>
+    );
+  };
+
   renderProcessingHistory = () => {
     const lastProcessed =
       this.props.lastProcessedId === this.props.row.pk ? styles.bold : null;
@@ -67,12 +81,7 @@ export default class HistoryData extends React.Component {
         <TableCell>{this.props.row.airmass}</TableCell>
         <TableCell />
         <TableCell>
-          <span
-            style={styles.link}
-            onClick={() => this.props.selectProcessQA(this.props.processId)}
-          >
-            View
-          </span>
+          {this.renderViewQA(lastProcessed, this.props.row.runtime)}
         </TableCell>
         <TableCell />
       </TableRow>
