@@ -31,6 +31,9 @@ jest.mock('../../../src/containers/offline/connection/qlf-api', () => {
     getDefaultConfiguration: () => {
       return qlfConfig;
     },
+    getQlConfig: () => {
+      return 'QLConfig';
+    },
   };
 });
 
@@ -50,6 +53,11 @@ describe('Configuration', () => {
       .find('Tab')
       .at(1)
       .simulate('click');
-    expect(wrapper.find('CircularProgress').length).toBe(1);
+    expect(
+      wrapper
+        .find('Display')
+        .at(0)
+        .text()
+    ).toBe('QLConfig');
   });
 });
