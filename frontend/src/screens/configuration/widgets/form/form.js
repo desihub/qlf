@@ -1,5 +1,5 @@
 import React from 'react';
-import QLFApi from '../../../containers/offline/connection/qlf-api';
+import QLFApi from '../../../../containers/offline/connection/qlf-api';
 import Paper from 'material-ui-next/Paper';
 import TextField from 'material-ui-next/TextField';
 import Divider from 'material-ui-next/Divider';
