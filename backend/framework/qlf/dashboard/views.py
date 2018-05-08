@@ -291,6 +291,17 @@ class DefaultConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
         response.data = {'results': default_configuration}
         return response
 
+class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(QlConfigViewSet, self).list(
+            request, args, kwargs)
+        qlconfig = qlf.get_qlconfig()
+        response.data = qlconfig
+        return response
+
 
 class SetConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Configuration.objects.order_by('creation_date')

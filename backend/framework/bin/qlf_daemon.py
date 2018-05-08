@@ -244,6 +244,13 @@ class QLFAutomatic(object):
     def set_current_configuration(self, configuration):
         return QLFConfiguration.set_current_configuration(configuration)
 
+    def get_qlconfig(self):
+        try:
+            file = open(QLFConfiguration.get_current_configuration()['qlconfig'])
+            return file.read()
+        except:
+            return 'Error reading qlconfig'
+
 # TODO: refactor QLFManual
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
