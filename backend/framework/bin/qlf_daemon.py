@@ -74,7 +74,7 @@ class QLFAutoRun(Process):
             self.running.set()
 
             try:
-                ql = QLFPipeline(exposure)
+                ql = QLFPipeline(exposure, QLFConfiguration.get_current_configuration())
                 self.process_id.value = ql.start_process()
                 ql.start_jobs()
                 ql.finish_process()
@@ -129,7 +129,7 @@ class QLFManualRun(Process):
 
             self.running.set()
             self.current_exposure = exposure
-            ql = QLFPipeline(self.current_exposure)
+            ql = QLFPipeline(self.current_exposure, QLFConfiguration.get_current_configuration())
             mainlogger.info('Executing expid {}...'.format(exposure.get('expid')))
             ql.start_process()
             ql.start_jobs()

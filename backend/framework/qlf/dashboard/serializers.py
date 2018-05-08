@@ -133,7 +133,7 @@ class ConfigurationSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Configuration
-        fields = ('configuration', 'creation_date', 'links')
+        fields = ('name', 'configuration', 'creation_date', 'links')
 
     def get_links(self, obj):
         request = self.context['request']

@@ -1,5 +1,6 @@
 import configparser
 import os
+from qlf_models import QLFModels
 
 
 class QLFConfiguration:
@@ -36,8 +37,9 @@ class QLFConfiguration:
 
     def get_last_configuration(self):
         try:
-            configuration = QLFModels().get_last_configuration().configuration
+            configuration = QLFModels().get_last_configuration()
         except:
             configuration = self.get_default_configuration()
+            configuration = QLFModels().insert_config("default", configuration)
 
         return configuration
