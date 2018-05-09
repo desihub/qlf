@@ -7,7 +7,6 @@ import Landing from './screens/landing/landing';
 import { Route } from 'react-router';
 import { Provider } from 'react-redux';
 import { store, history } from './store';
-import Sidemenu from './screens/side-menu/side-menu';
 import { ConnectedRouter } from 'react-router-redux';
 import logo from './assets/DESILogo.png';
 import OnlineContainer from './containers/online/online-container';
@@ -42,7 +41,6 @@ const styles = {
 
 class App extends React.Component {
   state = {
-    openDrawer: false,
     url: '/',
     displayHeaders: true,
   };
@@ -68,14 +66,6 @@ class App extends React.Component {
       default:
         return '';
     }
-  };
-
-  openDrawer = () => {
-    this.setState({ openDrawer: true });
-  };
-
-  closeDrawer = url => {
-    this.setState({ openDrawer: false, url });
   };
 
   updateUrl = url => {
@@ -180,10 +170,6 @@ class App extends React.Component {
           <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
             <div>
               {this.renderTopBar()}
-              <Sidemenu
-                openDrawer={this.state.openDrawer}
-                closeDrawer={this.closeDrawer}
-              />
               {['/', '/about', '/help', '/tutorials', '/contact'].map(path => (
                 <Route
                   exact
