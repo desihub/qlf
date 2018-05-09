@@ -1,40 +1,27 @@
 import astropy.io.fits
-import configparser
 import datetime
 from log import get_logger
 import os
 import random
 import re
 import shutil
-import sys
 import time
+from util import get_config
 from multiprocessing import Process, Manager
 
-qlf_root = os.getenv("QLF_ROOT")
+cfg = get_config()
+qlf_root = cfg.get("environment", "qlf_root")
 
-if not qlf_root:
-    raise ValueError('QLF_ROOT not define.')
+log = get_logger(
+    "exposure.generator",
+    os.path.join(qlf_root, "logs", "exposure_generator.log")
+)
 
-log = get_logger(__name__, os.path.join(qlf_root, "exposure_generator.log"))
-qlf_conf = os.path.join(qlf_root, "framework/config/qlf.cfg")
-
-cfg = configparser.ConfigParser()
-
-try:
-    cfg.read(qlf_conf)
-
-    spectro_path = os.path.normpath(
-        cfg.get("namespace", "desi_spectro_data"))
-    spectro_redux = os.path.normpath(
-        cfg.get("namespace", "desi_spectro_redux"))
-
-    fiberflat_path = os.path.join(spectro_redux, "calib2d")
-    psfboot_path = os.path.join(fiberflat_path, "psf")
-    list_base_nights = cfg.get("data", "night").split(",")
-except Exception as error:
-    log.error(error)
-    log.error("Error reading config file %s" % qlf_conf)
-    sys.exit(1)
+spectro_path = os.path.normpath(cfg.get("namespace", "desi_spectro_data"))
+spectro_redux = os.path.normpath(cfg.get("namespace", "desi_spectro_redux"))
+fiberflat_path = os.path.join(spectro_redux, "calib2d")
+psfboot_path = os.path.join(fiberflat_path, "psf")
+list_base_nights = cfg.get("data", "night").split(",")
 
 
 class ExposureGenerator(Process):
@@ -42,10 +29,10 @@ class ExposureGenerator(Process):
     def __init__(self):
         super().__init__()
 
-        self.min_interval = 2
-        self.max_interval = 5
+        self.min_interval = 1
+        self.max_interval = 3
 
-        self.__last_exposure = dict()
+        self.__last_exposure = Manager().dict()
         self.__cameras = list()
         self.__base_night = None
         self.__base_exposure = None
@@ -55,7 +42,7 @@ class ExposureGenerator(Process):
 
         for arm in arms:
             for spec in spectrographs:
-                self.__cameras.append(arm + spec)
+                self.__cameras.append({'name': arm + spec})
 
     @staticmethod
     def __get_random_night():
@@ -256,7 +243,6 @@ class ExposureGenerator(Process):
         log.info("spectro_path:      {}".format(spectro_path))
         log.info("fiberflat_path:    {}".format(fiberflat_path))
         log.info("psfboot_path:      {}".format(psfboot_path))
-        log.info("cameras:           {}".format(",".join(self.__cameras)))
 
 
 if __name__ == "__main__":

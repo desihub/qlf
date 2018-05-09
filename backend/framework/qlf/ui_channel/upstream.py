@@ -3,14 +3,9 @@ import time
 import schedule
 import json
 from channels import Group
-import Pyro4
-from django.conf import settings
 from .views import open_file
-import subprocess
 import os
-import sys
 import configparser
-import requests
 from ui_channel.camera_status import get_camera_status
 from dashboard.utils import get_date
 from astropy.io import fits
@@ -19,10 +14,9 @@ import logging
 import io
 
 from dashboard.bokeh.helper import get_last_process
-import Pyro4
+from clients import get_exposure_monitoring
 
-uri = settings.QLF_DAEMON_URL
-qlf = Pyro4.Proxy(uri)
+qlf = get_exposure_monitoring()
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -120,9 +114,6 @@ def avaiable_cameras(process):
             cams.append(job['camera'])
         return cams
     return list()
-
-uri = settings.QLF_DAEMON_URL
-qlf = Pyro4.Proxy(uri)
 
 def start_daemon():
     qlf.start()

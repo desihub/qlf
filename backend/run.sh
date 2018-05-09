@@ -14,11 +14,13 @@ for package in desispec desiutil; do
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
 done
 
+export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
+
 cd $QLF_ROOT
 echo "Initializing QLF Daemon..."
 
 # Start QLF daemon
-python -Wi framework/bin/servers.py &> $QLF_ROOT/servers.log &
+python -Wi framework/bin/servers.py &
 
 cd $QLF_PROJECT
 

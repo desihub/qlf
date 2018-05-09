@@ -1,69 +1,76 @@
-from monitoring import Monitoring
+from exposure_monitoring import ExposureMonitoring
 from exposure_generator import ExposureGenerator
-from qlf_models import QLFModels
+
 import Pyro4
-import configparser
-import sys
 import os
+
 from log import get_logger
 from procutil import kill_proc_tree
+from util import get_config
 from scalar_metrics import LoadMetrics
-from clients import get_exposure_generator
+from qlf_models import QLFModels
 
-qlf_root = os.getenv('QLF_ROOT')
-cfg = configparser.ConfigParser()
+from clients import EXPOSURE_MONITORING_NS, EXPOSURE_GENERATOR_NS, PYRO_HOST, PYRO_PORT
+from clients import get_exposure_generator, get_exposure_monitoring
 
-if not qlf_root:
-    raise ValueError('QLF_ROOT not define.')
-
-qlf_conf = os.path.join(qlf_root, "framework/config/qlf.cfg")
-
-cfg.read(qlf_conf)
-logfile = cfg.get("main", "logfile")
+cfg = get_config()
 loglevel = cfg.get("main", "loglevel")
+qlf_root = cfg.get("environment", "qlf_root")
 
-logger = get_logger("main_logger", logfile, loglevel)
-gen_logger = get_logger(__name__, os.path.join(qlf_root, "exposure_generator.log"))
+logger = get_logger(
+    "pyro.servers",
+    os.path.join(qlf_root, "logs", "servers.log"),
+    loglevel
+)
 
 
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
-class QLFInterface(object):
+class Monitoring(object):
 
     monitoring = False
 
     # TODO: is provisional while we do not have the ICS.
-    generator = get_exposure_generator()
+    exposure_generator = get_exposure_generator()
 
     def start(self):
         if self.monitoring and self.monitoring.is_alive():
-            self.monitoring.set_exit(False)
-            logger.info("Monitor is already initialized (pid: %i)." % self.monitoring.pid)
+            self.monitoring.exit.clear()
+            logger.debug("Monitor is already initialized (pid: %i)." % self.monitoring.pid)
         else:
-            self.monitoring = Monitoring()
+            self.monitoring = ExposureMonitoring()
             self.monitoring.start()
-            logger.info("Starting pid %i..." % self.monitoring.pid)
+            logger.debug("Starting pid %i..." % self.monitoring.pid)
 
-        self.generator.start()
+        self.exposure_generator.start()
 
     def stop(self):
         if self.monitoring and self.monitoring.is_alive():
-            self.monitoring.set_exit()
-            logger.info("Stop pid %i" % self.monitoring.pid)
+            self.monitoring.exit.set()
+            logger.debug("Stop pid %i" % self.monitoring.pid)
 
-            self.monitoring.get_current_process_id()
             pid = self.monitoring.pid
 
             kill_proc_tree(pid, include_parent=False)
         else:
-            logger.info("Monitor is not initialized.")
+            logger.debug("Monitor is not initialized.")
 
-        self.generator.stop()
+        self.exposure_generator.stop()
+
+    def reset(self):
+        self.stop()
+
+        logfile = cfg.get("main", "logfile")
+        logpipeline = cfg.get('main', 'logpipeline')
+
+        for log in [logfile, logpipeline]:
+            with open(log, 'r+') as filelog:
+                filelog.truncate()
 
     def get_status(self):
         status = False
 
-        if self.monitoring and not self.monitoring.get_exit():
+        if self.monitoring and not self.monitoring.exit.is_set():
             status = True
 
         return status
@@ -71,48 +78,68 @@ class QLFInterface(object):
     def is_running(self):
         running = False
 
-        if self.monitoring and self.monitoring.running.is_set():
+        if self.monitoring and self.monitoring.processing.is_alive():
             running = True
 
         return running
 
+    def add_exposures(self, exposures):
+        # TODO: improvements
+        return None
+
     @staticmethod
-    def qa_tests():
-        model = QLFModels()
-        for camera in model.get_cameras():
+    def qa_tests(process_id):
+        qa_tests = list()
+        for job in QLFModels().get_jobs_by_process_id(process_id):
             try:
-                exposure = model.get_last_exposure()
-                lm = LoadMetrics(camera.camera, exposure.exposure_id, exposure.night)
-                lm.save_qa_tests()
+                process = job.process
+                exposure = process.exposure
+                lm = LoadMetrics(job.camera_id, process.exposure_id, exposure.night)
+                qa_tests.append({job.camera_id: lm.load_qa_tests()})
             except:
-                logger.error('qa_tests error camera %s' % camera.camera)
+                logger.error('qa_tests error camera %s' % job.camera)
+        return qa_tests
+
+    @staticmethod
+    def load_scalar_metrics(process_id, cam):
+        scalar_metrics = dict()
+        try:
+            process = QLFModels().get_process_by_process_id(process_id)
+            exposure = process.exposure
+            lm = LoadMetrics(process_id, cam, process.exposure_id, exposure.night)
+            scalar_metrics['metrics'] = lm.metrics
+            scalar_metrics['tests'] = lm.tests
+        except:
+            print('load_scalar_metrics error')
+        return scalar_metrics
 
 
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
-class ExposureEmulator(object):
+class Generator(object):
 
     generator = False
 
     def start(self):
         if self.generator and self.generator.is_alive():
-            gen_logger.info("Exposure generator is already initialized.")
+            logger.debug("Exposure generator is already initialized.")
         else:
             self.generator = ExposureGenerator()
             self.generator.start()
 
     def stop(self):
+        logger.debug(self.generator)
         if self.generator and self.generator.is_alive():
-            gen_logger.info("Stop pid %i" % self.generator.pid)
+            logger.debug("Stop pid %i" % self.generator.pid)
             self.generator.terminate()
         else:
-            gen_logger.info("Exposure generator is not initialized.")
+            logger.debug("Exposure generator is not initialized.")
 
     def last_exposure(self):
         if self.generator and self.generator.is_alive():
             return dict(self.generator.get_last_exposure())
         else:
-            gen_logger.info("Exposure generator is not initialized.")
+            logger.debug("Exposure generator is not initialized.")
             return dict()
 
     # def get_exposure_summary(self, date_range=None, expid_range=None, require_data_written=True):
@@ -125,17 +152,17 @@ class ExposureEmulator(object):
 
 
 def main():
-    try:
-        interface = os.environ.get('QLF_DAEMON_NS', 'qlf.daemon')
-        emulator = os.environ.get('EXPOSURE_EMULATOR', 'exposure.emulator')
-        host = os.environ.get('QLF_DAEMON_HOST', 'localhost')
-        port = int(os.environ.get('QLF_DAEMON_PORT', '56005'))
-    except Exception as err:
-        logger.error(err)
-        sys.exit(1)
+
+    exposure_monitoring = EXPOSURE_MONITORING_NS
+    exposure_generator = EXPOSURE_GENERATOR_NS
+    host = PYRO_HOST
+    port = int(PYRO_PORT)
 
     Pyro4.Daemon.serveSimple(
-        {QLFInterface: interface, ExposureEmulator: emulator},
+        {
+            Monitoring: exposure_monitoring,
+            Generator: exposure_generator
+        },
         host=host,
         port=port,
         ns=False

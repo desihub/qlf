@@ -1,28 +1,32 @@
 import logging
 import Pyro4
-import sys
+import os
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-sh = logging.StreamHandler(sys.stdout)
-sh.setLevel(logging.DEBUG)
-log.addHandler(sh)
+log = logging.getLogger()
 
-name_servers = {
-    'generator': 'PYRO:exposure.emulator@localhost:56005',
-    'qlf_daemon': 'PYRO:qlf.daemon@localhost:56005'
-}
+EXPOSURE_MONITORING_NS = os.environ.get('EXPOSURE_MONITORING_NS', 'exposure.monitoring')
+EXPOSURE_GENERATOR_NS = os.environ.get('EXPOSURE_GENERATOR_NS', 'exposure.generator')
+PYRO_HOST = os.environ.get('PYRO_HOST', 'localhost')
+PYRO_PORT = str(os.environ.get('PYRO_PORT', 56006))
+
+EXPOSURE_MONITORING = 'PYRO:{}@{}:{}'.format(
+    EXPOSURE_MONITORING_NS,
+    PYRO_HOST,
+    PYRO_PORT
+)
+
+EXPOSURE_GENERATOR = 'PYRO:{}@{}:{}'.format(
+    EXPOSURE_GENERATOR_NS,
+    PYRO_HOST,
+    PYRO_PORT
+)
 
 
 def get_exposure_generator():
     """ """
-    return Pyro4.Proxy(get('generator'))
+    return Pyro4.Proxy(EXPOSURE_GENERATOR)
 
 
-def get_qlf_interface():
+def get_exposure_monitoring():
     """ """
-    return Pyro4.Proxy(get('qlf_daemon'))
-
-
-def get(key):
-    return name_servers.get(key)
+    return Pyro4.Proxy(EXPOSURE_MONITORING)
