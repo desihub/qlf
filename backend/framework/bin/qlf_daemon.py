@@ -1,7 +1,6 @@
 from dos_monitor import DOSmonitor
 from qlf_models import QLFModels
-from time import sleep
-from multiprocessing import Process, Event, Value
+from multiprocessing import Process, Event, Value, Manager, Lock
 import Pyro4
 import configparser
 import sys
@@ -27,56 +26,62 @@ mainlogger = get_logger("main_logger", "main_daemon.log", loglevel)
 
 class QLFAutoRun(Process):
 
-    def __init__(self):
+    def __init__(self, exposures=None):
         super().__init__()
         self.running = Event()
         self.exit = Event()
-
         self.dos_monitor = DOSmonitor()
-
-        self.last_night = None
         self.process_id = Value('i', 0)
+        self.base_night = self.dos_monitor.get_last_night()
+        self.list_lock = Lock()
+        self.exposures = Manager().list()
 
-        exposure = QLFModels().get_last_exposure()
+        if not exposures:
+            exposures = self.dos_monitor.get_exposures_by_night(
+                self.base_night)
 
-        if exposure:
-            self.last_night = exposure.night
+            for item in exposures:
+                item['discovery'] = True
+                self.exposures.append(item)
+        else:
+            self.add_exposures(exposures)
+
+    def add_exposures(self, exposures):
+        with self.list_lock:
+            for exposure in exposures:
+                item = self.dos_monitor.get_exposure(self.base_night, exposure)
+                self.exposures.append(item)
 
     def run(self):
-
         while not self.get_exit():
-            night = self.dos_monitor.get_last_night()
 
-            if night == self.last_night:
-                sleep(10)
+            with self.list_lock:
+                exposure = self.exposures.pop(0) if self.exposures else None
+
+            if self.get_exit():
+                mainlogger.info('Exit is set')
+                break
+
+            if not exposure:
                 continue
 
-            exposures = self.dos_monitor.get_exposures_by_night(night)
-
-            if not exposures:
-                sleep(10)
-                continue
-
-            for exposure in exposures:
-                if self.get_exit():
-                    break
-
+            if exposure.get('discovery', None):
                 logger.info('Found expID {}'.format(exposure.get('expid')))
-                self.running.set()
 
-                try:
-                    ql = QLFPipeline(exposure)
-                    self.process_id.value = ql.start_process()
-                    ql.start_jobs()
-                    ql.finish_process()
-                except socket_error as serr:
-                    if serr.errno != errno.ECONNREFUSED:
-                        mainlogger.exception('Daemon Error')
-                        raise
+            self.running.set()
+
+            try:
+                ql = QLFPipeline(exposure)
+                self.process_id.value = ql.start_process()
+                ql.start_jobs()
+                ql.finish_process()
+            except socket_error as serr:
+                if serr.errno != errno.ECONNREFUSED:
+                    mainlogger.exception('Daemon Error')
+                    raise
 
             self.running.clear()
             self.process_id.value = 0
-            self.last_night = night
 
     def get_current_process_id(self):
         """ """
@@ -92,6 +97,7 @@ class QLFAutoRun(Process):
     def get_exit(self):
         """ """
         return self.exit.is_set()
+
 
 # TODO: refactor QLFManualRun
 class QLFManualRun(Process):
@@ -138,18 +144,19 @@ class QLFManualRun(Process):
     def shutdown(self):
         self.exit.set()
 
+
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
 class QLFAutomatic(object):
     def __init__(self):
         self.process = False
 
-    def start(self):
+    def start(self, exposures=None):
         if self.process and self.process.is_alive():
             self.process.set_exit(False)
             mainlogger.info("Monitor is already initialized (pid: %i)." % self.process.pid)
         else:
-            self.process = QLFAutoRun()
+            self.process = QLFAutoRun(exposures)
             self.process.start()
             mainlogger.info("Starting pid %i..." % self.process.pid)
 
@@ -162,26 +169,25 @@ class QLFAutomatic(object):
             pid = self.process.pid
 
             kill_proc_tree(pid, include_parent=False)
+            truncate_logs([logpipeline, logfile])
 
-            if process_id:
-                model = QLFModels()
-                model.delete_process(process_id)
         else:
             mainlogger.info("Monitor is not initialized.")
 
     def reset(self):
         self.stop()
+        truncate_logs([logpipeline, logfile])
 
-        with open(logfile, 'r+') as ics:
-            ics.truncate()
+    def add_exposures(self, exposures):
 
-        with open(logpipeline, 'r+') as pipeline:
-            pipeline.truncate()
+        if not isinstance(exposures, list):
+            mainlogger.info("add_exposures function requires a list of exposures")
+            return
 
-        model = QLFModels()
-        model.delete_all_cameras()
-        model.delete_all_processes()
-        model.delete_all_exposures()
+        if self.process and self.process.is_alive():
+            self.process.add_exposures(exposures)
+        else:
+            self.start(exposures)
 
     def get_status(self):
         status = False
@@ -205,11 +211,23 @@ class QLFAutomatic(object):
             try:
                 process = job.process
                 exposure = process.exposure
-                lm = LoadMetrics(job.camera_id, process.exposure_id, exposure.night)
+                lm = LoadMetrics(process_id, job.camera_id, process.exposure_id, exposure.night)
                 qa_tests.append({job.camera_id: lm.load_qa_tests()})
             except:
                 mainlogger.error('qa_tests error camera %s' % job.camera)
         return qa_tests
+
+    def load_scalar_metrics(self, process_id, cam):
+        scalar_metrics = dict()
+        try:
+            process = QLFModels().get_process_by_process_id(process_id)
+            exposure = process.exposure
+            lm = LoadMetrics(process_id, cam, process.exposure_id, exposure.night)
+            scalar_metrics['metrics'] = lm.metrics
+            scalar_metrics['tests'] = lm.tests
+        except:
+            print('load_scalar_metrics error')
+        return scalar_metrics
 
 # TODO: refactor QLFManual
 @Pyro4.expose
@@ -247,6 +265,12 @@ class QLFManual(object):
 
     def get_current_run(self):
         return self.process.current_exposure
+
+
+def truncate_logs(logs):
+    for log in logs:
+        with open(log, 'r+') as filelog:
+            filelog.truncate()
 
 
 def main():

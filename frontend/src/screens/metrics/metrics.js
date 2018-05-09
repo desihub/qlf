@@ -111,7 +111,8 @@ export default class Metrics extends Component {
     }
   };
 
-  changeQA = qa => {
+  changeQA = async qa => {
+    if (this.state.qa === qa) await this.setState({ qa: '' });
     this.setState({ qa, loading: true });
   };
 
@@ -161,7 +162,7 @@ export default class Metrics extends Component {
     const height = this.iframeSize().toString();
     const url =
       process.env.REACT_APP_BOKEH +
-      `${this.state.qa}/?exposure=${this.props.exposure}&arm=${
+      `${this.state.qa}/?process_id=${this.props.processId}&arm=${
         this.props.arms[this.state.arm]
       }&spectrograph=${this.state.spectrograph}`;
 

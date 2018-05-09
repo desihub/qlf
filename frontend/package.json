@@ -16,6 +16,7 @@
     "history": "^4.7.2",
     "material-ui": "^0.19.4",
     "material-ui-icons": "^1.0.0-beta.17",
+    "material-ui-next": "^1.0.0-beta.44",
     "moment": "^2.19.2",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
