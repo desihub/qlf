@@ -99,14 +99,22 @@ export function getHistoryDateRange() {
   };
 }
 
-export function getProcessingHistory(start, end, order, offset, limit) {
+export function getProcessingHistory(
+  start,
+  end,
+  order,
+  offset,
+  limit,
+  filters
+) {
   return async function(dispatch) {
     const rows = await QlfApi.getProcessingHistory(
       start,
       end,
       order,
       offset,
-      limit
+      limit,
+      filters
     );
     if (rows && rows.results) {
       dispatch(updateRowsCount(rows.count));
@@ -115,14 +123,15 @@ export function getProcessingHistory(start, end, order, offset, limit) {
   };
 }
 
-export function getObservingHistory(start, end, order, offset, limit) {
+export function getObservingHistory(start, end, order, offset, limit, filters) {
   return async function(dispatch) {
     const rows = await QlfApi.getObservingHistory(
       start,
       end,
       order,
       offset,
-      limit
+      limit,
+      filters
     );
     if (rows && rows.results) {
       dispatch(updateRowsCount(rows.count));

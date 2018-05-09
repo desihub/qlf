@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import { ArrowDropDown, ArrowDropUp } from 'material-ui-icons';
 import { TableCell, TableHead, TableRow } from 'material-ui-next/Table';
 import Checkbox from 'material-ui-next/Checkbox';
+import Icon from 'material-ui-next/Icon';
+import Popover from 'material-ui-next/Popover';
+import Typography from 'material-ui-next/Typography';
+import QlfApi from '../../../../../containers/offline/connection/qlf-api';
 
 const styles = {
   arrow: { display: 'flex', alignItems: 'center' },
@@ -13,12 +17,26 @@ export default class HistoryHeader extends React.Component {
   static muiName = 'TableHead';
   static propTypes = {
     type: PropTypes.string.isRequired,
-    getHistory: PropTypes.func.isRequired,
+    addOrder: PropTypes.func.isRequired,
+    addFilters: PropTypes.func.isRequired,
     asc: PropTypes.bool,
     ordering: PropTypes.string,
     orderable: PropTypes.bool,
     selectable: PropTypes.bool,
     selectExposure: PropTypes.func,
+  };
+
+  state = {
+    flavor: undefined,
+  };
+
+  componentWillMount() {
+    this.getFlavors();
+  }
+
+  getFlavors = async () => {
+    const flavors = await QlfApi.getFlavors();
+    this.setState({ flavors });
   };
 
   renderArrow = id => {
@@ -33,7 +51,7 @@ export default class HistoryHeader extends React.Component {
 
   fetchOrder = id => {
     if (!id) return;
-    this.props.getHistory(id);
+    this.props.addOrder(id);
   };
 
   renderHeader = (id, name) => {
@@ -43,7 +61,58 @@ export default class HistoryHeader extends React.Component {
           {name}
         </span>
         {this.props.orderable ? this.renderArrow(id) : null}
+        {this.renderFilter(id)}
+        {this.renderPopOver()}
       </div>
+    );
+  };
+
+  renderFilter = id => {
+    if (id === 'exposure__flavor') {
+      return (
+        <Icon onClick={this.handleClick} style={{ fontSize: 20 }}>
+          filter_list
+        </Icon>
+      );
+    }
+  };
+
+  state = {
+    anchorEl: null,
+  };
+
+  handleClick = event => {
+    this.setState({
+      anchorEl: event.currentTarget,
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      anchorEl: null,
+    });
+  };
+
+  renderPopOver = () => {
+    return (
+      <Popover
+        open={Boolean(this.state.anchorEl)}
+        anchorEl={this.state.anchorEl}
+        onClose={this.handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        elevation={1}
+      >
+        <Typography style={{ margin: '3em' }}>
+          The content of the Popover.
+        </Typography>
+      </Popover>
     );
   };
 
