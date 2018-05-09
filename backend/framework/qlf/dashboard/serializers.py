@@ -152,34 +152,31 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
         fields = ('id', 'exposure', 'process_jobs')
 
 
+class ProcessingHistoryExposureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exposure
+        fields = (
+            'exposure_id', 'tile', 'telra', 'teldec',
+            'dateobs', 'exptime', 'flavor', 'night',
+            'airmass'
+        )
+
+
 class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
     runtime = serializers.SerializerMethodField()
     datemjd = serializers.SerializerMethodField()
-    dateobs = serializers.SerializerMethodField()
-    tile = serializers.SerializerMethodField()
-    telra = serializers.SerializerMethodField()
-    teldec = serializers.SerializerMethodField()
-    exptime = serializers.SerializerMethodField()
-    airmass = serializers.SerializerMethodField()
-    flavor = serializers.SerializerMethodField()
+    exposure = ProcessingHistoryExposureSerializer(required=True)
 
     class Meta:
         model = Process
         fields = (
             'pk',
-            'dateobs',
+            'exposure',
             'datemjd',
-            'exposure_id',
-            'tile',
-            'telra',
-            'teldec',
-            'exptime',
-            'airmass',
             'runtime',
             'start',
             'end',
-            'flavor'
         )
 
     def get_runtime(self, obj):
@@ -194,27 +191,6 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
             return None
         else:
             return time.mjd
-
-    def get_dateobs(self, obj):
-        return obj.exposure.dateobs
-
-    def get_tile(self, obj):
-        return obj.exposure.tile
-
-    def get_telra(self, obj):
-        return obj.exposure.telra
-
-    def get_teldec(self, obj):
-        return obj.exposure.teldec
-
-    def get_exptime(self, obj):
-        return obj.exposure.exptime
-
-    def get_airmass(self, obj):
-        return obj.exposure.airmass
-    
-    def get_flavor(self, obj):
-        return obj.exposure.flavor
 
 
 class SingleQASerializer(DynamicFieldsModelSerializer):
@@ -277,3 +253,9 @@ class ExposuresDateRangeSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Exposure
         fields = ('exposure_id', 'dateobs')
+
+
+class ExposureFlavorSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Exposure
+        fields = ('flavor',)

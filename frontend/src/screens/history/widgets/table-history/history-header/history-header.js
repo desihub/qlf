@@ -56,15 +56,31 @@ export default class HistoryHeader extends React.Component {
           <TableCell>{this.renderHeader('start', 'Process Date')}</TableCell>
           <TableCell>{this.renderHeader('', 'Process Time')}</TableCell>
           <TableCell>{this.renderHeader('exposure_id', 'Exp ID')}</TableCell>
-          <TableCell>{this.renderHeader('tile', 'Tile ID')}</TableCell>
-          <TableCell>{this.renderHeader('dateobs', 'OBS Date')}</TableCell>
-          <TableCell>{this.renderHeader('', 'OBS Time')}</TableCell>
+          <TableCell>
+            {this.renderHeader('exposure__tile', 'Tile ID')}
+          </TableCell>
+          <TableCell>
+            {this.renderHeader('exposure__dateobs', 'OBS Date')}
+          </TableCell>
+          <TableCell>
+            {this.renderHeader('exposure__dateobs', 'OBS Time')}
+          </TableCell>
           <TableCell>{this.renderHeader('', 'MJD')}</TableCell>
-          <TableCell>{this.renderHeader('telra', 'RA (hms)')}</TableCell>
-          <TableCell>{this.renderHeader('teldec', 'Dec (dms)')}</TableCell>
-          <TableCell>{this.renderHeader('exptime', 'Exp Time(s)')}</TableCell>
-          <TableCell>{this.renderHeader('', 'Flavor')}</TableCell>
-          <TableCell>{this.renderHeader('', 'Airmass')}</TableCell>
+          <TableCell>
+            {this.renderHeader('exposure__telra', 'RA (hms)')}
+          </TableCell>
+          <TableCell>
+            {this.renderHeader('exposure__teldec', 'Dec (dms)')}
+          </TableCell>
+          <TableCell>
+            {this.renderHeader('exposure__exptime', 'Exp Time(s)')}
+          </TableCell>
+          <TableCell>
+            {this.renderHeader('exposure__flavor', 'Flavor')}
+          </TableCell>
+          <TableCell>
+            {this.renderHeader('exposure__airmass', 'Airmass')}
+          </TableCell>
           <TableCell>{this.renderHeader('', 'FWHM (arcsec)')}</TableCell>
           <TableCell>{this.renderHeader('', 'QA')}</TableCell>
           <TableCell>{this.renderHeader('', 'View')}</TableCell>
@@ -98,7 +114,7 @@ export default class HistoryHeader extends React.Component {
           <TableCell>{this.renderHeader('telra', 'RA (hms)')}</TableCell>
           <TableCell>{this.renderHeader('teldec', 'Dec (dms)')}</TableCell>
           <TableCell>{this.renderHeader('exptime', 'Exp Time(s)')}</TableCell>
-          <TableCell>{this.renderHeader('', 'Flavor')}</TableCell>
+          <TableCell>{this.renderHeader('flavor', 'Flavor')}</TableCell>
           <TableCell>{this.renderHeader('', 'Airmass')}</TableCell>
           <TableCell>{this.renderHeader('', 'FWHM (arcsec)')}</TableCell>
           <TableCell>{this.renderHeader('', 'QA')}</TableCell>
@@ -107,6 +123,7 @@ export default class HistoryHeader extends React.Component {
       </TableHead>
     );
   };
+
   render() {
     return this.props.type === 'process'
       ? this.renderProcessingHistoryHeader()
