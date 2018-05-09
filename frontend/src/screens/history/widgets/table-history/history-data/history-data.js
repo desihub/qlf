@@ -102,6 +102,10 @@ export default class HistoryData extends React.Component {
     );
   };
 
+  selectExposure = rowNumber => {
+    if (this.props.selectExposure) this.props.selectExposure([rowNumber]);
+  };
+
   renderObservingHistory = () => {
     const {
       processId,
@@ -124,10 +128,10 @@ export default class HistoryData extends React.Component {
       exptime,
       flavor,
       airmass,
-    } = row.exposure ? row.exposure : row;
+    } = row;
     return (
       <TableRow
-        onClick={() => this.props.selectExposure([rowNumber])}
+        onClick={() => this.selectExposure(rowNumber)}
         style={lastProcessed}
         striped={striped}
       >

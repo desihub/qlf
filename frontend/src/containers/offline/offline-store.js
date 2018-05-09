@@ -9,7 +9,8 @@ function defaultState() {
     time: '',
     exposure: '',
     processId: undefined,
-    lastProcesses: undefined,
+    recentProcesses: undefined,
+    recentExposures: undefined,
     qaTests: [],
     arm: 0,
     spectrograph: 0,
@@ -35,23 +36,40 @@ function updateDateRange(startDate, endDate) {
   return { type: 'UPDATE_DATE_RANGE', state };
 }
 
-function updateLastProcess(lastProcesses) {
-  const state = { lastProcesses };
-  return { type: 'UPDATE_LAST_PROCESSES', state };
+function updateRecentProcess(recentProcesses) {
+  const state = { recentProcesses };
+  return { type: 'UPDATE_RECENT_PROCESSES', state };
+}
+
+function updateRecentExposures(recentExposures) {
+  const state = { recentExposures };
+  return { type: 'UPDATE_RECENT_EXPOSURES', state };
 }
 
 export function fetchLastProcess() {
   return async function(dispatch, getState) {
     const { startDate, endDate } = getState().qlfOffline;
-    const lastProcesses = await QlfApi.getProcessingHistory(
+    const recentProcesses = await QlfApi.getProcessingHistory(
       startDate,
       endDate,
       '-pk',
       0,
       10
     );
-    if (lastProcesses && !lastProcesses.detail && lastProcesses.results)
-      dispatch(updateLastProcess(lastProcesses.results));
+
+    const recentExposures = await QlfApi.getObservingHistory(
+      startDate,
+      endDate,
+      '-pk',
+      0,
+      10
+    );
+
+    if (recentProcesses && !recentProcesses.detail && recentProcesses.results)
+      dispatch(updateRecentProcess(recentProcesses.results));
+
+    if (recentExposures && recentExposures.results)
+      dispatch(updateRecentExposures(recentExposures.results));
   };
 }
 
@@ -147,9 +165,13 @@ export function qlfOfflineReducers(state = defaultState(), action) {
         spectrograph: action.state.spectrograph,
         arm: action.state.arm,
       });
-    case 'UPDATE_LAST_PROCESSES':
+    case 'UPDATE_RECENT_PROCESSES':
       return Object.assign({}, state, {
-        lastProcesses: action.state.lastProcesses,
+        recentProcesses: action.state.recentProcesses,
+      });
+    case 'UPDATE_RECENT_EXPOSURES':
+      return Object.assign({}, state, {
+        recentExposures: action.state.recentExposures,
       });
     case 'UPDATE_DATE_RANGE':
       return Object.assign({}, state, {
