@@ -8,15 +8,13 @@ pipeline {
                 dir('frontend') {
                     sh 'yarn install'
                 }
-                dir('backend'){
-                    sh 'docker run -v $(pwd):/app backend_qlf down'
-                }
             }
         }
         stage('Test Backend') {
             steps {
                 dir('backend'){
-                    sh 'docker run -v $(pwd):/app backend_qlf ./test.sh'
+                    sh 'docker-compose run qlf ./test.sh'
+                    sh 'docker-compose stop'
                 }
             }
         }
