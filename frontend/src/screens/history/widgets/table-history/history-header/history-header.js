@@ -63,6 +63,7 @@ export default class HistoryHeader extends React.Component {
           <TableCell>{this.renderHeader('telra', 'RA (hms)')}</TableCell>
           <TableCell>{this.renderHeader('teldec', 'Dec (dms)')}</TableCell>
           <TableCell>{this.renderHeader('exptime', 'Exp Time(s)')}</TableCell>
+          <TableCell>{this.renderHeader('', 'Flavor')}</TableCell>
           <TableCell>{this.renderHeader('', 'Airmass')}</TableCell>
           <TableCell>{this.renderHeader('', 'FWHM (arcsec)')}</TableCell>
           <TableCell>{this.renderHeader('', 'QA')}</TableCell>
@@ -97,6 +98,7 @@ export default class HistoryHeader extends React.Component {
           <TableCell>{this.renderHeader('telra', 'RA (hms)')}</TableCell>
           <TableCell>{this.renderHeader('teldec', 'Dec (dms)')}</TableCell>
           <TableCell>{this.renderHeader('exptime', 'Exp Time(s)')}</TableCell>
+          <TableCell>{this.renderHeader('', 'Flavor')}</TableCell>
           <TableCell>{this.renderHeader('', 'Airmass')}</TableCell>
           <TableCell>{this.renderHeader('', 'FWHM (arcsec)')}</TableCell>
           <TableCell>{this.renderHeader('', 'QA')}</TableCell>

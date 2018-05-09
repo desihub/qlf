@@ -78,6 +78,7 @@ export default class HistoryData extends React.Component {
         <TableCell>{this.props.row.telra}</TableCell>
         <TableCell>{this.props.row.teldec}</TableCell>
         <TableCell>{this.props.row.exptime}</TableCell>
+        <TableCell>{this.props.row.flavor}</TableCell>
         <TableCell>{this.props.row.airmass}</TableCell>
         <TableCell />
         <TableCell>
@@ -126,6 +127,7 @@ export default class HistoryData extends React.Component {
         <TableCell>{row.telra}</TableCell>
         <TableCell>{row.teldec}</TableCell>
         <TableCell>{row.exptime}</TableCell>
+        <TableCell>{row.flavor}</TableCell>
         <TableCell>{row.airmass}</TableCell>
         <TableCell />
         <TableCell>

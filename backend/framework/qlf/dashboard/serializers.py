@@ -162,10 +162,25 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
     teldec = serializers.SerializerMethodField()
     exptime = serializers.SerializerMethodField()
     airmass = serializers.SerializerMethodField()
+    flavor = serializers.SerializerMethodField()
 
     class Meta:
         model = Process
-        fields = ('pk', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime', 'start', 'end')
+        fields = (
+            'pk',
+            'dateobs',
+            'datemjd',
+            'exposure_id',
+            'tile',
+            'telra',
+            'teldec',
+            'exptime',
+            'airmass',
+            'runtime',
+            'start',
+            'end',
+            'flavor'
+        )
 
     def get_runtime(self, obj):
         if obj.end is not None and obj.start is not None:
@@ -197,6 +212,9 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
     def get_airmass(self, obj):
         return obj.exposure.airmass
+    
+    def get_flavor(self, obj):
+        return obj.exposure.flavor
 
 
 class SingleQASerializer(DynamicFieldsModelSerializer):
@@ -230,7 +248,18 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Exposure
-        fields = ('exposure_id', 'dateobs', 'datemjd', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'last_exposure_process_id')
+        fields = (
+            'exposure_id',
+            'dateobs',
+            'datemjd',
+            'tile',
+            'telra',
+            'teldec',
+            'exptime',
+            'airmass',
+            'last_exposure_process_id',
+            'flavor'
+        )
 
     def get_datemjd(self, obj):
         time = get_date(obj.pk)

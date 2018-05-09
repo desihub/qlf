@@ -163,6 +163,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
 
     queryset = Process.objects.order_by('-pk')
     serializer_class = ProcessingHistorySerializer
+    filter_fields = ('exposure_id', 'flavor')
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -207,7 +208,7 @@ class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelV
 
     queryset = Exposure.objects.order_by('-pk')
     serializer_class = ObservingHistorySerializer
-    filter_fields = ('exposure_id',)
+    filter_fields = ('exposure_id', 'flavor')
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
