@@ -85,7 +85,7 @@ class QLFModels(object):
 
         # TODO: get configuration coming of interface
         # Make sure there is a configuration to refer to
-        if not Configuration.objects.get(name=name):
+        if not Configuration.objects.all() or not Configuration.objects.get(name=name):
             configuration = Configuration(
                 name=name,
                 configuration=default_configuration,
