@@ -14,7 +14,7 @@ pipeline {
             steps {
                 dir('backend'){
                     sh 'docker-compose run qlf ./test.sh'
-                    sh 'docker-compose down'
+                    sh 'docker-compose stop'
                 }
             }
         }
