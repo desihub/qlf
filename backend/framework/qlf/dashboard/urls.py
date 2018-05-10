@@ -15,7 +15,6 @@ api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'last_process', views.LastProcessViewSet, 'monitor')
 api_router.register(r'datatable_exposures', views.DataTableExposureViewSet, 'datatable_exposures')
-api_router.register(r'exposures_date_range', views.ExposuresDateRange, 'exposures_date_range')
 api_router.register(r'distinct_flavors',
                     views.DistinctFlavorsViewSet, 'distinct_flavors')
 api_router.register(r'exposures_date_range',
