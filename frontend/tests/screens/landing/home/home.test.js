@@ -116,6 +116,14 @@ describe('Landing Home', () => {
     expect(updateUrl).toBeCalledWith('/observing-history');
   });
 
+  it('navigates to /afternoon-planning', () => {
+    wrapper
+      .find('a')
+      .at(3)
+      .simulate('click');
+    expect(updateUrl).toBeCalledWith('/afternoon-planning');
+  });
+
   it('navigates to /', () => {
     wrapper
       .find('a')
