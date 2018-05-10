@@ -17,6 +17,7 @@ import PropTypes from 'prop-types';
 import QA from '../../screens/qa/qa';
 import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
+import UnderConstruction from '../../screens/under-construction/under-construction';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -201,6 +202,10 @@ class OfflineContainer extends Component {
           )}
         />
         <Route path="/configuration" render={() => <Configuration />} />
+        <Route
+          path="/under-construction"
+          render={() => <UnderConstruction />}
+        />
       </div>
     );
   }
