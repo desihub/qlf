@@ -118,7 +118,7 @@ class OfflineContainer extends Component {
               startDate={this.props.startDate}
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
-              lastProcesses={this.props.lastProcesses}
+              recentProcesses={this.props.recentProcesses}
               type={'process'}
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
