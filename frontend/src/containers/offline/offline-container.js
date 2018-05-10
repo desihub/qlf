@@ -52,7 +52,8 @@ class OfflineContainer extends Component {
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
-    lastProcesses: PropTypes.array,
+    recentProcesses: PropTypes.array,
+    recentExposures: PropTypes.array,
     processId: PropTypes.number,
     toggleHeader: PropTypes.func.isRequired,
     lastProcessedId: PropTypes.number,
@@ -118,7 +119,7 @@ class OfflineContainer extends Component {
               startDate={this.props.startDate}
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
-              lastProcesses={this.props.lastProcesses}
+              recentProcesses={this.props.recentProcesses}
               type={'process'}
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
@@ -134,7 +135,7 @@ class OfflineContainer extends Component {
               startDate={this.props.startDate}
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
-              lastProcesses={this.props.lastProcesses}
+              recentProcesses={this.props.recentProcesses}
               type={'process'}
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
@@ -150,7 +151,7 @@ class OfflineContainer extends Component {
               startDate={this.props.startDate}
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
-              lastProcesses={this.props.lastProcesses}
+              recentExposures={this.props.recentExposures}
               type={'exposure'}
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
@@ -222,7 +223,8 @@ export default connect(
     spectrograph: state.qlfOffline.spectrograph,
     startDate: state.qlfOffline.startDate,
     endDate: state.qlfOffline.endDate,
-    lastProcesses: state.qlfOffline.lastProcesses,
+    recentProcesses: state.qlfOffline.recentProcesses,
+    recentExposures: state.qlfOffline.recentExposures,
     processId: state.qlfOffline.processId,
     lastProcessedId: state.qlfOnline.processId,
     rowsCount: state.qlfOffline.rowsCount,
@@ -233,10 +235,10 @@ export default connect(
     navigateToMetrics: (step, spectrograph, arm) =>
       dispatch(navigateToOfflineMetrics(step, spectrograph, arm)),
     navigateToQA: () => dispatch(navigateToOfflineQA()),
-    getProcessingHistory: (start, end, order, offset, limit) =>
-      dispatch(getProcessingHistory(start, end, order, offset, limit)),
-    getObservingHistory: (start, end, order, offset, limit) =>
-      dispatch(getObservingHistory(start, end, order, offset, limit)),
+    getProcessingHistory: (start, end, order, offset, limit, filters) =>
+      dispatch(getProcessingHistory(start, end, order, offset, limit, filters)),
+    getObservingHistory: (start, end, order, offset, limit, filters) =>
+      dispatch(getObservingHistory(start, end, order, offset, limit, filters)),
     getHistoryDateRange: () => dispatch(getHistoryDateRange()),
   })
 )(OfflineContainer);

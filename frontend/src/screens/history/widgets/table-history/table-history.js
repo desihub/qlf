@@ -29,6 +29,7 @@ class TableHistory extends Component {
     asc: undefined,
     ordering: '-pk',
     offset: 0,
+    filters: '',
   };
 
   componentWillReceiveProps(nextProps) {
@@ -42,26 +43,11 @@ class TableHistory extends Component {
         nextProps.endDate,
         this.state.ordering,
         this.state.offset,
-        this.props.limit
+        this.props.limit,
+        this.state.filters
       );
     }
   }
-
-  getHistory = async ordering => {
-    const order = this.state.asc ? ordering : `-${ordering}`;
-    this.props.getHistory(
-      this.props.startDate,
-      this.props.endDate,
-      order,
-      this.state.offset,
-      this.props.limit
-    );
-    this.setState({
-      asc: !this.state.asc,
-      ordering,
-      offset: 0,
-    });
-  };
 
   selectProcessQA = pk => {
     this.props.navigateToQA(pk);
@@ -95,13 +81,43 @@ class TableHistory extends Component {
     );
   };
 
+  addOrder = ordering => {
+    const order = this.state.asc ? ordering : `-${ordering}`;
+    this.props.getHistory(
+      this.props.startDate,
+      this.props.endDate,
+      order,
+      this.state.offset,
+      this.props.limit,
+      this.state.filters
+    );
+    this.setState({
+      asc: !this.state.asc,
+      ordering,
+      offset: 0,
+    });
+  };
+
+  addFilters = filters => {
+    this.setState({ filters });
+    this.props.getHistory(
+      this.props.startDate,
+      this.props.endDate,
+      this.state.ordering,
+      this.state.offset,
+      this.props.limit,
+      filters
+    );
+  };
+
   handleChangePage = (evt, offset) => {
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
       this.state.ordering,
       offset * this.props.limit,
-      this.props.limit
+      this.props.limit,
+      this.state.filters
     );
     this.setState({ offset });
   };
@@ -112,7 +128,8 @@ class TableHistory extends Component {
       this.props.endDate,
       this.state.ordering,
       this.state.offset * this.props.limit,
-      event.target.value
+      event.target.value,
+      this.state.filters
     );
     this.props.changeLimit(event.target.value);
   };
@@ -142,7 +159,8 @@ class TableHistory extends Component {
       <div className={this.props.classes.root}>
         <Table style={{ width: 'auto', tableLayout: 'auto' }}>
           <HistoryHeader
-            getHistory={this.getHistory}
+            addOrder={this.addOrder}
+            addFilters={this.addFilters}
             type={this.props.type}
             asc={this.state.asc}
             ordering={this.state.ordering}
