@@ -43,7 +43,7 @@ function selectMetric(step, spectrograph, arm) {
 export function updateLastProcessAndMonitor(state) {
   return function(dispatch, getState) {
     if (
-      !getState().qlfOffline.lastProcesses ||
+      !getState().qlfOffline.recentProcesses ||
       getState().qlfOnline.processId !== state.processId
     ) {
       dispatch(fetchLastProcess());

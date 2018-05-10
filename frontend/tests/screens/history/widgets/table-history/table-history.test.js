@@ -11,26 +11,30 @@ configure({ adapter: new Adapter() });
 const rows = [
   {
     pk: 69,
-    dateobs: '2019-01-01T22:00:00Z',
+    exposure: {
+      dateobs: '2019-01-01T22:00:00Z',
+      exposure_id: 3,
+      tile: 6,
+      telra: 333.22,
+      teldec: 14.84,
+      exptime: 1000,
+      airmass: null,
+    },
     datemjd: 58484.916666666664,
-    exposure_id: 3,
-    tile: 6,
-    telra: 333.22,
-    teldec: 14.84,
-    exptime: 1000,
-    airmass: null,
     runtime: '110.648429',
   },
   {
     pk: 70,
-    dateobs: '2019-01-01T22:00:00Z',
+    exposure: {
+      dateobs: '2019-01-01T22:00:00Z',
+      exposure_id: 4,
+      tile: 7,
+      telra: 332.35,
+      teldec: 12.32,
+      exptime: 1000,
+      airmass: null,
+    },
     datemjd: 58484.916666666664,
-    exposure_id: 4,
-    tile: 7,
-    telra: 332.35,
-    teldec: 12.32,
-    exptime: 1000,
-    airmass: null,
     runtime: '96.254038',
   },
 ];
@@ -89,10 +93,11 @@ describe('TableHistory Controls', () => {
   //   expect(getHistoryOrdered).toBeCalledWith('-pk');
   // });
 
-  it('calls navigateToQA', () => {
-    wrapper
+  it('calls navigateToQA', async () => {
+    await wrapper
+      .find('TableCell')
+      .at(32)
       .find('span')
-      .at(16)
       .simulate('click');
     expect(navigateToQA).toBeCalledWith(69);
   });

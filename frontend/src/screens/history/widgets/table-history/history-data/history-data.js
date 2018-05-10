@@ -70,15 +70,20 @@ export default class HistoryData extends React.Component {
         <TableCell>{this.props.row.pk}</TableCell>
         <TableCell>{this.formatDate(this.props.row.start)}</TableCell>
         <TableCell>{this.props.row.runtime}</TableCell>
-        <TableCell>{this.props.row.exposure_id}</TableCell>
-        <TableCell>{this.props.row.tile}</TableCell>
-        <TableCell>{this.formatDate(this.props.row.dateobs)}</TableCell>
-        <TableCell>{this.formatTime(this.props.row.dateobs)}</TableCell>
+        <TableCell>{this.props.row.exposure.exposure_id}</TableCell>
+        <TableCell>{this.props.row.exposure.tile}</TableCell>
+        <TableCell>
+          {this.formatDate(this.props.row.exposure.dateobs)}
+        </TableCell>
+        <TableCell>
+          {this.formatTime(this.props.row.exposure.dateobs)}
+        </TableCell>
         <TableCell>{this.props.row.datemjd.toFixed(2)}</TableCell>
-        <TableCell>{this.props.row.telra}</TableCell>
-        <TableCell>{this.props.row.teldec}</TableCell>
-        <TableCell>{this.props.row.exptime}</TableCell>
-        <TableCell>{this.props.row.airmass}</TableCell>
+        <TableCell>{this.props.row.exposure.telra}</TableCell>
+        <TableCell>{this.props.row.exposure.teldec}</TableCell>
+        <TableCell>{this.props.row.exposure.exptime}</TableCell>
+        <TableCell>{this.props.row.exposure.flavor}</TableCell>
+        <TableCell>{this.props.row.exposure.airmass}</TableCell>
         <TableCell />
         <TableCell>
           {this.renderViewQA(lastProcessed, this.props.row.runtime)}
@@ -97,6 +102,10 @@ export default class HistoryData extends React.Component {
     );
   };
 
+  selectExposure = rowNumber => {
+    if (this.props.selectExposure) this.props.selectExposure([rowNumber]);
+  };
+
   renderObservingHistory = () => {
     const {
       processId,
@@ -110,23 +119,34 @@ export default class HistoryData extends React.Component {
     const lastProcessed = lastProcessedId === processId ? styles.bold : null;
     const selectedExposure =
       selectedExposures && selectedExposures.includes(rowNumber);
+    const {
+      exposure_id,
+      tile,
+      dateobs,
+      telra,
+      teldec,
+      exptime,
+      flavor,
+      airmass,
+    } = row;
     return (
       <TableRow
-        onClick={() => this.props.selectExposure([rowNumber])}
+        onClick={() => this.selectExposure(rowNumber)}
         style={lastProcessed}
         striped={striped}
       >
         {this.renderCheckbox(selectedExposure)}
         <TableCell />
-        <TableCell>{row.exposure_id}</TableCell>
-        <TableCell>{row.tile}</TableCell>
-        <TableCell>{this.formatDate(row.dateobs)}</TableCell>
-        <TableCell>{this.formatTime(row.dateobs)}</TableCell>
+        <TableCell>{exposure_id}</TableCell>
+        <TableCell>{tile}</TableCell>
+        <TableCell>{this.formatDate(dateobs)}</TableCell>
+        <TableCell>{this.formatTime(dateobs)}</TableCell>
         <TableCell>{row.datemjd.toFixed(2)}</TableCell>
-        <TableCell>{row.telra}</TableCell>
-        <TableCell>{row.teldec}</TableCell>
-        <TableCell>{row.exptime}</TableCell>
-        <TableCell>{row.airmass}</TableCell>
+        <TableCell>{telra}</TableCell>
+        <TableCell>{teldec}</TableCell>
+        <TableCell>{exptime}</TableCell>
+        <TableCell>{flavor}</TableCell>
+        <TableCell>{airmass}</TableCell>
         <TableCell />
         <TableCell>
           <span style={styles.link} onClick={() => selectProcessQA(processId)}>

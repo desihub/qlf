@@ -13,7 +13,7 @@ from .serializers import (
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     SingleQASerializer, ObservingHistorySerializer,
-    ExposuresDateRangeSerializer
+    ExposuresDateRangeSerializer, ExposureFlavorSerializer
 )
 import Pyro4
 from datetime import datetime, timedelta
@@ -163,12 +163,32 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
 
     queryset = Process.objects.order_by('-pk')
     serializer_class = ProcessingHistorySerializer
+    filter_fields = (
+        'exposure_id',
+        'exposure__tile',
+        'exposure__telra',
+        'exposure__night',
+        'exposure__exptime',
+        'exposure__flavor',
+        'exposure__dateobs',
+        'exposure__airmass',
+        'exposure__teldec')
+    ordering_fields = (
+        'pk',
+        'exposure_id',
+        'exposure__tile',
+        'exposure__telra',
+        'exposure__night',
+        'exposure__exptime',
+        'exposure__flavor',
+        'exposure__dateobs',
+        'exposure__airmass',
+        'exposure__teldec')
 
-    # Added to order SerializerMethodFields
+    # Added to filter datemin and datemax
     def list(self, request, *args, **kwargs):
         response = super(ProcessingHistoryViewSet, self).list(
             request, args, kwargs)
-        ordering = request.query_params.get('ordering')
         datemin = request.query_params.get('datemin')
         datemax = request.query_params.get('datemax')
         queryset = self.filter_queryset(self.get_queryset())
@@ -182,15 +202,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
             except:
                 response.data['results'] = {"Error": 'wrong date format'}
                 return response
-        if ordering and ordering[0] == '-':
-            prefix_order = '-'
-            standard_ordering = ordering[1:]
-        else:
-            prefix_order = ''
-            standard_ordering = ordering
-        if ordering and standard_ordering not in ('-pk', 'pk', 'exposure_id', '-exposure_id', 'start', '-start'):
-            order_by = '{}exposure__{}'.format(prefix_order, standard_ordering)
-            queryset = queryset.order_by(order_by)
+
         if self.pagination_class:
             page = self.paginate_queryset(queryset)
 
@@ -207,7 +219,7 @@ class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelV
 
     queryset = Exposure.objects.order_by('-pk')
     serializer_class = ObservingHistorySerializer
-    filter_fields = ('exposure_id',)
+    filter_fields = ('exposure_id', 'flavor')
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -293,6 +305,13 @@ class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
     filter_fields = ('exposure_id',)
+
+
+class DistinctFlavorsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing exposures flavors"""
+
+    queryset = Exposure.objects.all().distinct('flavor')
+    serializer_class = ExposureFlavorSerializer
 
 
 class LoadScalarMetrics(viewsets.ReadOnlyModelViewSet):

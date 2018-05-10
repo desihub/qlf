@@ -53,7 +53,7 @@ describe('History Controls', () => {
           getHistory={getHistory}
           navigateToQA={navigateToQA}
           getHistoryOrdered={getHistoryOrdered}
-          type={'process'}
+          type={'exposure'}
         />
       </MuiThemeProvider>
     );

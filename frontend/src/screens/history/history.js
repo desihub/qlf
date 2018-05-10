@@ -9,7 +9,6 @@ import FontIcon from 'material-ui/FontIcon';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import QlfApi from '../../containers/offline/connection/qlf-api';
-import _ from 'lodash';
 
 const styles = {
   card: {
@@ -27,7 +26,8 @@ export default class History extends Component {
     rows: PropTypes.array.isRequired,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
-    lastProcesses: PropTypes.array,
+    recentProcesses: PropTypes.array,
+    recentExposures: PropTypes.array,
     type: PropTypes.string.isRequired,
     lastProcessedId: PropTypes.number,
     rowsCount: PropTypes.number,
@@ -70,18 +70,36 @@ export default class History extends Component {
     }
   }
 
-  renderLastProcesses = () => {
-    let lastProcesses = this.props.lastProcesses
-      ? this.props.lastProcesses
+  renderRecentProcesses = () => {
+    const recentProcesses = this.props.recentProcesses
+      ? this.props.recentProcesses
       : [];
-    if (this.props.type === 'exposure')
-      lastProcesses = _.uniq(lastProcesses.map(lp => lp.exposure_id)).map(exp =>
-        _.maxBy(lastProcesses.filter(lp => lp.exposure_id === exp), 'pk')
-      );
     return (
       <TableHistory
         getHistory={this.props.getHistory}
-        rows={lastProcesses}
+        rows={recentProcesses}
+        navigateToQA={this.props.navigateToQA}
+        type={this.props.type}
+        selectable={false}
+        orderable={false}
+        startDate={this.state.startDate}
+        endDate={this.state.endDate}
+        lastProcessedId={this.props.lastProcessedId}
+        changeLimit={this.changeLimit}
+        limit={this.state.limit}
+      />
+    );
+  };
+
+  renderRecentExposures = () => {
+    const recentExposures = this.props.recentExposures
+      ? this.props.recentExposures
+      : [];
+
+    return (
+      <TableHistory
+        getHistory={this.props.getHistory}
+        rows={recentExposures}
         navigateToQA={this.props.navigateToQA}
         type={this.props.type}
         selectable={false}
@@ -241,7 +259,9 @@ export default class History extends Component {
         <Card style={styles.card}>
           <Tabs value={this.state.value} onChange={this.handleChange}>
             <Tab label="Most Recent" value="last">
-              {this.renderLastProcesses()}
+              {this.props.type === 'process'
+                ? this.renderRecentProcesses()
+                : this.renderRecentExposures()}
             </Tab>
             <Tab label="History" value="history">
               {this.renderToolbar()}
