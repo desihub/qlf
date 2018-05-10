@@ -17,9 +17,6 @@ api_router.register(r'last_process', views.LastProcessViewSet, 'monitor')
 api_router.register(r'datatable_exposures', views.DataTableExposureViewSet, 'datatable_exposures')
 api_router.register(r'distinct_flavors',
                     views.DistinctFlavorsViewSet, 'distinct_flavors')
-api_router.register(r'exposures_date_range',
-                    views.ExposuresDateRange, 'exposures_date_range')
-api_router.register(r'load_scalar_metrics', views.LoadScalarMetrics, 'load_scalar_metrics')
 api_router.register(r'processing_history', views.ProcessingHistoryViewSet, 'processing_history')
 api_router.register(r'observing_history', views.ObservingHistoryViewSet, 'observing_history')
 api_router.register(r'single_qa', views.SingleQAViewSet, 'single_qa')
