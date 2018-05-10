@@ -109,6 +109,22 @@ class OfflineContainer extends Component {
       <div>
         {this.renderLoading()}
         <Route
+          path="/afternoon-planning"
+          render={() => (
+            <History
+              getHistory={this.props.getProcessingHistory}
+              rows={this.props.rows}
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
+              navigateToQA={this.navigateToQA}
+              lastProcesses={this.props.lastProcesses}
+              type={'process'}
+              lastProcessedId={this.props.lastProcessedId}
+              rowsCount={this.props.rowsCount}
+            />
+          )}
+        />
+        <Route
           path="/processing-history"
           render={() => (
             <History
