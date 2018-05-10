@@ -76,7 +76,10 @@ export default class Home extends React.Component {
               subtitle="Display time series plots for QA metrics, list of exposures and observed targets for the current night of for a range of nights"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/afternoon-planning')}
+          >
             <Card
               icon="BrightnessMedium"
               title="Afternoon Planning"

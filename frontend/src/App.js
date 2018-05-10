@@ -63,6 +63,8 @@ class App extends React.Component {
         return '- Processing History';
       case '/observing-history':
         return '- Observing History';
+      case '/afternoon-planning':
+        return '- Afternoon Planning';
       default:
         return '';
     }
