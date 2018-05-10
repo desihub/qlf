@@ -129,24 +129,24 @@ describe('Landing Home', () => {
       .find('a')
       .at(4)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/under-construction');
     updateUrl.mockReset();
     wrapper
       .find('a')
       .at(5)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/under-construction');
     updateUrl.mockReset();
     wrapper
       .find('a')
       .at(6)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/under-construction');
     updateUrl.mockReset();
     wrapper
       .find('a')
       .at(7)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/under-construction');
   });
 });

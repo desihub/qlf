@@ -88,28 +88,40 @@ export default class Home extends React.Component {
           </a>
         </div>
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/under-construction')}
+          >
             <Card
               icon="TrendingUp"
               title="Trend Analysis"
               subtitle="Simple plots using quantities stored in the database"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/under-construction')}
+          >
             <Card
               icon="Cloud"
               title="Sky Conditions"
               subtitle="Display sky conditions such as atmospheric transparency, seeing, and sky background from the GFA camera"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/under-construction')}
+          >
             <Card
               icon="Assignment"
               title="Survey Reports"
               subtitle="Show the overall progress and performance of survey"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/under-construction')}
+          >
             <Card
               icon="ViewModule"
               title="Configuration"
