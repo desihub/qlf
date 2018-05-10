@@ -384,13 +384,12 @@ class LoadMetrics:
         except:
             return None
 
-    def save_qa_tests(self):
+    def load_qa_tests(self):
         try:
             preproc = self.get_qa_metric_color('preproc')
             extract = self.get_qa_metric_color('extract')
             fiberfl = self.get_qa_metric_color('fiberfl')
             skysubs = self.get_qa_metric_color('skysubs')
-
             qa_tests = {'preproc': preproc, 'extract': extract,
                         'fiberfl': fiberfl, 'skysubs': skysubs}
             return qa_tests

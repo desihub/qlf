@@ -78,7 +78,7 @@ class Monitoring(object):
     def is_running(self):
         running = False
 
-        if self.monitoring and self.monitoring.processing.is_alive():
+        if self.monitoring and self.monitoring.processing and self.monitoring.processing.is_alive():
             running = True
 
         return running
@@ -87,21 +87,20 @@ class Monitoring(object):
         # TODO: improvements
         return None
 
-    @staticmethod
-    def qa_tests(process_id):
+    def qa_tests(self, process_id):
         qa_tests = list()
         for job in QLFModels().get_jobs_by_process_id(process_id):
             try:
                 process = job.process
                 exposure = process.exposure
-                lm = LoadMetrics(job.camera_id, process.exposure_id, exposure.night)
+                lm = LoadMetrics(process_id, job.camera_id, process.exposure_id, exposure.night)
                 qa_tests.append({job.camera_id: lm.load_qa_tests()})
-            except:
+            except Exception as err:
+                logger.error(err)
                 logger.error('qa_tests error camera %s' % job.camera)
         return qa_tests
 
-    @staticmethod
-    def load_scalar_metrics(process_id, cam):
+    def load_scalar_metrics(self, process_id, cam):
         scalar_metrics = dict()
         try:
             process = QLFModels().get_process_by_process_id(process_id)
@@ -109,8 +108,9 @@ class Monitoring(object):
             lm = LoadMetrics(process_id, cam, process.exposure_id, exposure.night)
             scalar_metrics['metrics'] = lm.metrics
             scalar_metrics['tests'] = lm.tests
-        except:
-            print('load_scalar_metrics error')
+        except Exception as err:
+            logger.error(err)
+            logger.error('load_scalar_metrics error')
         return scalar_metrics
 
 
