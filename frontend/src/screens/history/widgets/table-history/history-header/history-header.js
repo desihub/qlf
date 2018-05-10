@@ -5,16 +5,28 @@ import { TableCell, TableHead, TableRow } from 'material-ui-next/Table';
 import Checkbox from 'material-ui-next/Checkbox';
 import Icon from 'material-ui-next/Icon';
 import Popover from 'material-ui-next/Popover';
-import Typography from 'material-ui-next/Typography';
 import QlfApi from '../../../../../containers/offline/connection/qlf-api';
+import Radio, { RadioGroup } from 'material-ui-next/Radio';
+import { FormControlLabel } from 'material-ui-next/Form';
 
 const styles = {
   arrow: { display: 'flex', alignItems: 'center' },
   header: { cursor: 'pointer', color: 'black' },
+  headerRecent: { color: 'black' },
+  radioGroup: { margin: '1em' },
 };
 
 export default class HistoryHeader extends React.Component {
   static muiName = 'TableHead';
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      flavors: undefined,
+      selectedFlavor: 'none',
+    };
+  }
+
   static propTypes = {
     type: PropTypes.string.isRequired,
     addOrder: PropTypes.func.isRequired,
@@ -26,17 +38,17 @@ export default class HistoryHeader extends React.Component {
     selectExposure: PropTypes.func,
   };
 
-  state = {
-    flavor: undefined,
-  };
-
   componentWillMount() {
-    this.getFlavors();
+    if (this.props.orderable) this.getFlavors();
   }
 
   getFlavors = async () => {
     const flavors = await QlfApi.getFlavors();
-    this.setState({ flavors });
+    if (flavors && flavors.results) {
+      this.setState({
+        flavors: flavors.results.map(f => f.flavor),
+      });
+    }
   };
 
   renderArrow = id => {
@@ -55,22 +67,28 @@ export default class HistoryHeader extends React.Component {
   };
 
   renderHeader = (id, name) => {
+    const headerStyle = this.props.orderable
+      ? styles.header
+      : styles.headerRecent;
     return (
       <div style={styles.arrow}>
-        <span style={styles.header} onClick={() => this.fetchOrder(id)}>
+        <span style={headerStyle} onClick={() => this.fetchOrder(id)}>
           {name}
         </span>
         {this.props.orderable ? this.renderArrow(id) : null}
-        {this.renderFilter(id)}
-        {this.renderPopOver()}
+        {this.props.orderable ? this.renderFilter(id) : null}
+        {this.props.orderable ? this.renderPopOver(id) : null}
       </div>
     );
   };
 
-  renderFilter = id => {
-    if (id === 'exposure__flavor') {
+  renderFilter = filter => {
+    if (filter === 'exposure__flavor' || filter === 'flavor') {
       return (
-        <Icon onClick={this.handleClick} style={{ fontSize: 20 }}>
+        <Icon
+          onClick={event => this.handleFilterClick(event, filter)}
+          style={{ fontSize: 20 }}
+        >
           filter_list
         </Icon>
       );
@@ -81,13 +99,14 @@ export default class HistoryHeader extends React.Component {
     anchorEl: null,
   };
 
-  handleClick = event => {
+  handleFilterClick = (event, filter) => {
     this.setState({
       anchorEl: event.currentTarget,
+      filter,
     });
   };
 
-  handleClose = () => {
+  handlePopOverClose = () => {
     this.setState({
       anchorEl: null,
     });
@@ -98,7 +117,7 @@ export default class HistoryHeader extends React.Component {
       <Popover
         open={Boolean(this.state.anchorEl)}
         anchorEl={this.state.anchorEl}
-        onClose={this.handleClose}
+        onClose={this.handlePopOverClose}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
@@ -109,11 +128,44 @@ export default class HistoryHeader extends React.Component {
         }}
         elevation={1}
       >
-        <Typography style={{ margin: '3em' }}>
-          The content of the Popover.
-        </Typography>
+        {this.renderRadioGroup()}
       </Popover>
     );
+  };
+
+  renderRadioGroup = () => {
+    return (
+      <RadioGroup
+        name="flavor"
+        style={styles.radioGroup}
+        value={this.state.selectedFlavor}
+        onChange={this.handleRadioChange}
+      >
+        {this.state.flavors
+          ? this.state.flavors.map(f => {
+              return (
+                <FormControlLabel
+                  key={f}
+                  value={`${this.state.filter}=${f}`}
+                  control={<Radio />}
+                  label={f}
+                />
+              );
+            })
+          : null}
+        <FormControlLabel value="none" control={<Radio />} label="none" />
+      </RadioGroup>
+    );
+  };
+
+  handleRadioChange = evt => {
+    const selectedFlavor = evt.target.value;
+    this.setState({ selectedFlavor });
+    if (selectedFlavor === 'none') {
+      this.props.addFilters('');
+    } else {
+      this.props.addFilters(`${selectedFlavor}`);
+    }
   };
 
   renderProcessingHistoryHeader = () => {
