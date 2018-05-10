@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import authentication, permissions, viewsets, filters, status, views
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
-
+import json
 
 from django.db.models import Max, Min
 from django.db.models import Q
@@ -263,9 +263,13 @@ class ProcessViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
 class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing configurations"""
-
+    permission_classes = (permissions.AllowAny,)
     queryset = Configuration.objects.order_by('creation_date')
     serializer_class = ConfigurationSerializer
+
+    def create(self, request):
+        response = super(ConfigurationViewSet, self).create(request)
+        return response
 
 
 class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
