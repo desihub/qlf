@@ -225,7 +225,6 @@ plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=False)
 key_name = 'snr'
 info, nlines = write_info(key_name, tests[key_name])
 txt = PreText(text=info, height=nlines*20)
-# p2txt = column(widgetbox(txt),p2)
 info_col = Div(text=write_description('snr'), width=2*star_plot.plot_width)
 layout = column(widgetbox(info_col), plot)
 
