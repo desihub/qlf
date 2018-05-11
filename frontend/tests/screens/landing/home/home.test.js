@@ -147,6 +147,6 @@ describe('Landing Home', () => {
       .find('a')
       .at(7)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/under-construction');
+    expect(updateUrl).toBeCalledWith('/configuration');
   });
 });

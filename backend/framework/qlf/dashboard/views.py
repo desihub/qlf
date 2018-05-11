@@ -280,6 +280,58 @@ class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelView
     serializer_class = ConfigurationSerializer
 
 
+class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(CurrentConfigurationViewSet, self).list(
+            request, args, kwargs)
+        current_configuration = qlf.get_current_configuration()
+        response.data = {'results': current_configuration}
+        return response
+
+
+class DefaultConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(DefaultConfigurationViewSet, self).list(
+            request, args, kwargs)
+        default_configuration = qlf.get_default_configuration()
+        response.data = {'results': default_configuration}
+        return response
+
+class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(QlConfigViewSet, self).list(
+            request, args, kwargs)
+        qlconfig = qlf.get_qlconfig()
+        response.data = qlconfig
+        return response
+
+
+class SetConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(SetConfigurationViewSet, self).list(
+            request, args, kwargs)
+        configuration = request.GET.get('configuration')
+        if configuration is not None:
+            qlf.set_current_configuration(configuration)
+            response.data = {'status': 'Configuration set'}
+            return response
+        else:
+            response.data = {'Error': 'Missing configuration'}
+            return response
+
+
 class QAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing QA results"""
 
@@ -314,12 +366,12 @@ class DistinctFlavorsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelVi
     serializer_class = ExposureFlavorSerializer
 
 
-class LoadScalarMetrics(viewsets.ReadOnlyModelViewSet):
+class LoadScalarMetricsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Process.objects.none()
     serializer_class = ProcessSerializer
 
     def list(self, request, *args, **kwargs):
-        response = super(LoadScalarMetrics, self).list(
+        response = super(LoadScalarMetricsViewSet, self).list(
             request, args, kwargs)
         process_id = request.GET.get('process_id')
         cam = request.GET.get('cam')
@@ -332,29 +384,29 @@ class LoadScalarMetrics(viewsets.ReadOnlyModelViewSet):
             return response
 
 
-class AddExposure(viewsets.ReadOnlyModelViewSet):
+class AddExposureViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Process.objects.none()
     serializer_class = ProcessSerializer
 
     def list(self, request, *args, **kwargs):
-        response = super(AddExposure, self).list(
+        response = super(AddExposureViewSet, self).list(
             request, args, kwargs)
         exposure_id = request.GET.get('exposure_id')
         if exposure_id is not None:
-            load_scalar_metrics = qlf.add_exposures([exposure_id])
-            reponse.data = {'status': 'Exposure added to queue'}
+            qlf.add_exposures([exposure_id])
+            response.data = {'status': 'Exposure added to queue'}
             return response
         else:
             response.data = {'Error': 'Missing exposure_id'}
             return response
 
 
-class ExposuresDateRange(viewsets.ReadOnlyModelViewSet):
+class ExposuresDateRangeViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing exposures date range"""
     queryset = Exposure.objects.order_by('exposure_id')
 
     def list(self, request, *args, **kwargs):
-        response = super(ExposuresDateRange, self).list(
+        response = super(ExposuresDateRangeViewSet, self).list(
             request, args, kwargs)
         queryset = self.get_queryset()
         start_date = queryset.aggregate(Min('dateobs'))['dateobs__min']

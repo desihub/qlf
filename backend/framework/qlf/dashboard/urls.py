@@ -15,17 +15,29 @@ api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'last_process', views.LastProcessViewSet, 'monitor')
 api_router.register(r'datatable_exposures', views.DataTableExposureViewSet, 'datatable_exposures')
-api_router.register(r'add_exposure', views.AddExposure, 'add_exposure')
-api_router.register(r'exposures_date_range', views.ExposuresDateRange, 'exposures_date_range')
 api_router.register(r'distinct_flavors',
                     views.DistinctFlavorsViewSet, 'distinct_flavors')
-api_router.register(r'exposures_date_range',
-                    views.ExposuresDateRange, 'exposures_date_range')
-api_router.register(r'load_scalar_metrics', views.LoadScalarMetrics, 'load_scalar_metrics')
 api_router.register(r'processing_history', views.ProcessingHistoryViewSet, 'processing_history')
 api_router.register(r'observing_history', views.ObservingHistoryViewSet, 'observing_history')
 api_router.register(r'single_qa', views.SingleQAViewSet, 'single_qa')
+api_router.register(r'qlconfig', views.QlConfigViewSet, 'qlconfig')
 api_router.register(r'configuration', views.ConfigurationViewSet)
+api_router.register(r'current_configuration',
+                    views.CurrentConfigurationViewSet, 'current_configuration')
+api_router.register(r'set_configuration',
+                    views.SetConfigurationViewSet,
+                    'set_configuration')
+api_router.register(r'default_configuration',
+                    views.DefaultConfigurationViewSet, 'default_configuration')
+api_router.register(r'qa', views.QAViewSet)
+api_router.register(r'exposure', views.ExposureViewSet)
+api_router.register(r'datatable_exposures', views.DataTableExposureViewSet, 'datatable_exposures')
+api_router.register(r'camera', views.CameraViewSet)
+api_router.register(r'exposures_date_range',
+                    views.ExposuresDateRangeViewSet, 'exposures_date_range')
+api_router.register(r'load_scalar_metrics',
+                    views.LoadScalarMetricsViewSet, 'load_scalar_metrics')
+api_router.register(r'add_exposure', views.AddExposureViewSet, 'add_exposure')
 api_router.register(r'current_process',
                     views.CurrentProcessViewSet, 'current_process')
 

@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+import sys
 
 
 class Exposure(models.Model):
@@ -27,6 +28,17 @@ class Exposure(models.Model):
                                 help_text='Exposure time')
 
 
+class Configuration(models.Model):
+    """Configuration information"""
+
+    name = models.CharField(max_length=45, default='QLF',
+                            help_text='Name of the configuration.',
+                            primary_key=True)
+    configuration = JSONField(default={}, help_text='Configuration used.')
+    creation_date = models.DateTimeField(auto_now=True,
+                                         help_text='Datetime when the configuration was created')
+
+
 class Process(models.Model):
     """Process information"""
 
@@ -46,15 +58,8 @@ class Process(models.Model):
     status = models.SmallIntegerField(default=STATUS_OK,
                                       help_text='Process status, 0=OK, 1=Failed')
     exposure = models.ForeignKey(Exposure, related_name='process_exposure')
-
-
-class Configuration(models.Model):
-    """Configuration information"""
-
-    configuration = JSONField(help_text='Configuration used.')
-    creation_date = models.DateTimeField(auto_now=True,
-                                         help_text='Datetime when the configuration was created')
-    process = models.ForeignKey(Process, related_name='configuration_process')
+    configuration = models.ForeignKey(
+        Configuration, related_name='process_configuration')
 
 
 class Camera(models.Model):

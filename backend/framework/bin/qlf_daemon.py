@@ -11,6 +11,7 @@ from log import setup_logger
 from procutil import kill_proc_tree
 from qlf_pipeline import Jobs as QLFPipeline
 from scalar_metrics import LoadMetrics
+from qlf_configuration import QLFConfiguration
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -22,6 +23,8 @@ loglevel = cfg.get("main", "loglevel")
 
 logger = setup_logger("icslogger", logfile, loglevel)
 mainlogger = setup_logger("main_logger", "main_daemon.log", loglevel)
+
+QLFConfiguration = QLFConfiguration()
 
 
 class QLFAutoRun(Process):
@@ -71,7 +74,7 @@ class QLFAutoRun(Process):
             self.running.set()
 
             try:
-                ql = QLFPipeline(exposure)
+                ql = QLFPipeline(exposure, QLFConfiguration.get_current_configuration())
                 self.process_id.value = ql.start_process()
                 ql.start_jobs()
                 ql.finish_process()
@@ -126,7 +129,7 @@ class QLFManualRun(Process):
 
             self.running.set()
             self.current_exposure = exposure
-            ql = QLFPipeline(self.current_exposure)
+            ql = QLFPipeline(self.current_exposure, QLFConfiguration.get_current_configuration())
             mainlogger.info('Executing expid {}...'.format(exposure.get('expid')))
             ql.start_process()
             ql.start_jobs()
@@ -228,6 +231,25 @@ class QLFAutomatic(object):
         except:
             print('load_scalar_metrics error')
         return scalar_metrics
+
+    def get_last_configuration(self):
+        return QLFConfiguration.get_last_configuration()
+
+    def get_current_configuration(self):
+        return QLFConfiguration.get_current_configuration().configuration
+
+    def get_default_configuration(self):
+        return QLFConfiguration.get_default_configuration()
+
+    def set_current_configuration(self, configuration):
+        return QLFConfiguration.set_current_configuration(configuration)
+
+    def get_qlconfig(self):
+        try:
+            file = open(QLFConfiguration.get_current_configuration().configuration['qlconfig'])
+            return file.read()
+        except:
+            return 'Error reading qlconfig'
 
 # TODO: refactor QLFManual
 @Pyro4.expose

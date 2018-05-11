@@ -55,7 +55,7 @@ class QLFModels(object):
         # Save Process for this exposure
         return Exposure.objects.get(exposure_id=expid)
 
-    def insert_process(self, data, pipeline_name):
+    def insert_process(self, data, pipeline_name, configuration):
         """ Inserts initial data in process table. """
 
         exposure = self.insert_exposure(
@@ -71,6 +71,7 @@ class QLFModels(object):
 
         process = Process(
             exposure_id=exposure.exposure_id,
+            configuration_id=configuration.pk,
             start=data.get('start'),
             pipeline_name=pipeline_name
         )
@@ -79,26 +80,20 @@ class QLFModels(object):
 
         return process
 
-    def insert_config(self, process_id):
+    def insert_config(self, name, default_configuration):
         """ Inserts used configuration. """
 
         # TODO: get configuration coming of interface
         # Make sure there is a configuration to refer to
-        if not Configuration.objects.all():
-            config_file = open('../qlf/static/ql.json', 'r')
-            config_str = config_file.read()
-            config_file.close()
-
-            config_json = self.jsonify(json.loads(config_str))
-
+        if not Configuration.objects.all() or not Configuration.objects.get(name=name):
             configuration = Configuration(
-                configuration=config_json,
-                process_id=process_id
+                name=name,
+                configuration=default_configuration,
             )
 
             configuration.save()
 
-        return Configuration.objects.latest('pk')
+        return Configuration.objects.get(name=name)
 
     def insert_camera(self, camera):
         """ Inserts used camera. """
@@ -215,6 +210,9 @@ class QLFModels(object):
             job_id=job_id
         )
         qa.save()
+
+    def get_last_configuration(self):
+        return Configuration.objects.latest('pk')
 
     def get_qa(self, process_id, cam, qa_name):
         """ Gets QA """

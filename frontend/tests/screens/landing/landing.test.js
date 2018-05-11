@@ -6,12 +6,11 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { BrowserRouter as Router } from 'react-router-dom';
-import sinon from 'sinon';
 
 configure({ adapter: new Adapter() });
 
 describe('Landing', () => {
-  const func = sinon.spy();
+  const func = jest.fn();
   let landing, wrapper;
 
   beforeEach(() => {
