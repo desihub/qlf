@@ -11,7 +11,7 @@ from scalar_metrics import LoadMetrics
 from qlf_models import QLFModels
 
 from clients import EXPOSURE_MONITORING_NS, EXPOSURE_GENERATOR_NS, PYRO_HOST, PYRO_PORT
-from clients import get_exposure_generator, get_exposure_monitoring
+from clients import get_exposure_generator
 
 cfg = get_config()
 loglevel = cfg.get("main", "loglevel")

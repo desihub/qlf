@@ -7,6 +7,7 @@ from log import get_logger
 from qlf_pipeline import QLFProcess
 from clients import get_exposure_generator
 from threading import Thread
+from qlf_configuration import QLFConfiguration
 
 cfg = get_config()
 
@@ -14,6 +15,8 @@ logfile = cfg.get("main", "logfile")
 loglevel = cfg.get("main", "loglevel")
 
 logger = get_logger("monitoring", logfile, loglevel)
+
+configuration = QLFConfiguration()
 
 
 class ExposureMonitoring(Process):
@@ -49,9 +52,9 @@ class ExposureMonitoring(Process):
 
             logger.debug('Exposure ID {} was obtained'.format(exposure.get('expid')))
 
-            if self.db_last_exposure.exposure_id == int(exposure.get('expid')):
-                logger.debug('Exposure ID {} has already been ingested.'.format(str(exposure.get('expid'))))
-                continue
+            # if self.db_last_exposure.exposure_id == int(exposure.get('expid')):
+            #     logger.debug('Exposure ID {} has already been ingested.'.format(str(exposure.get('expid'))))
+            #     continue
 
             # records exposure in database
             self.db_last_exposure = QLFModels().insert_exposure(
@@ -96,7 +99,7 @@ class ExposureMonitoring(Process):
 def process_run(exposure, process_id):
     """ """
 
-    qlf_process = QLFProcess(exposure)
+    qlf_process = QLFProcess(exposure, configuration.get_current_configuration())
     process_id.value = qlf_process.start_process()
     qlf_process.start_jobs()
     qlf_process.finish_process()
