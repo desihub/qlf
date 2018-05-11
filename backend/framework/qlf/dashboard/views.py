@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import authentication, permissions, viewsets, filters, status, views
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
-
+import json
 
 from django.db.models import Max, Min
 from django.db.models import Q
@@ -275,9 +275,65 @@ class ProcessViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
 class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing configurations"""
-
+    permission_classes = (permissions.AllowAny,)
     queryset = Configuration.objects.order_by('creation_date')
     serializer_class = ConfigurationSerializer
+
+    def create(self, request):
+        response = super(ConfigurationViewSet, self).create(request)
+        return response
+
+
+class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(CurrentConfigurationViewSet, self).list(
+            request, args, kwargs)
+        current_configuration = qlf.get_current_configuration()
+        response.data = {'results': current_configuration}
+        return response
+
+
+class DefaultConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(DefaultConfigurationViewSet, self).list(
+            request, args, kwargs)
+        default_configuration = qlf.get_default_configuration()
+        response.data = {'results': default_configuration}
+        return response
+
+class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(QlConfigViewSet, self).list(
+            request, args, kwargs)
+        qlconfig = qlf.get_qlconfig()
+        response.data = qlconfig
+        return response
+
+
+class SetConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(SetConfigurationViewSet, self).list(
+            request, args, kwargs)
+        configuration = request.GET.get('configuration')
+        if configuration is not None:
+            qlf.set_current_configuration(configuration)
+            response.data = {'status': 'Configuration set'}
+            return response
+        else:
+            response.data = {'Error': 'Missing configuration'}
+            return response
 
 
 class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
