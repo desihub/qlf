@@ -9,7 +9,6 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 configure({ adapter: new Adapter() });
 
 describe('SelectDate Controls', () => {
-  const getHistoryRangeDate = jest.fn();
   let history;
   beforeEach(() => {
     history = (
@@ -17,7 +16,6 @@ describe('SelectDate Controls', () => {
         <SelectDate
           startDate={'2019-01-01T22:00:00Z'}
           endDate={'2019-01-01T22:00:00Z'}
-          getHistoryRangeDate={getHistoryRangeDate}
         />
       </MuiThemeProvider>
     );

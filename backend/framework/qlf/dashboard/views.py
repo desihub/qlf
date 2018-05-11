@@ -10,9 +10,10 @@ from django.db.models import Q
 from .models import Job, Exposure, Camera, QA, Process, Configuration
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
-    QASerializer, ProcessSerializer, ConfigurationSerializer, ProcessJobsSerializer,
-    ProcessingHistorySerializer, SingleQASerializer, ObservingHistorySerializer,
-    ExposuresDateRangeSerializer
+    QASerializer, ProcessSerializer, ConfigurationSerializer,
+    ProcessJobsSerializer, ProcessingHistorySerializer,
+    SingleQASerializer, ObservingHistorySerializer,
+    ExposuresDateRangeSerializer, ExposureFlavorSerializer
 )
 import Pyro4
 from datetime import datetime, timedelta
@@ -81,7 +82,8 @@ class DynamicFieldsMixin(object):
             page = self.paginate_queryset(queryset)
 
             if page is not None:
-                serializer = self.get_serializer(page, many=True, fields=fields)
+                serializer = self.get_serializer(
+                    page, many=True, fields=fields)
                 return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True, fields=fields)
@@ -136,38 +138,71 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 
     serializer_class = ProcessJobsSerializer
 
+
+class CurrentProcessViewSet(viewsets.ModelViewSet):
+    """API endpoint listing current process"""
+
+    def get_queryset(self):
+        try:
+            process = Process.objects.latest('pk')
+            if process.end is None:
+                process_id = process.id
+            else:
+                process_id = None
+        except Process.DoesNotExist as error:
+            logger.debug(error)
+            process_id = None
+
+        return Process.objects.filter(id=process_id)
+
+    serializer_class = ProcessJobsSerializer
+
+
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing processing history"""
 
     queryset = Process.objects.order_by('-pk')
     serializer_class = ProcessingHistorySerializer
+    filter_fields = (
+        'exposure_id',
+        'exposure__tile',
+        'exposure__telra',
+        'exposure__night',
+        'exposure__exptime',
+        'exposure__flavor',
+        'exposure__dateobs',
+        'exposure__airmass',
+        'exposure__teldec')
+    ordering_fields = (
+        'pk',
+        'exposure_id',
+        'exposure__tile',
+        'exposure__telra',
+        'exposure__night',
+        'exposure__exptime',
+        'exposure__flavor',
+        'exposure__dateobs',
+        'exposure__airmass',
+        'exposure__teldec')
 
-    # Added to order SerializerMethodFields
+    # Added to filter datemin and datemax
     def list(self, request, *args, **kwargs):
         response = super(ProcessingHistoryViewSet, self).list(
             request, args, kwargs)
-        ordering = request.query_params.get('ordering')
         datemin = request.query_params.get('datemin')
         datemax = request.query_params.get('datemax')
         queryset = self.filter_queryset(self.get_queryset())
         if datemax and datemin:
             try:
                 datemin = datetime.strptime(datemin, "%Y-%m-%d")
-                datemax = datetime.strptime(datemax, "%Y-%m-%d") + timedelta(days=1)
+                datemax = datetime.strptime(
+                    datemax, "%Y-%m-%d") + timedelta(days=1)
                 queryset = queryset.filter(exposure__dateobs__gte=datemin)
                 queryset = queryset.filter(exposure__dateobs__lte=datemax)
             except:
-                response.data['results'] = { "Error": 'wrong date format' }
+                response.data['results'] = {"Error": 'wrong date format'}
                 return response
-        if ordering and ordering[0] == '-':
-            prefix_order = '-'
-            standard_ordering = ordering[1:]
-        else:
-            prefix_order = ''
-            standard_ordering = ordering
-        if ordering and standard_ordering not in ('-pk', 'pk', 'exposure_id', '-exposure_id', 'start', '-start'):
-            order_by = '{}exposure__{}'.format(prefix_order,standard_ordering)
-            queryset = queryset.order_by(order_by)
+
         if self.pagination_class:
             page = self.paginate_queryset(queryset)
 
@@ -178,12 +213,13 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
 class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing observing history"""
 
     queryset = Exposure.objects.order_by('-pk')
     serializer_class = ObservingHistorySerializer
-    filter_fields = ('exposure_id',)
+    filter_fields = ('exposure_id', 'flavor')
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -195,11 +231,12 @@ class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelV
         if datemax and datemin:
             try:
                 datemin = datetime.strptime(datemin, "%Y-%m-%d")
-                datemax = datetime.strptime(datemax, "%Y-%m-%d") + timedelta(days=1)
+                datemax = datetime.strptime(
+                    datemax, "%Y-%m-%d") + timedelta(days=1)
                 queryset = queryset.filter(dateobs__gte=datemin)
                 queryset = queryset.filter(dateobs__lte=datemax)
             except:
-                response.data['results'] = { "Error": 'wrong date format' }
+                response.data['results'] = {"Error": 'wrong date format'}
                 return response
         if self.pagination_class:
             page = self.paginate_queryset(queryset)
@@ -211,12 +248,14 @@ class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelV
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
 class SingleQAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing qa"""
-    
+
     queryset = Process.objects.order_by('exposure')
     serializer_class = SingleQASerializer
     filter_fields = ('exposure_id',)
+
 
 class JobViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing jobs"""
@@ -239,6 +278,58 @@ class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelView
 
     queryset = Configuration.objects.order_by('creation_date')
     serializer_class = ConfigurationSerializer
+
+
+class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(CurrentConfigurationViewSet, self).list(
+            request, args, kwargs)
+        current_configuration = qlf.get_current_configuration()
+        response.data = {'results': current_configuration}
+        return response
+
+
+class DefaultConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(DefaultConfigurationViewSet, self).list(
+            request, args, kwargs)
+        default_configuration = qlf.get_default_configuration()
+        response.data = {'results': default_configuration}
+        return response
+
+class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(QlConfigViewSet, self).list(
+            request, args, kwargs)
+        qlconfig = qlf.get_qlconfig()
+        response.data = qlconfig
+        return response
+
+
+class SetConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(SetConfigurationViewSet, self).list(
+            request, args, kwargs)
+        configuration = request.GET.get('configuration')
+        if configuration is not None:
+            qlf.set_current_configuration(configuration)
+            response.data = {'status': 'Configuration set'}
+            return response
+        else:
+            response.data = {'Error': 'Missing configuration'}
+            return response
 
 
 class QAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
@@ -267,39 +358,64 @@ class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = ExposureSerializer
     filter_fields = ('exposure_id',)
 
-class LoadScalarMetrics(viewsets.ReadOnlyModelViewSet):
+
+class DistinctFlavorsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing exposures flavors"""
+
+    queryset = Exposure.objects.all().distinct('flavor')
+    serializer_class = ExposureFlavorSerializer
+
+
+class LoadScalarMetricsViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Process.objects.none()
+    serializer_class = ProcessSerializer
+
     def list(self, request, *args, **kwargs):
+        response = super(LoadScalarMetricsViewSet, self).list(
+            request, args, kwargs)
         process_id = request.GET.get('process_id')
         cam = request.GET.get('cam')
         if process_id is not None:
             load_scalar_metrics = qlf.load_scalar_metrics(process_id, cam)
-            return JsonResponse({ 'results': load_scalar_metrics })
+            response.data = {'results': load_scalar_metrics}
+            return response
         else:
-            return JsonResponse({ 'Error': 'Missing process_id' })
+            response.data = {'Error': 'Missing process_id'}
+            return response
 
-class AddExposure(viewsets.ReadOnlyModelViewSet):
+
+class AddExposureViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Process.objects.none()
+    serializer_class = ProcessSerializer
+
     def list(self, request, *args, **kwargs):
+        response = super(AddExposureViewSet, self).list(
+            request, args, kwargs)
         exposure_id = request.GET.get('exposure_id')
         if exposure_id is not None:
-            load_scalar_metrics = qlf.add_exposures([exposure_id])
-            return JsonResponse({ 'status': 'Exposure added to queue' })
+            qlf.add_exposures([exposure_id])
+            response.data = {'status': 'Exposure added to queue'}
+            return response
         else:
-            return JsonResponse({ 'Error': 'Missing exposure_id' })
+            response.data = {'Error': 'Missing exposure_id'}
+            return response
 
-class ExposuresDateRange(viewsets.ReadOnlyModelViewSet):
+
+class ExposuresDateRangeViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing exposures date range"""
     queryset = Exposure.objects.order_by('exposure_id')
 
     def list(self, request, *args, **kwargs):
-        response = super(ExposuresDateRange, self).list(
+        response = super(ExposuresDateRangeViewSet, self).list(
             request, args, kwargs)
         queryset = self.get_queryset()
         start_date = queryset.aggregate(Min('dateobs'))['dateobs__min']
         end_date = queryset.aggregate(Max('dateobs'))['dateobs__max']
-        response.data = { "start_date": start_date, "end_date": end_date }
+        response.data = {"start_date": start_date, "end_date": end_date}
         return response
 
     serializer_class = ExposuresDateRangeSerializer
+
 
 class DataTableExposureViewSet(viewsets.ModelViewSet):
     queryset = Exposure.objects.order_by('exposure_id')
@@ -356,7 +472,8 @@ class DataTableExposureViewSet(viewsets.ModelViewSet):
                 )
 
             count = queryset.count()
-            queryset = queryset.order_by(order_column)[start_items:start_items + length]
+            queryset = queryset.order_by(order_column)[
+                start_items:start_items + length]
 
             serializer = ExposureSerializer(queryset, many=True)
             result = dict()
@@ -375,6 +492,7 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
+
 
 def start(request):
     qlf_manual_status = qlf_manual.get_status()
@@ -397,13 +515,15 @@ def reset(request):
     qlf.reset()
     return HttpResponseRedirect('dashboard/monitor')
 
+
 def qa_tests(request):
     process_id = request.GET.get('process_id')
     if process_id is not None:
         qa_tests = qlf.qa_tests(process_id)
-        return JsonResponse({ 'status': qa_tests })
+        return JsonResponse({'status': qa_tests})
     else:
-        return JsonResponse({ 'Error': 'Missing process_id' })
+        return JsonResponse({'Error': 'Missing process_id'})
+
 
 def daemon_status(request):
     ql_status = True
@@ -465,8 +585,10 @@ def observing_history(request):
         }
     )
 
+
 def index(request):
     return render(request, 'dashboard/index.html')
+
 
 def embed_bokeh(request, bokeh_app):
     """Render the requested app from the bokeh server"""
@@ -499,6 +621,7 @@ def embed_bokeh(request, bokeh_app):
     response.set_cookie('django_full_path', request.get_full_path())
     return response
 
+
 def send_ticket_email(request):
     email = request.GET.get('email')
     name = request.GET.get('name')
@@ -506,10 +629,10 @@ def send_ticket_email(request):
     subject = request.GET.get('subject')
     helpdesk = os.environ.get('EMAIL_HELPDESK', None)
     if email == None or name == None or message == None or subject == None or helpdesk == None:
-        return JsonResponse({ 'status': 'Missing params' })
+        return JsonResponse({'status': 'Missing params'})
     else:
         try:
             send_mail(subject, message, email, [helpdesk], fail_silently=False)
-            return JsonResponse({ 'status': 'sent' })
+            return JsonResponse({'status': 'sent'})
         except:
-            return JsonResponse({ 'status': 'send_mail fail' })
+            return JsonResponse({'status': 'send_mail fail'})

@@ -1,24 +1,23 @@
 import React, { Component } from 'react';
 import History from '../../screens/history/history';
 import { Route } from 'react-router';
+import Configuration from '../../screens/configuration/configuration';
 import Metrics from '../../screens/metrics/metrics';
 import { connect } from 'react-redux';
 import {
-  getProcessingHistoryOrdered,
   getProcessingHistory,
-  getProcessingHistoryRangeDate,
-  getObservingHistoryOrdered,
   getObservingHistory,
-  getObservingHistoryRangeDate,
   getQA,
   navigateToProcessingHistory,
   navigateToOfflineMetrics,
+  getHistoryDateRange,
   navigateToOfflineQA,
 } from './offline-store';
 import PropTypes from 'prop-types';
 import QA from '../../screens/qa/qa';
 import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
+import UnderConstruction from '../../screens/under-construction/under-construction';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -37,11 +36,7 @@ const styles = {
 class OfflineContainer extends Component {
   static propTypes = {
     getProcessingHistory: PropTypes.func.isRequired,
-    getProcessingHistoryOrdered: PropTypes.func.isRequired,
-    getProcessingHistoryRangeDate: PropTypes.func.isRequired,
     getObservingHistory: PropTypes.func.isRequired,
-    getObservingHistoryOrdered: PropTypes.func.isRequired,
-    getObservingHistoryRangeDate: PropTypes.func.isRequired,
     rows: PropTypes.array.isRequired,
     getQA: PropTypes.func.isRequired,
     pathname: PropTypes.string,
@@ -58,10 +53,13 @@ class OfflineContainer extends Component {
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
-    lastProcesses: PropTypes.array,
+    recentProcesses: PropTypes.array,
+    recentExposures: PropTypes.array,
     processId: PropTypes.number,
     toggleHeader: PropTypes.func.isRequired,
     lastProcessedId: PropTypes.number,
+    rowsCount: PropTypes.number,
+    getHistoryDateRange: PropTypes.func,
   };
 
   state = {
@@ -90,6 +88,7 @@ class OfflineContainer extends Component {
   };
 
   componentWillMount() {
+    this.props.getHistoryDateRange();
     if (window.location.pathname === '/qa') {
       this.props.toggleHeader();
       if (window.location.search.includes('process_id=')) {
@@ -113,19 +112,34 @@ class OfflineContainer extends Component {
       <div>
         {this.renderLoading()}
         <Route
-          path="/processing-history"
+          path="/afternoon-planning"
           render={() => (
             <History
               getHistory={this.props.getProcessingHistory}
-              getHistoryOrdered={this.props.getProcessingHistoryOrdered}
               rows={this.props.rows}
               startDate={this.props.startDate}
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
-              getHistoryRangeDate={this.props.getProcessingHistoryRangeDate}
-              lastProcesses={this.props.lastProcesses}
+              recentProcesses={this.props.recentProcesses}
               type={'process'}
               lastProcessedId={this.props.lastProcessedId}
+              rowsCount={this.props.rowsCount}
+            />
+          )}
+        />
+        <Route
+          path="/processing-history"
+          render={() => (
+            <History
+              getHistory={this.props.getProcessingHistory}
+              rows={this.props.rows}
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
+              navigateToQA={this.navigateToQA}
+              recentProcesses={this.props.recentProcesses}
+              type={'process'}
+              lastProcessedId={this.props.lastProcessedId}
+              rowsCount={this.props.rowsCount}
             />
           )}
         />
@@ -134,15 +148,14 @@ class OfflineContainer extends Component {
           render={() => (
             <History
               getHistory={this.props.getObservingHistory}
-              getHistoryOrdered={this.props.getObservingHistoryOrdered}
               rows={this.props.rows}
               startDate={this.props.startDate}
               endDate={this.props.endDate}
               navigateToQA={this.navigateToQA}
-              getHistoryRangeDate={this.props.getObservingHistoryRangeDate}
-              lastProcesses={this.props.lastProcesses}
+              recentExposures={this.props.recentExposures}
               type={'exposure'}
               lastProcessedId={this.props.lastProcessedId}
+              rowsCount={this.props.rowsCount}
             />
           )}
         />
@@ -188,6 +201,11 @@ class OfflineContainer extends Component {
             />
           )}
         />
+        <Route path="/configuration" render={() => <Configuration />} />
+        <Route
+          path="/under-construction"
+          render={() => <UnderConstruction />}
+        />
       </div>
     );
   }
@@ -207,9 +225,11 @@ export default connect(
     spectrograph: state.qlfOffline.spectrograph,
     startDate: state.qlfOffline.startDate,
     endDate: state.qlfOffline.endDate,
-    lastProcesses: state.qlfOffline.lastProcesses,
+    recentProcesses: state.qlfOffline.recentProcesses,
+    recentExposures: state.qlfOffline.recentExposures,
     processId: state.qlfOffline.processId,
     lastProcessedId: state.qlfOnline.processId,
+    rowsCount: state.qlfOffline.rowsCount,
   }),
   dispatch => ({
     getQA: processId => dispatch(getQA(processId)),
@@ -217,15 +237,10 @@ export default connect(
     navigateToMetrics: (step, spectrograph, arm) =>
       dispatch(navigateToOfflineMetrics(step, spectrograph, arm)),
     navigateToQA: () => dispatch(navigateToOfflineQA()),
-    getProcessingHistoryOrdered: ordering =>
-      dispatch(getProcessingHistoryOrdered(ordering)),
-    getProcessingHistory: () => dispatch(getProcessingHistory()),
-    getProcessingHistoryRangeDate: (start, end) =>
-      dispatch(getProcessingHistoryRangeDate(start, end)),
-    getObservingHistoryOrdered: ordering =>
-      dispatch(getObservingHistoryOrdered(ordering)),
-    getObservingHistory: () => dispatch(getObservingHistory()),
-    getObservingHistoryRangeDate: (start, end) =>
-      dispatch(getObservingHistoryRangeDate(start, end)),
+    getProcessingHistory: (start, end, order, offset, limit, filters) =>
+      dispatch(getProcessingHistory(start, end, order, offset, limit, filters)),
+    getObservingHistory: (start, end, order, offset, limit, filters) =>
+      dispatch(getObservingHistory(start, end, order, offset, limit, filters)),
+    getHistoryDateRange: () => dispatch(getHistoryDateRange()),
   })
 )(OfflineContainer);

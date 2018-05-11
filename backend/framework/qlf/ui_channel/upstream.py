@@ -18,7 +18,7 @@ from astropy.time import Time
 import logging
 import io
 
-from dashboard.bokeh.helper import get_last_process
+from dashboard.bokeh.helper import get_current_process
 import Pyro4
 
 uri = settings.QLF_DAEMON_URL
@@ -60,7 +60,7 @@ class Upstream:
 
 
     def get_camera_log(self, cam):
-        process = get_last_process()
+        process = get_current_process()
         cameralog = None
 
         try:
@@ -138,7 +138,7 @@ class Upstream:
 
     def get_current_state(self):
         camera_status = get_camera_status()
-        process = get_last_process()
+        process = get_current_process()
         qa_results = self.get_current_qa_tests(process)
         available_cameras = self.avaiable_cameras(process)
         daemon_status = qlf.get_status()
@@ -159,7 +159,7 @@ class Upstream:
             process_id = process[0].get("id")
             date = self.get_date(exposure)
             date_time = date.value
-            mjd = date.mjd
+            mjd = date.mjd if date is not None else None
         else:
             exposure = ''
         return json.dumps({

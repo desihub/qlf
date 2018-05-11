@@ -55,22 +55,6 @@ export default class QlfApi {
     }
   }
 
-  static async getProcessingHistory() {
-    try {
-      const processes = await fetch(
-        `${apiUrl}dashboard/api/processing_history/?format=json`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await processes.json();
-      return responseJson;
-    } catch (e) {
-      return null;
-    }
-  }
-
   static async getProcessingHistoryById(processId) {
     try {
       const processes = await fetch(
@@ -87,68 +71,48 @@ export default class QlfApi {
     }
   }
 
-  static async getProcessingHistoryLimit() {
+  static async getCurrentConfiguration() {
     try {
-      const processes = await fetch(
-        `${apiUrl}dashboard/api/processing_history/?format=json&limit=10`,
+      const configuration = await fetch(
+        `${apiUrl}dashboard/api/current_configuration/?format=json`,
         {
           method: 'GET',
           headers: headers,
         }
       );
-      const responseJson = await processes.json();
+      const responseJson = await configuration.json();
       return responseJson;
     } catch (e) {
       return null;
     }
   }
 
-  static async getProcessingHistoryOrdered(order) {
+  static async getDefaultConfiguration() {
     try {
-      const processes = await fetch(
-        `${apiUrl}dashboard/api/processing_history/?format=json&ordering=${
-          order
-        }`,
+      const configuration = await fetch(
+        `${apiUrl}dashboard/api/default_configuration/?format=json`,
         {
           method: 'GET',
           headers: headers,
         }
       );
-      const responseJson = await processes.json();
+      const responseJson = await configuration.json();
       return responseJson;
     } catch (e) {
       return null;
     }
   }
 
-  static async getProcessingHistoryRangeDate(start, end) {
+  static async getQlConfig() {
     try {
-      const processes = await fetch(
-        `${apiUrl}dashboard/api/processing_history/?format=json&datemin=${
-          start
-        }&&datemax=${end}`,
+      const configuration = await fetch(
+        `${apiUrl}dashboard/api/qlconfig/?format=json`,
         {
           method: 'GET',
           headers: headers,
         }
       );
-      const responseJson = await processes.json();
-      return responseJson;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static async getObservingHistory() {
-    try {
-      const exposures = await fetch(
-        `${apiUrl}dashboard/api/observing_history/?format=json`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await exposures.json();
+      const responseJson = await configuration.json();
       return responseJson;
     } catch (e) {
       return null;
@@ -171,12 +135,10 @@ export default class QlfApi {
     }
   }
 
-  static async getObservingHistoryOrdered(order) {
+  static async getFlavors() {
     try {
       const exposures = await fetch(
-        `${apiUrl}dashboard/api/observing_history/?format=json&ordering=${
-          order
-        }`,
+        `${apiUrl}dashboard/api/distinct_flavors/`,
         {
           method: 'GET',
           headers: headers,
@@ -189,12 +151,36 @@ export default class QlfApi {
     }
   }
 
-  static async getObservingHistoryRangeDate(start, end) {
+  static async getProcessingHistory(start, end, order, offset, limit, filters) {
+    if (!start && !end) return;
+    try {
+      const processes = await fetch(
+        `${apiUrl}dashboard/api/processing_history/?format=json&limit=${
+          limit
+        }&offset=${offset}&ordering=${order}&datemin=${
+          start.split('T')[0]
+        }&datemax=${end.split('T')[0]}&${filters}`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await processes.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static async getObservingHistory(start, end, order, offset, limit, filters) {
+    if (!start && !end) return;
     try {
       const exposures = await fetch(
-        `${apiUrl}dashboard/api/observing_history/?format=json&datemin=${
-          start
-        }&&datemax=${end}`,
+        `${apiUrl}dashboard/api/observing_history/?format=json&limit=${
+          limit
+        }&offset=${offset}&ordering=${order}&datemin=${
+          start.split('T')[0]
+        }&&datemax=${end.split('T')[0]}&${filters}`,
         {
           method: 'GET',
           headers: headers,

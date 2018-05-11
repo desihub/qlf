@@ -1,7 +1,8 @@
 import React from 'react';
-import { TableRow, TableRowColumn } from 'material-ui/Table';
+import { TableRow, TableCell } from 'material-ui-next/Table';
 import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
+import { CircularProgress } from 'material-ui-next/Progress';
 
 const styles = {
   link: {
@@ -25,12 +26,8 @@ export default class HistoryData extends React.Component {
     children: PropTypes.array,
     selectProcessQA: PropTypes.func.isRequired,
     selectedExposures: PropTypes.array,
-    onCellClick: PropTypes.func,
-    onCellHover: PropTypes.func,
-    onCellHoverExit: PropTypes.func,
-    onRowClick: PropTypes.func,
-    onRowHover: PropTypes.func,
-    onRowHoverExit: PropTypes.func,
+    selectable: PropTypes.bool,
+    selectExposure: PropTypes.func,
     rowNumber: PropTypes.number,
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
@@ -51,40 +48,62 @@ export default class HistoryData extends React.Component {
     return hour + ':' + minutes + ':' + seconds;
   };
 
+  renderViewQA = (lastProcessed, runtime) => {
+    if (lastProcessed && !runtime) return <CircularProgress size={20} />;
+    if (!runtime) return;
+    return (
+      <span
+        style={styles.link}
+        onClick={() => this.props.selectProcessQA(this.props.processId)}
+      >
+        View
+      </span>
+    );
+  };
+
   renderProcessingHistory = () => {
     const lastProcessed =
       this.props.lastProcessedId === this.props.row.pk ? styles.bold : null;
     return (
       <TableRow style={lastProcessed}>
-        <TableRowColumn />
-        <TableRowColumn>{this.props.row.pk}</TableRowColumn>
-        <TableRowColumn>{this.formatDate(this.props.row.start)}</TableRowColumn>
-        <TableRowColumn>{this.props.row.runtime}</TableRowColumn>
-        <TableRowColumn>{this.props.row.exposure_id}</TableRowColumn>
-        <TableRowColumn>{this.props.row.tile}</TableRowColumn>
-        <TableRowColumn>
-          {this.formatDate(this.props.row.dateobs)}
-        </TableRowColumn>
-        <TableRowColumn>
-          {this.formatTime(this.props.row.dateobs)}
-        </TableRowColumn>
-        <TableRowColumn>{this.props.row.datemjd.toFixed(2)}</TableRowColumn>
-        <TableRowColumn>{this.props.row.telra}</TableRowColumn>
-        <TableRowColumn>{this.props.row.teldec}</TableRowColumn>
-        <TableRowColumn>{this.props.row.exptime}</TableRowColumn>
-        <TableRowColumn>{this.props.row.airmass}</TableRowColumn>
-        <TableRowColumn />
-        <TableRowColumn>
-          <span
-            style={styles.link}
-            onClick={() => this.props.selectProcessQA(this.props.processId)}
-          >
-            View
-          </span>
-        </TableRowColumn>
-        <TableRowColumn />
+        <TableCell />
+        <TableCell>{this.props.row.pk}</TableCell>
+        <TableCell>{this.formatDate(this.props.row.start)}</TableCell>
+        <TableCell>{this.props.row.runtime}</TableCell>
+        <TableCell>{this.props.row.exposure.exposure_id}</TableCell>
+        <TableCell>{this.props.row.exposure.tile}</TableCell>
+        <TableCell>
+          {this.formatDate(this.props.row.exposure.dateobs)}
+        </TableCell>
+        <TableCell>
+          {this.formatTime(this.props.row.exposure.dateobs)}
+        </TableCell>
+        <TableCell>{this.props.row.datemjd.toFixed(2)}</TableCell>
+        <TableCell>{this.props.row.exposure.telra}</TableCell>
+        <TableCell>{this.props.row.exposure.teldec}</TableCell>
+        <TableCell>{this.props.row.exposure.exptime}</TableCell>
+        <TableCell>{this.props.row.exposure.flavor}</TableCell>
+        <TableCell>{this.props.row.exposure.airmass}</TableCell>
+        <TableCell />
+        <TableCell>
+          {this.renderViewQA(lastProcessed, this.props.row.runtime)}
+        </TableCell>
+        <TableCell />
       </TableRow>
     );
+  };
+
+  renderCheckbox = checked => {
+    if (!this.props.selectable) return;
+    return (
+      <TableCell padding="checkbox">
+        <Checkbox checked={checked} />
+      </TableCell>
+    );
+  };
+
+  selectExposure = rowNumber => {
+    if (this.props.selectExposure) this.props.selectExposure([rowNumber]);
   };
 
   renderObservingHistory = () => {
@@ -94,55 +113,47 @@ export default class HistoryData extends React.Component {
       row,
       lastProcessedId,
       selectedExposures,
-      children,
-      onCellClick,
-      onCellHover,
-      onCellHoverExit,
-      onRowClick,
-      onRowHover,
-      onRowHoverExit,
       rowNumber,
-      displayBorder,
       striped,
     } = this.props;
     const lastProcessed = lastProcessedId === processId ? styles.bold : null;
     const selectedExposure =
       selectedExposures && selectedExposures.includes(rowNumber);
+    const {
+      exposure_id,
+      tile,
+      dateobs,
+      telra,
+      teldec,
+      exptime,
+      flavor,
+      airmass,
+    } = row;
     return (
       <TableRow
+        onClick={() => this.selectExposure(rowNumber)}
         style={lastProcessed}
-        onCellClick={onCellClick}
-        onCellHover={onCellHover}
-        onCellHoverExit={onCellHoverExit}
-        onRowClick={onRowClick}
-        onRowHover={onRowHover}
-        onRowHoverExit={onRowHoverExit}
-        rowNumber={rowNumber}
-        displayBorder={displayBorder}
         striped={striped}
       >
-        {children[0] ? (
-          <Checkbox checked={selectedExposure} style={styles.checkbox} />
-        ) : (
-          children[0]
-        )}
-        <TableRowColumn />
-        <TableRowColumn>{row.exposure_id}</TableRowColumn>
-        <TableRowColumn>{row.tile}</TableRowColumn>
-        <TableRowColumn>{this.formatDate(row.dateobs)}</TableRowColumn>
-        <TableRowColumn>{this.formatTime(row.dateobs)}</TableRowColumn>
-        <TableRowColumn>{row.datemjd.toFixed(2)}</TableRowColumn>
-        <TableRowColumn>{row.telra}</TableRowColumn>
-        <TableRowColumn>{row.teldec}</TableRowColumn>
-        <TableRowColumn>{row.exptime}</TableRowColumn>
-        <TableRowColumn>{row.airmass}</TableRowColumn>
-        <TableRowColumn />
-        <TableRowColumn>
+        {this.renderCheckbox(selectedExposure)}
+        <TableCell />
+        <TableCell>{exposure_id}</TableCell>
+        <TableCell>{tile}</TableCell>
+        <TableCell>{this.formatDate(dateobs)}</TableCell>
+        <TableCell>{this.formatTime(dateobs)}</TableCell>
+        <TableCell>{row.datemjd.toFixed(2)}</TableCell>
+        <TableCell>{telra}</TableCell>
+        <TableCell>{teldec}</TableCell>
+        <TableCell>{exptime}</TableCell>
+        <TableCell>{flavor}</TableCell>
+        <TableCell>{airmass}</TableCell>
+        <TableCell />
+        <TableCell>
           <span style={styles.link} onClick={() => selectProcessQA(processId)}>
             View
           </span>
-        </TableRowColumn>
-        <TableRowColumn />
+        </TableCell>
+        <TableCell />
       </TableRow>
     );
   };

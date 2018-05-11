@@ -4,12 +4,21 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                sh './configure.sh ci'
                 dir('frontend') {
                     sh 'yarn install'
                 }
             }
         }
-        stage('Test') {
+        stage('Test Backend') {
+            steps {
+                dir('backend'){
+                    sh 'docker-compose run qlf ./test.sh'
+                    sh 'docker-compose stop'
+                }
+            }
+        }
+        stage('Test Frontend') {
             steps {
                 dir('frontend') {
                     sh 'yarn lint'

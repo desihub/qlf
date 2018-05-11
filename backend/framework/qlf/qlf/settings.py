@@ -109,9 +109,6 @@ DATABASES = {
     }
 }
 
-if 'test' in sys.argv or 'test_coverage' in sys.argv:
-    DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
-
 DATABASE_POOL_ARGS = {
     'max_overflow': 30,
     'pool_size': 10

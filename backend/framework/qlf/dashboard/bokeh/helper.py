@@ -36,7 +36,8 @@ def get_data(name, params):
 
     for metric in params:
         if metric not in full_metrics:
-            logger.warn('The {} metric is not present in {}'.format(metric, name))
+            logger.warn(
+                'The {} metric is not present in {}'.format(metric, name))
 
         metrics[metric] = full_metrics.get(metric, [])
 
@@ -56,7 +57,8 @@ def get_arms_and_spectrographs():
 
     cameras = requests.get(
         api['camera'],
-        params={'paginate': 'null', 'fields': ','.join(['arm', 'spectrograph'])}
+        params={'paginate': 'null', 'fields': ','.join(
+            ['arm', 'spectrograph'])}
     ).json()
 
     for camera in cameras:
@@ -73,6 +75,15 @@ def get_last_process():
 
     api = requests.get(QLF_API_URL).json()
     return requests.get(api['last_process']).json()
+
+
+def get_current_process():
+    """
+    Returns last process
+    """
+
+    api = requests.get(QLF_API_URL).json()
+    return requests.get(api['current_process']).json()
 
 
 def get_exposure_ids():
@@ -124,6 +135,7 @@ def get_cameras():
     api = requests.get(QLF_API_URL).json()
 
     return requests.get(api['camera'], params={'paginate': 'null'}).json()
+
 
 def get_scalar_metrics(process_id, cam):
     """
@@ -182,25 +194,31 @@ def get_url_args(curdoc, defaults=None):
 def write_info(qa_name, params):
     """
     Writes informations in params as a string to be showed in dashboard"""
-    info =""""""
-    nlines=0
-    dict_test_keys=dict(
-        getrms =  ['NOISE_NORMAL_RANGE', 'NOISE_WARN_RANGE'],
-        skycont =  ['SKYCONT_NORMAL_RANGE', 'SKYCONT_WARN_RANGE', 'B_CONT', 'R_CONT', 'Z_CONT'],
-        xwsigma =  ['B_PEAKS', 'R_PEAKS', 'Z_PEAKS', 'XWSIGMA_NORMAL_RANGE', 'XWSIGMA_WARN_RANGE'],
-        skyresid =  ['PCHI_RESID', 'PER_RESID', 'RESID_NORMAL_RANGE', 'RESID_WARN_RANGE', 'BIN_SZ'],
-        countbins =  ['CUTHI', 'CUTMED', 'CUTLO', 'NGOODFIB_WARN_RANGE', 'NGOODFIB_NORMAL_RANGE'],
-        skypeak =  ['B_PEAKS', 'R_PEAKS', 'Z_PEAKS', 'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
-        getbias =  ['BIAS_NORMAL_RANGE',  'BIAS_WARN_RANGE', 'PERCENTILES'],
-        countpix =  ['NPIX_NORMAL_RANGE', 'NPIX_WARN_RANGE', 'CUTLO', 'CUTHI'],
-        integ =  ['MAGDIFF_WARN_RANGE', 'MAGDIFF_NORMAL_RANGE'],
-        snr =  ['FIDSNR_NORMAL_RANGE', 'FIDSNR_WARN_RANGE', 'FIDMAG'])
+    info = """"""
+    nlines = 0
+    dict_test_keys = dict(
+        getrms=['NOISE_NORMAL_RANGE', 'NOISE_WARN_RANGE'],
+        skycont=['SKYCONT_NORMAL_RANGE', 'SKYCONT_WARN_RANGE',
+                 'B_CONT', 'R_CONT', 'Z_CONT'],
+        xwsigma=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
+                 'XWSIGMA_NORMAL_RANGE', 'XWSIGMA_WARN_RANGE'],
+        skyresid=['PCHI_RESID', 'PER_RESID',
+                  'RESID_NORMAL_RANGE', 'RESID_WARN_RANGE', 'BIN_SZ'],
+        countbins=['CUTHI', 'CUTMED', 'CUTLO',
+                   'NGOODFIB_WARN_RANGE', 'NGOODFIB_NORMAL_RANGE'],
+        skypeak=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
+                 'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
+        getbias=['BIAS_NORMAL_RANGE',  'BIAS_WARN_RANGE', 'PERCENTILES'],
+        countpix=['NPIX_NORMAL_RANGE', 'NPIX_WARN_RANGE', 'CUTLO', 'CUTHI'],
+        integ=['MAGDIFF_WARN_RANGE', 'MAGDIFF_NORMAL_RANGE'],
+        snr=['FIDSNR_NORMAL_RANGE', 'FIDSNR_WARN_RANGE', 'FIDMAG'])
 
     keys = dict_test_keys[qa_name]
     for ii in keys:
-            info +="""{:>24}: {}\n""".format(ii, params[ii])
-            nlines +=1
+        info += """{:>24}: {}\n""".format(ii, params[ii])
+        nlines += 1
     return info, nlines
+
 
 def write_description(qa_name):
     """Descriptions to be displayed in QA plots."""
@@ -244,8 +262,6 @@ def eval_histpar(yscale, hist):
         bottomval = 'bottom'
         histval = 'hist'
     return [ylabel,yrange,bottomval,histval]
-
-
 
 if __name__ == '__main__':
     logger.info('Standalone execution...')

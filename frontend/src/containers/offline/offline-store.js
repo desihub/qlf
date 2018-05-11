@@ -9,13 +9,15 @@ function defaultState() {
     time: '',
     exposure: '',
     processId: undefined,
-    lastProcesses: undefined,
+    recentProcesses: undefined,
+    recentExposures: undefined,
     qaTests: [],
     arm: 0,
     spectrograph: 0,
     step: 0,
-    startDate: undefined,
-    endDate: undefined,
+    startDate: '',
+    endDate: '',
+    rowsCount: undefined,
   };
 }
 
@@ -24,21 +26,50 @@ function updateRows(rows) {
   return { type: 'UPDATE_ROWS', state };
 }
 
+function updateRowsCount(count) {
+  const state = { count };
+  return { type: 'UPDATE_ROWS_COUNT', state };
+}
+
 function updateDateRange(startDate, endDate) {
   const state = { startDate, endDate };
   return { type: 'UPDATE_DATE_RANGE', state };
 }
 
-function updateLastProcess(lastProcesses) {
-  const state = { lastProcesses };
-  return { type: 'UPDATE_LAST_PROCESSES', state };
+function updateRecentProcess(recentProcesses) {
+  const state = { recentProcesses };
+  return { type: 'UPDATE_RECENT_PROCESSES', state };
+}
+
+function updateRecentExposures(recentExposures) {
+  const state = { recentExposures };
+  return { type: 'UPDATE_RECENT_EXPOSURES', state };
 }
 
 export function fetchLastProcess() {
-  return async function(dispatch) {
-    const lastProcesses = await QlfApi.getProcessingHistoryLimit();
-    if (lastProcesses && !lastProcesses.detail && lastProcesses.results)
-      dispatch(updateLastProcess(lastProcesses.results));
+  return async function(dispatch, getState) {
+    const { startDate, endDate } = getState().qlfOffline;
+    const recentProcesses = await QlfApi.getProcessingHistory(
+      startDate,
+      endDate,
+      '-pk',
+      0,
+      10
+    );
+
+    const recentExposures = await QlfApi.getObservingHistory(
+      startDate,
+      endDate,
+      '-pk',
+      0,
+      10
+    );
+
+    if (recentProcesses && !recentProcesses.detail && recentProcesses.results)
+      dispatch(updateRecentProcess(recentProcesses.results));
+
+    if (recentExposures && recentExposures.results)
+      dispatch(updateRecentExposures(recentExposures.results));
   };
 }
 
@@ -59,72 +90,53 @@ function selectMetric(step, spectrograph, arm) {
   return { type: 'UPDATE_METRIC_SELECT_OFFLINE', state };
 }
 
-export function getProcessingHistory() {
+export function getHistoryDateRange() {
   return async function(dispatch) {
-    const rows = await QlfApi.getProcessingHistory();
     const dateRange = await QlfApi.getExposuresDateRange();
-    if (rows && rows.results) {
-      dispatch(updateRows(rows.results));
-    }
-
     if (dateRange && dateRange.end_date && dateRange.start_date) {
       dispatch(updateDateRange(dateRange.start_date, dateRange.end_date));
     }
   };
 }
 
-export function getProcessingHistoryRangeDate(start, end) {
+export function getProcessingHistory(
+  start,
+  end,
+  order,
+  offset,
+  limit,
+  filters
+) {
   return async function(dispatch) {
-    const rows = await QlfApi.getProcessingHistoryRangeDate(
-      start.toISOString().split('T')[0],
-      end.toISOString().split('T')[0]
+    const rows = await QlfApi.getProcessingHistory(
+      start,
+      end,
+      order,
+      offset,
+      limit,
+      filters
     );
-
     if (rows && rows.results) {
-      await dispatch(updateRows(rows.results));
-    }
-  };
-}
-
-export function getProcessingHistoryOrdered(ordering) {
-  return async function(dispatch) {
-    const rows = await QlfApi.getProcessingHistoryOrdered(ordering);
-    if (rows && rows.results) await dispatch(updateRows(rows.results));
-  };
-}
-
-export function getObservingHistory() {
-  return async function(dispatch) {
-    const rows = await QlfApi.getObservingHistory();
-    const dateRange = await QlfApi.getExposuresDateRange();
-    if (rows && rows.results) {
+      dispatch(updateRowsCount(rows.count));
       dispatch(updateRows(rows.results));
     }
-
-    if (dateRange && dateRange.end_date && dateRange.start_date) {
-      dispatch(updateDateRange(dateRange.start_date, dateRange.end_date));
-    }
   };
 }
 
-export function getObservingHistoryRangeDate(start, end) {
+export function getObservingHistory(start, end, order, offset, limit, filters) {
   return async function(dispatch) {
-    const rows = await QlfApi.getObservingHistoryRangeDate(
-      start.toISOString().split('T')[0],
-      end.toISOString().split('T')[0]
+    const rows = await QlfApi.getObservingHistory(
+      start,
+      end,
+      order,
+      offset,
+      limit,
+      filters
     );
-
-    if (rows && rows.results && rows.results) {
-      await dispatch(updateRows(rows.results));
+    if (rows && rows.results) {
+      dispatch(updateRowsCount(rows.count));
+      dispatch(updateRows(rows.results));
     }
-  };
-}
-
-export function getObservingHistoryOrdered(ordering) {
-  return async function(dispatch) {
-    const rows = await QlfApi.getObservingHistoryOrdered(ordering);
-    if (rows && rows.results && rows.results)
-      await dispatch(updateRows(rows.results));
   };
 }
 
@@ -162,14 +174,22 @@ export function qlfOfflineReducers(state = defaultState(), action) {
         spectrograph: action.state.spectrograph,
         arm: action.state.arm,
       });
-    case 'UPDATE_LAST_PROCESSES':
+    case 'UPDATE_RECENT_PROCESSES':
       return Object.assign({}, state, {
-        lastProcesses: action.state.lastProcesses,
+        recentProcesses: action.state.recentProcesses,
+      });
+    case 'UPDATE_RECENT_EXPOSURES':
+      return Object.assign({}, state, {
+        recentExposures: action.state.recentExposures,
       });
     case 'UPDATE_DATE_RANGE':
       return Object.assign({}, state, {
         startDate: action.state.startDate,
         endDate: action.state.endDate,
+      });
+    case 'UPDATE_ROWS_COUNT':
+      return Object.assign({}, state, {
+        rowsCount: action.state.count,
       });
     case 'UPDATE_ROWS':
       return Object.assign({}, state, {

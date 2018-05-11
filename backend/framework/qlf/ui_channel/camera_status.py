@@ -2,7 +2,7 @@
 import os
 import configparser
 import copy
-from dashboard.bokeh.helper import get_last_process
+from dashboard.bokeh.helper import get_current_process
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ except Exception as error:
     logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
 
 def update_camera_status():
-    process = get_last_process()
+    process = get_current_process()
     label_name = list()
 
     for num in range(30):
