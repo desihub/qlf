@@ -22,7 +22,7 @@ logger = get_logger("pipeline", logpipeline, loglevel)
 class QLFProcess(object):
     """ Class responsible for managing Quick Look pipeline process. """
 
-    def __init__(self, data):
+    def __init__(self, data, configuration):
         self.pipeline_name = 'Quick Look'
         self.data = data
 
@@ -52,6 +52,7 @@ class QLFProcess(object):
         ]
 
         self.models = QLFModels()
+        self.configuration = configuration
 
         output_dir = os.path.join(
             'exposures',
@@ -78,7 +79,8 @@ class QLFProcess(object):
         # create process in database and obtain the process id
         process = self.models.insert_process(
             self.data,
-            self.pipeline_name
+            self.pipeline_name,
+            self.configuration
         )
 
         self.data['process_id'] = process.id

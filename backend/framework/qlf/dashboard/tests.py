@@ -1,5 +1,5 @@
 from rest_framework.test import APITestCase
-from dashboard.models import Exposure, Process, Job, Camera
+from dashboard.models import Exposure, Process, Job, Camera, Configuration
 from rest_framework import status
 from unittest.mock import patch
 import datetime
@@ -52,6 +52,9 @@ class ProcessTest(APITestCase):
             night="20190101",
             airmass=None,
         )
+        self.configuration = Configuration.objects.create(
+            name="qltest"
+        )
         self.process = Process.objects.create(
             pk=7,
             pipeline_name="Quick Look",
@@ -61,6 +64,7 @@ class ProcessTest(APITestCase):
             version="",
             process_dir="exposures/20190101/00000003",
             exposure=self.exposure,
+            configuration=self.configuration
         )
 
     def test_get_process(self):
@@ -101,6 +105,9 @@ class JobTest(APITestCase):
             night="20190101",
             airmass=None,
         )
+        self.configuration = Configuration.objects.create(
+            name="qltest"
+        )
         self.process = Process.objects.create(
             pk=7,
             pipeline_name="Quick Look",
@@ -110,6 +117,7 @@ class JobTest(APITestCase):
             version="",
             process_dir="exposures/20190101/00000003",
             exposure=self.exposure,
+            configuration=self.configuration,
         )
         self.camera = Camera.objects.create(
             camera="b3",
@@ -148,6 +156,9 @@ def mock_pipeline(self):
             night="20190101",
             airmass=None,
         )
+        self.configuration = Configuration.objects.create(
+            name="qltest"
+        )
         self.process = Process.objects.create(
             pk=8,
             pipeline_name="Quick Look",
@@ -157,6 +168,7 @@ def mock_pipeline(self):
             version="",
             process_dir="exposures/20190101/00000003",
             exposure=self.exposure,
+            configuration=self.configuration
         )
         self.camera = Camera.objects.create(
             camera="b3",
@@ -201,14 +213,21 @@ class ProcessingHistoryTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['results'][0]['pk'], 8)
         self.assertIsNotNone(response.data['results']
-                         [0]['dateobs'])
+                             [0]['exposure']['dateobs'])
         self.assertEqual(response.data['results'][0]['datemjd'], None)
-        self.assertEqual(response.data['results'][0]['exposure_id'], 3)
-        self.assertEqual(response.data['results'][0]['tile'], 6)
-        self.assertEqual(response.data['results'][0]['telra'], 333.22)
-        self.assertEqual(response.data['results'][0]['teldec'], 14.84)
-        self.assertEqual(response.data['results'][0]['exptime'], 1000.0)
-        self.assertEqual(response.data['results'][0]['airmass'], None)
+        self.assertEqual(response.data['results']
+                         [0]['exposure']['exposure_id'], 3)
+        self.assertEqual(response.data['results'][0]['exposure']['tile'], 6)
+        self.assertEqual(response.data['results']
+                         [0]['exposure']['telra'], 333.22)
+        self.assertEqual(response.data['results']
+                         [0]['exposure']['teldec'], 14.84)
+        self.assertEqual(response.data['results']
+                         [0]['exposure']['exptime'], 1000.0)
+        self.assertEqual(response.data['results']
+                         [0]['exposure']['airmass'], None)
+        self.assertEqual(response.data['results']
+                         [0]['exposure']['flavor'], "science")
         self.assertIsNotNone(response.data['results'][0]['runtime'])
         self.assertIsNotNone(response.data['results'][0]['start'])
         self.assertIsNotNone(response.data['results'][0]['end'])

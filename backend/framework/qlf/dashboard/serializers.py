@@ -130,7 +130,7 @@ class ConfigurationSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Configuration
-        fields = ('configuration', 'creation_date', 'links')
+        fields = ('name', 'configuration', 'creation_date', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
@@ -149,20 +149,32 @@ class ProcessJobsSerializer(serializers.ModelSerializer):
         fields = ('id', 'exposure', 'process_jobs')
 
 
+class ProcessingHistoryExposureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exposure
+        fields = (
+            'exposure_id', 'tile', 'telra', 'teldec',
+            'dateobs', 'exptime', 'flavor', 'night',
+            'airmass'
+        )
+
+
 class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
 
     runtime = serializers.SerializerMethodField()
     datemjd = serializers.SerializerMethodField()
-    dateobs = serializers.SerializerMethodField()
-    tile = serializers.SerializerMethodField()
-    telra = serializers.SerializerMethodField()
-    teldec = serializers.SerializerMethodField()
-    exptime = serializers.SerializerMethodField()
-    airmass = serializers.SerializerMethodField()
+    exposure = ProcessingHistoryExposureSerializer(required=True)
 
     class Meta:
         model = Process
-        fields = ('pk', 'dateobs', 'datemjd', 'exposure_id', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'runtime', 'start', 'end')
+        fields = (
+            'pk',
+            'exposure',
+            'datemjd',
+            'runtime',
+            'start',
+            'end',
+        )
 
     def get_runtime(self, obj):
         if obj.end is not None and obj.start is not None:
@@ -176,24 +188,6 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
             return None
         else:
             return time.mjd
-
-    def get_dateobs(self, obj):
-        return obj.exposure.dateobs
-
-    def get_tile(self, obj):
-        return obj.exposure.tile
-
-    def get_telra(self, obj):
-        return obj.exposure.telra
-
-    def get_teldec(self, obj):
-        return obj.exposure.teldec
-
-    def get_exptime(self, obj):
-        return obj.exposure.exptime
-
-    def get_airmass(self, obj):
-        return obj.exposure.airmass
 
 
 class SingleQASerializer(DynamicFieldsModelSerializer):
@@ -227,7 +221,18 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Exposure
-        fields = ('exposure_id', 'dateobs', 'datemjd', 'tile', 'telra', 'teldec', 'exptime', 'airmass', 'last_exposure_process_id')
+        fields = (
+            'exposure_id',
+            'dateobs',
+            'datemjd',
+            'tile',
+            'telra',
+            'teldec',
+            'exptime',
+            'airmass',
+            'last_exposure_process_id',
+            'flavor'
+        )
 
     def get_datemjd(self, obj):
         time = get_date(obj.pk)
@@ -245,3 +250,9 @@ class ExposuresDateRangeSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Exposure
         fields = ('exposure_id', 'dateobs')
+
+
+class ExposureFlavorSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Exposure
+        fields = ('flavor',)

@@ -116,29 +116,37 @@ describe('Landing Home', () => {
     expect(updateUrl).toBeCalledWith('/observing-history');
   });
 
+  it('navigates to /afternoon-planning', () => {
+    wrapper
+      .find('a')
+      .at(3)
+      .simulate('click');
+    expect(updateUrl).toBeCalledWith('/afternoon-planning');
+  });
+
   it('navigates to /', () => {
     wrapper
       .find('a')
       .at(4)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/under-construction');
     updateUrl.mockReset();
     wrapper
       .find('a')
       .at(5)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/under-construction');
     updateUrl.mockReset();
     wrapper
       .find('a')
       .at(6)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/under-construction');
     updateUrl.mockReset();
     wrapper
       .find('a')
       .at(7)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/');
+    expect(updateUrl).toBeCalledWith('/configuration');
   });
 });
