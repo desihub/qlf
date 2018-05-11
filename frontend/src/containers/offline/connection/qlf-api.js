@@ -135,7 +135,23 @@ export default class QlfApi {
     }
   }
 
-  static async getProcessingHistory(start, end, order, offset, limit) {
+  static async getFlavors() {
+    try {
+      const exposures = await fetch(
+        `${apiUrl}dashboard/api/distinct_flavors/`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await exposures.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static async getProcessingHistory(start, end, order, offset, limit, filters) {
     if (!start && !end) return;
     try {
       const processes = await fetch(
@@ -143,7 +159,7 @@ export default class QlfApi {
           limit
         }&offset=${offset}&ordering=${order}&datemin=${
           start.split('T')[0]
-        }&&datemax=${end.split('T')[0]}`,
+        }&datemax=${end.split('T')[0]}&${filters}`,
         {
           method: 'GET',
           headers: headers,
@@ -156,7 +172,7 @@ export default class QlfApi {
     }
   }
 
-  static async getObservingHistory(start, end, order, offset, limit) {
+  static async getObservingHistory(start, end, order, offset, limit, filters) {
     if (!start && !end) return;
     try {
       const exposures = await fetch(
@@ -164,7 +180,7 @@ export default class QlfApi {
           limit
         }&offset=${offset}&ordering=${order}&datemin=${
           start.split('T')[0]
-        }&&datemax=${end.split('T')[0]}`,
+        }&&datemax=${end.split('T')[0]}&${filters}`,
         {
           method: 'GET',
           headers: headers,

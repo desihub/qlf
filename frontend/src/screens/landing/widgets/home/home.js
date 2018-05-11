@@ -76,7 +76,10 @@ export default class Home extends React.Component {
               subtitle="Display time series plots for QA metrics, list of exposures and observed targets for the current night of for a range of nights"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/afternoon-planning')}
+          >
             <Card
               icon="BrightnessMedium"
               title="Afternoon Planning"
@@ -85,21 +88,30 @@ export default class Home extends React.Component {
           </a>
         </div>
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/under-construction')}
+          >
             <Card
               icon="TrendingUp"
               title="Trend Analysis"
               subtitle="Simple plots using quantities stored in the database"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/under-construction')}
+          >
             <Card
               icon="Cloud"
               title="Sky Conditions"
               subtitle="Display sky conditions such as atmospheric transparency, seeing, and sky background from the GFA camera"
             />
           </a>
-          <a style={styles.linkStyle} onClick={() => this.navigateTo('/')}>
+          <a
+            style={styles.linkStyle}
+            onClick={() => this.navigateTo('/under-construction')}
+          >
             <Card
               icon="Assignment"
               title="Survey Reports"
