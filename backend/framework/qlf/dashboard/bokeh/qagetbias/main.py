@@ -16,7 +16,8 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics
+from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics,\
+                            eval_histpar
 
 import numpy as np
 import logging
@@ -62,6 +63,16 @@ dz = metr[name] #getbias['BIAS_AMP']
 
 mapper = LinearColorMapper(palette= Viridis256, low=min(dz),high=max(dz) )
 
+dzmax, dzmin = max(dz), min(dz) 
+if np.log10(dzmax) > 4 or np.log10(dzmin) <-3:
+    ztext = ['{:3.2e}'.format(i) for i in dz]
+    cbarformat = "%2.1e"
+elif np.log10(dzmin)>0:
+    ztext = ['{:4.3f}'.format(i) for i in dz]
+    cbarformat = "%4.2f"
+else:
+    ztext = ['{:5.4f}'.format(i) for i in dz]
+    cbarformat = "%5.4f"
 
 
 source = ColumnDataSource(
@@ -73,7 +84,7 @@ source = ColumnDataSource(
 
         z = dz,
         amp = ['AMP %s'%i for i in range(1,5) ] ,
-        ztext = ['{:3.2e}'.format(i) for i in dz]
+        ztext = ztext#['{:3.2e}'.format(i) for i in dz]
     )
 )
 
@@ -124,7 +135,7 @@ p.text(x="x", y="y_offset2", text="ztext",
        text_font_style="bold", text_font_size="20pt", **text_props)
 p.text(x="x", y="y_offset1", text="amp",
         text_font_size="18pt", **text_props)
-formatter = PrintfTickFormatter(format='%2.1e')
+formatter = PrintfTickFormatter(format=cbarformat)#format='%2.1e')
 color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                 major_label_text_font_size='10pt', label_standoff=2, location=(0, 0)
                    ,formatter=formatter, title="(ADU)", title_text_baseline="alphabetic" )
@@ -140,11 +151,65 @@ p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
 p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
 p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
+
+#-------------------------------------
+# histogram
+
+
+yscale = "auto"#"auto" or "log"
+
+hist_tooltip = """
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
+            <span style="font-size: 13px; color: #515151">@hist</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">XSIGMA: </span>
+            <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
+        </div>
+    </div>
+"""
+
+hist, edges  = np.histogram(getbias['MEANBIAS_ROW'], bins='sqrt')
+
+source_hist = ColumnDataSource(data={
+    'hist': hist,
+    'histplusone':np.array(hist)+1,
+    'bottom':[0] *len(hist),
+    'bottomplusone':[1]*len(hist),
+    'left':edges[:-1],
+    'right':edges[1:]
+})
+
+hover = HoverTool(tooltips=hist_tooltip)
+
+ylabel,yrange,bottomval,histval = eval_histpar(yscale, hist)
+
+xhistlabel = "MEANBIAS_ROW"
+p_hist = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
+           y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
+        , plot_width=700, plot_height=400
+        , x_axis_type="auto",    y_axis_type=yscale
+        , y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
+
+p_hist.quad(top=histval, bottom=bottomval, left='left', right='right',
+       source=source_hist, 
+        fill_color="dodgerblue", line_color="blue", alpha=0.8,
+       hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
+
+
+
 #infos
 info, nlines = write_info('getbias', tests['getbias'])
-txt = PreText(text=info, height=nlines*20, width=p.plot_width)
-info_col=Div(text=write_description('getbias'), width=p.plot_width)
-ptxt = column(widgetbox(info_col),p)
+info_hist ="""
+<p style="font-size:18px;"> BIAS: {} </p>
+""".format(getbias['BIAS'])
+txt = Div(text=info_hist, width= 2*p.plot_width)
+
+
+info_col=Div(text=write_description('getbias'), width=2*p.plot_width)
+ptxt = column(widgetbox(info_col), p, txt,p_hist)
 
 
 #output_notebook()
@@ -152,4 +217,3 @@ ptxt = column(widgetbox(info_col),p)
 # End of Bokeh Block
 curdoc().add_root(ptxt)
 curdoc().title="GETBIAS"
-
