@@ -13,6 +13,7 @@ cfg = get_config()
 
 logfile = cfg.get("main", "logfile")
 loglevel = cfg.get("main", "loglevel")
+generation_limit = 10
 
 logger = get_logger("monitoring", logfile, loglevel)
 
@@ -24,21 +25,28 @@ class ExposureMonitoring(Process):
     def __init__(self):
         super().__init__()
 
-        self.processing = None
+        self.process = None
         self.exit = Event()
+        self.running = Event()
         self.allowed_delay = 20.0
-
+        self.ics_last_exposure = {}
+        self.process_id = Value('i', 0)
+        self.generation_count = 0
         self.generator = get_exposure_generator()
 
-        self.db_last_exposure = QLFModels().get_last_exposure()
-        self.ics_last_exposure = {}
-
-        self.process_id = Value('i', 0)
 
     def run(self):
         """ """
-        while not self.exit.is_set():
+        while not self.exit.is_set() or self.generation_count <= 3:
             time.sleep(1.5)
+
+            if self.process and self.process.is_alive():
+                logger.debug('Process ID {} is running.'.format(
+                    str(self.process_id)
+                ))
+                continue
+
+            self.running.clear()
 
             exposure = self.generator.last_exposure()
 
@@ -52,12 +60,8 @@ class ExposureMonitoring(Process):
 
             logger.debug('Exposure ID {} was obtained'.format(exposure.get('expid')))
 
-            # if self.db_last_exposure.exposure_id == int(exposure.get('expid')):
-            #     logger.debug('Exposure ID {} has already been ingested.'.format(str(exposure.get('expid'))))
-            #     continue
-
             # records exposure in database
-            self.db_last_exposure = QLFModels().insert_exposure(
+            QLFModels().insert_exposure(
                 exposure.get('expid'),
                 exposure.get('night'),
                 exposure.get('telra'),
@@ -67,12 +71,6 @@ class ExposureMonitoring(Process):
                 exposure.get('flavor'),
                 exposure.get('exptime')
             )
-
-            if self.processing and self.processing.is_alive():
-                logger.debug('Exposure ID {} was not processed as there is active processing.'.format(
-                    str(exposure.get('expid'))
-                ))
-                continue
 
             if isinstance(exposure.get('time'), str):
                 exposure['time'] = datetime.datetime.strptime(
@@ -90,8 +88,11 @@ class ExposureMonitoring(Process):
 
             logger.info('Exposure ID {} will be processed.'.format(exposure.get('expid')))
 
-            self.processing = Thread(target=process_run, args=(exposure, self.process_id,))
-            self.processing.start()
+            self.process = Thread(target=process_run, args=(exposure, self.process_id,))
+            self.process.start()
+            self.running.set()
+
+            self.generation_count += 1
 
         logger.info("Bye!")
 

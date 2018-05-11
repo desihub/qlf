@@ -123,15 +123,14 @@ class Upstream:
         pipelinelog = list()
         mjd = str()
         process_id = int()
-        date = dict()
         date_time = str()
         if len(process) > 0:
             pipelinelog = self.get_pipeline_log()
             exposure = process[0].get("exposure")
             process_id = process[0].get("id")
             date = get_date(exposure)
-            date_time = date.value
-            mjd = date.mjd if date is not None else None
+            date_time = date.value if date else ''
+            mjd = date.mjd if date else ''
         else:
             exposure = ''
         return json.dumps({

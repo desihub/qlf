@@ -24,26 +24,40 @@ except Exception as error:
 def get_date(exp):
 
     # open file
-    exp_zfill = str(exp).zfill(8)
+    # exp_zfill = str(exp).zfill(8)
 
     exposure = Exposure.objects.get(exposure_id=exp)
 
-    logger.info(exposure)
+    # fits_file = '{}/{}/desi-{}.fits.fz'.format(
+    #     desi_spectro_data,
+    #     exposure.night,
+    #     exp_zfill
+    # )
+    #
+    # try:
+    #     f = fits.open(fits_file)
+    # except FileNotFoundError:
+    #     logger.exception('Fits file not found: {}'.format(fits_file))
+    #     return None
+    #
+    # # read the time in isot
+    # time = f[0].header['DATE-OBS']
 
-    fits_file = '{}/{}/desi-{}.fits.fz'.format(
-        desi_spectro_data,
-        exposure.night,
-        exp_zfill
-    )
+    t = None
 
-    f = fits.open(fits_file)
-
-    # read the time in isot
-    time = f[0].header['DATE-OBS']
-
-    # declare the format
-    t = Time(time, format='isot', scale='utc')
+    if exposure and exposure.dateobs:
+        time = exposure.dateobs
+        # declare the format
+        try:
+            t = Time(time, format='isot', scale='utc')
+        except Exception:
+            print(time)
+            logger.info(time)
+            logger.exception('Error to get time.')
+            t = None
 
     # Convert to MJD
     return t
+
+
 

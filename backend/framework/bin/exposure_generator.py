@@ -72,7 +72,7 @@ class ExposureGenerator(Process):
             last_exposure = self.generate_exposure()
             log.info(
                 "Exposure id '%s' generated at '%s' as night '%s'."
-                % (last_exposure['expid'], last_exposure['date-obs'], last_exposure['night'])
+                % (last_exposure['expid'], last_exposure['dateobs'], last_exposure['night'])
             )
 
             self.__last_exposure.update(last_exposure)
@@ -113,7 +113,7 @@ class ExposureGenerator(Process):
 
         return {
             "expid": exp_id,
-            "date-obs": self.__date_obs(gen_time),
+            "dateobs": self.__date_obs(gen_time),
             "night": night,
             "zfill": exp_id_zfill,
             "desi_spectro_data": spectro_path,
