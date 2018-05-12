@@ -214,7 +214,10 @@ class ProcessingHistoryTest(APITestCase):
         self.assertEqual(response.data['results'][0]['pk'], 8)
         self.assertIsNotNone(response.data['results']
                              [0]['exposure']['dateobs'])
-        self.assertEqual(response.data['results'][0]['datemjd'], None)
+        self.assertEqual(
+            type(response.data['results'][0]['datemjd']),
+            float
+        )
         self.assertEqual(response.data['results']
                          [0]['exposure']['exposure_id'], 3)
         self.assertEqual(response.data['results'][0]['exposure']['tile'], 6)
@@ -243,7 +246,11 @@ class ObservingHistoryTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response.data['results']
                              [0]['dateobs'])
-        self.assertEqual(response.data['results'][0]['datemjd'], None)
+        self.assertEqual(
+            type(response.data['results'][0]['datemjd']),
+            float
+        )
+
         self.assertEqual(response.data['results'][0]['exposure_id'], 3)
         self.assertEqual(response.data['results'][0]['tile'], 6)
         self.assertEqual(response.data['results'][0]['telra'], 333.22)
