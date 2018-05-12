@@ -129,7 +129,7 @@ class Upstream:
             exposure = process[0].get("exposure")
             process_id = process[0].get("id")
             date = get_date(exposure)
-            date_time = str(date.value) if date else ''
+            date_time = date.value if date else ''
             mjd = date.mjd if date else ''
         else:
             exposure = ''

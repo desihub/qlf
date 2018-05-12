@@ -28,9 +28,6 @@ def get_date(exp):
     if not exposure or not exposure.dateobs:
         return None
 
-    time = exposure.dateobs
+    time = str(exposure.dateobs)
 
-    return Time(time, format='datetime', scale='utc')
-
-
-
+    return Time(time, format='iso', scale='utc')
