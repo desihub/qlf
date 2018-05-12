@@ -78,13 +78,8 @@ class Monitoring(object):
     def is_running(self):
         running = False
 
-        logger.info('---> IS RUNNING?')
-        logger.info(self.monitoring)
-
-        if self.monitoring:
-            logger.info(self.monitoring.running.is_set())
-            if self.monitoring.running.is_set():
-                running = True
+        if self.monitoring and self.monitoring.running.is_set():
+            running = True
 
         return running
 

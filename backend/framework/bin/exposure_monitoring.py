@@ -13,6 +13,7 @@ cfg = get_config()
 
 logfile = cfg.get("main", "logfile")
 loglevel = cfg.get("main", "loglevel")
+allowed_delay = cfg.getfloat("main", "allowed_delay")
 generation_limit = 10
 
 logger = get_logger("monitoring", logfile, loglevel)
@@ -28,25 +29,17 @@ class ExposureMonitoring(Process):
         self.process = None
         self.exit = Event()
         self.running = Event()
-        self.allowed_delay = 20.0
         self.ics_last_exposure = {}
         self.process_id = Value('i', 0)
-        self.generation_count = 0
         self.generator = get_exposure_generator()
-
 
     def run(self):
         """ """
-        while not self.exit.is_set() or self.generation_count <= 3:
+        while not self.exit.is_set():
             time.sleep(1.5)
 
-            if self.process and self.process.is_alive():
-                logger.debug('Process ID {} is running.'.format(
-                    str(self.process_id)
-                ))
-                continue
-
-            self.running.clear()
+            if not self.process or not self.process.is_alive():
+                self.running.clear()
 
             exposure = self.generator.last_exposure()
 
@@ -72,6 +65,12 @@ class ExposureMonitoring(Process):
                 exposure.get('exptime')
             )
 
+            if self.process and self.process.is_alive():
+                logger.debug('Process ID {} is running.'.format(
+                    str(self.process_id.value)
+                ))
+                continue
+
             if isinstance(exposure.get('time'), str):
                 exposure['time'] = datetime.datetime.strptime(
                     exposure.get('time'), "%Y-%m-%dT%H:%M:%S.%f"
@@ -80,9 +79,9 @@ class ExposureMonitoring(Process):
             delay = datetime.datetime.utcnow() - exposure.get('time')
             delay = delay.total_seconds()
 
-            if delay > self.allowed_delay:
+            if delay > allowed_delay:
                 logger.debug('The delay in the acquisition of the exposure went from {} seconds'.format(
-                    str(self.allowed_delay)
+                    str(allowed_delay)
                 ))
                 continue
 
@@ -91,8 +90,6 @@ class ExposureMonitoring(Process):
             self.process = Thread(target=process_run, args=(exposure, self.process_id,))
             self.process.start()
             self.running.set()
-
-            self.generation_count += 1
 
         logger.info("Bye!")
 

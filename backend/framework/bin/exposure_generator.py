@@ -22,6 +22,9 @@ spectro_redux = os.path.normpath(cfg.get("namespace", "desi_spectro_redux"))
 fiberflat_path = os.path.join(spectro_redux, "calib2d")
 psfboot_path = os.path.join(fiberflat_path, "psf")
 list_base_nights = cfg.get("data", "night").split(",")
+min_interval = cfg.getint("main", "min_interval")
+max_interval = cfg.getint("main", "max_interval")
+max_exposures = cfg.getint("main", "max_exposures")
 
 
 class ExposureGenerator(Process):
@@ -29,13 +32,11 @@ class ExposureGenerator(Process):
     def __init__(self):
         super().__init__()
 
-        self.min_interval = 1
-        self.max_interval = 3
-
         self.__last_exposure = Manager().dict()
         self.__cameras = list()
         self.__base_night = None
         self.__base_exposure = None
+        self.__generation_count = 0
 
         arms = cfg.get('data', 'arms').split(',')
         spectrographs = cfg.get('data', 'spectrographs').split(',')
@@ -66,7 +67,7 @@ class ExposureGenerator(Process):
         return random.choice(exposures_list)
 
     def run(self):
-        while True:
+        while self.__generation_count < max_exposures:
             log.info("Starting generation of new exposure...")
 
             last_exposure = self.generate_exposure()
@@ -76,8 +77,12 @@ class ExposureGenerator(Process):
             )
 
             self.__last_exposure.update(last_exposure)
+            self.__generation_count += 1
 
-            rand = random.randint(self.min_interval, self.max_interval)
+            if self.__generation_count == max_exposures:
+                continue
+
+            rand = random.randint(min_interval, max_interval)
             log.info("Next generation in %s minutes..." % rand)
 
             time.sleep(rand * 60)
@@ -238,8 +243,8 @@ class ExposureGenerator(Process):
             os.makedirs(path)
 
     def __print_vars(self):
-        log.info("min_interval:      {}".format(self.min_interval))
-        log.info("max_interval:      {}".format(self.max_interval))
+        log.info("min_interval:      {}".format(min_interval))
+        log.info("max_interval:      {}".format(max_interval))
         log.info("spectro_path:      {}".format(spectro_path))
         log.info("fiberflat_path:    {}".format(fiberflat_path))
         log.info("psfboot_path:      {}".format(psfboot_path))
