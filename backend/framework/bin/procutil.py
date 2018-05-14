@@ -3,7 +3,7 @@ import psutil
 import signal
 import os
 
-logger = logging.getLogger("main_logger")
+logger = logging.getLogger()
 
 
 def reap_children(timeout=3):

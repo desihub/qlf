@@ -10,6 +10,9 @@ for package in desispec desiutil; do
 	export PATH=$QLF_ROOT/$package/bin:$PATH
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
 done
+
+export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
+
 if [ -z $1 ]; then
     python framework/qlf/manage.py test dashboard --noinput
 else

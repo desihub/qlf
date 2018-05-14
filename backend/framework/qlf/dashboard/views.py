@@ -3,7 +3,6 @@ from rest_framework import authentication, permissions, viewsets, filters, statu
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
-
 from django.db.models import Max, Min
 from django.db.models import Q
 
@@ -15,7 +14,7 @@ from .serializers import (
     SingleQASerializer, ObservingHistorySerializer,
     ExposuresDateRangeSerializer, ExposureFlavorSerializer
 )
-import Pyro4
+
 from datetime import datetime, timedelta
 
 from django.http import HttpResponseRedirect
@@ -28,16 +27,15 @@ from django.http import JsonResponse
 
 from django.core.mail import send_mail
 import os
-import operator
+
+from clients import get_exposure_monitoring
 
 from django.contrib import messages
 import logging
 
-uri = settings.QLF_DAEMON_URL
-qlf = Pyro4.Proxy(uri)
+qlf = get_exposure_monitoring()
 
-uri_manual = settings.QLF_MANUAL_URL
-qlf_manual = Pyro4.Proxy(uri_manual)
+# qlf_manual = get_processing_manual()
 
 logger = logging.getLogger(__name__)
 
@@ -495,10 +493,10 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
 
 def start(request):
-    qlf_manual_status = qlf_manual.get_status()
-
-    if qlf_manual_status:
-        qlf_manual.stop()
+    # qlf_manual_status = qlf_manual.get_status()
+    #
+    # if qlf_manual_status:
+    #     qlf_manual.stop()
 
     qlf.start()
     return HttpResponseRedirect('dashboard/monitor')
@@ -529,7 +527,8 @@ def daemon_status(request):
     ql_status = True
 
     run_auto = qlf.get_status()
-    run_manual = qlf_manual.get_status()
+    # run_manual = qlf_manual.get_status()
+    run_manual = None
 
     if run_auto:
         message = "Please stop the automatic execution before executing the manual processing."
@@ -557,7 +556,7 @@ def run_manual_mode(request):
     exposures = request.GET.getlist('exposures[]')
     logger.info(exposures)
 
-    qlf_manual.start(exposures)
+    # qlf_manual.start(exposures)
 
     return JsonResponse({
         "success": True,

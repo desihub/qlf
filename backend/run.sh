@@ -14,11 +14,13 @@ for package in desispec desiutil; do
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
 done
 
+export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
+
 cd $QLF_ROOT
 echo "Initializing QLF Daemon..."
 
 # Start QLF daemon
-python -Wi framework/bin/qlf_daemon.py &> $QLF_ROOT/qlf_daemon.log &
+python -Wi framework/bin/servers.py &> $QLF_ROOT/logs/servers.log &
 
 cd $QLF_PROJECT
 
@@ -30,4 +32,4 @@ echo "QLF web application is running at http://$QLF_HOSTNAME:$QLF_PORT you may s
 if [ $BOKEH_TEST = "false" ]; then
 	bokeh serve $BOKEH_CONFIGURATION --port=$BOKEH_PORT dashboard/bokeh/qacountpix dashboard/bokeh/qaskycont dashboard/bokeh/qacountbins dashboard/bokeh/qagetbias dashboard/bokeh/qagetrms dashboard/bokeh/qainteg dashboard/bokeh/qaskypeak dashboard/bokeh/qasnr dashboard/bokeh/qaskyresid dashboard/bokeh/qaxwsigma dashboard/bokeh/monitor dashboard/bokeh/exposures dashboard/bokeh/footprint &> $QLF_ROOT/bokeh.log &
 fi
-python -u manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/runserver.log
+python -u manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log

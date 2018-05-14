@@ -4,8 +4,8 @@ pattern = logging.Formatter("%(asctime)s - %(message)s",
                             "%Y-%m-%d %H:%M:%S")
 
 
-def setup_logger(name, log_file, level=logging.INFO, handler=False, formatter=pattern):
-    """Function setup as many loggers as you want"""
+def get_logger(name, log_file, level=logging.INFO, formatter=pattern, handler=False):
+    """ Function to create log handlers """
 
     if not handler:
         handler = logging.FileHandler(log_file)
@@ -20,5 +20,5 @@ def setup_logger(name, log_file, level=logging.INFO, handler=False, formatter=pa
 
 
 if __name__ == "__main__":
-    logger = setup_logger("main_logger", "test_logger.log")
+    logger = get_logger("main_logger", "test_logger.log")
     logger.info('This is just info message')

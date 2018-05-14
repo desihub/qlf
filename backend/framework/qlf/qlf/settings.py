@@ -80,7 +80,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -99,12 +99,13 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'ENGINE': 'django_postgrespool',
         'NAME': os.environ.get('POSTGRES_DB', 'dbqlf'),
         'USER': os.environ.get('POSTGRES_USER', 'userqlf'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'qlfuser'),
         'HOST': os.environ.get('DB_NAME', 'db'),
+        # 'HOST': os.environ.get('DB_NAME', 'localhost'),
         'PORT': '',
     }
 }
@@ -114,21 +115,21 @@ DATABASE_POOL_ARGS = {
     'pool_size': 10
 }
 
-BOKEH_URL='http://{}:{}'.format(
+BOKEH_URL = 'http://{}:{}'.format(
     os.environ.get('BOKEH_SERVER', 'localhost'),
     os.environ.get('BOKEH_PORT', '5006')
 )
 
-QLF_DAEMON_URL='PYRO:{}@{}:{}'.format(
-    os.environ.get('QLF_DAEMON_NS', 'qlf.daemon'),
-    os.environ.get('QLF_DAEMON_HOST', 'localhost'),
-    str(os.environ.get('QLF_DAEMON_PORT', 56005))
+EXPOSURE_MONITORING = 'PYRO:{}@{}:{}'.format(
+    os.environ.get('EXPOSURE_MONITORING_NS', 'exposure.monitoring'),
+    os.environ.get('PYRO_HOST', 'localhost'),
+    str(os.environ.get('PYRO_PORT', 56006))
 )
 
-QLF_MANUAL_URL='PYRO:{}@{}:{}'.format(
-    os.environ.get('QLF_MANUAL_NS', 'qlf.manual'),
-    os.environ.get('QLF_DAEMON_HOST', 'localhost'),
-    str(os.environ.get('QLF_DAEMON_PORT', 56005))
+EXPOSURE_GENERATOR = 'PYRO:{}@{}:{}'.format(
+    os.environ.get('EXPOSURE_GENERATOR_NS', 'exposure.generator'),
+    os.environ.get('PYRO_HOST', 'localhost'),
+    str(os.environ.get('PYRO_PORT', 56006))
 )
 
 QLF_BASE_URL = os.environ.get('QLF_BASE_URL', 'http://localhost:8000')
