@@ -3,26 +3,18 @@ import time
 import schedule
 import json
 from channels import Group
-import Pyro4
-from django.conf import settings
 from .views import open_file
-import subprocess
 import os
-import sys
 import configparser
-import requests
 from ui_channel.camera_status import get_camera_status
 from dashboard.utils import get_date
-from astropy.io import fits
-from astropy.time import Time
 import logging
 import io
 
+from clients import get_exposure_monitoring
 from dashboard.bokeh.helper import get_current_process
-import Pyro4
 
-uri = settings.QLF_DAEMON_URL
-qlf = Pyro4.Proxy(uri)
+qlf = get_exposure_monitoring()
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -41,23 +33,6 @@ except Exception as error:
 class Upstream:
     def __init__(self):
         self.startedUpStreamJob = False
-
-    def get_date(self, exp):
-        # open file
-        exp_zfill = str(exp).zfill(8)
-        fits_file = '{}/{}/desi-{}.fits.fz'.format(desi_spectro_data, night, exp_zfill)
-
-        f = fits.open(fits_file)
-
-        # read the time in isot
-        time = f[0].header['DATE-OBS']
-
-        # declare the format
-        t = Time(time, format='isot', scale='utc')
-
-        # Convert to MJD
-        return t
-
 
     def get_camera_log(self, cam):
         process = get_current_process()
@@ -124,9 +99,6 @@ class Upstream:
             return cams
         return list()
 
-    uri = settings.QLF_DAEMON_URL
-    qlf = Pyro4.Proxy(uri)
-
     def start_daemon(self):
         qlf.start()
 
@@ -151,15 +123,14 @@ class Upstream:
         pipelinelog = list()
         mjd = str()
         process_id = int()
-        date = dict()
         date_time = str()
         if len(process) > 0:
             pipelinelog = self.get_pipeline_log()
             exposure = process[0].get("exposure")
             process_id = process[0].get("id")
-            date = self.get_date(exposure)
-            date_time = date.value
-            mjd = date.mjd if date is not None else None
+            date = get_date(exposure)
+            date_time = date.value if date else ''
+            mjd = date.mjd if date else ''
         else:
             exposure = ''
         return json.dumps({
@@ -188,7 +159,6 @@ class Upstream:
         Group("monitor").send({
             "text": state
         })
-
 
     def run_threaded(self, job_func):
         job_thread = threading.Thread(target=job_func)

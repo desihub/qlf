@@ -2,9 +2,9 @@ import os
 import sys
 import configparser
 from astropy.io import fits
-from log import setup_logger
+from log import get_logger
 
-logger = setup_logger(__name__, "{}.log".format(__name__))
+logger = get_logger(__name__, "{}.log".format(__name__))
 
 
 class DOSmonitor(object):
@@ -120,14 +120,14 @@ class DOSmonitor(object):
             logger.error("error to load fits file: %s" % error)
             return {}
 
-        dateobs = "%s-%s-%s 22:00" % (night[:-4], night[-4:][:2], night[-2:])
+        # dateobs = "%s-%s-%s 22:00" % (night[:-4], night[-4:][:2], night[-2:])
 
         return {
             'telra': hdr.get('telra', None),
             'teldec': hdr.get('teldec', None),
             'tile': hdr.get('tileid', None),
-            #'dateobs': hdr.get('date-obs', None),
-            'dateobs': dateobs,
+            'dateobs': hdr.get('date-obs', None),
+            # 'dateobs': dateobs,
             'flavor': hdr.get('flavor', None),
             'exptime': hdr.get('exptime', None)
         }

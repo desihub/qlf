@@ -30,7 +30,10 @@ services:
       - EMAIL_HELPDESK=LIneA Science Server <helpdesk@linea.gov.br>
       - BOKEH_PORT=5007
       - QLF_PORT=8001
-      - QLF_DAEMON_PORT=56006
+      - EXPOSURE_GENERATOR_NS=exposure.generator
+      - EXPOSURE_MONITORING_NS=exposure.monitoring
+      - PYRO_HOST=localhost
+      - PYRO_PORT=56006
       - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001 --host=localhost:5007
       - DB_NAME=db
       - REDIS_NAME=redis

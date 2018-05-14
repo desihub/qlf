@@ -1,13 +1,10 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from .models import Job, Exposure, Camera, QA, Process, Configuration
-from astropy.time import Time
 from .utils import get_date
-from django.conf import settings
-import Pyro4
+from clients import get_exposure_monitoring
 
-uri = settings.QLF_DAEMON_URL
-qlf = Pyro4.Proxy(uri)
+qlf = get_exposure_monitoring()
 
 
 # http://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields

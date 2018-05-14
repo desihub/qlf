@@ -1,26 +1,22 @@
 import os
 import io
-from log import setup_logger
+from log import get_logger
 import subprocess
-import datetime
-import configparser
+from datetime import datetime
+from util import get_config
 import shutil
-import logging
-from multiprocessing import Manager, Lock, Process
+from multiprocessing import Manager, Lock, Process, Value
 from threading import Thread
 from qlf_models import QLFModels
 
-qlf_root = os.getenv('QLF_ROOT')
-cfg = configparser.ConfigParser()
+cfg = get_config()
 
-cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
 qlconfig = cfg.get('main', 'qlconfig')
-logmain = cfg.get('main', 'logfile')
-logpipeline = cfg.get('main', 'logpipeline')
 desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+loglevel = cfg.get("main", "loglevel")
+logpipeline = cfg.get('main', 'logpipeline')
 
-logger = logging.getLogger("main_logger")
-pipe_logger = setup_logger('logpipeline', logpipeline)
+logger = get_logger("pipeline", logpipeline, loglevel)
 
 
 class QLFProcess(object):
@@ -29,74 +25,9 @@ class QLFProcess(object):
     def __init__(self, data, configuration):
         self.pipeline_name = 'Quick Look'
         self.data = data
-        self.models = QLFModels()
-        self.configuration = configuration
 
-        output_dir = os.path.join(
-            'exposures',
-            self.data.get('night'),
-            self.data.get('zfill')
-        )
-
-        output_full_dir = os.path.join(desi_spectro_redux, output_dir)
-
-        # Remove old dir
-        if os.path.isdir(output_full_dir):
-            shutil.rmtree(output_full_dir)
-
-        # Make output dir
-        os.makedirs(output_full_dir)
-
-        self.data['output_dir'] = output_dir
-
-    def start_process(self):
-        """ Start pipeline. """
-
-        self.data['start'] = datetime.datetime.now().replace(microsecond=0)
-
-        # create process in database and obtain the process id
-        process = self.models.insert_process(
-            self.data,
-            self.pipeline_name,
-            self.configuration
-        )
-
-        self.data['process_id'] = process.id
-        self.data['status'] = process.status
-
-        # TODO: ingest configuration file used, this should be done by process
-        # self.models.insert_config(process.id)
-
-        pipe_logger.info('...{}'.format('\n' * 20))
-        pipe_logger.info('Process ID {}'.format(process.id))
-        pipe_logger.info('ExpID {} started.'.format(self.data.get('expid')))
-
-        return process.id
-
-    def finish_process(self):
-        """ Finish pipeline. """
-
-        self.data['end'] = datetime.datetime.now().replace(microsecond=0)
-
-        self.data['duration'] = self.data.get('end') - self.data.get('start')
-
-        pipe_logger.info("ExpID {} ended (runtime: {}).".format(
-           self.data.get('expid'),
-           str(self.data.get('duration'))
-        ))
-
-        proc = Thread(target=self.ingest_parallel_qas)
-        proc.start()
-
-
-class Jobs(QLFProcess):
-
-    def __init__(self, data, configuration):
-
-        super().__init__(data, configuration)
         self.num_cameras = len(self.data.get('cameras'))
 
-        # TODO: improvements - get stages/steps in database
         self.stages = [
             {
                 "display_name": "Pre Processing",
@@ -120,6 +51,50 @@ class Jobs(QLFProcess):
             }
         ]
 
+        self.models = QLFModels()
+        self.configuration = configuration
+
+        output_dir = os.path.join(
+            'exposures',
+            self.data.get('night'),
+            self.data.get('zfill')
+        )
+
+        output_full_dir = os.path.join(desi_spectro_redux, output_dir)
+
+        # Remove old dir
+        if os.path.isdir(output_full_dir):
+            shutil.rmtree(output_full_dir)
+
+        # Make output dir
+        os.makedirs(output_full_dir)
+
+        self.data['output_dir'] = output_dir
+
+    def start_process(self):
+        """ Start pipeline. """
+
+        self.data['start'] = datetime.now().replace(microsecond=0)
+
+        # create process in database and obtain the process id
+        process = self.models.insert_process(
+            self.data,
+            self.pipeline_name,
+            self.configuration
+        )
+
+        self.data['process_id'] = process.id
+        self.data['status'] = process.status
+
+        # TODO: ingest configuration file used, this should be done by process
+        # self.models.insert_config(process.id)
+
+        logger.info('...{}'.format('\n' * 20))
+        logger.info('Process ID {}'.format(process.id))
+        logger.info('ExpID {} started.'.format(self.data.get('expid')))
+
+        return process.id
+
     def start_jobs(self):
         """ Distributes the cameras for parallel processing. """
 
@@ -128,9 +103,7 @@ class Jobs(QLFProcess):
         resumelog_lock = Lock()
 
         for camera in self.data.get('cameras'):
-            camera['start'] = datetime.datetime.now().replace(
-                microsecond=0
-            )
+            camera['start'] = datetime.now().replace(microsecond=0)
 
             logname = os.path.join(
                 self.data.get('output_dir'),
@@ -202,7 +175,7 @@ class Jobs(QLFProcess):
 
         logname.close()
 
-        camera['end'] = datetime.datetime.now().replace(microsecond=0)
+        camera['end'] = datetime.now().replace(microsecond=0)
         camera['status'] = 0
         camera['duration'] = str(
             camera.get('end') - camera.get('start')
@@ -213,9 +186,24 @@ class Jobs(QLFProcess):
 
         return_cameras.append(camera)
 
+    def finish_process(self):
+        """ Finish pipeline. """
+
+        self.data['end'] = datetime.now().replace(microsecond=0)
+
+        self.data['duration'] = self.data.get('end') - self.data.get('start')
+
+        logger.info("ExpID {} ended (runtime: {}).".format(
+           self.data.get('expid'),
+           str(self.data.get('duration'))
+        ))
+
+        proc = Thread(target=self.ingest_parallel_qas)
+        proc.start()
+
     def ingest_parallel_qas(self):
-        pipe_logger.info('Ingesting QAs...')
-        start_ingestion = datetime.datetime.now().replace(microsecond=0)
+        logger.info('Ingesting QAs...')
+        start_ingestion = datetime.now().replace(microsecond=0)
 
         proc_qas = list()
 
@@ -250,12 +238,11 @@ class Jobs(QLFProcess):
             status=self.data.get('status')
         )
 
-        duration_ingestion = datetime.datetime.now().replace(microsecond=0) - start_ingestion
+        duration_ingestion = datetime.now().replace(microsecond=0) - start_ingestion
 
-        pipe_logger.info("(ExpID {}) Ingestion complete: {}.".format(
-            self.data.get('expid'), str(duration_ingestion)))
-        pipe_logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
-        pipe_logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
+        logger.info("Ingestion complete: %s." % str(duration_ingestion))
+        logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
+        logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
 
     def resume_log(self, line, camera, lock):
         """ """
@@ -267,9 +254,9 @@ class Jobs(QLFProcess):
             line_str = line.split(':')[-1]
 
             if line.find('ERROR') > -1:
-                pipe_logger.error("ERROR: Camera {}: {}".format(camera, line_str))
+                logger.error("ERROR: Camera {}: {}".format(camera, line_str))
             elif line.find('CRITICAL') > -1:
-                pipe_logger.critical("CRITICAL: Camera {}: {}".format(camera, line_str))
+                logger.critical("CRITICAL: Camera {}: {}".format(camera, line_str))
             else:
                 for stage in self.stages:
                     stage_start = stage.get('start')
@@ -279,8 +266,9 @@ class Jobs(QLFProcess):
                         stage_end['count'] += 1
 
                         if stage_end.get('count') == self.num_cameras:
-                            stage_end['time'] = datetime.datetime.now().replace(microsecond=0)
-                            pipe_logger.info(
+                            end_time = datetime.now().replace(microsecond=0)
+                            stage_end['time'] = end_time
+                            logger.info(
                                 '{} ended (runtime: {}).'.format(
                                     stage.get('display_name'),
                                     stage_end.get('time') - stage_start.get('time')
@@ -291,14 +279,21 @@ class Jobs(QLFProcess):
                         stage_start['count'] += 1
 
                         if 'time' not in stage_start:
-                            stage_start['time'] = datetime.datetime.now().replace(microsecond=0)
-                            pipe_logger.info('{} started.'.format(stage.get('display_name')))
+                            start_time = datetime.now().replace(microsecond=0)
+                            stage_start['time'] = start_time
+                            logger.info('{} started.'.format(stage.get('display_name')))
 
         except Exception as err:
-            pipe_logger.info(err)
+            logger.info(err)
 
         lock.release()
 
 
-if __name__ == "__main__":
-    print('Standalone execution...')
+def process_run(exp, _id):
+    """ """
+    qlf_process = QLFProcess(exp)
+    _id.value = qlf_process.start_process()
+    print('Process ID: {}'.format(_id.value))
+    qlf_process.start_jobs()
+    qlf_process.finish_process()
+
