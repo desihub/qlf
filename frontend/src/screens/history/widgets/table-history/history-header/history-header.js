@@ -182,16 +182,16 @@ export default class HistoryHeader extends React.Component {
             {this.renderHeader('pk', 'Process ID')}
           </TableCell>
           <TableCell style={styles.tableCell}>
-            {this.renderHeader('start', 'Process Date')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Process Time')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure_id', 'Exp ID')}
           </TableCell>
           <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__tile', 'Tile ID')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('start', 'Process Date')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'Process Time')}
           </TableCell>
           <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__dateobs', 'OBS Date')}
@@ -224,7 +224,7 @@ export default class HistoryHeader extends React.Component {
             {this.renderHeader('', 'QA')}
           </TableCell>
           <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'View')}
+            {this.renderHeader('', 'CCDs')}
           </TableCell>
         </TableRow>
       </TableHead>
@@ -287,7 +287,7 @@ export default class HistoryHeader extends React.Component {
             {this.renderHeader('', 'QA')}
           </TableCell>
           <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'View')}
+            {this.renderHeader('', 'CCDs')}
           </TableCell>
         </TableRow>
       </TableHead>

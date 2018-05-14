@@ -31,7 +31,7 @@ class Connection extends Component {
         exposure: result.exposure.toString(),
         camerasStages: result.cameras,
         availableCameras: result.available_cameras,
-        mjd: result.mjd === '' ? '' : result.mjd.toFixed(5),
+        mjd: result.mjd === '' ? '' : result.mjd.toFixed(3),
         date: result.date === '' ? '' : result.date.split('T')[0],
         time: result.date === '' ? '' : result.date.split('T')[1],
         processId: result.process_id,

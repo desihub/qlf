@@ -75,15 +75,15 @@ export default class HistoryData extends React.Component {
         <TableCell style={styles.tableCell} />
         <TableCell style={styles.tableCell}>{this.props.row.pk}</TableCell>
         <TableCell style={styles.tableCell}>
-          {this.formatDate(this.props.row.start)}
-        </TableCell>
-        <TableCell style={styles.tableCell}>{this.props.row.runtime}</TableCell>
-        <TableCell style={styles.tableCell}>
           {this.props.row.exposure.exposure_id}
         </TableCell>
         <TableCell style={styles.tableCell}>
           {this.props.row.exposure.tile}
         </TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.formatDate(this.props.row.start)}
+        </TableCell>
+        <TableCell style={styles.tableCell}>{this.props.row.runtime}</TableCell>
         <TableCell style={styles.tableCell}>
           {this.formatDate(this.props.row.exposure.dateobs)}
         </TableCell>
@@ -180,9 +180,14 @@ export default class HistoryData extends React.Component {
         <TableCell style={styles.tableCell}>{airmass}</TableCell>
         <TableCell style={styles.tableCell} />
         <TableCell style={styles.tableCell}>
-          <span style={styles.link} onClick={() => selectProcessQA(processId)}>
-            View
-          </span>
+          {processId ? (
+            <span
+              style={styles.link}
+              onClick={() => selectProcessQA(processId)}
+            >
+              View
+            </span>
+          ) : null}
         </TableCell>
         <TableCell style={styles.tableCell} />
       </TableRow>

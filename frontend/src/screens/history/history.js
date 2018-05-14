@@ -17,6 +17,10 @@ const styles = {
     height: '90%',
     margin: '1em',
   },
+  tableBody: {
+    overflowY: 'scroll',
+    height: '70vh',
+  },
 };
 
 export default class History extends Component {
@@ -259,13 +263,15 @@ export default class History extends Component {
         <Card style={styles.card}>
           <Tabs value={this.state.value} onChange={this.handleChange}>
             <Tab label="Most Recent" value="last">
-              {this.props.type === 'process'
-                ? this.renderRecentProcesses()
-                : this.renderRecentExposures()}
+              <div style={styles.tableBody}>
+                {this.props.type === 'process'
+                  ? this.renderRecentProcesses()
+                  : this.renderRecentExposures()}
+              </div>
             </Tab>
             <Tab label="History" value="history">
+              <div style={styles.tableBody}>{this.renderRows()}</div>
               {this.renderToolbar()}
-              {this.renderRows()}
             </Tab>
           </Tabs>
         </Card>

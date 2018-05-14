@@ -20,7 +20,7 @@ export default class Status extends Component {
 
   render() {
     const mjd = parseFloat(this.props.mjd)
-      ? parseFloat(this.props.mjd).toFixed(5)
+      ? parseFloat(this.props.mjd).toFixed(3)
       : '';
     const processId = this.props.processId
       ? this.props.processId.toString()
