@@ -174,19 +174,18 @@ def get_url_args(curdoc, defaults=None):
 
     logger.info(http_request)
 
-    if http_request and 'django_full_path' in http_request.cookies:
-        uri = http_request.cookies['django_full_path'].value
-        tmp = furl(uri).args
+    if http_request and 'process_id' in http_request.arguments:
+        tmp = http_request.arguments
+        for key in http_request.arguments:
+            args[key] = tmp[key][0].decode("utf-8")
 
-        for key in tmp:
-            args[key] = tmp[key]
-
-        logger.info('URI: {}'.format(uri))
         logger.info('ARGS: {}'.format(tmp))
         logger.info(__name__)
 
+        print(args)
+
         # the bokeh app name is the second segment of the url path
-        args['bokeh_app'] = furl(uri).path.segments[1]
+        args['bokeh_app'] = args['bokeh-app-path']
 
     return args
 

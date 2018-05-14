@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 from django.http import HttpResponseRedirect
 from django.conf import settings
 
-from bokeh.embed import autoload_server
+from bokeh.embed import server_document
 from django.template import loader
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -595,7 +595,7 @@ def embed_bokeh(request, bokeh_app):
     # http://bokeh.pydata.org/en/0.12.5/docs/reference/embed.html
 
     # TODO: test if bokeh server is reachable
-    bokeh_script = autoload_server(None, url="{}/{}".format(settings.BOKEH_URL,
+    bokeh_script = server_document(arguments=request.GET, url="{}/{}".format(settings.BOKEH_URL,
                                                             bokeh_app))
 
     template = loader.get_template('dashboard/embed_bokeh.html')

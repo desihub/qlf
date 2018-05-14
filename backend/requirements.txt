@@ -20,7 +20,7 @@ djangorestframework==3.6.2
 django-debug-toolbar==1.8
 pytest==3.0.7
 tornado==4.4.2 # make sure bokeh uses this version of tornado
-bokeh==0.12.4
+bokeh==0.12.15
 pandas==0.20.1
 requests==2.13.0
 sphinx==1.5.4
