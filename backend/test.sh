@@ -14,8 +14,8 @@ for package in desispec desiutil; do
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
 done
 
-python -Wi framework/qlf/manage.py migrate
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
+python -Wi framework/qlf/manage.py migrate
 
 if [ -z $1 ]; then
     python framework/qlf/manage.py test dashboard --noinput
