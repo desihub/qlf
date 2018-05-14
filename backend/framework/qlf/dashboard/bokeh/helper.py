@@ -173,7 +173,6 @@ def get_url_args(curdoc, defaults=None):
     http_request = curdoc().session_context.request
 
     logger.info(http_request)
-    print(http_request.arguments)
 
     if http_request and 'process_id' in http_request.arguments:
         tmp = http_request.arguments
