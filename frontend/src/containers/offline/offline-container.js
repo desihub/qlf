@@ -102,7 +102,7 @@ class OfflineContainer extends Component {
     if (!this.state.loading) return null;
     return (
       <div style={{ ...styles.loading }}>
-        <FadeLoader color="teal" size="16px" margin="4px" />
+        <FadeLoader color="#424242" size="16px" margin="4px" />
       </div>
     );
   };

@@ -34,7 +34,7 @@ const styles = {
     alignItems: 'center',
   },
   card: {
-    borderLeft: 'solid 4px teal',
+    borderLeft: 'solid 4px #424242',
     flex: '1',
     height: '90%',
   },

@@ -119,6 +119,7 @@ export function getProcessingHistory(
     if (rows && rows.results) {
       dispatch(updateRowsCount(rows.count));
       dispatch(updateRows(rows.results));
+      dispatch(updateRecentProcess(rows.results));
     }
   };
 }
@@ -136,6 +137,7 @@ export function getObservingHistory(start, end, order, offset, limit, filters) {
     if (rows && rows.results) {
       dispatch(updateRowsCount(rows.count));
       dispatch(updateRows(rows.results));
+      dispatch(updateRecentExposures(rows.results));
     }
   };
 }
