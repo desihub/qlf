@@ -297,27 +297,3 @@ def process_run(exp, _id):
     qlf_process.start_jobs()
     qlf_process.finish_process()
 
-
-if __name__ == "__main__":
-    print('Start Pipeline...')
-
-    exposure = {
-        'night': '20190101',
-        # 'cameras': [{'name': 'r7'}, {'name': 'r8'}],
-        'cameras': [{'name': 'r7'}],
-        'teldec': 14.84,
-        'telra': 333.22,
-        'exptime': 1000,
-        'zfill': '00000003',
-        'dateobs': '2019-01-01T22:00:00',
-        'tile': 6,
-        'desi_spectro_data': '/home/singulani/Projects/quicklook/qlf/backend/spectro/data',
-        'desi_spectro_redux': '/home/singulani/Projects/quicklook/qlf/backend/spectro/redux',
-        'flavor': 'science',
-        'expid': '3'
-    }
-
-    process_id = Value('i', 0)
-
-    processing = Process(target=process_run, args=(exposure, process_id,))
-    processing.start()
