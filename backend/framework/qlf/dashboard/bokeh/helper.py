@@ -222,37 +222,46 @@ def write_info(qa_name, params):
 
 def write_description(qa_name):
     """Descriptions to be displayed in QA plots."""
-    info_dic = {"getbias":
-                # "Used to calculate mean and median of region of 2D image, including overscan"],
-                ["Bias From Overscan",
-                    "Mean of values in overscan covered by each amplifier."],
-                # "Used to calculate RMS of region of 2D image, including overscan."],
-                "getrms": ["Get RMS", "RMS of full region covered by each amplifier."],
-                # "Count number of pixels above three configured thresholds."],
-                "countpix": ["Count Pixels", "Number pixels above 'CUTHI' threshold per amplifier."],
-                # +"Quantities should be independent of exposure length."],
-                "xwsigma": ["XWSigma", "Calculate PSF sigma in spatial and wavelength directions independently using "
-                            + "configured sky lines."],
-                "countbins": ["Count Spectral Bins", "Count the number of wavelength bins above three configured thresholds."],
-                "skycont": ["Sky Continuum", "Measurement of sky continuum in configured inter-line sky regions on sky fibers."
-                            #+"There are at least two such regions configured per half-fiber (i.e. In the region covered by each of the "
-                            #+"2 amps covering the fiber)."
-                            ],
-                "skypeak": ["Sky Peaks", "Measurement of counts in windows around configured peak sky wavelengths on all fibers "
-                            + "aside from standard star fibers."
-                            #  There are at least two such peaks configured per half-fiber"
-                            #+"(i.e. In the region covered by each of the 2 amps covering the fiber)."
-                            ],
-                # "Number of wavelength bins above three configured thresholds."],
-                "skyresid": ["Sky Residual", "Median of residuals in each wavelength bin"],
-                "integ": ["Integrate Spectrum", "Sum of counts for stars fibers"],
-                # Number of wavelength bins above three configured thresholds."],
-                "snr": ["Calculate SNR",  "Signal-to-noise ratio measurements for individual targets."]}
-
-    text = """<body><p  style="text-align:left; color:#262626; font-size:20px;">
-            <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0], info_dic[qa_name][1])
+    info_dic={"getbias":
+          ["Bias From Overscan", "Mean of values in overscan covered by each amplifier" ],#"Used to calculate mean and median of region of 2D image, including overscan"],
+            "getrms":["Get RMS", "RMS of full region covered by each amplifier"],#"Used to calculate RMS of region of 2D image, including overscan."],
+        "countpix": ["Count Pixels", "Number pixels above 'CUTHI' threshold per amplifier" ],#"Count number of pixels above three configured thresholds."],
+          #+"Quantities should be independent of exposure length."],
+        "xwsigma":["XWSigma","Calculate PSF sigma in spatial and wavelength directions independently using "
+          +"configured sky lines"],
+        "countbins":["Count Spectral Bins","Count the number of wavelength bins above three configured thresholds."],
+        "skycont":["Sky Continuum","Measurement of sky continuum in configured inter-line sky regions on <i>sky fibers</i> "
+          #+"There are at least two such regions configured per half-fiber (i.e. In the region covered by each of the " 
+          #+"2 amps covering the fiber)."
+                  ],
+        "skypeak":["Sky Peaks","Measurement of counts in windows around configured peak sky wavelengths on <i>all fibers</i>"
+          +"aside from standard star fibers"
+                   #  There are at least two such peaks configured per half-fiber" 
+          #+"(i.e. In the region covered by each of the 2 amps covering the fiber)."
+                  ],
+        "skyresid":["Sky Residual", "Median of residuals in each wavelength bin" ],#"Number of wavelength bins above three configured thresholds."],
+        "integ":["Integrate Spectrum","Sum of counts for stars fibers"],
+          #Number of wavelength bins above three configured thresholds."],
+        "snr":["Calculate SNR",  "Signal-to-noise ratio measurements for individual targets."]}
+    
+    text="""<body><p  style="text-align:left; color:#262626; font-size:20px;">
+            <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0],info_dic[qa_name][1])                  
     return text
 
+def eval_histpar(yscale, hist):
+    """ Common parameters for histograms"""
+    from numpy import log10
+    if yscale == 'log':
+        ylabel = "Frequency + 1"
+        yrange = (1, 1.* 10**(int(log10(max(hist))) +1) )
+        bottomval = 'bottomplusone'
+        histval = 'histplusone'
+    else:
+        ylabel = "Frequency"
+        yrange = (0, 1.1*max(hist))
+        bottomval = 'bottom'
+        histval = 'hist'
+    return [ylabel,yrange,bottomval,histval]
 
 if __name__ == '__main__':
     logger.info('Standalone execution...')
