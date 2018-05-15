@@ -12,10 +12,18 @@ import QlfApi from '../../containers/offline/connection/qlf-api';
 
 const styles = {
   card: {
-    borderLeft: 'solid 4px teal',
+    borderLeft: 'solid 4px #424242',
     flex: '1',
     height: '90%',
     margin: '1em',
+  },
+  tableBody: {
+    overflowY: 'scroll',
+    maxHeight: '60vh',
+  },
+  submit: {
+    paddingLeft: '16px',
+    cursor: ' pointer',
   },
 };
 
@@ -31,6 +39,7 @@ export default class History extends Component {
     type: PropTypes.string.isRequired,
     lastProcessedId: PropTypes.number,
     rowsCount: PropTypes.number,
+    fetchLastProcess: PropTypes.func,
   };
 
   renderSelectDate = () => {
@@ -55,6 +64,7 @@ export default class History extends Component {
     startDate: this.props.startDate,
     endDate: this.props.endDate,
     limit: 10,
+    firstLoad: false,
   };
 
   changeLimit = limit => {
@@ -63,9 +73,11 @@ export default class History extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.startDate && nextProps.endDate) {
+      if (!this.state.firstLoad) this.props.fetchLastProcess();
       this.setState({
         startDate: nextProps.startDate,
         endDate: nextProps.endDate,
+        firstLoad: true,
       });
     }
   }
@@ -204,13 +216,13 @@ export default class History extends Component {
     return (
       <ToolbarGroup>
         <ToolbarSeparator />
-        <FontIcon
-          className="material-icons"
+        <span
+          style={styles.submit}
           title="Reprocess"
           onClick={this.handleOpenDialog}
         >
-          play_arrow
-        </FontIcon>
+          Submit
+        </span>
       </ToolbarGroup>
     );
   };
@@ -259,13 +271,15 @@ export default class History extends Component {
         <Card style={styles.card}>
           <Tabs value={this.state.value} onChange={this.handleChange}>
             <Tab label="Most Recent" value="last">
-              {this.props.type === 'process'
-                ? this.renderRecentProcesses()
-                : this.renderRecentExposures()}
+              <div style={styles.tableBody}>
+                {this.props.type === 'process'
+                  ? this.renderRecentProcesses()
+                  : this.renderRecentExposures()}
+              </div>
             </Tab>
             <Tab label="History" value="history">
+              <div style={styles.tableBody}>{this.renderRows()}</div>
               {this.renderToolbar()}
-              {this.renderRows()}
             </Tab>
           </Tabs>
         </Card>

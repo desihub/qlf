@@ -19,12 +19,9 @@ log = get_logger(
 
 spectro_path = os.path.normpath(cfg.get("namespace", "desi_spectro_data"))
 spectro_redux = os.path.normpath(cfg.get("namespace", "desi_spectro_redux"))
-
 base_exposures_path = cfg.get("namespace", "base_exposures_path")
-
 fiberflat_path = os.path.join(base_exposures_path, "calib2d")
 psfboot_path = os.path.join(base_exposures_path, "psf")
-
 list_base_nights = cfg.get("data", "night").split(",")
 min_interval = cfg.getint("main", "min_interval")
 max_interval = cfg.getint("main", "max_interval")
@@ -37,7 +34,6 @@ class ExposureGenerator(Process):
         super().__init__()
 
         self.__last_exposure = Manager().dict()
-
         self.__base_exposure = None
         self.__generation_count = 0
 
@@ -56,7 +52,7 @@ class ExposureGenerator(Process):
 
             if self.__generation_count == max_exposures:
                 continue
-
+                
             minutes = random.randint(min_interval, max_interval)
             log.info("Next generation in %s minutes..." % minutes)
 
@@ -78,21 +74,23 @@ class ExposureGenerator(Process):
 
         return random.choice(exposures_list)
 
+
     def get_last_exposure(self):
         return Manager().dict(self.__last_exposure)
 
     def generate_exposure(self):
+
         self.__base_exposure = self.__get_random_exposure()
 
         log.info("Base exposure: {}".format(self.__base_exposure))
 
         gen_time = datetime.datetime.utcnow()
+
         exp_id = self.__gen_new_expid()
         exp_id_zfill = str(exp_id).zfill(8)
 
         self.__gen_desi_file(exp_id_zfill, gen_time)
         self.__gen_fibermap_file(exp_id_zfill, gen_time)
-
         self.__gen_fiberflat_folder(gen_time)
         self.__gen_psfboot_folder(gen_time)
 
@@ -154,6 +152,7 @@ class ExposureGenerator(Process):
 
     def __gen_desi_file(self, exp_id, gen_time):
         src = os.path.join(base_exposures_path)
+
         dest = os.path.join(
             spectro_path, self.__night_to_generate(gen_time))
         self.__ensure_dir(dest)
@@ -220,6 +219,7 @@ class ExposureGenerator(Process):
 
         # if not os.path.isdir(dest):
         #     shutil.copytree(psfboot_path, dest)
+
 
     @staticmethod
     def __night_to_generate(gen_time):

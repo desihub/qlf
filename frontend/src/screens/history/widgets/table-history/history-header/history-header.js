@@ -14,6 +14,9 @@ const styles = {
   header: { cursor: 'pointer', color: 'black' },
   headerRecent: { color: 'black' },
   radioGroup: { margin: '1em' },
+  tableCell: {
+    padding: '4px 4px 4px 4px',
+  },
 };
 
 export default class HistoryHeader extends React.Component {
@@ -172,39 +175,57 @@ export default class HistoryHeader extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          <TableCell>{this.renderHeader('', 'Program')}</TableCell>
-          <TableCell>{this.renderHeader('pk', 'Process ID')}</TableCell>
-          <TableCell>{this.renderHeader('start', 'Process Date')}</TableCell>
-          <TableCell>{this.renderHeader('', 'Process Time')}</TableCell>
-          <TableCell>{this.renderHeader('exposure_id', 'Exp ID')}</TableCell>
-          <TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'Program')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('pk', 'Process ID')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('exposure_id', 'Exp ID')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__tile', 'Tile ID')}
           </TableCell>
-          <TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('start', 'Process Date')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'Process Time')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__dateobs', 'OBS Date')}
           </TableCell>
-          <TableCell>
+          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__dateobs', 'OBS Time')}
           </TableCell>
-          <TableCell>{this.renderHeader('', 'MJD')}</TableCell>
-          <TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'MJD')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__telra', 'RA (hms)')}
           </TableCell>
-          <TableCell>
+          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__teldec', 'Dec (dms)')}
           </TableCell>
-          <TableCell>
+          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__exptime', 'Exp Time(s)')}
           </TableCell>
-          <TableCell>
+          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__flavor', 'Flavor')}
           </TableCell>
-          <TableCell>
+          <TableCell style={styles.tableCell}>
             {this.renderHeader('exposure__airmass', 'Airmass')}
           </TableCell>
-          <TableCell>{this.renderHeader('', 'FWHM (arcsec)')}</TableCell>
-          <TableCell>{this.renderHeader('', 'QA')}</TableCell>
-          <TableCell>{this.renderHeader('', 'View')}</TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'FWHM (arcsec)')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'QA')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'CCDs')}
+          </TableCell>
         </TableRow>
       </TableHead>
     );
@@ -226,20 +247,48 @@ export default class HistoryHeader extends React.Component {
       <TableHead>
         <TableRow>
           {this.renderCheckbox()}
-          <TableCell>{this.renderHeader('', 'Program')}</TableCell>
-          <TableCell>{this.renderHeader('exposure_id', 'Exp ID')}</TableCell>
-          <TableCell>{this.renderHeader('tile', 'Tile ID')}</TableCell>
-          <TableCell>{this.renderHeader('dateobs', 'OBS Date')}</TableCell>
-          <TableCell>{this.renderHeader('', 'OBS Time')}</TableCell>
-          <TableCell>{this.renderHeader('', 'MJD')}</TableCell>
-          <TableCell>{this.renderHeader('telra', 'RA (hms)')}</TableCell>
-          <TableCell>{this.renderHeader('teldec', 'Dec (dms)')}</TableCell>
-          <TableCell>{this.renderHeader('exptime', 'Exp Time(s)')}</TableCell>
-          <TableCell>{this.renderHeader('flavor', 'Flavor')}</TableCell>
-          <TableCell>{this.renderHeader('', 'Airmass')}</TableCell>
-          <TableCell>{this.renderHeader('', 'FWHM (arcsec)')}</TableCell>
-          <TableCell>{this.renderHeader('', 'QA')}</TableCell>
-          <TableCell>{this.renderHeader('', 'View')}</TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'Program')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('exposure_id', 'Exp ID')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('tile', 'Tile ID')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('dateobs', 'OBS Date')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'OBS Time')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'MJD')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('telra', 'RA (hms)')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('teldec', 'Dec (dms)')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('exptime', 'Exp Time(s)')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('flavor', 'Flavor')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'Airmass')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'FWHM (arcsec)')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'QA')}
+          </TableCell>
+          <TableCell style={styles.tableCell}>
+            {this.renderHeader('', 'CCDs')}
+          </TableCell>
         </TableRow>
       </TableHead>
     );

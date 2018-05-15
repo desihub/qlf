@@ -27,6 +27,9 @@ night=20190101
 # the 30 cameras in parallel, unless you have a multicore machine, test at your
 # own risk
 
+# exposure ids to be processed, e.g. desi-00000003.fits.fz, desi-00000004.fits.fz
+exposures=3,4
+
 # cameras to be processed, camera=arm+spectrograph
 
 # b,r,z
@@ -34,7 +37,6 @@ arms=b,r,z
 
 # 0,1,2,3,4,5,6,7,8,9
 spectrographs=0
-
 
 [namespace]
 # Input data directory, e.g. full/path/to/spectro/data

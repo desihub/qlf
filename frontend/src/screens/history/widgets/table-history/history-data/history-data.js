@@ -14,6 +14,12 @@ const styles = {
     marginTop: '12px',
     marginLeft: '24px',
   },
+  tableCheckbox: {
+    paddingLeft: '23px',
+  },
+  tableCell: {
+    padding: '4px 4px 4px 4px',
+  },
 };
 
 export default class HistoryData extends React.Component {
@@ -48,15 +54,40 @@ export default class HistoryData extends React.Component {
     return hour + ':' + minutes + ':' + seconds;
   };
 
+  qaSuccess = () => {
+    const { row } = this.props;
+    const qaTests = row.qa_tests
+      ? row.qa_tests
+      : row.last_exposure_process_qa_tests
+        ? row.last_exposure_process_qa_tests
+        : null;
+    if (qaTests) {
+      const testsFailed =
+        !JSON.stringify(qaTests).includes('None') &&
+        !JSON.stringify(qaTests).includes('FAILURE');
+      return this.renderQAStatus(testsFailed);
+    }
+    return this.renderQAStatus(false);
+  };
+
+  renderQAStatus = status => {
+    return status ? (
+      <span style={{ color: 'green' }}>✓</span>
+    ) : (
+      <span style={{ color: 'red' }}>✖︎</span>
+    );
+  };
+
   renderViewQA = (lastProcessed, runtime) => {
     if (lastProcessed && !runtime) return <CircularProgress size={20} />;
     if (!runtime) return;
+
     return (
       <span
         style={styles.link}
         onClick={() => this.props.selectProcessQA(this.props.processId)}
       >
-        View
+        {this.qaSuccess()}
       </span>
     );
   };
@@ -66,29 +97,47 @@ export default class HistoryData extends React.Component {
       this.props.lastProcessedId === this.props.row.pk ? styles.bold : null;
     return (
       <TableRow style={lastProcessed}>
-        <TableCell />
-        <TableCell>{this.props.row.pk}</TableCell>
-        <TableCell>{this.formatDate(this.props.row.start)}</TableCell>
-        <TableCell>{this.props.row.runtime}</TableCell>
-        <TableCell>{this.props.row.exposure.exposure_id}</TableCell>
-        <TableCell>{this.props.row.exposure.tile}</TableCell>
-        <TableCell>
+        <TableCell style={styles.tableCell} />
+        <TableCell style={styles.tableCell}>{this.props.row.pk}</TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.props.row.exposure.exposure_id}
+        </TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.props.row.exposure.tile}
+        </TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.formatDate(this.props.row.start)}
+        </TableCell>
+        <TableCell style={styles.tableCell}>{this.props.row.runtime}</TableCell>
+        <TableCell style={styles.tableCell}>
           {this.formatDate(this.props.row.exposure.dateobs)}
         </TableCell>
-        <TableCell>
+        <TableCell style={styles.tableCell}>
           {this.formatTime(this.props.row.exposure.dateobs)}
         </TableCell>
-        <TableCell>{this.props.row.datemjd.toFixed(2)}</TableCell>
-        <TableCell>{this.props.row.exposure.telra}</TableCell>
-        <TableCell>{this.props.row.exposure.teldec}</TableCell>
-        <TableCell>{this.props.row.exposure.exptime}</TableCell>
-        <TableCell>{this.props.row.exposure.flavor}</TableCell>
-        <TableCell>{this.props.row.exposure.airmass}</TableCell>
-        <TableCell />
-        <TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.props.row.datemjd.toFixed(2)}
+        </TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.props.row.exposure.telra}
+        </TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.props.row.exposure.teldec}
+        </TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.props.row.exposure.exptime}
+        </TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.props.row.exposure.flavor}
+        </TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.props.row.exposure.airmass}
+        </TableCell>
+        <TableCell style={styles.tableCell} />
+        <TableCell style={styles.tableCell}>
           {this.renderViewQA(lastProcessed, this.props.row.runtime)}
         </TableCell>
-        <TableCell />
+        <TableCell style={styles.tableCell} />
       </TableRow>
     );
   };
@@ -96,7 +145,10 @@ export default class HistoryData extends React.Component {
   renderCheckbox = checked => {
     if (!this.props.selectable) return;
     return (
-      <TableCell padding="checkbox">
+      <TableCell
+        style={{ ...styles.tableCell, ...styles.tableCheckbox }}
+        padding="checkbox"
+      >
         <Checkbox checked={checked} />
       </TableCell>
     );
@@ -136,24 +188,33 @@ export default class HistoryData extends React.Component {
         striped={striped}
       >
         {this.renderCheckbox(selectedExposure)}
-        <TableCell />
-        <TableCell>{exposure_id}</TableCell>
-        <TableCell>{tile}</TableCell>
-        <TableCell>{this.formatDate(dateobs)}</TableCell>
-        <TableCell>{this.formatTime(dateobs)}</TableCell>
-        <TableCell>{row.datemjd.toFixed(2)}</TableCell>
-        <TableCell>{telra}</TableCell>
-        <TableCell>{teldec}</TableCell>
-        <TableCell>{exptime}</TableCell>
-        <TableCell>{flavor}</TableCell>
-        <TableCell>{airmass}</TableCell>
-        <TableCell />
-        <TableCell>
-          <span style={styles.link} onClick={() => selectProcessQA(processId)}>
-            View
-          </span>
+        <TableCell style={styles.tableCell} />
+        <TableCell style={styles.tableCell}>{exposure_id}</TableCell>
+        <TableCell style={styles.tableCell}>{tile}</TableCell>
+        <TableCell style={styles.tableCell}>
+          {this.formatDate(dateobs)}
         </TableCell>
-        <TableCell />
+        <TableCell style={styles.tableCell}>
+          {this.formatTime(dateobs)}
+        </TableCell>
+        <TableCell style={styles.tableCell}>{row.datemjd.toFixed(2)}</TableCell>
+        <TableCell style={styles.tableCell}>{telra}</TableCell>
+        <TableCell style={styles.tableCell}>{teldec}</TableCell>
+        <TableCell style={styles.tableCell}>{exptime}</TableCell>
+        <TableCell style={styles.tableCell}>{flavor}</TableCell>
+        <TableCell style={styles.tableCell}>{airmass}</TableCell>
+        <TableCell style={styles.tableCell} />
+        <TableCell style={styles.tableCell}>
+          {processId && lastProcessedId !== processId ? (
+            <span
+              style={styles.link}
+              onClick={() => selectProcessQA(processId)}
+            >
+              {this.qaSuccess()}
+            </span>
+          ) : null}
+        </TableCell>
+        <TableCell style={styles.tableCell} />
       </TableRow>
     );
   };

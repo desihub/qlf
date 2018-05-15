@@ -8,6 +8,7 @@ import shutil
 from multiprocessing import Manager, Lock, Process, Value
 from threading import Thread
 from qlf_models import QLFModels
+from scalar_metrics import LoadMetrics
 
 cfg = get_config()
 
@@ -231,11 +232,14 @@ class QLFProcess(object):
         for proc in proc_qas:
             proc.join()
 
+        qa_tests=self.generate_qa_tests()
+
         self.models.update_process(
             process_id=self.data.get('process_id'),
             end=self.data.get('end'),
             process_dir=self.data.get('output_dir'),
-            status=self.data.get('status')
+            status=self.data.get('status'),
+            qa_tests=qa_tests
         )
 
         duration_ingestion = datetime.now().replace(microsecond=0) - start_ingestion
@@ -243,6 +247,22 @@ class QLFProcess(object):
         logger.info("Ingestion complete: %s." % str(duration_ingestion))
         logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
         logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
+
+    def generate_qa_tests(self):
+        qa_tests = list()
+        for camera in self.data.get('cameras'):
+            try:
+                lm = LoadMetrics(
+                    self.data.get('process_id'),
+                    camera.get('name'),
+                    self.data.get('expid'),
+                    self.data.get('night')
+                )
+                qa_tests.append({camera.get('name'): lm.load_qa_tests()})
+            except Exception as err:
+                logger.error(err)
+                logger.error('qa_tests error camera %s' % camera.get('name'))
+        return qa_tests
 
     def resume_log(self, line, camera, lock):
         """ """
@@ -296,28 +316,3 @@ def process_run(exp, _id):
     print('Process ID: {}'.format(_id.value))
     qlf_process.start_jobs()
     qlf_process.finish_process()
-
-
-if __name__ == "__main__":
-    print('Start Pipeline...')
-
-    exposure = {
-        'night': '20190101',
-        # 'cameras': [{'name': 'r7'}, {'name': 'r8'}],
-        'cameras': [{'name': 'r7'}],
-        'teldec': 14.84,
-        'telra': 333.22,
-        'exptime': 1000,
-        'zfill': '00000003',
-        'dateobs': '2019-01-01T22:00:00',
-        'tile': 6,
-        'desi_spectro_data': '/home/singulani/Projects/quicklook/qlf/backend/spectro/data',
-        'desi_spectro_redux': '/home/singulani/Projects/quicklook/qlf/backend/spectro/redux',
-        'flavor': 'science',
-        'expid': '3'
-    }
-
-    process_id = Value('i', 0)
-
-    processing = Process(target=process_run, args=(exposure, process_id,))
-    processing.start()

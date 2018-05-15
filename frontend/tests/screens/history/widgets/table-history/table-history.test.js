@@ -98,7 +98,16 @@ describe('TableHistory Controls', () => {
       .find('TableCell')
       .at(32)
       .find('span')
+      .at(0)
       .simulate('click');
+    expect(
+      wrapper
+        .find('TableCell')
+        .at(32)
+        .find('span')
+        .at(0)
+        .text()
+    ).toBe('✖︎');
     expect(navigateToQA).toBeCalledWith(69);
   });
 });

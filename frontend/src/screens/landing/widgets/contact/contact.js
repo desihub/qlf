@@ -3,6 +3,7 @@ import TextField from 'material-ui/TextField';
 import Recaptcha from 'react-recaptcha';
 import RaisedButton from 'material-ui/RaisedButton';
 import QlfApi from '../../../../containers/offline/connection/qlf-api';
+import Paper from 'material-ui-next/Paper';
 
 const styles = {
   container: {
@@ -10,8 +11,12 @@ const styles = {
     justifyContent: 'center',
   },
   main: {
-    maxWidth: '800px',
+    maxWidth: '70vw',
     flexDirection: 'column',
+    maxHeight: '65vh',
+    overflowY: 'scroll',
+    margin: '16px',
+    padding: '16px',
   },
 };
 
@@ -73,7 +78,7 @@ export default class ContactUs extends React.Component {
   render() {
     return (
       <div style={styles.container}>
-        <div style={styles.main}>
+        <Paper elevation={4} style={styles.main}>
           <h1>Contact Us</h1>
           <TextField
             ref={ref => this.storeNameRef(ref)}
@@ -108,13 +113,12 @@ export default class ContactUs extends React.Component {
           />
           <RaisedButton
             label="submit"
-            style={{ margin: '1em' }}
             labelStyle={{ color: 'white' }}
             backgroundColor={'#00C853'}
             fullWidth={true}
             onClick={this.sendEmail}
           />
-        </div>
+        </Paper>
       </div>
     );
   }

@@ -13,7 +13,6 @@ const stepsQa = {
   skysubs: ['snr'],
 };
 
-let petalSize = window.innerWidth + window.innerHeight;
 const arms = ['b', 'r', 'z'];
 
 const styles = {
@@ -34,7 +33,7 @@ const styles = {
     alignItems: 'center',
   },
   card: {
-    borderLeft: 'solid 4px teal',
+    borderLeft: 'solid 4px #424242',
     flex: '1',
     height: '90%',
   },
@@ -79,7 +78,7 @@ export default class Steps extends Component {
   static propTypes = {
     renderMetrics: PropTypes.func.isRequired,
     exposure: PropTypes.string,
-    qaTests: PropTypes.array.isRequired,
+    qaTests: PropTypes.array,
     mjd: PropTypes.string,
     date: PropTypes.string,
     time: PropTypes.string,
@@ -90,10 +89,14 @@ export default class Steps extends Component {
 
   state = {
     message: '',
+    petalSize: 80,
   };
 
   componentWillMount() {
     window.addEventListener('resize', this.updatePetalSize);
+  }
+
+  componentDidMount() {
     this.updatePetalSize();
   }
 
@@ -102,12 +105,16 @@ export default class Steps extends Component {
   }
 
   updatePetalSize = () => {
-    petalSize =
-      (window.outerWidth + window.outerHeight) / this.props.petalSizeFactor;
+    if (window.outerWidth) {
+      this.setState({
+        petalSize:
+          (window.outerWidth + window.outerHeight) / this.props.petalSizeFactor,
+      });
+    }
   };
 
   findQATest = arm => {
-    if (this.props.qaTests.length !== 0) {
+    if (this.props.qaTests) {
       const testKeys = this.props.qaTests.map(
         test => Object.keys(test).filter(key => key.includes(arm))[0]
       );
@@ -119,6 +126,7 @@ export default class Steps extends Component {
   };
 
   showQaAlarms = (camera, step) => {
+    if (!this.props.qaTests) return;
     const cameraQa = this.props.qaTests.find(test => {
       if (Object.keys(test)[0] === camera) return test[camera];
       return null;
@@ -147,7 +155,7 @@ export default class Steps extends Component {
         renderMetrics={this.props.renderMetrics}
         step={step}
         arm={arm}
-        size={petalSize}
+        size={this.state.petalSize}
         showQaAlarms={this.showQaAlarms}
         hideQaAlarms={this.hideQaAlarms}
         qaTests={this.findQATest(arms[arm])}
