@@ -98,6 +98,7 @@ describe('TableHistory Controls', () => {
       .find('TableCell')
       .at(32)
       .find('span')
+      .at(0)
       .simulate('click');
     expect(navigateToQA).toBeCalledWith(69);
   });
