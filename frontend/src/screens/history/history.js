@@ -42,10 +42,6 @@ export default class History extends Component {
     fetchLastProcess: PropTypes.func,
   };
 
-  componentWillMount() {
-    this.props.fetchLastProcess();
-  }
-
   renderSelectDate = () => {
     if (this.props.startDate && this.props.endDate)
       return (
@@ -68,6 +64,7 @@ export default class History extends Component {
     startDate: this.props.startDate,
     endDate: this.props.endDate,
     limit: 10,
+    firstLoad: false,
   };
 
   changeLimit = limit => {
@@ -76,9 +73,11 @@ export default class History extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.startDate && nextProps.endDate) {
+      if (!this.state.firstLoad) this.props.fetchLastProcess();
       this.setState({
         startDate: nextProps.startDate,
         endDate: nextProps.endDate,
+        firstLoad: true,
       });
     }
   }
