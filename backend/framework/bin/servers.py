@@ -150,7 +150,7 @@ class Generator(object):
             logger.debug("Exposure generator is not initialized.")
 
     def last_exposure(self):
-        if self.generator and self.generator.is_alive():
+        if self.generator:
             return dict(self.generator.get_last_exposure())
         else:
             logger.debug("Exposure generator is not initialized.")
