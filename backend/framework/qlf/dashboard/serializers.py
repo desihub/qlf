@@ -174,6 +174,7 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
             'runtime',
             'start',
             'end',
+            'qa_tests',
         )
 
     def get_runtime(self, obj):
@@ -190,34 +191,11 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
             return time.mjd
 
 
-class SingleQASerializer(DynamicFieldsModelSerializer):
-
-    datemjd = serializers.SerializerMethodField()
-    qa_tests = serializers.SerializerMethodField()
-    date = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Process
-        fields = ('pk', 'date', 'exposure_id', 'datemjd', 'qa_tests')
-
-    def get_datemjd(self, obj):
-        time = get_date(obj.exposure_id)
-        if time is None:
-            return None
-        else:
-            return time.mjd
-
-    def get_date(self, obj):
-        return obj.exposure.dateobs
-
-    def get_qa_tests(self, obj):
-        return qlf.qa_tests(obj.pk)
-
-
 class ObservingHistorySerializer(DynamicFieldsModelSerializer):
 
     datemjd = serializers.SerializerMethodField()
     last_exposure_process_id = serializers.SerializerMethodField()
+    last_exposure_process_qa_tests = serializers.SerializerMethodField()
 
     class Meta:
         model = Exposure
@@ -231,6 +209,7 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             'exptime',
             'airmass',
             'last_exposure_process_id',
+            'last_exposure_process_qa_tests',
             'flavor'
         )
 
@@ -242,9 +221,16 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             return time.mjd
 
     def get_last_exposure_process_id(self, obj):
-        if not Process.objects.all().filter(exposure=obj.pk):
+        process = Process.objects.all().filter(exposure=obj.pk)
+        if not process:
             return None
-        return Process.objects.all().filter(exposure=obj.pk).last().pk
+        return process.last().pk
+
+    def get_last_exposure_process_qa_tests(self, obj):
+        process = Process.objects.all().filter(exposure=obj.pk)
+        if not process:
+            return None
+        return process.last().qa_tests
 
 
 class ExposuresDateRangeSerializer(DynamicFieldsModelSerializer):
