@@ -8,7 +8,7 @@ describe('QlfApi', () => {
   it('calls getQA', () => {
     QlfApi.getQA(1);
     expect(fetch).toBeCalledWith(
-      'http://localhost:8001/dashboard/api/single_qa/1/?format=json',
+      'http://localhost:8001/dashboard/api/processing_history/1/?format=json',
       {
         headers: {
           _headers: {

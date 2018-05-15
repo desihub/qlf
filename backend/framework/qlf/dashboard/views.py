@@ -11,8 +11,8 @@ from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
-    SingleQASerializer, ObservingHistorySerializer,
-    ExposuresDateRangeSerializer, ExposureFlavorSerializer
+    ObservingHistorySerializer, ExposuresDateRangeSerializer,
+    ExposureFlavorSerializer
 )
 
 from datetime import datetime, timedelta
@@ -245,14 +245,6 @@ class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelV
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
-
-class SingleQAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for listing qa"""
-
-    queryset = Process.objects.order_by('exposure')
-    serializer_class = SingleQASerializer
-    filter_fields = ('exposure_id',)
 
 
 class JobViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):

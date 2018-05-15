@@ -58,6 +58,7 @@ class Process(models.Model):
     status = models.SmallIntegerField(default=STATUS_OK,
                                       help_text='Process status, 0=OK, 1=Failed')
     exposure = models.ForeignKey(Exposure, related_name='process_exposure')
+    qa_tests = JSONField(default={}, help_text='QA tests summary.')
     configuration = models.ForeignKey(
         Configuration, related_name='process_configuration')
 

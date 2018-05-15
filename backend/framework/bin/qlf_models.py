@@ -126,13 +126,14 @@ class QLFModels(object):
 
         return job
 
-    def update_process(self, process_id, end, process_dir, status):
+    def update_process(self, process_id, end, process_dir, status, qa_tests):
         """ Updates process with execution results. """
 
         process = Process.objects.filter(id=process_id).update(
             end=end,
             process_dir=process_dir,
-            status=status
+            status=status,
+            qa_tests=qa_tests
         )
 
         return process

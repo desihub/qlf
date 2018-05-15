@@ -54,15 +54,40 @@ export default class HistoryData extends React.Component {
     return hour + ':' + minutes + ':' + seconds;
   };
 
+  qaSuccess = () => {
+    const { row } = this.props;
+    const qaTests = row.qa_tests
+      ? row.qa_tests
+      : row.last_exposure_process_qa_tests
+        ? row.last_exposure_process_qa_tests
+        : null;
+    if (qaTests) {
+      const testsFailed =
+        !JSON.stringify(qaTests).includes('None') &&
+        !JSON.stringify(qaTests).includes('FAILURE');
+      return this.renderQAStatus(testsFailed);
+    }
+    return this.renderQAStatus(false);
+  };
+
+  renderQAStatus = status => {
+    return status ? (
+      <span style={{ color: 'green' }}>✓</span>
+    ) : (
+      <span style={{ color: 'red' }}>✖︎</span>
+    );
+  };
+
   renderViewQA = (lastProcessed, runtime) => {
     if (lastProcessed && !runtime) return <CircularProgress size={20} />;
     if (!runtime) return;
+
     return (
       <span
         style={styles.link}
         onClick={() => this.props.selectProcessQA(this.props.processId)}
       >
-        View
+        {this.qaSuccess()}
       </span>
     );
   };
@@ -185,7 +210,7 @@ export default class HistoryData extends React.Component {
               style={styles.link}
               onClick={() => selectProcessQA(processId)}
             >
-              View
+              {this.qaSuccess()}
             </span>
           ) : null}
         </TableCell>

@@ -77,10 +77,10 @@ function updateQA(qaTests) {
   const state = {
     mjd: qaTests.datemjd.toFixed(3),
     qaTests: qaTests.qa_tests,
-    date: qaTests.date.split('T')[0],
-    time: qaTests.date.split('T')[1],
+    date: qaTests.exposure.dateobs.split('T')[0],
+    time: qaTests.exposure.dateobs.split('T')[1],
     processId: qaTests.pk,
-    exposure: qaTests.exposure_id.toString(),
+    exposure: qaTests.exposure.exposure_id.toString(),
   };
   return { type: 'UPDATE_OFFLINE_QA', state };
 }

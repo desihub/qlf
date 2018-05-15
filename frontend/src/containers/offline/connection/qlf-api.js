@@ -8,7 +8,7 @@ export default class QlfApi {
   static async getQA(processId) {
     try {
       const qa = await fetch(
-        `${apiUrl}dashboard/api/single_qa/${processId}/?format=json`,
+        `${apiUrl}dashboard/api/processing_history/${processId}/?format=json`,
         {
           method: 'GET',
           headers: headers,
