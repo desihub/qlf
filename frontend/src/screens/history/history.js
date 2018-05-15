@@ -21,6 +21,10 @@ const styles = {
     overflowY: 'scroll',
     maxHeight: '60vh',
   },
+  submit: {
+    paddingLeft: '16px',
+    cursor: ' pointer',
+  },
 };
 
 export default class History extends Component {
@@ -213,13 +217,13 @@ export default class History extends Component {
     return (
       <ToolbarGroup>
         <ToolbarSeparator />
-        <FontIcon
-          className="material-icons"
+        <span
+          style={styles.submit}
           title="Reprocess"
           onClick={this.handleOpenDialog}
         >
-          play_arrow
-        </FontIcon>
+          Submit
+        </span>
       </ToolbarGroup>
     );
   };
