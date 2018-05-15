@@ -35,7 +35,7 @@ describe('Websocket', () => {
 
   it('receives a state update from api', () => {
     mockServer.send(
-      '{"date": "dateTtime", "mjd": 58484.916666666664, "upstream_status": false, "exposure": 4, "ingestion": ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"], "lines": ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"], "daemon_status": false}'
+      '{"date": "date time", "mjd": 58484.916666666664, "upstream_status": false, "exposure": 4, "ingestion": ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"], "lines": ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"], "daemon_status": false}'
     );
 
     expect(store.getState().qlfOnline).toEqual({
@@ -49,7 +49,7 @@ describe('Websocket', () => {
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
       mainTerminal: ['2017-11-23 12:59:04 [INFO]: QLF Daemon status: False'],
-      qaTests: [],
+      qaTests: undefined,
       mjd: '58484.917',
       time: 'time',
       date: 'date',
@@ -81,7 +81,7 @@ describe('Websocket', () => {
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
       mainTerminal: ['2017-11-23 12:59:04 [INFO]: QLF Daemon status: False'],
-      qaTests: [],
+      qaTests: undefined,
       arm: 0,
       spectrograph: 0,
       step: 0,
