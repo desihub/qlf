@@ -9,6 +9,7 @@ from procutil import kill_proc_tree
 from util import get_config
 from scalar_metrics import LoadMetrics
 from qlf_models import QLFModels
+from qlf_configuration import QLFConfiguration
 
 from clients import EXPOSURE_MONITORING_NS, EXPOSURE_GENERATOR_NS, PYRO_HOST, PYRO_PORT
 from clients import get_exposure_generator
@@ -112,6 +113,19 @@ class Monitoring(object):
             logger.error(err)
             logger.error('load_scalar_metrics error')
         return scalar_metrics
+
+    def get_current_configuration(self):
+        configuration = QLFConfiguration()
+        return configuration.get_current_configuration().configuration	
+
+    def get_qlconfig(self):	
+        try:	
+            configuration = QLFConfiguration()
+            file = open(configuration.get_current_configuration().configuration['qlconfig'])	
+            return file.read()	
+        except Exception as err:
+            logger.info(err)
+            return 'Error reading qlconfig'
 
 
 @Pyro4.expose

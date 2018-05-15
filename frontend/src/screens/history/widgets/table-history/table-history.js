@@ -157,7 +157,7 @@ class TableHistory extends Component {
   render() {
     return (
       <div className={this.props.classes.root}>
-        <Table style={{ width: 'auto', tableLayout: 'auto' }}>
+        <Table style={styles.table}>
           <HistoryHeader
             addOrder={this.addOrder}
             addFilters={this.addFilters}
@@ -180,6 +180,11 @@ const styles = {
   root: {
     width: '100%',
     overflowX: 'auto',
+  },
+  table: {
+    textAlign: 'center',
+    width: '100%',
+    tableLayout: 'auto',
   },
 };
 
