@@ -8,6 +8,7 @@ import Popover from 'material-ui-next/Popover';
 import QlfApi from '../../../../../containers/offline/connection/qlf-api';
 import Radio, { RadioGroup } from 'material-ui-next/Radio';
 import { FormControlLabel } from 'material-ui-next/Form';
+import { tableColumns } from '../columns';
 
 const styles = {
   arrow: { display: 'flex', alignItems: 'center' },
@@ -175,57 +176,13 @@ export default class HistoryHeader extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Program')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('pk', 'Process ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure_id', 'Exp ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__tile', 'Tile ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('start', 'Process Date')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Process Time')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__dateobs', 'OBS Date')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__dateobs', 'OBS Time')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'MJD')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__telra', 'RA (hms)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__teldec', 'Dec (dms)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__exptime', 'Exp Time(s)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__flavor', 'Flavor')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__airmass', 'Airmass')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'FWHM (arcsec)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'QA')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'CCDs')}
-          </TableCell>
+          {tableColumns.map((column, id) => {
+            return (
+              <TableCell key={`PROCESS${id}`} style={styles.tableCell}>
+                {this.renderHeader(column.processKey, column.name)}
+              </TableCell>
+            );
+          })}
         </TableRow>
       </TableHead>
     );
@@ -247,48 +204,15 @@ export default class HistoryHeader extends React.Component {
       <TableHead>
         <TableRow>
           {this.renderCheckbox()}
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Program')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure_id', 'Exp ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('tile', 'Tile ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('dateobs', 'OBS Date')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'OBS Time')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'MJD')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('telra', 'RA (hms)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('teldec', 'Dec (dms)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exptime', 'Exp Time(s)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('flavor', 'Flavor')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Airmass')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'FWHM (arcsec)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'QA')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'CCDs')}
-          </TableCell>
+          {tableColumns
+            .filter(column => column.exposureKey !== null)
+            .map((column, id) => {
+              return (
+                <TableCell key={`EXP${id}`} style={styles.tableCell}>
+                  {this.renderHeader(column.exposureKey, column.name)}
+                </TableCell>
+              );
+            })}
         </TableRow>
       </TableHead>
     );
