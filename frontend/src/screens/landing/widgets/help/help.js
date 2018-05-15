@@ -1,4 +1,5 @@
 import React from 'react';
+import Paper from 'material-ui-next/Paper';
 
 const styles = {
   container: {
@@ -6,13 +7,17 @@ const styles = {
     justifyContent: 'center',
   },
   main: {
-    maxWidth: '600px',
+    maxWidth: '70vw',
+    maxHeight: '65vh',
+    overflowY: 'scroll',
     hyphens: 'auto',
     wordWrap: 'break-word',
     fontSize: 15,
     lineHeight: 1.5,
     fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',
     fontWeight: 400,
+    margin: '16px',
+    padding: '16px',
   },
 };
 
@@ -20,7 +25,7 @@ export default class Help extends React.Component {
   render() {
     return (
       <div style={styles.container}>
-        <div style={styles.main}>
+        <Paper elevation={4} style={styles.main}>
           <h1>About the Quick Look Framework (QLF)</h1>
           <p>
             <span>
@@ -87,7 +92,7 @@ export default class Help extends React.Component {
               <span>Riccardo Campisano</span>
             </li>
           </ul>
-        </div>
+        </Paper>
       </div>
     );
   }

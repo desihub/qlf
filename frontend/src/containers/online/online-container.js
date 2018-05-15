@@ -17,7 +17,7 @@ const spectrographs = _.range(0, 10);
 class OnlineContainer extends Component {
   static propTypes = {
     exposure: PropTypes.string.isRequired,
-    qaTests: PropTypes.array.isRequired,
+    qaTests: PropTypes.array,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
     mjd: PropTypes.string.isRequired,

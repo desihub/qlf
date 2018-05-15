@@ -35,7 +35,8 @@ export default class Controls extends Component {
   };
 
   renderStartOrStop = () => {
-    return this.props.daemonStatus === 'Running' ? (
+    return this.props.daemonStatus === 'Running' ||
+      this.props.daemonStatus === 'Idle' ? (
       <RaisedButton
         label="Stop"
         style={styles.button}

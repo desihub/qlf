@@ -56,7 +56,7 @@ export default class Monitor extends Component {
     cameraTerminal: PropTypes.array.isRequired,
     camerasStages: PropTypes.object.isRequired,
     processId: PropTypes.number,
-    qaTests: PropTypes.array.isRequired,
+    qaTests: PropTypes.array,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
   };

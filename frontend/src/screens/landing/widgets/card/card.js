@@ -15,7 +15,7 @@ import {
 
 const styles = {
   card: {
-    borderLeft: 'solid 4px teal',
+    borderLeft: 'solid 4px #424242',
     flex: '1',
     marginRight: '1vw',
     marginBottom: '1vw',

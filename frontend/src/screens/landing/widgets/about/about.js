@@ -1,4 +1,5 @@
 import React from 'react';
+import Paper from 'material-ui-next/Paper';
 
 const styles = {
   container: {
@@ -6,7 +7,11 @@ const styles = {
     justifyContent: 'center',
   },
   main: {
-    maxWidth: '600px',
+    maxWidth: '70vw',
+    maxHeight: '65vh',
+    overflowY: 'scroll',
+    margin: '16px',
+    padding: '16px',
     hyphens: 'auto',
     wordWrap: 'break-word',
     fontSize: 15,
@@ -23,7 +28,7 @@ export default class AboutUs extends React.Component {
   render() {
     return (
       <div style={styles.container}>
-        <div style={styles.main}>
+        <Paper elevation={4} style={styles.main}>
           <h1>About LIneA</h1>
           <p>
             <span>
@@ -99,7 +104,7 @@ export default class AboutUs extends React.Component {
               project at the Las Campanas Observatory.
             </span>
           </p>
-        </div>
+        </Paper>
       </div>
     );
   }

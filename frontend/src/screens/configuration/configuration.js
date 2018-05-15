@@ -7,6 +7,8 @@ import Tabs, { Tab } from 'material-ui-next/Tabs';
 const styles = {
   container: {
     margin: '1em',
+    overflowY: 'scroll',
+    height: '85vh',
   },
 };
 

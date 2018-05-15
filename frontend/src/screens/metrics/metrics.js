@@ -152,7 +152,7 @@ export default class Metrics extends Component {
     if (!this.state.loading) return null;
     return (
       <div style={{ ...styles.loading }}>
-        <FadeLoader color="teal" size="16px" margin="4px" />
+        <FadeLoader color="#424242" size="16px" margin="4px" />
       </div>
     );
   };
@@ -222,7 +222,7 @@ export default class Metrics extends Component {
                 value={this.props.arms[this.state.arm]}
               />
               <RaisedButton
-                label={'Steps'}
+                label={'Back'}
                 secondary={true}
                 style={styles.backButton}
                 onClick={this.props.navigateToQA}

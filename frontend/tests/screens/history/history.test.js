@@ -38,6 +38,7 @@ const rows = [
 describe('History Controls', () => {
   const getHistory = jest.fn(),
     getHistoryOrdered = jest.fn(() => rows),
+    fetchLastProcess = jest.fn(() => rows),
     navigateToQA = jest.fn();
   let history;
   beforeEach(() => {
@@ -53,6 +54,7 @@ describe('History Controls', () => {
           getHistory={getHistory}
           navigateToQA={navigateToQA}
           getHistoryOrdered={getHistoryOrdered}
+          fetchLastProcess={fetchLastProcess}
           type={'exposure'}
         />
       </MuiThemeProvider>
