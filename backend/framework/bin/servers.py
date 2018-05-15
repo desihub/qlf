@@ -123,7 +123,8 @@ class Monitoring(object):
             configuration = QLFConfiguration()
             file = open(configuration.get_current_configuration().configuration['qlconfig'])	
             return file.read()	
-        except:	
+        except Exception as err:
+            logger.info(err)
             return 'Error reading qlconfig'
 
 
