@@ -174,6 +174,7 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
             'runtime',
             'start',
             'end',
+            'qa_tests',
         )
 
     def get_runtime(self, obj):
