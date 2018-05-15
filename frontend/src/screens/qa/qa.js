@@ -15,7 +15,7 @@ const styles = {
 export default class QA extends Component {
   static propTypes = {
     exposure: PropTypes.string,
-    qaTests: PropTypes.array.isRequired,
+    qaTests: PropTypes.array,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
     mjd: PropTypes.string,
@@ -25,29 +25,6 @@ export default class QA extends Component {
     navigateToProcessingHistory: PropTypes.func,
     petalSizeFactor: PropTypes.number.isRequired,
     processId: PropTypes.number,
-  };
-
-  state = {
-    layout: {},
-    metrics: undefined,
-    qaCameras: undefined,
-  };
-
-  componentDidMount() {
-    this.updateWindowDimensions();
-    window.addEventListener('resize', this.updateWindowDimensions);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateWindowDimensions);
-  }
-
-  updateWindowDimensions = () => {
-    this.setState({
-      layout: {
-        flexDirection: 'row',
-      },
-    });
   };
 
   renderMetrics = (step, spectrographNumber, arm) => {

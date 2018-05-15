@@ -10,7 +10,7 @@ function defaultState() {
     ingestionTerminal: [],
     cameraTerminal: [],
     camerasStages: { b: [], r: [], z: [] },
-    qaTests: [],
+    qaTests: undefined,
     spectrographs: [],
     arms: [],
     mjd: '',
