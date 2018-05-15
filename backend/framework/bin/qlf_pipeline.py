@@ -232,7 +232,7 @@ class QLFProcess(object):
         for proc in proc_qas:
             proc.join()
 
-        qa_tests=self.generate_qa_tests(self.data.get('process_id'))
+        qa_tests=self.generate_qa_tests()
 
         self.models.update_process(
             process_id=self.data.get('process_id'),
@@ -248,17 +248,20 @@ class QLFProcess(object):
         logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
         logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
 
-    def generate_qa_tests(self, process_id):
+    def generate_qa_tests(self):
         qa_tests = list()
-        for job in self.models.get_jobs_by_process_id(process_id):
+        for camera in self.data.get('cameras'):
             try:
-                process = job.process
-                exposure = process.exposure
-                lm = LoadMetrics(process_id, job.camera_id, process.exposure_id, exposure.night)
-                qa_tests.append({job.camera_id: lm.load_qa_tests()})
+                lm = LoadMetrics(
+                    self.data.get('process_id'),
+                    camera.get('name'),
+                    self.data.get('expid'),
+                    self.data.get('night')
+                )
+                qa_tests.append({camera.get('name'): lm.load_qa_tests()})
             except Exception as err:
                 logger.error(err)
-                logger.error('qa_tests error camera %s' % job.camera)
+                logger.error('qa_tests error camera %s' % camera.get('name'))
         return qa_tests
 
     def resume_log(self, line, camera, lock):
