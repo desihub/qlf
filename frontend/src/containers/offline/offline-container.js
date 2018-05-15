@@ -12,6 +12,7 @@ import {
   navigateToOfflineMetrics,
   getHistoryDateRange,
   navigateToOfflineQA,
+  fetchLastProcess,
 } from './offline-store';
 import PropTypes from 'prop-types';
 import QA from '../../screens/qa/qa';
@@ -60,6 +61,7 @@ class OfflineContainer extends Component {
     lastProcessedId: PropTypes.number,
     rowsCount: PropTypes.number,
     getHistoryDateRange: PropTypes.func,
+    fetchLastProcess: PropTypes.func,
   };
 
   state = {
@@ -124,6 +126,7 @@ class OfflineContainer extends Component {
               type={'process'}
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
+              fetchLastProcess={this.props.fetchLastProcess}
             />
           )}
         />
@@ -140,6 +143,7 @@ class OfflineContainer extends Component {
               type={'process'}
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
+              fetchLastProcess={this.props.fetchLastProcess}
             />
           )}
         />
@@ -156,6 +160,7 @@ class OfflineContainer extends Component {
               type={'exposure'}
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
+              fetchLastProcess={this.props.fetchLastProcess}
             />
           )}
         />
@@ -241,6 +246,7 @@ export default connect(
       dispatch(getProcessingHistory(start, end, order, offset, limit, filters)),
     getObservingHistory: (start, end, order, offset, limit, filters) =>
       dispatch(getObservingHistory(start, end, order, offset, limit, filters)),
+    fetchLastProcess: () => dispatch(fetchLastProcess()),
     getHistoryDateRange: () => dispatch(getHistoryDateRange()),
   })
 )(OfflineContainer);

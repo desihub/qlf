@@ -180,7 +180,7 @@ export default class HistoryData extends React.Component {
         <TableCell style={styles.tableCell}>{airmass}</TableCell>
         <TableCell style={styles.tableCell} />
         <TableCell style={styles.tableCell}>
-          {processId ? (
+          {processId && lastProcessedId !== processId ? (
             <span
               style={styles.link}
               onClick={() => selectProcessQA(processId)}

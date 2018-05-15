@@ -19,7 +19,7 @@ const styles = {
   },
   tableBody: {
     overflowY: 'scroll',
-    height: '70vh',
+    maxHeight: '60vh',
   },
 };
 
@@ -35,7 +35,12 @@ export default class History extends Component {
     type: PropTypes.string.isRequired,
     lastProcessedId: PropTypes.number,
     rowsCount: PropTypes.number,
+    fetchLastProcess: PropTypes.func,
   };
+
+  componentWillMount() {
+    this.props.fetchLastProcess();
+  }
 
   renderSelectDate = () => {
     if (this.props.startDate && this.props.endDate)

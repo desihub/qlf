@@ -50,7 +50,7 @@ describe('Websocket', () => {
       ],
       mainTerminal: ['2017-11-23 12:59:04 [INFO]: QLF Daemon status: False'],
       qaTests: [],
-      mjd: '58484.91667',
+      mjd: '58484.917',
       time: 'time',
       date: 'date',
       arm: 0,
@@ -67,7 +67,7 @@ describe('Websocket', () => {
 
     expect(store.getState().qlfOnline).toEqual({
       arms: [],
-      mjd: '58484.91667',
+      mjd: '58484.917',
       time: 'time',
       date: 'date',
       spectrographs: [],
