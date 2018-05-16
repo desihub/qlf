@@ -1,8 +1,9 @@
 import React from 'react';
 import Form from './widgets/form/form';
 import Display from './widgets/display/display';
-import Paper from 'material-ui-next/Paper';
-import Tabs, { Tab } from 'material-ui-next/Tabs';
+import Paper from '@material-ui/core/Paper';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 const styles = {
   container: {

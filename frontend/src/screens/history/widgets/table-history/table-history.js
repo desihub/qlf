@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import HistoryHeader from './history-header/history-header';
 import HistoryData from './history-data/history-data';
-import { withStyles } from 'material-ui-next/styles';
-import Table, { TableBody, TablePagination } from 'material-ui-next/Table';
+import { withStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TablePagination from '@material-ui/core/TablePagination';
 
 class TableHistory extends Component {
   static propTypes = {
@@ -81,8 +83,8 @@ class TableHistory extends Component {
     );
   };
 
-  addOrder = ordering => {
-    const order = this.state.asc ? ordering : `-${ordering}`;
+  addOrder = (ordering, asc) => {
+    const order = asc ? ordering : `-${ordering}`;
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
@@ -92,7 +94,7 @@ class TableHistory extends Component {
       this.state.filters
     );
     this.setState({
-      asc: !this.state.asc,
+      asc,
       ordering,
       offset: 0,
     });

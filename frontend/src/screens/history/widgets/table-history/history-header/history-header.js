@@ -1,14 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ArrowDropDown, ArrowDropUp } from 'material-ui-icons';
-import { TableCell, TableHead, TableRow } from 'material-ui-next/Table';
-import Checkbox from 'material-ui-next/Checkbox';
-import Icon from 'material-ui-next/Icon';
-import Popover from 'material-ui-next/Popover';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Checkbox from '@material-ui/core/Checkbox';
+import Icon from '@material-ui/core/Icon';
 import QlfApi from '../../../../../containers/offline/connection/qlf-api';
-import Radio, { RadioGroup } from 'material-ui-next/Radio';
-import { FormControlLabel } from 'material-ui-next/Form';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { tableColumns } from '../columns';
+import Popover from 'material-ui/Popover';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Divider from '@material-ui/core/Divider';
 
 const styles = {
   arrow: { display: 'flex', alignItems: 'center' },
@@ -18,6 +24,11 @@ const styles = {
   tableCell: {
     padding: '4px 4px 4px 4px',
   },
+  itemText: {
+    fontSize: '12px',
+  },
+  listIcon: { fontSize: 20, cursor: 'pointer', paddingRight: '8px' },
+  listItem: { padding: '8px' },
 };
 
 export default class HistoryHeader extends React.Component {
@@ -28,6 +39,7 @@ export default class HistoryHeader extends React.Component {
     this.state = {
       flavors: undefined,
       selectedFlavor: 'none',
+      id: undefined,
     };
   }
 
@@ -65,9 +77,10 @@ export default class HistoryHeader extends React.Component {
     }
   };
 
-  fetchOrder = id => {
+  fetchOrder = (id, asc) => {
     if (!id) return;
-    this.props.addOrder(id);
+    this.handlePopOverClose();
+    this.props.addOrder(id, asc);
   };
 
   renderHeader = (id, name) => {
@@ -76,11 +89,14 @@ export default class HistoryHeader extends React.Component {
       : styles.headerRecent;
     return (
       <div style={styles.arrow}>
-        <span style={headerStyle} onClick={() => this.fetchOrder(id)}>
+        <span
+          style={headerStyle}
+          onClick={event => this.handleFilterClick(event, id)}
+        >
           {name}
         </span>
         {this.props.orderable ? this.renderArrow(id) : null}
-        {this.props.orderable ? this.renderFilter(id) : null}
+        {/* {this.props.orderable ? this.renderFilter(id) : null} */}
         {this.props.orderable ? this.renderPopOver(id) : null}
       </div>
     );
@@ -91,7 +107,7 @@ export default class HistoryHeader extends React.Component {
       return (
         <Icon
           onClick={event => this.handleFilterClick(event, filter)}
-          style={{ fontSize: 20 }}
+          style={{ fontSize: 20, cursor: 'pointer' }}
         >
           filter_list
         </Icon>
@@ -103,10 +119,10 @@ export default class HistoryHeader extends React.Component {
     anchorEl: null,
   };
 
-  handleFilterClick = (event, filter) => {
+  handleFilterClick = (event, id) => {
     this.setState({
       anchorEl: event.currentTarget,
-      filter,
+      id,
     });
   };
 
@@ -117,22 +133,50 @@ export default class HistoryHeader extends React.Component {
   };
 
   renderPopOver = () => {
+    // console.log(this.state.id);
     return (
       <Popover
         open={Boolean(this.state.anchorEl)}
         anchorEl={this.state.anchorEl}
-        onClose={this.handlePopOverClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+        onRequestClose={this.handlePopOverClose}
         elevation={1}
       >
-        {this.renderRadioGroup()}
+        <List component="nav">
+          {this.state.id ? (
+            <div>
+              <ListItem
+                onClick={() => this.fetchOrder(this.state.id, true)}
+                style={styles.listItem}
+                button
+              >
+                <Icon style={styles.listIcon}>arrow_upward</Icon>
+                <span style={styles.itemText}>Sort Ascending</span>
+              </ListItem>
+              <Divider />
+              <ListItem
+                onClick={() => this.fetchOrder(this.state.id, false)}
+                style={styles.listItem}
+                button
+              >
+                <Icon style={styles.listIcon}>arrow_downward</Icon>
+                <span style={styles.itemText}>Sort Descending</span>
+              </ListItem>
+              <Divider />
+              <ListItem style={styles.listItem} button>
+                <Icon style={styles.listIcon}>filter_list</Icon>
+                <span style={styles.itemText}>Filter</span>
+              </ListItem>
+              <Divider />
+            </div>
+          ) : null}
+          <ListItem style={styles.listItem} button>
+            <Icon style={styles.listIcon}>view_column</Icon>
+            <span style={styles.itemText}>Columns</span>
+          </ListItem>
+        </List>
+        {/* {this.renderRadioGroup()} */}
       </Popover>
     );
   };

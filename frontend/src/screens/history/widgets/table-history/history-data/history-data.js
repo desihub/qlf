@@ -1,8 +1,9 @@
 import React from 'react';
-import { TableRow, TableCell } from 'material-ui-next/Table';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
-import { CircularProgress } from 'material-ui-next/Progress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { tableColumns } from '../columns';
 
 const styles = {
