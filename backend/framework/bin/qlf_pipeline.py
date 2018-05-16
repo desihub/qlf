@@ -250,8 +250,8 @@ class QLFProcess(object):
 
     def generate_qa_tests(self):
         qa_tests = list()
-        for camera in self.data.get('cameras'):
-            try:
+        try:
+            for camera in self.data.get('cameras'):
                 lm = LoadMetrics(
                     self.data.get('process_id'),
                     camera.get('name'),
@@ -259,9 +259,8 @@ class QLFProcess(object):
                     self.data.get('night')
                 )
                 qa_tests.append({camera.get('name'): lm.load_qa_tests()})
-            except Exception as err:
-                logger.error(err)
-                logger.error('qa_tests error camera %s' % camera.get('name'))
+        except Exception as err:
+            logger.error(err)
         return qa_tests
 
     def resume_log(self, line, camera, lock):
