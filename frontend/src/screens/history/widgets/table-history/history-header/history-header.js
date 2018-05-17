@@ -16,7 +16,6 @@ import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 
 const styles = {
-  arrow: { display: 'flex', alignItems: 'center' },
   header: { cursor: 'pointer', color: 'black' },
   headerRecent: { color: 'black' },
   radioGroup: { margin: '1em' },
@@ -92,7 +91,7 @@ export default class HistoryHeader extends React.Component {
       ? styles.header
       : styles.headerRecent;
     return (
-      <div style={styles.arrow}>
+      <div>
         <span
           style={headerStyle}
           onClick={event => this.handleHeaderClick(event, id)}
@@ -265,7 +264,7 @@ export default class HistoryHeader extends React.Component {
   renderCheckbox = () => {
     if (!this.props.selectable) return;
     return (
-      <TableCell padding="checkbox">
+      <TableCell style={styles.tableCell}>
         <Checkbox
           onChange={(evt, checked) => this.props.selectExposure(checked)}
         />

@@ -2,8 +2,8 @@ import React from 'react';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
-import Checkbox from 'material-ui/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = {
   link: {
@@ -11,13 +11,6 @@ const styles = {
     textDecoration: 'none',
   },
   bold: { fontWeight: 900 },
-  checkbox: {
-    marginTop: '12px',
-    marginLeft: '24px',
-  },
-  tableCheckbox: {
-    paddingLeft: '23px',
-  },
   tableCell: {
     padding: '4px',
     textAlign: 'center',
@@ -159,10 +152,7 @@ export default class HistoryData extends React.Component {
   renderCheckbox = checked => {
     if (!this.props.selectable) return;
     return (
-      <TableCell
-        style={{ ...styles.tableCell, ...styles.tableCheckbox }}
-        padding="checkbox"
-      >
+      <TableCell style={{ ...styles.tableCell }}>
         <Checkbox checked={checked} />
       </TableCell>
     );
