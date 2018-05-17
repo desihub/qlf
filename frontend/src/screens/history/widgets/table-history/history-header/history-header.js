@@ -11,7 +11,7 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { tableColumns } from '../columns';
-import Popover from 'material-ui/Popover';
+import Popover from '@material-ui/core/Popover';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
@@ -141,6 +141,7 @@ export default class HistoryHeader extends React.Component {
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         targetOrigin={{ horizontal: 'left', vertical: 'top' }}
         onRequestClose={this.handlePopOverClose}
+        onClose={this.handlePopOverClose}
         elevation={1}
       >
         <List component="nav">
