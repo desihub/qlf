@@ -39,6 +39,8 @@ export default class HistoryHeader extends React.Component {
       flavors: undefined,
       selectedFlavor: 'none',
       id: undefined,
+      anchorFilterEl: null,
+      anchorEl: null,
     };
   }
 
@@ -92,35 +94,18 @@ export default class HistoryHeader extends React.Component {
       <div style={styles.arrow}>
         <span
           style={headerStyle}
-          onClick={event => this.handleFilterClick(event, id)}
+          onClick={event => this.handleHeaderClick(event, id)}
         >
           {name}
         </span>
         {this.props.orderable ? this.renderArrow(id) : null}
-        {/* {this.props.orderable ? this.renderFilter(id) : null} */}
         {this.props.orderable ? this.renderPopOver(id) : null}
+        {this.props.orderable ? this.renderFilterPopOver() : null}
       </div>
     );
   };
 
-  renderFilter = filter => {
-    if (filter === 'exposure__flavor' || filter === 'flavor') {
-      return (
-        <Icon
-          onClick={event => this.handleFilterClick(event, filter)}
-          style={{ fontSize: 20, cursor: 'pointer' }}
-        >
-          filter_list
-        </Icon>
-      );
-    }
-  };
-
-  state = {
-    anchorEl: null,
-  };
-
-  handleFilterClick = (event, id) => {
+  handleHeaderClick = (event, id) => {
     this.setState({
       anchorEl: event.currentTarget,
       id,
@@ -130,6 +115,7 @@ export default class HistoryHeader extends React.Component {
   handlePopOverClose = () => {
     this.setState({
       anchorEl: null,
+      anchorFilterEl: null,
     });
   };
 
@@ -164,7 +150,15 @@ export default class HistoryHeader extends React.Component {
                 <span style={styles.itemText}>Sort Descending</span>
               </ListItem>
               <Divider />
-              <ListItem style={styles.listItem} button>
+            </div>
+          ) : null}
+          {this.state.id && this.state.id.includes('flavor') ? (
+            <div>
+              <ListItem
+                onClick={event => this.handleFilterClick(event, this.state.id)}
+                style={styles.listItem}
+                button
+              >
                 <Icon style={styles.listIcon}>filter_list</Icon>
                 <span style={styles.itemText}>Filter</span>
               </ListItem>
@@ -180,9 +174,35 @@ export default class HistoryHeader extends React.Component {
             <span style={styles.itemText}>Columns</span>
           </ListItem>
         </List>
-        {/* {this.renderRadioGroup()} */}
       </Popover>
     );
+  };
+
+  handleFilterClick = (event, id) => {
+    this.setState({
+      anchorFilterEl: event.currentTarget,
+      id,
+    });
+  };
+
+  renderFilterPopOver = () => {
+    return (
+      <Popover
+        open={Boolean(this.state.anchorFilterEl)}
+        anchorEl={this.state.anchorFilterEl}
+        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+        onClose={this.handlePopOverClose}
+        elevation={1}
+      >
+        {this.renderRadioGroup()}
+      </Popover>
+    );
+  };
+
+  openFilterModal = () => {
+    this.handlePopOverClose();
+    this.props.openColumnsModal();
   };
 
   openColumnsModal = () => {

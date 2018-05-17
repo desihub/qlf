@@ -12,7 +12,6 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 
@@ -286,10 +285,12 @@ const styles = {
   },
   modalBody: {
     position: 'absolute',
-    width: '50%',
     backgroundColor: 'white',
     boxShadow: 1,
     padding: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
   },
   modal: {
     display: 'flex',
