@@ -120,18 +120,6 @@ BOKEH_URL = 'http://{}:{}'.format(
     os.environ.get('BOKEH_PORT', '5006')
 )
 
-EXPOSURE_MONITORING = 'PYRO:{}@{}:{}'.format(
-    os.environ.get('EXPOSURE_MONITORING_NS', 'exposure.monitoring'),
-    os.environ.get('PYRO_HOST', 'localhost'),
-    str(os.environ.get('PYRO_PORT', 56006))
-)
-
-EXPOSURE_GENERATOR = 'PYRO:{}@{}:{}'.format(
-    os.environ.get('EXPOSURE_GENERATOR_NS', 'exposure.generator'),
-    os.environ.get('PYRO_HOST', 'localhost'),
-    str(os.environ.get('PYRO_PORT', 56006))
-)
-
 QLF_BASE_URL = os.environ.get('QLF_BASE_URL', 'http://localhost:8000')
 if os.environ.get('QLF_REDIS', False):
     CHANNEL_LAYERS = {
@@ -146,7 +134,7 @@ if os.environ.get('QLF_REDIS', False):
 
 X_FRAME_OPTIONS = 'ALLOWALL'
 
-XS_SHARING_ALLOWED_METHODS = ['POST','GET','OPTIONS', 'PUT', 'DELETE']
+XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
 
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', None)
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
