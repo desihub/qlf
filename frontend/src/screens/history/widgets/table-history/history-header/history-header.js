@@ -21,7 +21,8 @@ const styles = {
   headerRecent: { color: 'black' },
   radioGroup: { margin: '1em' },
   tableCell: {
-    padding: '4px 4px 4px 4px',
+    padding: '4px',
+    textAlign: 'center',
   },
   itemText: {
     fontSize: '12px',

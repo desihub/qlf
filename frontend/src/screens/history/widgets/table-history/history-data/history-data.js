@@ -19,7 +19,8 @@ const styles = {
     paddingLeft: '23px',
   },
   tableCell: {
-    padding: '4px 4px 4px 4px',
+    padding: '4px',
+    textAlign: 'center',
   },
 };
 

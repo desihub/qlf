@@ -171,6 +171,10 @@ class TableHistory extends Component {
   };
 
   renderColumnsModal = () => {
+    const availableColumns =
+      this.props.type === 'process'
+        ? tableColumns
+        : tableColumns.filter(tc => tc.exposureKey !== null);
     return (
       <Modal
         aria-labelledby="simple-modal-title"
@@ -183,27 +187,22 @@ class TableHistory extends Component {
           <FormControl component="fieldset">
             <FormLabel component="legend">Avaiable Columns</FormLabel>
             <FormGroup className={this.props.classes.columnsFormGroup}>
-              {tableColumns
-                .filter(
-                  tc => this.props.type !== 'process' && tc.exposureKey !== null
-                )
-                .map(column => (
-                  <FormControlLabel
-                    key={`CHECK${column.name}`}
-                    control={
-                      <Checkbox
-                        checked={Boolean(
-                          !this.state.tableColumnsHidden.find(
-                            c => c === column.name
-                          )
-                        )}
-                        onChange={() => this.handleChangeColumns(column.name)}
-                        value="gilad"
-                      />
-                    }
-                    label={column.name}
-                  />
-                ))}
+              {availableColumns.map(column => (
+                <FormControlLabel
+                  key={`CHECK${column.name}`}
+                  control={
+                    <Checkbox
+                      checked={Boolean(
+                        !this.state.tableColumnsHidden.find(
+                          c => c === column.name
+                        )
+                      )}
+                      onChange={() => this.handleChangeColumns(column.name)}
+                    />
+                  }
+                  label={column.name}
+                />
+              ))}
             </FormGroup>
           </FormControl>
           <Button
