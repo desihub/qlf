@@ -237,7 +237,7 @@ export default class HistoryData extends React.Component {
                         style={styles.link}
                         onClick={() => selectProcessQA(processId)}
                       >
-                        View
+                        {this.qaSuccess()}
                       </span>
                     ) : null}
                   </TableCell>
