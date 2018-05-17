@@ -6,6 +6,7 @@ import random
 import re
 import shutil
 import time
+from glob import glob
 from util import get_config
 from multiprocessing import Process, Manager
 
@@ -20,9 +21,11 @@ log = get_logger(
 spectro_path = os.path.normpath(cfg.get("namespace", "desi_spectro_data"))
 spectro_redux = os.path.normpath(cfg.get("namespace", "desi_spectro_redux"))
 base_exposures_path = cfg.get("namespace", "base_exposures_path")
-fiberflat_path = os.path.join(base_exposures_path, "calib2d")
-psfboot_path = os.path.join(base_exposures_path, "psf")
-list_base_nights = cfg.get("data", "night").split(",")
+
+# TODO: verify desispec.io.findfile function to get the files correctly
+fiberflat_path = os.path.join(base_exposures_path, "fiberflat")
+psf_path = os.path.join(base_exposures_path, "psf")
+
 min_interval = cfg.getint("main", "min_interval")
 max_interval = cfg.getint("main", "max_interval")
 max_exposures = cfg.getint("main", "max_exposures")
@@ -32,7 +35,6 @@ class ExposureGenerator(Process):
 
     def __init__(self):
         super().__init__()
-
         self.__last_exposure = Manager().dict()
         self.__base_exposure = None
         self.__generation_count = 0
@@ -74,7 +76,6 @@ class ExposureGenerator(Process):
 
         return random.choice(exposures_list)
 
-
     def get_last_exposure(self):
         return Manager().dict(self.__last_exposure)
 
@@ -94,8 +95,9 @@ class ExposureGenerator(Process):
         self.__gen_fiberflat_folder(gen_time)
         self.__gen_psfboot_folder(gen_time)
 
-        expo_name = "desi-{}.fits.fz".format(exp_id_zfill)
         night = self.__night_to_generate(gen_time)
+        expo_name = "desi-{}.fits.fz".format(exp_id_zfill)
+
         file_path = os.path.join(spectro_path, night, expo_name)
 
         try:
@@ -130,12 +132,12 @@ class ExposureGenerator(Process):
 
         last_night = self.__get_last_night()
 
+        # If you do not have the last night, the generation of exposure begins with id 1 + 1
         if not last_night:
-            return 0
+            return 1
 
-        listdir = os.listdir(os.path.join(spectro_path, last_night))
-        regex = re.compile("^desi-\d+.fits.fz$")
-        last_exp_file = sorted(list(filter(regex.match, listdir)))[-1]
+        listdir = glob(os.path.join(spectro_path, last_night, 'desi-*.fits.fz'))
+        last_exp_file = sorted([os.path.basename(x) for x in listdir])[-1]
 
         return re.findall("^desi-(\d+).fits.fz$", last_exp_file)[0]
 
@@ -197,29 +199,22 @@ class ExposureGenerator(Process):
     def __gen_fiberflat_folder(self, gen_time):
         """ """
 
-        dest = os.path.join(spectro_redux, "calib2d")
+        dest = os.path.join(spectro_redux, "exposures", self.__night_to_generate(gen_time))
         self.__ensure_dir(dest)
-        dest = os.path.join(dest, self.__night_to_generate(gen_time))
+        dest = os.path.join(dest, "00000001")
 
         if not os.path.islink(dest):
             os.symlink(fiberflat_path, dest)
 
-        # if not os.path.isdir(dest):
-        #     shutil.copytree(fiberflat_path, dest)
-
     def __gen_psfboot_folder(self, gen_time):
         """ """
 
-        dest = os.path.join(spectro_redux, "calib2d", "psf")
+        dest = os.path.join(spectro_redux, "exposures", self.__night_to_generate(gen_time))
         self.__ensure_dir(dest)
-        dest = os.path.join(dest, self.__night_to_generate(gen_time))
+        dest = os.path.join(dest, "00000000")
 
         if not os.path.islink(dest):
-            os.symlink(psfboot_path, dest)
-
-        # if not os.path.isdir(dest):
-        #     shutil.copytree(psfboot_path, dest)
-
+            os.symlink(psf_path, dest)
 
     @staticmethod
     def __night_to_generate(gen_time):
@@ -243,5 +238,7 @@ class ExposureGenerator(Process):
 
 if __name__ == "__main__":
     print('Start Exposure Generator...')
+
     generator = ExposureGenerator()
     generator.start()
+    generator.join()
