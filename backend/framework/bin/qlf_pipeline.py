@@ -307,12 +307,3 @@ class QLFProcess(object):
             logger.info(err)
 
         lock.release()
-
-
-def process_run(exp, _id):
-    """ """
-    qlf_process = QLFProcess(exp)
-    _id.value = qlf_process.start_process()
-    print('Process ID: {}'.format(_id.value))
-    qlf_process.start_jobs()
-    qlf_process.finish_process()
