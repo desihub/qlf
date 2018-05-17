@@ -6,6 +6,15 @@ import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TablePagination from '@material-ui/core/TablePagination';
+import { tableColumns } from './columns';
+import Modal from '@material-ui/core/Modal';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
 
 class TableHistory extends Component {
   static propTypes = {
@@ -27,12 +36,17 @@ class TableHistory extends Component {
     limit: PropTypes.number.isRequired,
   };
 
-  state = {
-    asc: undefined,
-    ordering: '-pk',
-    offset: 0,
-    filters: '',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      asc: undefined,
+      ordering: '-pk',
+      offset: 0,
+      filters: '',
+      tableColumnsHidden: [],
+      openColumnsModal: false,
+    };
+  }
 
   componentWillReceiveProps(nextProps) {
     if (
@@ -76,6 +90,7 @@ class TableHistory extends Component {
               selectedExposures={this.props.selectedExposures}
               selectExposure={this.props.selectExposure}
               selectable={this.props.selectable}
+              tableColumns={this.availableColumns()}
             />
           );
         })}
@@ -156,9 +171,88 @@ class TableHistory extends Component {
     );
   };
 
+  renderColumnsModal = () => {
+    return (
+      <Modal
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+        open={this.state.openColumnsModal}
+        onClose={this.handleColumnModalClose}
+        className={this.props.classes.modal}
+      >
+        <div className={this.props.classes.modalBody}>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Avaiable Columns</FormLabel>
+            <FormGroup className={this.props.classes.columnsFormGroup}>
+              {tableColumns
+                .filter(
+                  tc => this.props.type !== 'process' && tc.exposureKey !== null
+                )
+                .map(column => (
+                  <FormControlLabel
+                    key={`CHECK${column.name}`}
+                    control={
+                      <Checkbox
+                        checked={Boolean(
+                          !this.state.tableColumnsHidden.find(
+                            c => c === column.name
+                          )
+                        )}
+                        onChange={() => this.handleChangeColumns(column.name)}
+                        value="gilad"
+                      />
+                    }
+                    label={column.name}
+                  />
+                ))}
+            </FormGroup>
+          </FormControl>
+          <Button
+            className={this.props.classes.modalColumnsButtonClose}
+            onClick={this.handleColumnModalClose}
+          >
+            Close
+          </Button>
+        </div>
+      </Modal>
+    );
+  };
+
+  handleChangeColumns = name => {
+    const { tableColumnsHidden } = this.state;
+    if (!tableColumnsHidden.find(c => c === name)) {
+      this.setState({
+        tableColumnsHidden: tableColumnsHidden.concat(name),
+      });
+    } else {
+      this.setState({
+        tableColumnsHidden: tableColumnsHidden.filter(tch => tch !== name),
+      });
+    }
+  };
+
+  availableColumns = () => {
+    return tableColumns.filter(
+      tc => !this.state.tableColumnsHidden.includes(tc.name)
+    );
+  };
+
+  openColumnsModal = () => {
+    this.setState({
+      openColumnsModal: true,
+    });
+  };
+
+  handleColumnModalClose = () => {
+    this.setState({
+      openColumnsModal: false,
+    });
+  };
+
   render() {
     return (
       <div className={this.props.classes.root}>
+        {this.renderColumnsModal()}
         <Table style={styles.table}>
           <HistoryHeader
             addOrder={this.addOrder}
@@ -169,6 +263,8 @@ class TableHistory extends Component {
             selectable={this.props.selectable}
             orderable={this.props.orderable}
             selectExposure={this.props.selectExposure}
+            tableColumns={this.availableColumns()}
+            openColumnsModal={this.openColumnsModal}
           />
           {this.renderBody()}
         </Table>
@@ -187,6 +283,25 @@ const styles = {
     textAlign: 'center',
     width: '100%',
     tableLayout: 'auto',
+  },
+  modalBody: {
+    position: 'absolute',
+    width: '50%',
+    backgroundColor: 'white',
+    boxShadow: 1,
+    padding: '16px',
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  columnsFormGroup: {
+    display: 'grid',
+    gridTemplateColumns: 'auto auto auto auto auto',
+  },
+  modalColumnsButtonClose: {
+    float: 'right',
   },
 };
 

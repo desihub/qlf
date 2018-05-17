@@ -10,7 +10,6 @@ import QlfApi from '../../../../../containers/offline/connection/qlf-api';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { tableColumns } from '../columns';
 import Popover from '@material-ui/core/Popover';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -52,6 +51,8 @@ export default class HistoryHeader extends React.Component {
     orderable: PropTypes.bool,
     selectable: PropTypes.bool,
     selectExposure: PropTypes.func,
+    tableColumns: PropTypes.array.isRequired,
+    openColumnsModal: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -133,14 +134,12 @@ export default class HistoryHeader extends React.Component {
   };
 
   renderPopOver = () => {
-    // console.log(this.state.id);
     return (
       <Popover
         open={Boolean(this.state.anchorEl)}
         anchorEl={this.state.anchorEl}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-        targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-        onRequestClose={this.handlePopOverClose}
+        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         onClose={this.handlePopOverClose}
         elevation={1}
       >
@@ -172,7 +171,11 @@ export default class HistoryHeader extends React.Component {
               <Divider />
             </div>
           ) : null}
-          <ListItem style={styles.listItem} button>
+          <ListItem
+            onClick={() => this.openColumnsModal()}
+            style={styles.listItem}
+            button
+          >
             <Icon style={styles.listIcon}>view_column</Icon>
             <span style={styles.itemText}>Columns</span>
           </ListItem>
@@ -180,6 +183,11 @@ export default class HistoryHeader extends React.Component {
         {/* {this.renderRadioGroup()} */}
       </Popover>
     );
+  };
+
+  openColumnsModal = () => {
+    this.handlePopOverClose();
+    this.props.openColumnsModal();
   };
 
   renderRadioGroup = () => {
@@ -221,7 +229,7 @@ export default class HistoryHeader extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {tableColumns.map((column, id) => {
+          {this.props.tableColumns.map((column, id) => {
             return (
               <TableCell key={`PROCESS${id}`} style={styles.tableCell}>
                 {this.renderHeader(column.processKey, column.name)}
@@ -249,7 +257,7 @@ export default class HistoryHeader extends React.Component {
       <TableHead>
         <TableRow>
           {this.renderCheckbox()}
-          {tableColumns
+          {this.props.tableColumns
             .filter(column => column.exposureKey !== null)
             .map((column, id) => {
               return (

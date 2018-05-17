@@ -4,7 +4,6 @@ import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { tableColumns } from '../columns';
 
 const styles = {
   link: {
@@ -39,6 +38,7 @@ export default class HistoryData extends React.Component {
     rowNumber: PropTypes.number,
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
+    tableColumns: PropTypes.array.isRequired,
   };
 
   formatDate = dateString => {
@@ -100,7 +100,7 @@ export default class HistoryData extends React.Component {
       this.props.lastProcessedId === row.pk ? styles.bold : null;
     return (
       <TableRow style={lastProcessed}>
-        {tableColumns.map((column, key) => {
+        {this.props.tableColumns.map((column, key) => {
           const id = column.processKey.includes('exposure__')
             ? column.processKey.split('__')[1]
             : column.processKey;
@@ -192,7 +192,7 @@ export default class HistoryData extends React.Component {
         striped={striped}
       >
         {this.renderCheckbox(selectedExposure)}
-        {tableColumns
+        {this.props.tableColumns
           .filter(column => column.exposureKey !== null)
           .map((column, key) => {
             const id = column.exposureKey;
