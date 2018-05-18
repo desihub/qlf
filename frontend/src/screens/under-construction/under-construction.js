@@ -1,6 +1,6 @@
 import React from 'react';
-import Paper from 'material-ui-next/Paper';
-import Typography from 'material-ui-next/Typography';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
 const styles = {
   paper: {
@@ -13,6 +13,10 @@ const styles = {
 };
 
 export default class UnderConstruction extends React.Component {
+  componentDidMount() {
+    document.title = 'Under Construction';
+  }
+
   render() {
     return (
       <Paper style={styles.paper} elevation={4}>

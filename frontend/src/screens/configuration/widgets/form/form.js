@@ -1,18 +1,16 @@
 import React from 'react';
 import QLFApi from '../../../../containers/offline/connection/qlf-api';
-import TextField from 'material-ui-next/TextField';
-import Divider from 'material-ui-next/Divider';
-import Typography from 'material-ui-next/Typography';
-import {
-  FormLabel,
-  FormControl,
-  FormGroup,
-  FormControlLabel,
-} from 'material-ui-next/Form';
-import Checkbox from 'material-ui-next/Checkbox';
+import TextField from '@material-ui/core/TextField';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import _ from 'lodash';
-import Button from 'material-ui-next/Button';
-import { CircularProgress } from 'material-ui-next/Progress';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = {
   container: {

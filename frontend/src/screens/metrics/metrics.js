@@ -88,6 +88,10 @@ export default class Metrics extends Component {
     if (this.props.exposure === '') this.props.navigateToProcessingHistory();
   }
 
+  componentDidMount() {
+    document.title = 'Metrics';
+  }
+
   changeStep = direction => {
     this.setState({ qa: undefined, loading: false });
     if (direction === 'next') {
@@ -159,7 +163,6 @@ export default class Metrics extends Component {
 
   renderQA = () => {
     if (!this.state.qa) return;
-    const height = this.iframeSize().toString();
     const url =
       process.env.REACT_APP_BOKEH +
       `${this.state.qa}/?process_id=${this.props.processId}&arm=${
@@ -171,8 +174,8 @@ export default class Metrics extends Component {
         <Iframe
           url={url}
           ref={this.storeIframeRef}
-          width="95%"
-          height={height}
+          width="100%"
+          height="67vh"
           display="initial"
           position="relative"
           allowFullScreen
