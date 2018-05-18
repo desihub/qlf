@@ -88,6 +88,10 @@ export default class Metrics extends Component {
     if (this.props.exposure === '') this.props.navigateToProcessingHistory();
   }
 
+  componentDidMount() {
+    document.title = 'Metrics';
+  }
+
   changeStep = direction => {
     this.setState({ qa: undefined, loading: false });
     if (direction === 'next') {
