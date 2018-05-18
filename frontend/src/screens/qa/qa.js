@@ -27,6 +27,10 @@ export default class QA extends Component {
     processId: PropTypes.number,
   };
 
+  componentDidMount() {
+    document.title = 'QA';
+  }
+
   renderMetrics = (step, spectrographNumber, arm) => {
     if (this.props.navigateToMetrics) {
       this.props.navigateToMetrics(

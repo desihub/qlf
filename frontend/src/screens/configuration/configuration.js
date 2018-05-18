@@ -17,6 +17,10 @@ export default class Configuration extends React.Component {
     tab: 0,
   };
 
+  componentDidMount() {
+    document.title = 'Configuration';
+  }
+
   handleTabChange = (evt, tab) => {
     this.setState({ tab });
   };

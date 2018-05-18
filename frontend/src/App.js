@@ -10,6 +10,7 @@ import { ConnectedRouter } from 'react-router-redux';
 import logo from './assets/DESILogo.png';
 import OnlineContainer from './containers/online/online-container';
 import OfflineContainer from './containers/offline/offline-container';
+import Icon from 'material-ui-next/Icon';
 
 const theme = {
   spacing: {
@@ -91,6 +92,12 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
   },
+  homeIcon: {
+    fontSize: 20,
+    alignSelf: 'center',
+    paddingRight: '8px',
+    cursor: 'pointer',
+  },
 };
 
 class App extends React.Component {
@@ -150,9 +157,17 @@ class App extends React.Component {
           <span style={styles.smallSpanTitle}>
             DESI Quick Look {this.renderRouteName()}
           </span>
-          <span style={styles.hideMenu} onClick={this.toggleHeader}>
-            Hide Menu
-          </span>
+          <div style={{ display: 'flex' }}>
+            <Icon
+              onClick={() => window.open('/', 'home', 'width=950, height=650')}
+              style={styles.homeIcon}
+            >
+              home
+            </Icon>
+            <span style={styles.hideMenu} onClick={this.toggleHeader}>
+              Hide Menu
+            </span>
+          </div>
         </div>
       );
     }

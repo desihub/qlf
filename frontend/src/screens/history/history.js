@@ -42,6 +42,16 @@ export default class History extends Component {
     fetchLastProcess: PropTypes.func,
   };
 
+  componentDidMount() {
+    switch (this.props.type) {
+      case 'process':
+        document.title = 'Processing History';
+        break;
+      case 'exposure':
+        document.title = 'Observing History';
+    }
+  }
+
   renderSelectDate = () => {
     if (this.props.startDate && this.props.endDate)
       return (

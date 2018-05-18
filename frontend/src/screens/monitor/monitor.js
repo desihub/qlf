@@ -76,6 +76,10 @@ export default class Monitor extends Component {
     mjd: '',
   };
 
+  componentDidMount() {
+    document.title = 'Monitor';
+  }
+
   componentWillReceiveProps(nextProps) {
     this.setState({ ...nextProps });
   }
