@@ -168,7 +168,8 @@ export default class HistoryData extends React.Component {
       rowNumber,
       striped,
     } = this.props;
-    const lastProcessed = lastProcessedId && lastProcessedId === processId ? styles.bold : null;
+    const lastProcessed =
+      lastProcessedId && lastProcessedId === processId ? styles.bold : null;
     // const selectedExposure =
     //   selectedExposures && selectedExposures.includes(rowNumber);
     const {
