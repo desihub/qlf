@@ -14,6 +14,7 @@ cfg = get_config()
 
 qlconfig = cfg.get('main', 'qlconfig')
 desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+desi_spectro_data = os.path.normpath(cfg.get("namespace", "desi_spectro_data"))
 loglevel = cfg.get("main", "loglevel")
 logpipeline = cfg.get('main', 'logpipeline')
 
@@ -247,6 +248,35 @@ class QLFProcess(object):
         logger.info("Ingestion complete: %s." % str(duration_ingestion))
         logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
         logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
+        self.delete_exposures()
+
+    def delete_exposures(self):
+        self.delete_files(os.path.join(
+            desi_spectro_redux,
+            'exposures',
+        ))
+
+        self.delete_files(os.path.join(
+            desi_spectro_data,
+        ))
+
+        self.delete_files(os.path.join(
+            desi_spectro_redux,
+            'calib2d',
+        ))
+
+        self.delete_files(os.path.join(
+            desi_spectro_redux,
+            'calib2d',
+            'psf',
+        ))
+
+    def delete_files(self, path):
+        for night in os.listdir(path):
+            if night != '20190101' and night != 'psf':
+                night_path = os.path.join(path, night)
+                if os.path.exists(night_path):
+                    shutil.rmtree(night_path)
 
     def generate_qa_tests(self):
         qa_tests = list()
