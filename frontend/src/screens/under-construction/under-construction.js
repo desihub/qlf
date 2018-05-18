@@ -13,6 +13,10 @@ const styles = {
 };
 
 export default class UnderConstruction extends React.Component {
+  componentDidMount() {
+    document.title = 'Under Construction';
+  }
+
   render() {
     return (
       <Paper style={styles.paper} elevation={4}>
