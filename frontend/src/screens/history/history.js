@@ -42,6 +42,19 @@ export default class History extends Component {
     fetchLastProcess: PropTypes.func,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      tab: 'history',
+      confirmDialog: false,
+      selectedExposures: [],
+      startDate: this.props.startDate,
+      endDate: this.props.endDate,
+      limit: 10,
+      firstLoad: false,
+    };
+  }
+
   componentDidMount() {
     switch (this.props.type) {
       case 'process':
@@ -49,6 +62,9 @@ export default class History extends Component {
         break;
       case 'exposure':
         document.title = 'Observing History';
+        break;
+      default:
+        document.title = 'History';
     }
   }
 
@@ -64,17 +80,10 @@ export default class History extends Component {
   };
 
   setHistoryRangeDate = (startDate, endDate) => {
-    this.setState({ startDate, endDate });
-  };
-
-  state = {
-    tab: 'history',
-    confirmDialog: false,
-    selectedExposures: [],
-    startDate: this.props.startDate,
-    endDate: this.props.endDate,
-    limit: 10,
-    firstLoad: false,
+    this.setState({
+      startDate,
+      endDate,
+    });
   };
 
   changeLimit = limit => {
@@ -83,12 +92,14 @@ export default class History extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.startDate && nextProps.endDate) {
-      if (!this.state.firstLoad) this.props.fetchLastProcess();
-      this.setState({
-        startDate: nextProps.startDate,
-        endDate: nextProps.endDate,
-        firstLoad: true,
-      });
+      if (!this.state.firstLoad) {
+        this.props.fetchLastProcess();
+        this.setState({
+          startDate: nextProps.startDate,
+          endDate: nextProps.endDate,
+          firstLoad: true,
+        });
+      }
     }
   }
 

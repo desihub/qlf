@@ -10,7 +10,7 @@ import { ConnectedRouter } from 'react-router-redux';
 import logo from './assets/DESILogo.png';
 import OnlineContainer from './containers/online/online-container';
 import OfflineContainer from './containers/offline/offline-container';
-import Icon from 'material-ui-next/Icon';
+import Icon from '@material-ui/core/Icon';
 
 const theme = {
   spacing: {

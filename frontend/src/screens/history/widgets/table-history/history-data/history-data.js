@@ -1,8 +1,9 @@
 import React from 'react';
-import { TableRow, TableCell } from 'material-ui-next/Table';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
-import Checkbox from 'material-ui/Checkbox';
-import { CircularProgress } from 'material-ui-next/Progress';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = {
   link: {
@@ -10,15 +11,9 @@ const styles = {
     textDecoration: 'none',
   },
   bold: { fontWeight: 900 },
-  checkbox: {
-    marginTop: '12px',
-    marginLeft: '24px',
-  },
-  tableCheckbox: {
-    paddingLeft: '23px',
-  },
   tableCell: {
-    padding: '4px 4px 4px 4px',
+    padding: '4px',
+    textAlign: 'center',
   },
 };
 
@@ -37,6 +32,7 @@ export default class HistoryData extends React.Component {
     rowNumber: PropTypes.number,
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
+    tableColumns: PropTypes.array.isRequired,
   };
 
   formatDate = dateString => {
@@ -93,51 +89,62 @@ export default class HistoryData extends React.Component {
   };
 
   renderProcessingHistory = () => {
+    const { row } = this.props;
     const lastProcessed =
-      this.props.lastProcessedId === this.props.row.pk ? styles.bold : null;
+      this.props.lastProcessedId === row.pk ? styles.bold : null;
     return (
       <TableRow style={lastProcessed}>
-        <TableCell style={styles.tableCell} />
-        <TableCell style={styles.tableCell}>{this.props.row.pk}</TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.props.row.exposure.exposure_id}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.props.row.exposure.tile}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.formatDate(this.props.row.start)}
-        </TableCell>
-        <TableCell style={styles.tableCell}>{this.props.row.runtime}</TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.formatDate(this.props.row.exposure.dateobs)}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.formatTime(this.props.row.exposure.dateobs)}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.props.row.datemjd.toFixed(2)}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.props.row.exposure.telra}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.props.row.exposure.teldec}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.props.row.exposure.exptime}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.props.row.exposure.flavor}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.props.row.exposure.airmass}
-        </TableCell>
-        <TableCell style={styles.tableCell} />
-        <TableCell style={styles.tableCell}>
-          {this.renderViewQA(lastProcessed, this.props.row.runtime)}
-        </TableCell>
-        <TableCell style={styles.tableCell} />
+        {this.props.tableColumns.map((column, key) => {
+          const id = column.processKey.includes('exposure__')
+            ? column.processKey.split('__')[1]
+            : column.processKey;
+          switch (column.type) {
+            case 'parent':
+              return (
+                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                  {row[id]}
+                </TableCell>
+              );
+            case 'normal':
+              return (
+                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                  {row.exposure[id]}
+                </TableCell>
+              );
+            case 'date':
+              return (
+                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                  {this.formatDate(row.exposure[id])}
+                </TableCell>
+              );
+            case 'dateprocess':
+              return (
+                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                  {this.formatDate(row[id])}
+                </TableCell>
+              );
+            case 'time':
+              return (
+                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                  {this.formatTime(row.exposure.dateobs)}
+                </TableCell>
+              );
+            case 'datemjd':
+              return (
+                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                  {row.datemjd.toFixed(2)}
+                </TableCell>
+              );
+            case 'qa':
+              return (
+                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                  {this.renderViewQA(lastProcessed, row.runtime)}
+                </TableCell>
+              );
+            default:
+              return <TableCell key={`PROCV${key}`} style={styles.tableCell} />;
+          }
+        })}
       </TableRow>
     );
   };
@@ -145,10 +152,7 @@ export default class HistoryData extends React.Component {
   renderCheckbox = checked => {
     if (!this.props.selectable) return;
     return (
-      <TableCell
-        style={{ ...styles.tableCell, ...styles.tableCheckbox }}
-        padding="checkbox"
-      >
+      <TableCell style={{ ...styles.tableCell }}>
         <Checkbox checked={checked} />
       </TableCell>
     );
@@ -171,16 +175,7 @@ export default class HistoryData extends React.Component {
     const lastProcessed = lastProcessedId === processId ? styles.bold : null;
     const selectedExposure =
       selectedExposures && selectedExposures.includes(rowNumber);
-    const {
-      exposure_id,
-      tile,
-      dateobs,
-      telra,
-      teldec,
-      exptime,
-      flavor,
-      airmass,
-    } = row;
+
     return (
       <TableRow
         onClick={() => this.selectExposure(rowNumber)}
@@ -188,33 +183,61 @@ export default class HistoryData extends React.Component {
         striped={striped}
       >
         {this.renderCheckbox(selectedExposure)}
-        <TableCell style={styles.tableCell} />
-        <TableCell style={styles.tableCell}>{exposure_id}</TableCell>
-        <TableCell style={styles.tableCell}>{tile}</TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.formatDate(dateobs)}
-        </TableCell>
-        <TableCell style={styles.tableCell}>
-          {this.formatTime(dateobs)}
-        </TableCell>
-        <TableCell style={styles.tableCell}>{row.datemjd.toFixed(2)}</TableCell>
-        <TableCell style={styles.tableCell}>{telra}</TableCell>
-        <TableCell style={styles.tableCell}>{teldec}</TableCell>
-        <TableCell style={styles.tableCell}>{exptime}</TableCell>
-        <TableCell style={styles.tableCell}>{flavor}</TableCell>
-        <TableCell style={styles.tableCell}>{airmass}</TableCell>
-        <TableCell style={styles.tableCell} />
-        <TableCell style={styles.tableCell}>
-          {processId && lastProcessedId !== processId ? (
-            <span
-              style={styles.link}
-              onClick={() => selectProcessQA(processId)}
-            >
-              {this.qaSuccess()}
-            </span>
-          ) : null}
-        </TableCell>
-        <TableCell style={styles.tableCell} />
+        {this.props.tableColumns
+          .filter(column => column.exposureKey !== null)
+          .map((column, key) => {
+            const id = column.exposureKey;
+            switch (column.type) {
+              case 'parent':
+              case 'normal':
+                return (
+                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                    {row[id]}
+                  </TableCell>
+                );
+              case 'date':
+                return (
+                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                    {this.formatDate(row[id])}
+                  </TableCell>
+                );
+              case 'dateprocess':
+                return (
+                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                    {this.formatDate(row[id])}
+                  </TableCell>
+                );
+              case 'time':
+                return (
+                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                    {this.formatTime(row.dateobs)}
+                  </TableCell>
+                );
+              case 'datemjd':
+                return (
+                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                    {row.datemjd.toFixed(2)}
+                  </TableCell>
+                );
+              case 'qa':
+                return (
+                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                    {processId && lastProcessedId !== processId ? (
+                      <span
+                        style={styles.link}
+                        onClick={() => selectProcessQA(processId)}
+                      >
+                        {this.qaSuccess()}
+                      </span>
+                    ) : null}
+                  </TableCell>
+                );
+              default:
+                return (
+                  <TableCell key={`EXPV${key}`} style={styles.tableCell} />
+                );
+            }
+          })}
       </TableRow>
     );
   };

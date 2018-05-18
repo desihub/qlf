@@ -1,6 +1,6 @@
 import React from 'react';
 import QLFApi from '../../../../containers/offline/connection/qlf-api';
-import { CircularProgress } from 'material-ui-next/Progress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = {
   qlconfig: {

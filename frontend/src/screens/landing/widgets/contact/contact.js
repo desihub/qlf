@@ -3,7 +3,7 @@ import TextField from 'material-ui/TextField';
 import Recaptcha from 'react-recaptcha';
 import RaisedButton from 'material-ui/RaisedButton';
 import QlfApi from '../../../../containers/offline/connection/qlf-api';
-import Paper from 'material-ui-next/Paper';
+import Paper from '@material-ui/core/Paper';
 
 const styles = {
   container: {

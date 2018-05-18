@@ -1,22 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ArrowDropDown, ArrowDropUp } from 'material-ui-icons';
-import { TableCell, TableHead, TableRow } from 'material-ui-next/Table';
-import Checkbox from 'material-ui-next/Checkbox';
-import Icon from 'material-ui-next/Icon';
-import Popover from 'material-ui-next/Popover';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Checkbox from '@material-ui/core/Checkbox';
+import Icon from '@material-ui/core/Icon';
 import QlfApi from '../../../../../containers/offline/connection/qlf-api';
-import Radio, { RadioGroup } from 'material-ui-next/Radio';
-import { FormControlLabel } from 'material-ui-next/Form';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Popover from '@material-ui/core/Popover';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Divider from '@material-ui/core/Divider';
 
 const styles = {
-  arrow: { display: 'flex', alignItems: 'center' },
   header: { cursor: 'pointer', color: 'black' },
   headerRecent: { color: 'black' },
   radioGroup: { margin: '1em' },
   tableCell: {
-    padding: '4px 4px 4px 4px',
+    padding: '4px',
+    textAlign: 'center',
   },
+  itemText: {
+    fontSize: '12px',
+  },
+  listIcon: { fontSize: 20, cursor: 'pointer', paddingRight: '8px' },
+  listItem: { padding: '8px' },
 };
 
 export default class HistoryHeader extends React.Component {
@@ -27,6 +38,9 @@ export default class HistoryHeader extends React.Component {
     this.state = {
       flavors: undefined,
       selectedFlavor: 'none',
+      id: undefined,
+      anchorFilterEl: null,
+      anchorEl: null,
     };
   }
 
@@ -39,6 +53,8 @@ export default class HistoryHeader extends React.Component {
     orderable: PropTypes.bool,
     selectable: PropTypes.bool,
     selectExposure: PropTypes.func,
+    tableColumns: PropTypes.array.isRequired,
+    openColumnsModal: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -64,9 +80,10 @@ export default class HistoryHeader extends React.Component {
     }
   };
 
-  fetchOrder = id => {
+  fetchOrder = (id, asc) => {
     if (!id) return;
-    this.props.addOrder(id);
+    this.handlePopOverClose();
+    this.props.addOrder(id, asc);
   };
 
   renderHeader = (id, name) => {
@@ -74,44 +91,31 @@ export default class HistoryHeader extends React.Component {
       ? styles.header
       : styles.headerRecent;
     return (
-      <div style={styles.arrow}>
-        <span style={headerStyle} onClick={() => this.fetchOrder(id)}>
+      <div>
+        <span
+          style={headerStyle}
+          onClick={event => this.handleHeaderClick(event, id)}
+        >
           {name}
         </span>
         {this.props.orderable ? this.renderArrow(id) : null}
-        {this.props.orderable ? this.renderFilter(id) : null}
         {this.props.orderable ? this.renderPopOver(id) : null}
+        {this.props.orderable ? this.renderFilterPopOver() : null}
       </div>
     );
   };
 
-  renderFilter = filter => {
-    if (filter === 'exposure__flavor' || filter === 'flavor') {
-      return (
-        <Icon
-          onClick={event => this.handleFilterClick(event, filter)}
-          style={{ fontSize: 20 }}
-        >
-          filter_list
-        </Icon>
-      );
-    }
-  };
-
-  state = {
-    anchorEl: null,
-  };
-
-  handleFilterClick = (event, filter) => {
+  handleHeaderClick = (event, id) => {
     this.setState({
       anchorEl: event.currentTarget,
-      filter,
+      id,
     });
   };
 
   handlePopOverClose = () => {
     this.setState({
       anchorEl: null,
+      anchorFilterEl: null,
     });
   };
 
@@ -120,20 +124,90 @@ export default class HistoryHeader extends React.Component {
       <Popover
         open={Boolean(this.state.anchorEl)}
         anchorEl={this.state.anchorEl}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         onClose={this.handlePopOverClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
+        elevation={1}
+      >
+        <List component="nav">
+          {this.state.id ? (
+            <div>
+              <ListItem
+                onClick={() => this.fetchOrder(this.state.id, true)}
+                style={styles.listItem}
+                button
+              >
+                <Icon style={styles.listIcon}>arrow_upward</Icon>
+                <span style={styles.itemText}>Sort Ascending</span>
+              </ListItem>
+              <Divider />
+              <ListItem
+                onClick={() => this.fetchOrder(this.state.id, false)}
+                style={styles.listItem}
+                button
+              >
+                <Icon style={styles.listIcon}>arrow_downward</Icon>
+                <span style={styles.itemText}>Sort Descending</span>
+              </ListItem>
+              <Divider />
+            </div>
+          ) : null}
+          {this.state.id && this.state.id.includes('flavor') ? (
+            <div>
+              <ListItem
+                onClick={event => this.handleFilterClick(event, this.state.id)}
+                style={styles.listItem}
+                button
+              >
+                <Icon style={styles.listIcon}>filter_list</Icon>
+                <span style={styles.itemText}>Filter</span>
+              </ListItem>
+              <Divider />
+            </div>
+          ) : null}
+          <ListItem
+            onClick={() => this.openColumnsModal()}
+            style={styles.listItem}
+            button
+          >
+            <Icon style={styles.listIcon}>view_column</Icon>
+            <span style={styles.itemText}>Columns</span>
+          </ListItem>
+        </List>
+      </Popover>
+    );
+  };
+
+  handleFilterClick = (event, id) => {
+    this.setState({
+      anchorFilterEl: event.currentTarget,
+      id,
+    });
+  };
+
+  renderFilterPopOver = () => {
+    return (
+      <Popover
+        open={Boolean(this.state.anchorFilterEl)}
+        anchorEl={this.state.anchorFilterEl}
+        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+        onClose={this.handlePopOverClose}
         elevation={1}
       >
         {this.renderRadioGroup()}
       </Popover>
     );
+  };
+
+  openFilterModal = () => {
+    this.handlePopOverClose();
+    this.props.openColumnsModal();
+  };
+
+  openColumnsModal = () => {
+    this.handlePopOverClose();
+    this.props.openColumnsModal();
   };
 
   renderRadioGroup = () => {
@@ -175,57 +249,13 @@ export default class HistoryHeader extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Program')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('pk', 'Process ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure_id', 'Exp ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__tile', 'Tile ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('start', 'Process Date')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Process Time')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__dateobs', 'OBS Date')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__dateobs', 'OBS Time')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'MJD')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__telra', 'RA (hms)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__teldec', 'Dec (dms)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__exptime', 'Exp Time(s)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__flavor', 'Flavor')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure__airmass', 'Airmass')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'FWHM (arcsec)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'QA')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'CCDs')}
-          </TableCell>
+          {this.props.tableColumns.map((column, id) => {
+            return (
+              <TableCell key={`PROCESS${id}`} style={styles.tableCell}>
+                {this.renderHeader(column.processKey, column.name)}
+              </TableCell>
+            );
+          })}
         </TableRow>
       </TableHead>
     );
@@ -234,7 +264,7 @@ export default class HistoryHeader extends React.Component {
   renderCheckbox = () => {
     if (!this.props.selectable) return;
     return (
-      <TableCell padding="checkbox">
+      <TableCell style={styles.tableCell}>
         <Checkbox
           onChange={(evt, checked) => this.props.selectExposure(checked)}
         />
@@ -247,48 +277,15 @@ export default class HistoryHeader extends React.Component {
       <TableHead>
         <TableRow>
           {this.renderCheckbox()}
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Program')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exposure_id', 'Exp ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('tile', 'Tile ID')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('dateobs', 'OBS Date')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'OBS Time')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'MJD')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('telra', 'RA (hms)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('teldec', 'Dec (dms)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('exptime', 'Exp Time(s)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('flavor', 'Flavor')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'Airmass')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'FWHM (arcsec)')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'QA')}
-          </TableCell>
-          <TableCell style={styles.tableCell}>
-            {this.renderHeader('', 'CCDs')}
-          </TableCell>
+          {this.props.tableColumns
+            .filter(column => column.exposureKey !== null)
+            .map((column, id) => {
+              return (
+                <TableCell key={`EXP${id}`} style={styles.tableCell}>
+                  {this.renderHeader(column.exposureKey, column.name)}
+                </TableCell>
+              );
+            })}
         </TableRow>
       </TableHead>
     );
