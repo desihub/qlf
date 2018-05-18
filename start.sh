@@ -17,7 +17,11 @@ fi
 if [ $1 = "prod" ]; then
   cd frontend
   sed -i '/REACT_APP_VERSION/d' .env
-  echo "REACT_APP_VERSION=$(git rev-parse HEAD)" >> .env
+  if git describe --exact-match --tags $(git log -n1 --pretty='%h') ; then
+      echo "REACT_APP_VERSION=$(git describe --exact-match --tags $(git log -n1 --pretty='%h'))"
+  else
+      echo "REACT_APP_VERSION=$(git rev-parse HEAD)"
+  fi
   cd ..
   docker-compose -f frontend/docker-compose.yml up -d
 	docker-compose -f backend/docker-compose.yml up -d
