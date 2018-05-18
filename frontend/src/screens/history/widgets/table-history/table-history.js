@@ -51,7 +51,8 @@ class TableHistory extends Component {
     if (
       nextProps.startDate &&
       nextProps.endDate &&
-      this.props.endDate !== nextProps.endDate
+      (this.props.startDate !== nextProps.startDate ||
+        this.props.endDate !== nextProps.endDate)
     ) {
       this.props.getHistory(
         nextProps.startDate,
