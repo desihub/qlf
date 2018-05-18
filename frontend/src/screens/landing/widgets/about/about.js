@@ -14,7 +14,7 @@ const styles = {
     padding: '16px',
     hyphens: 'auto',
     wordWrap: 'break-word',
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 1.5,
     fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',
     fontWeight: 400,

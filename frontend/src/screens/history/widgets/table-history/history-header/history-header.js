@@ -246,7 +246,7 @@ export default class HistoryHeader extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {this.renderCheckbox()}
+          {/* {this.renderCheckbox()} */}
           <TableCell style={styles.tableCell}>
             {this.renderHeader('', 'Program')}
           </TableCell>

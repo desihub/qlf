@@ -12,7 +12,7 @@ const styles = {
     overflowY: 'scroll',
     hyphens: 'auto',
     wordWrap: 'break-word',
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 1.5,
     fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',
     fontWeight: 400,
@@ -56,9 +56,6 @@ export default class Help extends React.Component {
               We would like to thank the contribution of the following LIneA
               team:
             </span>
-          </p>
-          <p>
-            <span>LIneA team:</span>
           </p>
           <ul>
             <li>

@@ -53,7 +53,7 @@ const styles = {
     fontWeight: 900,
   },
   headerTitleBottom: {
-    fontSize: '12px',
+    fontSize: '16px',
     height: '28px',
     lineHeight: '28px',
   },
@@ -74,7 +74,7 @@ const styles = {
     alignSelf: 'flex-end',
   },
   smallTitle: {
-    fontSize: '16px',
+    fontSize: '18px',
     lineHeight: '38px',
     display: 'flex',
     flexDirection: 'row',
