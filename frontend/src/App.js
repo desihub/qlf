@@ -74,7 +74,7 @@ const styles = {
     alignSelf: 'flex-end',
   },
   smallTitle: {
-    fontSize: '18px',
+    fontSize: 18,
     lineHeight: '38px',
     display: 'flex',
     flexDirection: 'row',
