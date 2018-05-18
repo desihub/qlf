@@ -62,6 +62,9 @@ export default class History extends Component {
         break;
       case 'exposure':
         document.title = 'Observing History';
+        break;
+      default:
+        document.title = 'History';
     }
   }
 
