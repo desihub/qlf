@@ -3,7 +3,7 @@ import io
 from log import get_logger
 import subprocess
 from datetime import datetime
-from util import get_config
+from util import get_config, delete_exposures
 import shutil
 from multiprocessing import Manager, Lock, Process, Value
 from threading import Thread
@@ -232,7 +232,7 @@ class QLFProcess(object):
         for proc in proc_qas:
             proc.join()
 
-        qa_tests=self.generate_qa_tests()
+        qa_tests = self.generate_qa_tests()
 
         self.models.update_process(
             process_id=self.data.get('process_id'),
@@ -247,6 +247,7 @@ class QLFProcess(object):
         logger.info("Ingestion complete: %s." % str(duration_ingestion))
         logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
         logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
+        delete_exposures()
 
     def generate_qa_tests(self):
         qa_tests = list()
