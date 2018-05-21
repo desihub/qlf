@@ -6,7 +6,7 @@ const styles = {
   link: {
     textDecoration: 'none',
     color: 'white',
-    fontSize: '15px',
+    fontSize: '16px',
     fontWeight: '100',
     lineHeight: '32px',
     paddingRight: '10px',

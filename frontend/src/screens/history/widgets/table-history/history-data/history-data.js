@@ -57,7 +57,7 @@ export default class HistoryData extends React.Component {
       : row.last_exposure_process_qa_tests
         ? row.last_exposure_process_qa_tests
         : null;
-    if (qaTests) {
+    if (qaTests && Array.isArray(qaTests)) {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
         !JSON.stringify(qaTests).includes('FAILURE');
@@ -168,13 +168,14 @@ export default class HistoryData extends React.Component {
       selectProcessQA,
       row,
       lastProcessedId,
-      selectedExposures,
+      // selectedExposures,
       rowNumber,
       striped,
     } = this.props;
-    const lastProcessed = lastProcessedId === processId ? styles.bold : null;
-    const selectedExposure =
-      selectedExposures && selectedExposures.includes(rowNumber);
+    const lastProcessed =
+      lastProcessedId && lastProcessedId === processId ? styles.bold : null;
+    // const selectedExposure =
+    //   selectedExposures && selectedExposures.includes(rowNumber);
 
     return (
       <TableRow
@@ -182,7 +183,7 @@ export default class HistoryData extends React.Component {
         style={lastProcessed}
         striped={striped}
       >
-        {this.renderCheckbox(selectedExposure)}
+        {/* {this.renderCheckbox(selectedExposure)} */}
         {this.props.tableColumns
           .filter(column => column.exposureKey !== null)
           .map((column, key) => {
@@ -222,7 +223,9 @@ export default class HistoryData extends React.Component {
               case 'qa':
                 return (
                   <TableCell key={`EXPV${key}`} style={styles.tableCell}>
-                    {processId && lastProcessedId !== processId ? (
+                    {lastProcessedId &&
+                    processId &&
+                    lastProcessedId !== processId ? (
                       <span
                         style={styles.link}
                         onClick={() => selectProcessQA(processId)}
