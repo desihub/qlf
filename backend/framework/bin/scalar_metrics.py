@@ -133,18 +133,19 @@ class LoadMetrics:
         ------
         y2: list
         """
-        import yaml
+
         cam, exp, night, process_id = self.cam, self.exp, self.night, self.process_id
 
         exp_zfill = str(exp).zfill(8)
-        qa_name = '{}{}-{}-{}.yaml'.format(self.prfx, qa, cam, exp_zfill)
+        qa_name = '{}{}-{}-{}.json'.format(self.prfx, qa, cam, exp_zfill)
 
         data = self.models.get_qa(process_id, cam, qa_name)
 
-        if str(data) != []:
+        if data:
             self.error.update({qa: False})
         else:
             self.error.update({qa: True})
+
         return data
 
     def Load_metrics_n_tests(self):
@@ -171,7 +172,7 @@ class LoadMetrics:
 
         if isinstance(self.qa_name, list):
             qa_list = self.qa_name
-        elif isinstance(self.qa_name, string):  # for a single qa_name
+        elif isinstance(self.qa_name, str):  # for a single qa_name
             qa_list = [self.qa_name]
         else:
             return "Invalid QA format"
@@ -186,7 +187,9 @@ class LoadMetrics:
                     dic_met.update({i: aux.metrics})
                     dic_tst.update({i: aux.params})
             except Exception as e:  # ff
+                print('------------->>>')
                 print(e)
+
         return dic_met, dic_tst
 
     def keys_from_scalars(self, params_keys):
@@ -347,10 +350,11 @@ class LoadMetrics:
         color: str
             Wedge color Alert
         """
-        alert_keys = {'getrms': 'NOISE_STAT', 'countpix': 'NPIX_STAT',
-                      'getbias': 'BIAS_STAT', 'countbins': 'NGOODFIB_STAT', 'integ': 'MAGDIFF_STAT',
-                      'xwsigma': 'XWSIGMA_STAT', 'snr': 'FIDSNR_STAT', 'skycont': 'SKYCONT_STAT',
-                      'skypeak': 'PEAKCOUNT_STAT', 'skyresid': 'RESIDRMS_STAT'}
+        alert_keys = {'getrms': 'NOISE_STATUS', 'countpix': 'NPIX_STATUS',
+                      'getbias': 'BIAS_STATUS', 'countbins': 'NGOODFIB_STATUS', 'integ': 'DELTAMAG_STATUS',
+                      'xwsigma': 'XWSIGMA_STATUS', 'snr': 'FIDSNR_STAT', 'skycont': 'SKYCONT_STATUS',
+                      'skypeak': 'PEAKCOUNT_STATUS', 'skyresid': 'RESIDRMS_STAT'}
+                      
         self.step_name = step_name
         steps_list = ['preproc', 'extract', 'fiberfl', 'skysubs']
         if not isinstance(self.step_name, str):
