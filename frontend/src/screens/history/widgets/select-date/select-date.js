@@ -57,9 +57,15 @@ export default class SelectDate extends React.Component {
 
   selectRange = () => {
     this.props.setHistoryRangeDate(
-      this.state.selectedStartDate,
-      this.state.selectedEndDate
+      this.formatFilterDate(this.state.selectedStartDate),
+      this.formatFilterDate(this.state.selectedEndDate)
     );
+  };
+
+  formatFilterDate = date => {
+    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
+    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
+    return date.getFullYear() + '-' + month + '-' + day;
   };
 
   formatDate = date => {

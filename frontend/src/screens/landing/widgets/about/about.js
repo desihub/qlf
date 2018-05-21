@@ -1,5 +1,5 @@
 import React from 'react';
-import Paper from 'material-ui-next/Paper';
+import Paper from '@material-ui/core/Paper';
 
 const styles = {
   container: {
@@ -14,7 +14,7 @@ const styles = {
     padding: '16px',
     hyphens: 'auto',
     wordWrap: 'break-word',
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 1.5,
     fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',
     fontWeight: 400,

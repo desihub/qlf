@@ -9,6 +9,7 @@ import time
 from glob import glob
 from util import get_config
 from multiprocessing import Process, Manager
+from qlf_models import QLFModels
 
 cfg = get_config()
 qlf_root = cfg.get("environment", "qlf_root")
@@ -122,7 +123,8 @@ class ExposureGenerator(Process):
         }
 
     def __gen_new_expid(self):
-        last_id = self.__get_last_expid()
+        # last_id = self.__get_last_expid()
+        last_id = self.__get_database_last_expid()
 
         return int(last_id) + 1
 
@@ -140,6 +142,10 @@ class ExposureGenerator(Process):
         last_exp_file = sorted([os.path.basename(x) for x in listdir])[-1]
 
         return re.findall(r"^desi-(\d+).fits.fz$", last_exp_file)[0]
+
+    def __get_database_last_expid(self):
+        last_expid = QLFModels().get_last_exposure()
+        return last_expid.pk if last_expid else 5
 
     def __get_last_night(self):
         listdir = os.listdir(spectro_path)

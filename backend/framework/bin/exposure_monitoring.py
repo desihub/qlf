@@ -2,7 +2,7 @@ from qlf_models import QLFModels
 from multiprocessing import Process, Event, Value
 import datetime
 import time
-from util import get_config
+from util import get_config, delete_exposures
 from log import get_logger
 from qlf_pipeline import QLFProcess
 from clients import get_exposure_generator
@@ -91,6 +91,7 @@ class ExposureMonitoring(Process):
             self.process.start()
             self.running.set()
 
+        delete_exposures()
         logger.info("Bye!")
 
 

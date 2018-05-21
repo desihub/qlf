@@ -34,7 +34,7 @@ services:
       - EXPOSURE_MONITORING_NS=exposure.monitoring
       - PYRO_HOST=localhost
       - PYRO_PORT=56006
-      - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001 --host=localhost:5007
+      - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001
       - DB_NAME=db
       - REDIS_NAME=redis
       - BOKEH_TEST=false
