@@ -174,6 +174,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
     ordering_fields = (
         'pk',
         'exposure_id',
+        'start',
         'exposure__tile',
         'exposure__telra',
         'exposure__night',
