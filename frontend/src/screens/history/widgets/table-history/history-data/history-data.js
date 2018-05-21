@@ -91,8 +91,7 @@ export default class HistoryData extends React.Component {
   renderProcessingHistory = () => {
     const { row } = this.props;
     const processing = this.props.lastProcessedId === row.pk;
-    const lastProcessed =
-      processing ? styles.bold : {};
+    const lastProcessed = processing ? styles.bold : {};
     return (
       <TableRow>
         {this.props.tableColumns.map((column, key) => {
@@ -164,7 +163,8 @@ export default class HistoryData extends React.Component {
                 </TableCell>
               );
             case 'qa':
-              if (!row.qa_tests.length && !processing) return;
+              if (!row.qa_tests || (!row.qa_tests.length && !processing))
+                return;
               return (
                 <TableCell
                   key={`PROCV${key}`}
@@ -189,7 +189,7 @@ export default class HistoryData extends React.Component {
   renderCheckbox = checked => {
     if (!this.props.selectable) return;
     return (
-      <TableCell style={{ ...styles.tableCell}}>
+      <TableCell style={{ ...styles.tableCell }}>
         <Checkbox checked={checked} />
       </TableCell>
     );

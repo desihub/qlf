@@ -7,10 +7,9 @@ const styles = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'left',
-    paddingLeft: '2vw',
   },
   space: {
-    width: '100px',
+    paddingLeft: '2vw',
   },
   label: {
     color: 'black',
@@ -49,12 +48,14 @@ export default class SelectDate extends React.Component {
 
   changeStart = evt => {
     const selectedStartDate = new Date(evt.target.value);
-    this.setState({ selectedStartDate }, this.selectRange);
+    if (selectedStartDate.toString() !== 'Invalid Date')
+      this.setState({ selectedStartDate }, this.selectRange);
   };
 
   changeEnd = evt => {
     const selectedEndDate = new Date(evt.target.value);
-    this.setState({ selectedEndDate }, this.selectRange);
+    if (selectedEndDate.toString() !== 'Invalid Date')
+      this.setState({ selectedEndDate }, this.selectRange);
   };
 
   selectRange = () => {
@@ -73,26 +74,30 @@ export default class SelectDate extends React.Component {
   render() {
     return (
       <div style={styles.container}>
-        <TextField
-          id="start"
-          label="Start Date"
-          type="date"
-          defaultValue={this.formatFilterDate(this.state.rangeStartDate)}
-          onChange={this.changeStart}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField
-          id="end"
-          label="End Date"
-          type="date"
-          defaultValue={this.formatFilterDate(this.state.rangeEndDate)}
-          onChange={this.changeEnd}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
+        <div style={styles.space}>
+          <TextField
+            id="start"
+            label="Start Date"
+            type="date"
+            defaultValue={this.formatFilterDate(this.state.rangeStartDate)}
+            onChange={this.changeStart}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </div>
+        <div style={styles.space}>
+          <TextField
+            id="end"
+            label="End Date"
+            type="date"
+            defaultValue={this.formatFilterDate(this.state.rangeEndDate)}
+            onChange={this.changeEnd}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </div>
       </div>
     );
   }
