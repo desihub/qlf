@@ -25,15 +25,15 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'dashboard',
-    'debug_toolbar',
+    # 'debug_toolbar',
     'channels',
     'ui_channel',
-    'django_postgrespool',
+    # 'django_postgrespool',
     'corsheaders',
 )
 
 MIDDLEWARE_CLASSES = (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -99,8 +99,8 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'ENGINE': 'django_postgrespool',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'ENGINE': 'django_postgrespool',
         'NAME': os.environ.get('POSTGRES_DB', 'dbqlf'),
         'USER': os.environ.get('POSTGRES_USER', 'userqlf'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'qlfuser'),
@@ -109,11 +109,11 @@ DATABASES = {
         'PORT': '',
     }
 }
-
-DATABASE_POOL_ARGS = {
-    'max_overflow': 30,
-    'pool_size': 10
-}
+#
+# DATABASE_POOL_ARGS = {
+#     'max_overflow': 30,
+#     'pool_size': 10
+# }
 
 BOKEH_URL = 'http://{}:{}'.format(
     os.environ.get('BOKEH_SERVER', 'localhost'),

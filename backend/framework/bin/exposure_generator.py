@@ -70,7 +70,7 @@ class ExposureGenerator(Process):
             raise OSError
 
         exposures_list = re.findall(
-            "desi-(\d+).fits.fz",
+            r"desi-(\d+).fits.fz",
             ''.join(os.listdir(base_exposures_path))
         )
 
@@ -139,7 +139,7 @@ class ExposureGenerator(Process):
         listdir = glob(os.path.join(spectro_path, last_night, 'desi-*.fits.fz'))
         last_exp_file = sorted([os.path.basename(x) for x in listdir])[-1]
 
-        return re.findall("^desi-(\d+).fits.fz$", last_exp_file)[0]
+        return re.findall(r"^desi-(\d+).fits.fz$", last_exp_file)[0]
 
     def __get_last_night(self):
         listdir = os.listdir(spectro_path)
@@ -147,7 +147,7 @@ class ExposureGenerator(Process):
         if not listdir:
             return None
 
-        regex = re.compile("^\d+$")
+        regex = re.compile(r"^\d+$")
         regex_match = list(filter(regex.match, listdir))
 
         return sorted(regex_match)[-1]

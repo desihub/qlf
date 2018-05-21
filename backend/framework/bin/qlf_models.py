@@ -1,6 +1,5 @@
 import os
 import sys
-import yaml
 import glob
 import json
 import numpy
@@ -170,7 +169,7 @@ class QLFModels(object):
     def create_qa_bulk(self, product, job_id):
         """ Creates QAs in bulk """
 
-        qa = yaml.load(open(product, 'r'))
+        qa = json.load(open(product, 'r'))
         name = os.path.basename(product)
 
         for item in ('PANAME', 'METRICS', 'PARAMS'):
@@ -179,8 +178,8 @@ class QLFModels(object):
                 return None
 
         paname = qa['PANAME']
-        metrics = self.jsonify(qa['METRICS'])
-        params = self.jsonify(qa['PARAMS'])
+        metrics = jsonify(qa['METRICS'])
+        params = jsonify(qa['PARAMS'])
 
         return QA(
             name=name,
@@ -296,18 +295,20 @@ class QLFModels(object):
 
         Exposure.objects.filter(exposure_id=expid).delete()
 
-    @staticmethod
-    def jsonify(data):
-        """ Make a dictionary with numpy arrays JSON serializable """
 
-        for key in data:
-            if type(data[key]) == numpy.ndarray:
-                data[key] = data[key].tolist()
-
-            if isinstance(data[key], list):
-                data[key] = [0 if isinstance(x, float) and math.isnan(x) else x for x in data[key]]
-
-        return data
+def jsonify(data):
+    """ Make a dictionary with numpy arrays JSON serializable """
+    if type(data) == numpy.ndarray:
+        data = data.tolist()
+    if isinstance(data, list):
+        for item in data:
+            data[data.index(item)] = jsonify(item)
+    if isinstance(data, dict):
+        for item in data:
+            data[item] = jsonify(data[item])
+    if isinstance(data, float) and math.isnan(data):
+        data = -9999
+    return data
 
 
 if __name__ == '__main__':
