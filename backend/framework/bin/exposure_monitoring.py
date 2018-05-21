@@ -102,7 +102,6 @@ def process_run(exposure, process_id):
     process_id.value = qlf_process.start_process()
     qlf_process.start_jobs()
     qlf_process.finish_process()
-    delete_exposures()
 
 
 if __name__ == "__main__":
