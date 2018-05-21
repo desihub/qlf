@@ -3,7 +3,8 @@ import io
 from log import get_logger
 import subprocess
 from datetime import datetime
-from util import get_config, delete_exposures
+from util import get_config
+import shutil
 from multiprocessing import Manager, Lock, Process, Value
 from threading import Thread
 from qlf_models import QLFModels
