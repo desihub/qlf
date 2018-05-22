@@ -57,7 +57,7 @@ export default class HistoryData extends React.Component {
       : row.last_exposure_process_qa_tests
         ? row.last_exposure_process_qa_tests
         : null;
-    if (qaTests && Array.isArray(qaTests)) {
+    if (qaTests) {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
         !JSON.stringify(qaTests).includes('FAILURE');
@@ -90,10 +90,10 @@ export default class HistoryData extends React.Component {
 
   renderProcessingHistory = () => {
     const { row } = this.props;
-    const lastProcessed =
-      this.props.lastProcessedId === row.pk ? styles.bold : null;
+    const processing = this.props.lastProcessedId === row.pk;
+    const lastProcessed = processing ? styles.bold : {};
     return (
-      <TableRow style={lastProcessed}>
+      <TableRow>
         {this.props.tableColumns.map((column, key) => {
           const id = column.processKey.includes('exposure__')
             ? column.processKey.split('__')[1]
@@ -101,48 +101,85 @@ export default class HistoryData extends React.Component {
           switch (column.type) {
             case 'parent':
               return (
-                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                <TableCell
+                  key={`PROCV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                >
                   {row[id]}
                 </TableCell>
               );
             case 'normal':
               return (
-                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                <TableCell
+                  key={`PROCV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                >
                   {row.exposure[id]}
                 </TableCell>
               );
             case 'date':
               return (
-                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                <TableCell
+                  key={`PROCV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                >
                   {this.formatDate(row.exposure[id])}
                 </TableCell>
               );
             case 'dateprocess':
               return (
-                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                <TableCell
+                  key={`PROCV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                >
                   {this.formatDate(row[id])}
                 </TableCell>
               );
             case 'time':
               return (
-                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                <TableCell
+                  key={`PROCV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                >
                   {this.formatTime(row.exposure.dateobs)}
                 </TableCell>
               );
             case 'datemjd':
               return (
-                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
-                  {row.datemjd.toFixed(2)}
+                <TableCell
+                  key={`PROCV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                >
+                  {row.datemjd.toFixed(3)}
+                </TableCell>
+              );
+            case 'runtime':
+              return (
+                <TableCell
+                  key={`EXPV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                >
+                  {row.runtime}
                 </TableCell>
               );
             case 'qa':
+              if (!row.qa_tests || (!row.qa_tests.length && !processing))
+                return;
               return (
-                <TableCell key={`PROCV${key}`} style={styles.tableCell}>
+                <TableCell
+                  key={`PROCV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                >
                   {this.renderViewQA(lastProcessed, row.runtime)}
                 </TableCell>
               );
             default:
-              return <TableCell key={`PROCV${key}`} style={styles.tableCell} />;
+              return (
+                <TableCell
+                  key={`PROCV${key}`}
+                  style={{ ...styles.tableCell, ...lastProcessed }}
+                />
+              );
           }
         })}
       </TableRow>
@@ -192,40 +229,56 @@ export default class HistoryData extends React.Component {
               case 'parent':
               case 'normal':
                 return (
-                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                  <TableCell
+                    key={`EXPV${key}`}
+                    style={{ ...styles.tableCell, ...lastProcessed }}
+                  >
                     {row[id]}
                   </TableCell>
                 );
               case 'date':
                 return (
-                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                  <TableCell
+                    key={`EXPV${key}`}
+                    style={{ ...styles.tableCell, ...lastProcessed }}
+                  >
                     {this.formatDate(row[id])}
                   </TableCell>
                 );
               case 'dateprocess':
                 return (
-                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                  <TableCell
+                    key={`EXPV${key}`}
+                    style={{ ...styles.tableCell, ...lastProcessed }}
+                  >
                     {this.formatDate(row[id])}
                   </TableCell>
                 );
               case 'time':
                 return (
-                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
+                  <TableCell
+                    key={`EXPV${key}`}
+                    style={{ ...styles.tableCell, ...lastProcessed }}
+                  >
                     {this.formatTime(row.dateobs)}
                   </TableCell>
                 );
               case 'datemjd':
                 return (
-                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
-                    {row.datemjd.toFixed(2)}
+                  <TableCell
+                    key={`EXPV${key}`}
+                    style={{ ...styles.tableCell, ...lastProcessed }}
+                  >
+                    {row.datemjd.toFixed(3)}
                   </TableCell>
                 );
               case 'qa':
                 return (
-                  <TableCell key={`EXPV${key}`} style={styles.tableCell}>
-                    {lastProcessedId &&
-                    processId &&
-                    lastProcessedId !== processId ? (
+                  <TableCell
+                    key={`EXPV${key}`}
+                    style={{ ...styles.tableCell, ...lastProcessed }}
+                  >
+                    {!lastProcessed && processId ? (
                       <span
                         style={styles.link}
                         onClick={() => selectProcessQA(processId)}
@@ -237,7 +290,10 @@ export default class HistoryData extends React.Component {
                 );
               default:
                 return (
-                  <TableCell key={`EXPV${key}`} style={styles.tableCell} />
+                  <TableCell
+                    key={`EXPV${key}`}
+                    style={{ ...styles.tableCell, ...lastProcessed }}
+                  />
                 );
             }
           })}

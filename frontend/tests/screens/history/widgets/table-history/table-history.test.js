@@ -19,9 +19,20 @@ const rows = [
       teldec: 14.84,
       exptime: 1000,
       airmass: null,
+      flavor: 'science',
     },
     datemjd: 58484.916666666664,
     runtime: '110.648429',
+    qa_tests: [
+      {
+        r0: {
+          fiberfl: { steps_status: ['NORMAL', 'NORMAL', 'NORMAL', 'NORMAL'] },
+          preproc: { steps_status: ['NORMAL', 'NORMAL', 'NORMAL', 'NORMAL'] },
+          extract: { steps_status: ['NORMAL'] },
+          skysubs: { steps_status: ['NORMAL'] },
+        },
+      },
+    ],
   },
   {
     pk: 70,
@@ -33,9 +44,20 @@ const rows = [
       teldec: 12.32,
       exptime: 1000,
       airmass: null,
+      flavor: 'science',
     },
     datemjd: 58484.916666666664,
     runtime: '96.254038',
+    qa_tests: [
+      {
+        r0: {
+          fiberfl: { steps_status: ['NORMAL', 'NORMAL', 'NORMAL', 'NORMAL'] },
+          preproc: { steps_status: ['NORMAL', 'NORMAL', 'NORMAL', 'NORMAL'] },
+          extract: { steps_status: ['NORMAL'] },
+          skysubs: { steps_status: ['None'] },
+        },
+      },
+    ],
   },
 ];
 
@@ -93,21 +115,39 @@ describe('TableHistory Controls', () => {
   //   expect(getHistoryOrdered).toBeCalledWith('-pk');
   // });
 
-  it('calls navigateToQA', async () => {
+  it('calls navigateToQA error', async () => {
     await wrapper
       .find('TableCell')
-      .at(32)
+      .at(46)
       .find('span')
       .at(0)
       .simulate('click');
     expect(
       wrapper
         .find('TableCell')
-        .at(32)
+        .at(46)
         .find('span')
         .at(0)
         .text()
     ).toBe('✖︎');
+    expect(navigateToQA).toBeCalledWith(70);
+  });
+
+  it('calls navigateToQA ok', async () => {
+    await wrapper
+      .find('TableCell')
+      .at(30)
+      .find('span')
+      .at(0)
+      .simulate('click');
+    expect(
+      wrapper
+        .find('TableCell')
+        .at(30)
+        .find('span')
+        .at(0)
+        .text()
+    ).toBe('✓');
     expect(navigateToQA).toBeCalledWith(69);
   });
 });

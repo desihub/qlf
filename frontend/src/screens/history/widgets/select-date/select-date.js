@@ -1,6 +1,6 @@
 import React from 'react';
-import DatePicker from 'material-ui/DatePicker';
 import Proptypes from 'prop-types';
+import TextField from '@material-ui/core/TextField';
 
 const styles = {
   container: {
@@ -10,7 +10,6 @@ const styles = {
   },
   space: {
     paddingLeft: '2vw',
-    width: '100px',
   },
   label: {
     color: 'black',
@@ -47,12 +46,16 @@ export default class SelectDate extends React.Component {
     }
   }
 
-  changeStart = (evt, selectedStartDate) => {
-    this.setState({ selectedStartDate }, this.selectRange);
+  changeStart = evt => {
+    const selectedStartDate = new Date(evt.target.value);
+    if (selectedStartDate.toString() !== 'Invalid Date')
+      this.setState({ selectedStartDate }, this.selectRange);
   };
 
-  changeEnd = (evt, selectedEndDate) => {
-    this.setState({ selectedEndDate }, this.selectRange);
+  changeEnd = evt => {
+    const selectedEndDate = new Date(evt.target.value);
+    if (selectedEndDate.toString() !== 'Invalid Date')
+      this.setState({ selectedEndDate }, this.selectRange);
   };
 
   selectRange = () => {
@@ -68,40 +71,33 @@ export default class SelectDate extends React.Component {
     return date.getFullYear() + '-' + month + '-' + day;
   };
 
-  formatDate = date => {
-    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
-    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
-    return month + '/' + day + '/' + date.getFullYear();
-  };
-
   render() {
     return (
       <div style={styles.container}>
-        <DatePicker
-          autoOk={true}
-          style={styles.space}
-          floatingLabelText="Start Date"
-          floatingLabelStyle={styles.label}
-          hintText="Start Date"
-          container="inline"
-          minDate={this.state.rangeStartDate}
-          maxDate={this.state.selectedEndDate || this.state.rangeEndDate}
-          value={this.state.selectedStartDate}
-          onChange={this.changeStart}
-          formatDate={this.formatDate}
-        />
-        <DatePicker
-          autoOk={true}
-          floatingLabelText="End Date"
-          floatingLabelStyle={styles.label}
-          hintText="End Date"
-          container="inline"
-          minDate={this.state.selectedStartDate || this.state.rangeStartDate}
-          maxDate={this.state.rangeEndDate}
-          value={this.state.selectedEndDate}
-          onChange={this.changeEnd}
-          formatDate={this.formatDate}
-        />
+        <div style={styles.space}>
+          <TextField
+            id="start"
+            label="Start Date"
+            type="date"
+            defaultValue={this.formatFilterDate(this.state.rangeStartDate)}
+            onChange={this.changeStart}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </div>
+        <div style={styles.space}>
+          <TextField
+            id="end"
+            label="End Date"
+            type="date"
+            defaultValue={this.formatFilterDate(this.state.rangeEndDate)}
+            onChange={this.changeEnd}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </div>
       </div>
     );
   }
