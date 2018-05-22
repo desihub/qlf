@@ -9,6 +9,7 @@ from multiprocessing import Manager, Lock, Process
 from threading import Thread
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
+import time
 
 cfg = get_config()
 
@@ -137,8 +138,14 @@ class QLFProcess(object):
             proc.start()
             procs.append(proc)
 
+        self.monitor_qa = True
+        monitor_qa_files = Thread(target=self.monitor_qa_files)
+        monitor_qa_files.start()
+
         for proc in procs:
             proc.join()
+
+        self.monitor_qa = False
 
         self.data['cameras'] = return_cameras
 
@@ -281,6 +288,31 @@ class QLFProcess(object):
                 logger.error('qa_tests error camera %s' % camera.get('name'))
         return qa_tests
 
+    def monitor_qa_files(self):
+        number_files = 0
+        while self.monitor_qa:
+            current_number_files = len(
+                os.listdir(
+                    os.path.join(
+                        desi_spectro_redux,
+                        self.data.get('output_dir')
+                        )
+                    )
+                )
+
+            if number_files != current_number_files:
+                number_files = current_number_files
+                qa_tests = self.generate_qa_tests(False)
+
+                self.models.update_process(
+                    process_id=self.data.get('process_id'),
+                    end=None,
+                    process_dir=self.data.get('output_dir'),
+                    status=self.data.get('status'),
+                    qa_tests=qa_tests
+                )
+                time.sleep(3)
+
     def resume_log(self, line, camera, lock):
         """ """
 
@@ -312,16 +344,6 @@ class QLFProcess(object):
                                     stage_end.get(
                                         'time') - stage_start.get('time')
                                 )
-                            )
-
-                            qa_tests = self.generate_qa_tests(False)
-
-                            self.models.update_process(
-                                process_id=self.data.get('process_id'),
-                                end=None,
-                                process_dir=self.data.get('output_dir'),
-                                status=self.data.get('status'),
-                                qa_tests=qa_tests
                             )
 
                     if line.find(stage_start.get('regex')) > -1:
