@@ -264,11 +264,11 @@ class QLFProcess(object):
         delete_exposures()
 
 
-    def generate_qa_tests(self, isIngested):
+    def generate_qa_tests(self, ingested):
         qa_tests = list()
         for camera in self.data.get('cameras'):
             try:
-                if isIngested:
+                if ingested:
                     lm = LoadMetrics(
                         self.data.get('process_id'),
                         camera.get('name'),
