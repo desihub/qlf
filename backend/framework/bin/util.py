@@ -52,17 +52,6 @@ def delete_exposures():
         desi_spectro_data,
     ))
 
-    delete_files(os.path.join(
-        desi_spectro_redux,
-        'calib2d',
-    ))
-
-    delete_files(os.path.join(
-        desi_spectro_redux,
-        'calib2d',
-        'psf',
-    ))
-
 
 def delete_files(path):
     for night in os.listdir(path):

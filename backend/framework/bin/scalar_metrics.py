@@ -8,9 +8,12 @@ import os
 import sys
 from qlf_models import QLFModels
 import json
+from util import get_config
 
 logger = logging.getLogger(__name__)
 
+cfg = get_config()
+desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 
 class LoadMetrics:
     """ Read values from the yaml's files and return an alert (NORMAL, WARN or ALARM)
@@ -138,8 +141,18 @@ class LoadMetrics:
 
         exp_zfill = str(exp).zfill(8)
         qa_name = '{}{}-{}-{}.json'.format(self.prfx, qa, cam, exp_zfill)
-
-        data = self.models.get_qa(process_id, cam, qa_name)
+        data = None
+        if process_id is not None:
+            data = self.models.get_qa(process_id, cam, qa_name)
+        else:
+            qa_file_path = "{}/exposures/{}/{}/{}".format(desi_spectro_redux, night, exp_zfill, qa_name)
+            try:
+                if os.path.exists(qa_file_path):
+                    with open(qa_file_path) as f:
+                        data=json.load(f)
+            except Exception as e:
+                print(e)
+                sys.exit("Could not open {}".format(qa_name))
 
         if data:
             self.error.update({qa: False})
@@ -184,8 +197,12 @@ class LoadMetrics:
                     dic_tst.update({i: aux})
                     self.error.update({i: True})
                 else:
-                    dic_met.update({i: aux.metrics})
-                    dic_tst.update({i: aux.params})
+                    if self.process_id is not None:
+                        dic_met.update({i: aux.metrics})
+                        dic_tst.update({i: aux.params})
+                    else:
+                        dic_met.update({i: aux['METRICS']})
+                        dic_tst.update({i: aux['PARAMS']})
             except Exception as e:  # ff
                 print('------------->>>')
                 print(e)
@@ -399,3 +416,8 @@ class LoadMetrics:
             return qa_tests
         except:
             logger.error('Camera not found %s' % (self.cam))
+
+if __name__ == "__main__":
+    lm = LoadMetrics(None, 'b0', '00000017', '20180522')
+    status = lm.load_qa_tests()
+    print(status)

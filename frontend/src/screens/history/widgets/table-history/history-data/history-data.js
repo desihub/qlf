@@ -74,8 +74,8 @@ export default class HistoryData extends React.Component {
     );
   };
 
-  renderViewQA = (lastProcessed, runtime) => {
-    if (lastProcessed && !runtime) return <CircularProgress size={20} />;
+  renderViewQA = (processing, runtime) => {
+    if (processing && !runtime) return <CircularProgress size={20} />;
     if (!runtime) return;
 
     return (
@@ -170,7 +170,7 @@ export default class HistoryData extends React.Component {
                   key={`PROCV${key}`}
                   style={{ ...styles.tableCell, ...lastProcessed }}
                 >
-                  {this.renderViewQA(lastProcessed, row.runtime)}
+                  {this.renderViewQA(processing, row.runtime)}
                 </TableCell>
               );
             default:

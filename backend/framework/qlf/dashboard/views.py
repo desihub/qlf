@@ -12,7 +12,7 @@ from .serializers import (
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
-    ExposureFlavorSerializer
+    ExposureFlavorSerializer, CurrentProcessJobsSerializer
 )
 
 from datetime import datetime, timedelta
@@ -137,7 +137,7 @@ class LastProcessViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessJobsSerializer
 
 
-class CurrentProcessViewSet(viewsets.ModelViewSet):
+class CurrentProcessViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint listing current process"""
 
     def get_queryset(self):
@@ -153,7 +153,7 @@ class CurrentProcessViewSet(viewsets.ModelViewSet):
 
         return Process.objects.filter(id=process_id)
 
-    serializer_class = ProcessJobsSerializer
+    serializer_class = CurrentProcessJobsSerializer
 
 
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):

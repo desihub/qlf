@@ -236,7 +236,7 @@ class QLFProcess(object):
         for proc in proc_qas:
             proc.join()
 
-        qa_tests = self.generate_qa_tests()
+        qa_tests = self.generate_qa_tests(True)
 
         self.models.update_process(
             process_id=self.data.get('process_id'),
@@ -257,16 +257,24 @@ class QLFProcess(object):
         delete_exposures()
 
 
-    def generate_qa_tests(self):
+    def generate_qa_tests(self, isIngested):
         qa_tests = list()
         for camera in self.data.get('cameras'):
             try:
-                lm = LoadMetrics(
-                    self.data.get('process_id'),
-                    camera.get('name'),
-                    self.data.get('expid'),
-                    self.data.get('night')
-                )
+                if isIngested:
+                    lm = LoadMetrics(
+                        self.data.get('process_id'),
+                        camera.get('name'),
+                        self.data.get('expid'),
+                        self.data.get('night')
+                    )
+                else:
+                    lm = LoadMetrics(
+                        None,
+                        camera.get('name'),
+                        self.data.get('expid'),
+                        self.data.get('night')
+                    )
                 qa_tests.append({camera.get('name'): lm.load_qa_tests()})
             except Exception as err:
                 logger.error(err)
@@ -304,6 +312,16 @@ class QLFProcess(object):
                                     stage_end.get(
                                         'time') - stage_start.get('time')
                                 )
+                            )
+
+                            qa_tests = self.generate_qa_tests(False)
+
+                            self.models.update_process(
+                                process_id=self.data.get('process_id'),
+                                end=None,
+                                process_dir=self.data.get('output_dir'),
+                                status=self.data.get('status'),
+                                qa_tests=qa_tests
                             )
 
                     if line.find(stage_start.get('regex')) > -1:
