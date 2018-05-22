@@ -30,21 +30,15 @@ export const tableColumns = [
     type: 'dateprocess',
   },
   {
-    processKey: '',
+    processKey: 'runtime',
     exposureKey: null,
     name: 'Process Time',
-    type: 'time',
+    type: 'runtime',
   },
   {
     processKey: 'exposure__dateobs',
     exposureKey: 'dateobs',
     name: 'OBS Date',
-    type: 'date',
-  },
-  {
-    processKey: 'exposure__dateobs',
-    exposureKey: 'dateobs',
-    name: 'OBS Time',
     type: 'date',
   },
   {
