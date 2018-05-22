@@ -5,7 +5,7 @@ import subprocess
 from datetime import datetime
 from util import get_config, delete_exposures
 import shutil
-from multiprocessing import Manager, Lock, Process, Value
+from multiprocessing import Manager, Lock, Process
 from threading import Thread
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
@@ -33,16 +33,20 @@ class QLFProcess(object):
             {
                 "display_name": "Pre Processing",
                 "start": {"regex": "Starting to run step Preproc", "count": 0},
-                "end": {"regex": "Starting to run step BoxcarExtract", "count": 0}
+                "end": {"regex": "Starting to run step BoxcarExtract",
+                        "count": 0}
             },
             {
                 "display_name": "Spectral Extraction",
-                "start": {"regex": "Starting to run step BoxcarExtract", "count": 0},
-                "end": {"regex": "Starting to run step ApplyFiberFlat_QL", "count": 0}
+                "start": {"regex": "Starting to run step BoxcarExtract",
+                          "count": 0},
+                "end": {"regex": "Starting to run step ApplyFiberFlat_QL",
+                        "count": 0}
             },
             {
                 "display_name": "Fiber Flattening",
-                "start": {"regex": "Starting to run step ApplyFiberFlat_QL", "count": 0},
+                "start": {"regex": "Starting to run step ApplyFiberFlat_QL",
+                          "count": 0},
                 "end": {"regex": "Starting to run step SkySub", "count": 0}
             },
             {
@@ -212,7 +216,7 @@ class QLFProcess(object):
             output_path = os.path.join(
                 desi_spectro_redux,
                 self.data.get('output_dir'),
-                'ql-*-%s-%s.yaml' % (
+                'ql-*-%s-%s.json' % (
                     camera.get('name'),
                     self.data.get('zfill')
                 )
@@ -242,12 +246,16 @@ class QLFProcess(object):
             qa_tests=qa_tests
         )
 
-        duration_ingestion = datetime.now().replace(microsecond=0) - start_ingestion
+        duration_ingestion = datetime.now().replace(
+            microsecond=0) - start_ingestion
 
         logger.info("Ingestion complete: %s." % str(duration_ingestion))
-        logger.info("Total runtime: %s." % (self.data.get('duration') + duration_ingestion))
-        logger.info("ExpID {} is ready for analysis".format(self.data.get('expid')))
+        logger.info("Total runtime: %s." % (
+            self.data.get('duration') + duration_ingestion))
+        logger.info("ExpID {} is ready for analysis".format(
+            self.data.get('expid')))
         delete_exposures()
+
 
     def generate_qa_tests(self):
         qa_tests = list()
@@ -277,7 +285,8 @@ class QLFProcess(object):
             if line.find('ERROR') > -1:
                 logger.error("ERROR: Camera {}: {}".format(camera, line_str))
             elif line.find('CRITICAL') > -1:
-                logger.critical("CRITICAL: Camera {}: {}".format(camera, line_str))
+                logger.critical("CRITICAL: Camera {}: {}".format(
+                    camera, line_str))
             else:
                 for stage in self.stages:
                     stage_start = stage.get('start')
@@ -292,7 +301,8 @@ class QLFProcess(object):
                             logger.info(
                                 '{} ended (runtime: {}).'.format(
                                     stage.get('display_name'),
-                                    stage_end.get('time') - stage_start.get('time')
+                                    stage_end.get(
+                                        'time') - stage_start.get('time')
                                 )
                             )
 
@@ -302,19 +312,10 @@ class QLFProcess(object):
                         if 'time' not in stage_start:
                             start_time = datetime.now().replace(microsecond=0)
                             stage_start['time'] = start_time
-                            logger.info('{} started.'.format(stage.get('display_name')))
+                            logger.info('{} started.'.format(
+                                stage.get('display_name')))
 
         except Exception as err:
             logger.info(err)
 
         lock.release()
-
-
-def process_run(exp, _id):
-    """ """
-    qlf_process = QLFProcess(exp)
-    _id.value = qlf_process.start_process()
-    print('Process ID: {}'.format(_id.value))
-    qlf_process.start_jobs()
-    qlf_process.finish_process()
-

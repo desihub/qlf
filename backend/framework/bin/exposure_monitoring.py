@@ -98,6 +98,17 @@ class ExposureMonitoring(Process):
 def process_run(exposure, process_id):
     """ """
 
+    arms = cfg.get('data', 'arms').split(',')
+    spectrographs = cfg.get('data', 'spectrographs').split(',')
+
+    cameras = list()
+
+    for arm in arms:
+        for spec in spectrographs:
+            cameras.append({'name': arm + spec})
+
+    exposure['cameras'] = cameras
+
     qlf_process = QLFProcess(exposure, configuration.get_current_configuration())
     process_id.value = qlf_process.start_process()
     qlf_process.start_jobs()

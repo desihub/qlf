@@ -1,4 +1,5 @@
 #!/bin/sh
+
 echo 'Cloning desispec and desiutil'
 git submodule init
 git submodule update
@@ -26,12 +27,11 @@ if [ -z "$1" ]; then
     else
         echo 'Downloading spectro test data'
         cd backend
-        mkdir spectro && cd spectro
-        wget -c http://portal.nersc.gov/project/desi/data/quicklook/20190101_small.tar.gz 
+        wget -c ftp://srvdatatransfer.linea.gov.br/qlfdata/spectro.tar.gz
 
         echo 'Unzipping...'
-        tar xvzf 20190101_small.tar.gz
-        rm 20190101_small.tar.gz
+        tar xvzf spectro.tar.gz
+        rm spectro.tar.gz
     fi
 fi
 

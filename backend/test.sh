@@ -15,6 +15,7 @@ for package in desispec desiutil; do
 done
 
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
+
 python -Wi framework/qlf/manage.py migrate
 
 if [ -z $1 ]; then

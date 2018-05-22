@@ -45,3 +45,5 @@ desi_spectro_data=/app/spectro/data
 # Processing output, e.g. full/path/to/spectro/redux or some other local (fast) scratch area
 # Note: this directory is created by QLF if it does not exist.
 desi_spectro_redux=/app/spectro/redux
+
+base_exposures_path=/app/spectro/base_exposures

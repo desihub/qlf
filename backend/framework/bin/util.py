@@ -12,7 +12,7 @@ if not qlf_root:
 
 
 def get_config(config_path=None):
-    """ """
+    """ Gets config """
 
     if not config_path:
         config_path = os.path.join(

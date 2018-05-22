@@ -127,7 +127,6 @@ class Monitoring(object):
             logger.info(err)
             return 'Error reading qlconfig'
 
-
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
 class Generator(object):

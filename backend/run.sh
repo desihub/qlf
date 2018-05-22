@@ -15,6 +15,7 @@ for package in desispec desiutil; do
 done
 
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
+
 python -Wi framework/qlf/manage.py migrate
 # echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 
@@ -29,6 +30,6 @@ echo "QLF web application is running at http://$QLF_HOSTNAME:$QLF_PORT you may s
 cd $QLF_PROJECT
 
 if [ $BOKEH_TEST = "false" ]; then
-	bokeh serve $BOKEH_CONFIGURATION --port=$BOKEH_PORT dashboard/bokeh/qacountpix dashboard/bokeh/qaskycont dashboard/bokeh/qacountbins dashboard/bokeh/qagetbias dashboard/bokeh/qagetrms dashboard/bokeh/qainteg dashboard/bokeh/qaskypeak dashboard/bokeh/qasnr dashboard/bokeh/qaskyresid dashboard/bokeh/qaxwsigma dashboard/bokeh/monitor dashboard/bokeh/exposures dashboard/bokeh/footprint &> $QLF_ROOT/bokeh.log &
+	bokeh serve $BOKEH_CONFIGURATION --port=$BOKEH_PORT dashboard/bokeh/qacountpix dashboard/bokeh/qaskycont dashboard/bokeh/qacountbins dashboard/bokeh/qagetbias dashboard/bokeh/qagetrms dashboard/bokeh/qainteg dashboard/bokeh/qaskypeak dashboard/bokeh/qasnr dashboard/bokeh/qaskyresid dashboard/bokeh/qaxwsigma dashboard/bokeh/monitor dashboard/bokeh/exposures dashboard/bokeh/footprint &> $QLF_ROOT/logs/bokeh.log &
 fi
 python -u manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
