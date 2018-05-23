@@ -1,13 +1,14 @@
-from qlf_models import QLFModels
-from multiprocessing import Process, Event, Value
 import datetime
 import time
-from util import get_config, delete_exposures
-from log import get_logger
-from qlf_pipeline import QLFProcess
-from clients import get_exposure_generator
+from multiprocessing import Event, Process, Value
 from threading import Thread
+
+from clients import get_exposure_generator
+from log import get_logger
 from qlf_configuration import QLFConfiguration
+from qlf_models import QLFModels
+from qlf_pipeline import QLFProcess
+from util import delete_exposures, get_config
 
 cfg = get_config()
 
@@ -44,14 +45,20 @@ class ExposureMonitoring(Process):
             exposure = self.generator.last_exposure()
 
             if not exposure:
+                logger.debug('No exposure available')
                 continue
 
-            if exposure.get('expid') == self.ics_last_exposure.get('expid', None):
+            ics_last_expid = self.ics_last_exposure.get('expid', None)
+
+            if exposure.get('expid') == ics_last_expid:
+                logger.debug('Exposure {} has already been processed'.format(
+                    ics_last_expid))
                 continue
 
             self.ics_last_exposure = exposure
 
-            logger.debug('Exposure ID {} was obtained'.format(exposure.get('expid')))
+            logger.debug('Exposure {} obtained'.format(
+                exposure.get('expid')))
 
             # records exposure in database
             QLFModels().insert_exposure(
@@ -66,7 +73,7 @@ class ExposureMonitoring(Process):
             )
 
             if self.process and self.process.is_alive():
-                logger.debug('Process ID {} is running.'.format(
+                logger.debug('Process {} is running.'.format(
                     str(self.process_id.value)
                 ))
                 continue
@@ -80,19 +87,22 @@ class ExposureMonitoring(Process):
             delay = delay.total_seconds()
 
             if delay > allowed_delay:
-                logger.debug('The delay in the acquisition of the exposure went from {} seconds'.format(
-                    str(allowed_delay)
+                logger.debug((
+                    'The delay in the acquisition of the exposure '
+                    'went from {} seconds'.format(str(allowed_delay))
                 ))
                 continue
 
-            logger.info('Exposure ID {} will be processed.'.format(exposure.get('expid')))
+            logger.info('Exposure {} available.'.format(
+                exposure.get('expid')))
 
-            self.process = Thread(target=process_run, args=(exposure, self.process_id,))
+            self.process = Thread(target=process_run,
+                                  args=(exposure, self.process_id,))
             self.process.start()
             self.running.set()
 
         delete_exposures()
-        logger.info("Bye!")
+        logger.debug("Bye!")
 
 
 def process_run(exposure, process_id):
@@ -109,7 +119,8 @@ def process_run(exposure, process_id):
 
     exposure['cameras'] = cameras
 
-    qlf_process = QLFProcess(exposure, configuration.get_current_configuration())
+    qlf_process = QLFProcess(
+        exposure, configuration.get_current_configuration())
     process_id.value = qlf_process.start_process()
     qlf_process.start_jobs()
     qlf_process.finish_process()
@@ -120,3 +131,4 @@ if __name__ == "__main__":
     monitor = ExposureMonitoring()
     monitor.generator.start()
     monitor.start()
+    monitor.join()
