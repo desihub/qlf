@@ -138,14 +138,14 @@ class QLFProcess(object):
             proc.start()
             procs.append(proc)
 
-        self.monitor_qa = True
+        self.monitor_generated_qa_files = True
         monitor_qa_files = Thread(target=self.monitor_qa_files)
         monitor_qa_files.start()
 
         for proc in procs:
             proc.join()
 
-        self.monitor_qa = False
+        self.monitor_generated_qa_files = False
 
         self.data['cameras'] = return_cameras
 
@@ -243,7 +243,7 @@ class QLFProcess(object):
         for proc in proc_qas:
             proc.join()
 
-        qa_tests = self.generate_qa_tests(True)
+        qa_tests = self.generate_qa_tests()
 
         self.models.update_process(
             process_id=self.data.get('process_id'),
@@ -263,25 +263,16 @@ class QLFProcess(object):
             self.data.get('expid')))
         delete_exposures()
 
-
-    def generate_qa_tests(self, ingested):
+    def generate_qa_tests(self):
         qa_tests = list()
         for camera in self.data.get('cameras'):
             try:
-                if ingested:
-                    lm = LoadMetrics(
-                        self.data.get('process_id'),
-                        camera.get('name'),
-                        self.data.get('expid'),
-                        self.data.get('night')
-                    )
-                else:
-                    lm = LoadMetrics(
-                        None,
-                        camera.get('name'),
-                        self.data.get('expid'),
-                        self.data.get('night')
-                    )
+                lm = LoadMetrics(
+                    self.data.get('process_id'),
+                    camera.get('name'),
+                    self.data.get('expid'),
+                    self.data.get('night')
+                )
                 qa_tests.append({camera.get('name'): lm.load_qa_tests()})
             except Exception as err:
                 logger.error(err)
@@ -289,28 +280,44 @@ class QLFProcess(object):
         return qa_tests
 
     def monitor_qa_files(self):
-        number_files = 0
-        while self.monitor_qa:
-            current_number_files = len(
-                os.listdir(
-                    os.path.join(
-                        desi_spectro_redux,
-                        self.data.get('output_dir')
-                        )
+        cameras = dict()
+        files = list()
+        for camera in self.data.get('cameras'):
+            cameras[camera.get('name')] = LoadMetrics(
+                None,
+                camera.get('name'),
+                self.data.get('expid'),
+                self.data.get('night')
+            )
+
+        while self.monitor_generated_qa_files:
+            current_files = os.listdir(
+                os.path.join(
+                    desi_spectro_redux,
+                    self.data.get('output_dir')
+                )
+            )
+
+            if len(set(current_files) - set(files)) > 0:
+                qa_tests = list()
+                for new_file in list(set(current_files) - set(files)):
+                    file_array = new_file.split('-')
+                    if file_array[0] == 'ql':
+                        cameras[file_array[2]].update_status(file_array[1])
+
+                for camera in self.data.get('cameras'):
+                    qa_tests.append(
+                        {camera.get('name'): cameras[camera.get('name')].status})
+
+                if len(qa_tests) > 0:
+                    self.models.update_process(
+                        process_id=self.data.get('process_id'),
+                        end=None,
+                        process_dir=self.data.get('output_dir'),
+                        status=self.data.get('status'),
+                        qa_tests=qa_tests
                     )
-                )
-
-            if number_files != current_number_files:
-                number_files = current_number_files
-                qa_tests = self.generate_qa_tests(False)
-
-                self.models.update_process(
-                    process_id=self.data.get('process_id'),
-                    end=None,
-                    process_dir=self.data.get('output_dir'),
-                    status=self.data.get('status'),
-                    qa_tests=qa_tests
-                )
+                files = current_files
                 time.sleep(3)
 
     def resume_log(self, line, camera, lock):
