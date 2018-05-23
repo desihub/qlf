@@ -64,6 +64,7 @@ backend/spectro/
 backend/framework/qlf/db.sqlite3
 backend/docker-compose.yml
 .vscode/
+.mypy_cache*/
 
 frontend/build/*
 frontend/node_modules/*
