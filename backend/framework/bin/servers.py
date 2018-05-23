@@ -1,18 +1,17 @@
-from exposure_monitoring import ExposureMonitoring
-from exposure_generator import ExposureGenerator
-
-import Pyro4
 import os
 
+import Pyro4
+
+from clients import (EXPOSURE_GENERATOR_NS, EXPOSURE_MONITORING_NS, PYRO_HOST,
+                     PYRO_PORT, get_exposure_generator)
+from exposure_generator import ExposureGenerator
+from exposure_monitoring import ExposureMonitoring
 from log import get_logger
 from procutil import kill_proc_tree
-from util import get_config
-from scalar_metrics import LoadMetrics
-from qlf_models import QLFModels
 from qlf_configuration import QLFConfiguration
-
-from clients import EXPOSURE_MONITORING_NS, EXPOSURE_GENERATOR_NS, PYRO_HOST, PYRO_PORT
-from clients import get_exposure_generator
+from qlf_models import QLFModels
+from scalar_metrics import LoadMetrics
+from util import get_config
 
 cfg = get_config()
 loglevel = cfg.get("main", "loglevel")
@@ -29,28 +28,30 @@ logger = get_logger(
 @Pyro4.behavior(instance_mode="single")
 class Monitoring(object):
 
-    monitoring = False
+    monitor = False
 
     # TODO: is provisional while we do not have the ICS.
     exposure_generator = get_exposure_generator()
 
     def start(self):
-        if self.monitoring and self.monitoring.is_alive():
-            self.monitoring.exit.clear()
-            logger.debug("Monitor is already initialized (pid: %i)." % self.monitoring.pid)
+        if self.monitor and self.monitor.is_alive():
+            self.monitor.exit.clear()
+            logger.debug(
+                "Monitor is already initialized (pid: {}).".format(
+                    self.monitor.pid))
         else:
-            self.monitoring = ExposureMonitoring()
-            self.monitoring.start()
-            logger.debug("Starting pid %i..." % self.monitoring.pid)
+            self.monitor = ExposureMonitoring()
+            self.monitor.start()
+            logger.debug("Starting pid %i..." % self.monitor.pid)
 
         self.exposure_generator.start()
 
     def stop(self):
-        if self.monitoring and self.monitoring.is_alive():
-            self.monitoring.exit.set()
-            logger.debug("Stop pid %i" % self.monitoring.pid)
+        if self.monitor and self.monitor.is_alive():
+            self.monitor.exit.set()
+            logger.debug("Stop pid %i" % self.monitor.pid)
 
-            pid = self.monitoring.pid
+            pid = self.monitor.pid
 
             kill_proc_tree(pid, include_parent=False)
         else:
@@ -71,7 +72,7 @@ class Monitoring(object):
     def get_status(self):
         status = False
 
-        if self.monitoring and not self.monitoring.exit.is_set():
+        if self.monitor and not self.monitor.exit.is_set():
             status = True
 
         return status
@@ -79,7 +80,7 @@ class Monitoring(object):
     def is_running(self):
         running = False
 
-        if self.monitoring and self.monitoring.running.is_set():
+        if self.monitor and self.monitor.running.is_set():
             running = True
 
         return running
@@ -94,7 +95,8 @@ class Monitoring(object):
             try:
                 process = job.process
                 exposure = process.exposure
-                lm = LoadMetrics(process_id, job.camera_id, process.exposure_id, exposure.night)
+                lm = LoadMetrics(process_id, job.camera_id,
+                                 process.exposure_id, exposure.night)
                 qa_tests.append({job.camera_id: lm.load_qa_tests()})
             except Exception as err:
                 logger.error(err)
@@ -106,7 +108,8 @@ class Monitoring(object):
         try:
             process = QLFModels().get_process_by_process_id(process_id)
             exposure = process.exposure
-            lm = LoadMetrics(process_id, cam, process.exposure_id, exposure.night)
+            lm = LoadMetrics(process_id, cam, process.exposure_id,
+                             exposure.night)
             scalar_metrics['metrics'] = lm.metrics
             scalar_metrics['tests'] = lm.tests
         except Exception as err:
@@ -116,20 +119,22 @@ class Monitoring(object):
 
     def get_current_configuration(self):
         configuration = QLFConfiguration()
-        return configuration.get_current_configuration().configuration	
+        current = configuration.get_current_configuration()
+        return current.configuration
 
-    def get_qlconfig(self):	
-        try:	
-            configuration = QLFConfiguration()
-            file = open(configuration.get_current_configuration().configuration['qlconfig'])	
-            return file.read()	
+    def get_qlconfig(self):
+        try:
+            config = self.get_current_configuration()
+            file = config['qlconfig']
+            return file.read()
         except Exception as err:
             logger.info(err)
             return 'Error reading qlconfig'
 
+
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
-class Generator(object):
+class GeneratorControl(object):
 
     generator = False
 
@@ -155,17 +160,18 @@ class Generator(object):
             logger.debug("Exposure generator is not initialized.")
             return dict()
 
-    # def get_exposure_summary(self, date_range=None, expid_range=None, require_data_written=True):
+    # def get_exposure_summary(self, date_range=None, expid_range=None,
+    #  require_data_written=True):
     #   # TODO
     #   return
-    #
-    # def get_exposure_files(self, expid, dest=None, file_class=['desi', 'fibermap'], overwrite=True):
+
+    # def get_exposure_files(self, expid, dest=None,
+    # file_class=['desi', 'fibermap'], overwrite=True):
     #   # TODO
     #   return
 
 
 def main():
-
     exposure_monitoring = EXPOSURE_MONITORING_NS
     exposure_generator = EXPOSURE_GENERATOR_NS
     host = PYRO_HOST
@@ -174,7 +180,7 @@ def main():
     Pyro4.Daemon.serveSimple(
         {
             Monitoring: exposure_monitoring,
-            Generator: exposure_generator
+            GeneratorControl: exposure_generator
         },
         host=host,
         port=port,

@@ -1,15 +1,17 @@
-import astropy.io.fits
 import datetime
-from log import get_logger
 import os
 import random
 import re
 import shutil
 import time
 from glob import glob
-from util import get_config
-from multiprocessing import Process, Manager
+from multiprocessing import Manager, Process
+
+import astropy.io.fits
+
+from log import get_logger
 from qlf_models import QLFModels
+from util import get_config
 
 cfg = get_config()
 qlf_root = cfg.get("environment", "qlf_root")
@@ -47,7 +49,8 @@ class ExposureGenerator(Process):
             last_exposure = self.generate_exposure()
             log.info(
                 "Exposure id '%s' generated at '%s' as night '%s'."
-                % (last_exposure['expid'], last_exposure['dateobs'], last_exposure['night'])
+                % (last_exposure['expid'],
+                   last_exposure['dateobs'], last_exposure['night'])
             )
 
             self.__last_exposure.update(last_exposure)
@@ -55,19 +58,21 @@ class ExposureGenerator(Process):
 
             if self.__generation_count == max_exposures:
                 continue
-                
+
             minutes = random.randint(min_interval, max_interval)
             log.info("Next generation in %s minutes..." % minutes)
 
             time.sleep(minutes * 60)
 
-        log.info("The generation of {} exposures has ended.".format(max_exposures))
+        log.info("The generation of {} exposures has ended.".format(
+            max_exposures))
 
     def __get_random_exposure(self):
         """ """
 
         if not os.path.exists(base_exposures_path):
-            log.error("Directory does not exist: {}".format(base_exposures_path))
+            log.error("Directory does not exist: {}".format(
+                base_exposures_path))
             raise OSError
 
         exposures_list = re.findall(
@@ -123,7 +128,6 @@ class ExposureGenerator(Process):
         }
 
     def __gen_new_expid(self):
-        # last_id = self.__get_last_expid()
         last_id = self.__get_database_last_expid()
 
         return int(last_id) + 1
@@ -134,11 +138,13 @@ class ExposureGenerator(Process):
 
         last_night = self.__get_last_night()
 
-        # If you do not have the last night, the generation of exposure begins with id 1 + 1
+        # If you do not have the last night, the generation of exposure
+        # begins with id 1 + 1
         if not last_night:
             return 1
 
-        listdir = glob(os.path.join(spectro_path, last_night, 'desi-*.fits.fz'))
+        listdir = glob(os.path.join(spectro_path, last_night,
+                                    'desi-*.fits.fz'))
         last_exp_file = sorted([os.path.basename(x) for x in listdir])[-1]
 
         return re.findall(r"^desi-(\d+).fits.fz$", last_exp_file)[0]
@@ -205,7 +211,8 @@ class ExposureGenerator(Process):
     def __gen_fiberflat_folder(self, gen_time):
         """ """
 
-        dest = os.path.join(spectro_redux, "exposures", self.__night_to_generate(gen_time))
+        dest = os.path.join(spectro_redux, "exposures",
+                            self.__night_to_generate(gen_time))
         self.__ensure_dir(dest)
         dest = os.path.join(dest, "00000001")
 
@@ -215,7 +222,8 @@ class ExposureGenerator(Process):
     def __gen_psfboot_folder(self, gen_time):
         """ """
 
-        dest = os.path.join(spectro_redux, "exposures", self.__night_to_generate(gen_time))
+        dest = os.path.join(spectro_redux, "exposures",
+                            self.__night_to_generate(gen_time))
         self.__ensure_dir(dest)
         dest = os.path.join(dest, "00000000")
 
