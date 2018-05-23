@@ -104,8 +104,7 @@ class LoadMetrics:
                     with open(qa_file_path) as f:
                         data = json.load(f)
             except Exception as e:
-                print(e)
-                sys.exit("Could not open {}".format(qa_name))
+                logger.error("Could not open {}".format(qa_name))
 
         if data:
             self.error.update({qa: False})
@@ -235,7 +234,7 @@ class LoadMetrics:
                 self.status[current_step]['steps_status'][index] = qa_status
 
         except TypeError as e:
-            logger.error(e)
+            logger.error("update_status error {}".format(e))
 
 
 if __name__ == "__main__":

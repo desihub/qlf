@@ -299,6 +299,7 @@ class QLFProcess(object):
             )
 
             if len(set(current_files) - set(files)) > 0:
+                time.sleep(5)
                 qa_tests = list()
                 for new_file in list(set(current_files) - set(files)):
                     file_array = new_file.split('-')
@@ -318,7 +319,6 @@ class QLFProcess(object):
                         qa_tests=qa_tests
                     )
                 files = current_files
-                time.sleep(3)
 
     def resume_log(self, line, camera, lock):
         """ """
