@@ -1,15 +1,16 @@
-import os
 import io
-from log import get_logger
+import os
+import shutil
 import subprocess
 from datetime import datetime
-from util import get_config, delete_exposures
-import shutil
-from multiprocessing import Manager, Lock, Process
+from multiprocessing import Lock, Manager, Process
 from threading import Thread
+
+from log import get_logger
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
 import time
+from util import delete_exposures, get_config
 
 cfg = get_config()
 
@@ -30,6 +31,7 @@ class QLFProcess(object):
 
         self.num_cameras = len(self.data.get('cameras'))
 
+        # TODO: improve getting stages
         self.stages = [
             {
                 "display_name": "Pre Processing",
@@ -95,9 +97,9 @@ class QLFProcess(object):
         # TODO: ingest configuration file used, this should be done by process
         # self.models.insert_config(process.id)
 
-        logger.info('...{}'.format('\n' * 20))
-        logger.info('Process ID {}'.format(process.id))
-        logger.info('ExpID {} started.'.format(self.data.get('expid')))
+        logger.info('...\n\n')
+        logger.info('Process {}'.format(process.id))
+        logger.info('Exposure {} started.'.format(self.data.get('expid')))
 
         return process.id
 
@@ -159,9 +161,10 @@ class QLFProcess(object):
             '-c', camera.get('name'),
             '-e', str(data.get('expid')),
             '--rawdata_dir', data.get('desi_spectro_data'),
-            '--mergeQA',
             '--specprod_dir', desi_spectro_redux
         ]
+
+        # TODO: Add --mergeQA in cmd
 
         logname = io.open(os.path.join(
                 desi_spectro_redux,
@@ -205,7 +208,7 @@ class QLFProcess(object):
 
         self.data['duration'] = self.data.get('end') - self.data.get('start')
 
-        logger.info("ExpID {} ended (runtime: {}).".format(
+        logger.info("Exposure {} ended ({}).".format(
            self.data.get('expid'),
            str(self.data.get('duration'))
         ))
@@ -256,11 +259,11 @@ class QLFProcess(object):
         duration_ingestion = datetime.now().replace(
             microsecond=0) - start_ingestion
 
-        logger.info("Ingestion complete: %s." % str(duration_ingestion))
-        logger.info("Total runtime: %s." % (
-            self.data.get('duration') + duration_ingestion))
-        logger.info("ExpID {} is ready for analysis".format(
-            self.data.get('expid')))
+        total_duration = self.data.get('duration') + duration_ingestion
+
+        logger.info("Ingestion complete: {}.".format(duration_ingestion))
+        logger.info("Total runtime: {}.".format(total_duration))
+        logger.info("Exposure {} is ready.".format(self.data.get('expid')))
         delete_exposures()
 
     def generate_qa_tests(self):
@@ -325,7 +328,13 @@ class QLFProcess(object):
                 files = current_files
 
     def resume_log(self, line, camera, lock):
-        """ """
+        """[summary]
+
+        Arguments:
+            line {str} -- [description]
+            camera {str} -- [description]
+            lock {[type]} -- [description]
+        """
 
         lock.acquire()
 
@@ -333,40 +342,42 @@ class QLFProcess(object):
             line = line.decode("utf-8").replace('\n', '')
             line_str = line.split(':')[-1]
 
-            if line.find('ERROR') > -1:
+            if line.find('ERROR') > -1 or line.find('CRITICAL') > -1:
                 logger.error("ERROR: Camera {}: {}".format(camera, line_str))
-            elif line.find('CRITICAL') > -1:
-                logger.critical("CRITICAL: Camera {}: {}".format(
-                    camera, line_str))
             else:
-                for stage in self.stages:
-                    stage_start = stage.get('start')
-                    stage_end = stage.get('end')
-
-                    if line.find(stage_end.get('regex')) > -1:
-                        stage_end['count'] += 1
-
-                        if stage_end.get('count') == self.num_cameras:
-                            end_time = datetime.now().replace(microsecond=0)
-                            stage_end['time'] = end_time
-                            logger.info(
-                                '{} ended (runtime: {}).'.format(
-                                    stage.get('display_name'),
-                                    stage_end.get(
-                                        'time') - stage_start.get('time')
-                                )
-                            )
-
-                    if line.find(stage_start.get('regex')) > -1:
-                        stage_start['count'] += 1
-
-                        if 'time' not in stage_start:
-                            start_time = datetime.now().replace(microsecond=0)
-                            stage_start['time'] = start_time
-                            logger.info('{} started.'.format(
-                                stage.get('display_name')))
-
+                self.stage_control(line)
         except Exception as err:
-            logger.info(err)
+            logger.error(err)
+        finally:
+            lock.release()
 
-        lock.release()
+    def stage_control(self, line):
+        """ Monitors the begin and end of the execution stages of QL per camera.
+
+        Arguments:
+            line {str} -- QL execution log file line
+        """
+
+        for stage in self.stages:
+            stage_start = stage.get('start')
+            stage_end = stage.get('end')
+
+            if line.find(stage_end.get('regex')) > -1:
+                stage_end['count'] += 1
+
+                if stage_end.get('count') == self.num_cameras:
+                    end_time = datetime.now().replace(microsecond=0)
+                    stage_end['time'] = end_time
+                    logger.info('{} ended ({}).'.format(
+                        stage.get('display_name'),
+                        stage_end.get('time') - stage_start.get('time')
+                    ))
+
+            if line.find(stage_start.get('regex')) > -1:
+                stage_start['count'] += 1
+
+                if 'time' not in stage_start:
+                    start_time = datetime.now().replace(microsecond=0)
+                    stage_start['time'] = start_time
+                    logger.info('{} started.'.format(
+                        stage.get('display_name')))
