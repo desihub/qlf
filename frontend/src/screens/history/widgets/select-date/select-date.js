@@ -14,6 +14,11 @@ const styles = {
   label: {
     color: 'black',
   },
+  dateField: {
+    backgroundColor: 'white',
+    border: '1px solid lightgrey',
+    padding: 1,
+  },
 };
 
 export default class SelectDate extends React.Component {
@@ -84,6 +89,9 @@ export default class SelectDate extends React.Component {
             InputLabelProps={{
               shrink: true,
             }}
+            inputProps={{
+              style: styles.dateField,
+            }}
           />
         </div>
         <div style={styles.space}>
@@ -95,6 +103,9 @@ export default class SelectDate extends React.Component {
             onChange={this.changeEnd}
             InputLabelProps={{
               shrink: true,
+            }}
+            inputProps={{
+              style: styles.dateField,
             }}
           />
         </div>
