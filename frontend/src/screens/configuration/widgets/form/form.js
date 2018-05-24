@@ -51,8 +51,24 @@ export default class Form extends React.Component {
     baseExposures: '',
   };
 
-  updateNight = night => {
-    this.setState({ night });
+  updateMinInterval = minInterval => {
+    this.setState({ minInterval });
+  };
+
+  updateMaxInterval = maxInterval => {
+    this.setState({ maxInterval });
+  };
+
+  updateMaxExposures = maxExposures => {
+    this.setState({ maxExposures });
+  };
+
+  updateAllowedDelay = allowedDelay => {
+    this.setState({ allowedDelay });
+  };
+
+  updateBaseExposures = baseExposures => {
+    this.setState({ baseExposures });
   };
 
   updateExposures = exposures => {
@@ -183,7 +199,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.minInterval}
-          onChange={evt => this.updateNight(evt.value)}
+          onChange={evt => this.updateMinInterval(evt.value)}
         />
         <TextField
           label="Max Interval"
@@ -194,7 +210,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.maxInterval}
-          onChange={evt => this.updateExposures(evt.value)}
+          onChange={evt => this.updateMaxInterval(evt.value)}
         />
         <TextField
           label="Allowed Delay"
@@ -205,7 +221,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.allowedDelay}
-          onChange={evt => this.updateExposures(evt.value)}
+          onChange={evt => this.updateAllowedDelay(evt.value)}
         />
         <TextField
           label="Max Exposures"
@@ -216,7 +232,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.maxExposures}
-          onChange={evt => this.updateExposures(evt.value)}
+          onChange={evt => this.updateMaxExposures(evt.value)}
         />
         <Typography style={styles.title} variant="headline" component="h2">
           Pipeline
@@ -310,7 +326,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.baseExposures}
-          onChange={evt => this.updateQlconfig(evt.value)}
+          onChange={evt => this.updateBaseExposures(evt.value)}
         />
         <TextField
           label="Configuration file for the quick look pipeline"

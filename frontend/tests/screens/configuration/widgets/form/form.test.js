@@ -18,11 +18,16 @@ jest.mock('../../../../../src/containers/offline/connection/qlf-api', () => {
       qlconfig:
         '/app/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml',
       loglevel: 'INFO',
-      arms: 'r',
+      arms: 'b,r',
       desi_spectro_data: '/app/spectro/data',
       night: '20190101',
       exposures: '3,4',
       logpipeline: '/app/pipeline.log',
+      min_interval: '3',
+      max_interval: '15',
+      max_exposures: '10',
+      allowed_delay: '20',
+      base_exposures_path: '/app/spectro/base_exposures',
     },
   };
   return {
@@ -42,72 +47,112 @@ describe('Configuration Form', () => {
     wrapper = await mount(form);
     wrapper.setState({
       night: '20190101',
-      arms: 'r',
+      arms: 'b,r',
       input: '/app/spectro/data',
       output: '/app/spectro/redux',
       exposures: '3,4',
-      logfile: '/app/qlf.log',
-      logpipeline: '/app/pipeline.log',
-      loglevel: 'INFO',
+      minInterval: '3',
+      maxInterval: '15',
+      maxExposures: '10',
+      allowedDelay: '20',
+      baseExposures: '/app/spectro/base_exposures',
       qlconfig:
         '/app/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml',
-      spectrographs: '6,7'.split(','),
+      spectrographs: 'r0,b0'.split(','),
     });
   });
 
-  it('changes night', async () => {
+  it('changes minInterval', async () => {
     expect(
       wrapper
-        .find('TextField')
+        .find('input')
         .at(0)
         .props().value
-    ).toBe('20190101');
+    ).toBe('3');
     await wrapper
       .find('input')
       .at(0)
-      .simulate('change', { value: 'night' });
+      .simulate('change', { value: 'minInterval' });
     expect(
       wrapper
         .find('TextField')
         .at(0)
         .props().value
-    ).toBe('night');
+    ).toBe('minInterval');
   });
 
-  it('changes exposure', async () => {
+  it('changes maxInterval', async () => {
     expect(
       wrapper
         .find('TextField')
         .at(1)
         .props().value
-    ).toBe('3,4');
+    ).toBe('15');
     await wrapper
       .find('input')
       .at(1)
-      .simulate('change', { value: 'exp' });
+      .simulate('change', { value: 'maxInterval' });
     expect(
       wrapper
         .find('TextField')
         .at(1)
         .props().value
-    ).toBe('exp');
+    ).toBe('maxInterval');
+  });
+
+  it('changes delay', async () => {
+    expect(
+      wrapper
+        .find('TextField')
+        .at(2)
+        .props().value
+    ).toBe('20');
+    await wrapper
+      .find('input')
+      .at(2)
+      .simulate('change', { value: 'delay' });
+    expect(
+      wrapper
+        .find('TextField')
+        .at(2)
+        .props().value
+    ).toBe('delay');
+  });
+
+  it('changes maxExposures', async () => {
+    expect(
+      wrapper
+        .find('TextField')
+        .at(3)
+        .props().value
+    ).toBe('10');
+    await wrapper
+      .find('input')
+      .at(3)
+      .simulate('change', { value: 'maxExposures' });
+    expect(
+      wrapper
+        .find('TextField')
+        .at(3)
+        .props().value
+    ).toBe('maxExposures');
   });
 
   it('changes input', async () => {
     expect(
       wrapper
-        .find('input')
-        .at(15)
+        .find('TextField')
+        .at(4)
         .props().value
     ).toBe('/app/spectro/data');
     await wrapper
       .find('input')
-      .at(15)
+      .at(37)
       .simulate('change', { value: 'input' });
     expect(
       wrapper
         .find('TextField')
-        .at(2)
+        .at(4)
         .props().value
     ).toBe('input');
   });
@@ -116,76 +161,38 @@ describe('Configuration Form', () => {
     expect(
       wrapper
         .find('TextField')
-        .at(3)
+        .at(5)
         .props().value
     ).toBe('/app/spectro/redux');
     await wrapper
       .find('input')
-      .at(16)
+      .at(38)
       .simulate('change', { value: 'output' });
     expect(
       wrapper
         .find('TextField')
-        .at(3)
+        .at(5)
         .props().value
     ).toBe('output');
   });
 
-  it('changes loglevel', async () => {
-    expect(
-      wrapper
-        .find('TextField')
-        .at(4)
-        .props().value
-    ).toBe('INFO');
-    await wrapper
-      .find('input')
-      .at(17)
-      .simulate('change', { value: 'DEBUG' });
-    expect(
-      wrapper
-        .find('TextField')
-        .at(4)
-        .props().value
-    ).toBe('DEBUG');
-  });
-
-  it('changes logfile', async () => {
-    expect(
-      wrapper
-        .find('TextField')
-        .at(5)
-        .props().value
-    ).toBe('/app/qlf.log');
-    await wrapper
-      .find('input')
-      .at(18)
-      .simulate('change', { value: 'logfile' });
-    expect(
-      wrapper
-        .find('TextField')
-        .at(5)
-        .props().value
-    ).toBe('logfile');
-  });
-
-  it('changes logpipeline', async () => {
+  it('changes baseExposures', async () => {
     expect(
       wrapper
         .find('TextField')
         .at(6)
         .props().value
-    ).toBe('/app/pipeline.log');
+    ).toBe('/app/spectro/base_exposures');
     await wrapper
       .find('input')
-      .at(19)
-      .simulate('change', { value: 'pipeline' });
+      .at(39)
+      .simulate('change', { value: 'baseExposures' });
     expect(
       wrapper
         .find('TextField')
         .at(6)
         .props().value
-    ).toBe('pipeline');
+    ).toBe('baseExposures');
   });
 
   it('changes qlconfig', async () => {
@@ -197,7 +204,7 @@ describe('Configuration Form', () => {
     ).toBe('/app/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml');
     await wrapper
       .find('input')
-      .at(20)
+      .at(40)
       .simulate('change', { value: 'qlconfig' });
     expect(
       wrapper
@@ -226,23 +233,39 @@ describe('Configuration Form', () => {
     ).toBe(true);
   });
 
-  it('changes checked arm', async () => {
+  it('changes checked arm and select all', async () => {
     expect(
       wrapper
         .find('input')
-        .at(3)
+        .at(4)
         .props().checked
     ).toBe(true);
     await wrapper
       .find('input')
-      .at(3)
+      .at(4)
       .simulate('change');
     expect(
       wrapper
         .find('input')
-        .at(3)
+        .at(4)
         .props().checked
     ).toBe(false);
+    expect(
+      wrapper
+        .find('input')
+        .at(8)
+        .props().checked
+    ).toBe(false);
+    await wrapper
+      .find('input')
+      .at(4)
+      .simulate('change');
+    expect(
+      wrapper
+        .find('input')
+        .at(8)
+        .props().checked
+    ).toBe(true);
   });
 
   it('clicks default button calls getDefaultConfiguration', async () => {
