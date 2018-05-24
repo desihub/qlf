@@ -1,7 +1,7 @@
 export const tableColumns = [
   {
-    processKey: '',
-    exposureKey: '',
+    processKey: 'exposure__program',
+    exposureKey: 'program',
     name: 'Program',
     type: 'normal',
   },
@@ -72,8 +72,8 @@ export const tableColumns = [
     type: 'normal',
   },
   {
-    processKey: '',
-    exposureKey: '',
+    processKey: 'exposure__airmass',
+    exposureKey: 'airmass',
     name: 'Airmass',
     type: 'normal',
   },
