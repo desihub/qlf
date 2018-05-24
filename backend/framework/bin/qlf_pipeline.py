@@ -311,7 +311,7 @@ class QLFProcess(object):
                             cameras[file_array[2]].update_status(file_array[1])
                         except TypeError as e:
                             current_files = list(set(current_files) - set([new_file]))
-                            logger.error("Error {}: {}".format(new_file, e))
+                            print("Error {}: {}".format(new_file, e))
 
                 for camera in self.data.get('cameras'):
                     qa_tests.append(
