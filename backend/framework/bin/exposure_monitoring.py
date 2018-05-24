@@ -83,7 +83,7 @@ class ExposureMonitoring(Process):
                     'went from {} seconds'.format(str(allowed_delay))
                 ))
                 continue
-
+               
             logger.info('Exposure {} ({} {}) available.'.format(
                 exposure.get('exposure_id'),
                 exposure.get('program').capitalize(),
@@ -96,7 +96,7 @@ class ExposureMonitoring(Process):
             self.running.set()
 
         delete_exposures()
-        logger.info("Bye!")
+        logger.debug("Bye!")
 
 
 def process_run(exposure, process_id):
