@@ -227,14 +227,10 @@ class LoadMetrics:
                 continue
 
         data = self.Load_qa(qa)
-        try:
-            qa_status = data['METRICS'][self.alert_keys[qa]]
+        qa_status = data['METRICS'][self.alert_keys[qa]]
 
-            if current_step:
-                self.status[current_step]['steps_status'][index] = qa_status
-
-        except TypeError as e:
-            logger.error("update_status error {}".format(e))
+        if current_step:
+            self.status[current_step]['steps_status'][index] = qa_status
 
 
 if __name__ == "__main__":
