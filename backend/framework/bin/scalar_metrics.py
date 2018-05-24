@@ -104,7 +104,8 @@ class LoadMetrics:
                     with open(qa_file_path) as f:
                         data = json.load(f)
             except Exception as e:
-                logger.error("Could not open {}".format(qa_name))
+                data = None
+                # logger.error("Could not open {}".format(qa_name))
 
         if data:
             self.error.update({qa: False})
