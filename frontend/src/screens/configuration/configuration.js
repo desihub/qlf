@@ -41,9 +41,11 @@ export default class Configuration extends React.Component {
           >
             <Tab label="QLF" value={0} />
             <Tab label="QL" value={1} />
+            <Tab label="CALIBRATION" value={2} />
           </Tabs>
           {tab === 0 ? <Form /> : null}
           {tab === 1 ? <Display /> : null}
+          {tab === 2 ? null : null}
         </Paper>
       </div>
     );
