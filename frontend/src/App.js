@@ -224,9 +224,7 @@ class App extends React.Component {
       <div style={styles.bottom}>
         <span>© Copyright 2018, LIneA/DESI</span>
         <span>
-          {process.env.REACT_APP_VERSION
-            ? process.env.REACT_APP_VERSION.substring(0, 7)
-            : ''}
+          {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
         </span>
       </div>
     );
