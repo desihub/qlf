@@ -299,12 +299,16 @@ class QLFProcess(object):
             )
 
             if len(set(current_files) - set(files)) > 0:
-                time.sleep(2)
+                time.sleep(1)
                 qa_tests = list()
                 for new_file in list(set(current_files) - set(files)):
                     file_array = new_file.split('-')
                     if file_array[0] == 'ql':
-                        cameras[file_array[2]].update_status(file_array[1])
+                        try:
+                            cameras[file_array[2]].update_status(file_array[1])
+                        except TypeError as e:
+                            current_files = list(set(current_files) - set([new_file]))
+                            logger.error("Error {}: {}".format(new_file, e))
 
                 for camera in self.data.get('cameras'):
                     qa_tests.append(
