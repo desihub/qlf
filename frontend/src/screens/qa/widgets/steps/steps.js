@@ -85,6 +85,7 @@ export default class Steps extends Component {
     navigateToProcessingHistory: PropTypes.func,
     petalSizeFactor: PropTypes.number.isRequired,
     processId: PropTypes.number,
+    monitor: PropTypes.bool,
   };
 
   state = {
@@ -159,6 +160,7 @@ export default class Steps extends Component {
         showQaAlarms={this.showQaAlarms}
         hideQaAlarms={this.hideQaAlarms}
         qaTests={this.findQATest(arms[arm])}
+        monitor={this.props.monitor}
       />
     );
   };

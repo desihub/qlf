@@ -57,6 +57,7 @@ export default class HistoryData extends React.Component {
       : row.last_exposure_process_qa_tests
         ? row.last_exposure_process_qa_tests
         : null;
+    if (!Array.isArray(qaTests)) return null;
     if (qaTests) {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
@@ -74,8 +75,8 @@ export default class HistoryData extends React.Component {
     );
   };
 
-  renderViewQA = (lastProcessed, runtime) => {
-    if (lastProcessed && !runtime) return <CircularProgress size={20} />;
+  renderViewQA = (processing, runtime) => {
+    if (processing && !runtime) return <CircularProgress size={20} />;
     if (!runtime) return;
 
     return (
@@ -164,13 +165,13 @@ export default class HistoryData extends React.Component {
               );
             case 'qa':
               if (!row.qa_tests || (!row.qa_tests.length && !processing))
-                return;
+                return null;
               return (
                 <TableCell
                   key={`PROCV${key}`}
                   style={{ ...styles.tableCell, ...lastProcessed }}
                 >
-                  {this.renderViewQA(lastProcessed, row.runtime)}
+                  {this.renderViewQA(processing, row.runtime)}
                 </TableCell>
               );
             default:

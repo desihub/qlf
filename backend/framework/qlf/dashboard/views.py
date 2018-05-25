@@ -15,7 +15,7 @@ from .serializers import (
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
-    ExposureFlavorSerializer
+    ExposureFlavorSerializer, CurrentProcessJobsSerializer
 )
 
 from datetime import datetime, timedelta
@@ -138,7 +138,7 @@ class LastProcessViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessJobsSerializer
 
 
-class CurrentProcessViewSet(viewsets.ModelViewSet):
+class CurrentProcessViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint listing current process"""
 
     def get_queryset(self):
@@ -154,7 +154,7 @@ class CurrentProcessViewSet(viewsets.ModelViewSet):
 
         return Process.objects.filter(id=process_id)
 
-    serializer_class = ProcessJobsSerializer
+    serializer_class = CurrentProcessJobsSerializer
 
 
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
@@ -508,15 +508,6 @@ def reset(request):
 
     qlf.reset()
     return HttpResponseRedirect('dashboard/monitor')
-
-
-def qa_tests(request):
-    process_id = request.GET.get('process_id')
-    if process_id is not None:
-        qa_tests = qlf.qa_tests(process_id)
-        return JsonResponse({'status': qa_tests})
-    else:
-        return JsonResponse({'Error': 'Missing process_id'})
 
 
 def daemon_status(request):

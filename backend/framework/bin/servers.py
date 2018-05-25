@@ -89,29 +89,15 @@ class Monitoring(object):
         # TODO: improvements
         return None
 
-    def qa_tests(self, process_id):
-        qa_tests = list()
-        for job in QLFModels().get_jobs_by_process_id(process_id):
-            try:
-                process = job.process
-                exposure = process.exposure
-                lm = LoadMetrics(process_id, job.camera_id,
-                                 process.exposure_id, exposure.night)
-                qa_tests.append({job.camera_id: lm.load_qa_tests()})
-            except Exception as err:
-                logger.error(err)
-                logger.error('qa_tests error camera %s' % job.camera)
-        return qa_tests
-
     def load_scalar_metrics(self, process_id, cam):
         scalar_metrics = dict()
         try:
             process = QLFModels().get_process_by_process_id(process_id)
             exposure = process.exposure
-            lm = LoadMetrics(process_id, cam, process.exposure_id,
-                             exposure.night)
-            scalar_metrics['metrics'] = lm.metrics
-            scalar_metrics['tests'] = lm.tests
+            metrics, tests = LoadMetrics(process_id, cam, process.exposure_id,
+                                         exposure.night).Load_metrics_n_tests()
+            scalar_metrics['metrics'] = metrics
+            scalar_metrics['tests'] = tests
         except Exception as err:
             logger.error(err)
             logger.error('load_scalar_metrics error')

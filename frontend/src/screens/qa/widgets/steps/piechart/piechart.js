@@ -15,13 +15,15 @@ export default class PieChart extends Component {
     showQaAlarms: PropTypes.func.isRequired,
     hideQaAlarms: PropTypes.func.isRequired,
     qaTests: PropTypes.array,
+    monitor: PropTypes.bool,
   };
 
   getColor = test => {
     if (test && !test.steps_status) return 'gray';
     if (
       (test && test.steps_status && test.steps_status.includes('FAILURE')) ||
-      (test.steps_status.includes('None') &&
+      (!this.props.monitor &&
+        test.steps_status.includes('None') &&
         test.steps_status.includes('NORMAL'))
     )
       return 'red';

@@ -20,7 +20,7 @@ if [ $1 = "prod" ]; then
   if git describe --exact-match --tags $(git log -n1 --pretty='%h') ; then
       echo "REACT_APP_VERSION=$(git describe --exact-match --tags $(git log -n1 --pretty='%h'))" >> .env
   else
-      echo "REACT_APP_VERSION=$(git log --pretty=format:"%h %aI" -1)" >> .env
+      echo "REACT_APP_VERSION=$(git log --pretty=format:"%h %ai" -1)" >> .env
   fi
   cd ..
   docker-compose -f frontend/docker-compose.yml up -d

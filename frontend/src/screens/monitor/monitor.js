@@ -145,6 +145,7 @@ export default class Monitor extends Component {
               arms={this.props.arms}
               spectrographs={this.props.spectrographs}
               petalSizeFactor={22}
+              monitor={true}
             />
           </div>
           <div style={styles.gridItem}>

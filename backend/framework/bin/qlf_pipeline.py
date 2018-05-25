@@ -9,6 +9,7 @@ from threading import Thread
 from log import get_logger
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
+import time
 from util import get_config
 
 cfg = get_config()
@@ -139,8 +140,14 @@ class QLFProcess(object):
             proc.start()
             procs.append(proc)
 
+        self.monitor_generated_qa_files = True
+        monitor_qa_files = Thread(target=self.monitor_qa_files)
+        monitor_qa_files.start()
+
         for proc in procs:
             proc.join()
+
+        self.monitor_generated_qa_files = False
 
         self.data['cameras'] = return_cameras
 
@@ -273,6 +280,51 @@ class QLFProcess(object):
                 logger.error(err)
                 logger.error('qa_tests error camera %s' % camera.get('name'))
         return qa_tests
+
+    def monitor_qa_files(self):
+        cameras = dict()
+        files = list()
+        for camera in self.data.get('cameras'):
+            cameras[camera.get('name')] = LoadMetrics(
+                None,
+                camera.get('name'),
+                self.data.get('expid'),
+                self.data.get('night')
+            )
+
+        while self.monitor_generated_qa_files:
+            time.sleep(0.5)
+            current_files = os.listdir(
+                os.path.join(
+                    desi_spectro_redux,
+                    self.data.get('output_dir')
+                )
+            )
+
+            if len(set(current_files) - set(files)) > 0:
+                qa_tests = list()
+                for new_file in list(set(current_files) - set(files)):
+                    file_array = new_file.split('-')
+                    if file_array[0] == 'ql':
+                        try:
+                            cameras[file_array[2]].update_status(file_array[1])
+                        except TypeError as e:
+                            current_files = list(set(current_files) - set([new_file]))
+                            print("Error {}: {}".format(new_file, e))
+
+                for camera in self.data.get('cameras'):
+                    qa_tests.append(
+                        {camera.get('name'): cameras[camera.get('name')].status})
+
+                if len(qa_tests) > 0:
+                    self.models.update_process(
+                        process_id=self.data.get('process_id'),
+                        end=None,
+                        process_dir=self.data.get('output_dir'),
+                        status=self.data.get('status'),
+                        qa_tests=qa_tests
+                    )
+                files = current_files
 
     def resume_log(self, line, camera, lock):
         """[summary]
