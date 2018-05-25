@@ -289,7 +289,7 @@ class QLFProcess(object):
             cameras[camera.get('name')] = LoadMetrics(
                 None,
                 camera.get('name'),
-                self.data.get('expid'),
+                self.data.get('exposure_id'),
                 self.data.get('night')
             )
 
@@ -302,7 +302,6 @@ class QLFProcess(object):
             ))
 
             if len(set(current_files) - set(files)) > 0:
-                time.sleep(0.5)
                 qa_tests = list()
                 for new_file in list(set(current_files) - set(files)):
                     file_array = os.path.basename(new_file).split('-')
