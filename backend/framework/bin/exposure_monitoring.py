@@ -48,9 +48,9 @@ class ExposureMonitoring(Process):
                 logger.debug('No exposure available')
                 continue
 
-            ics_last_expid = self.ics_last_exposure.get('expid', None)
+            ics_last_expid = self.ics_last_exposure.get('exposure_id', None)
 
-            if exposure.get('expid') == ics_last_expid:
+            if exposure.get('exposure_id') == ics_last_expid:
                 logger.debug('Exposure {} has already been processed'.format(
                     ics_last_expid))
                 continue
@@ -58,19 +58,10 @@ class ExposureMonitoring(Process):
             self.ics_last_exposure = exposure
 
             logger.debug('Exposure {} obtained'.format(
-                exposure.get('expid')))
+                exposure.get('exposure_id')))
 
             # records exposure in database
-            QLFModels().insert_exposure(
-                exposure.get('expid'),
-                exposure.get('night'),
-                exposure.get('telra'),
-                exposure.get('teldec'),
-                exposure.get('tile'),
-                exposure.get('dateobs'),
-                exposure.get('flavor'),
-                exposure.get('exptime')
-            )
+            QLFModels().insert_exposure(**exposure)
 
             if self.process and self.process.is_alive():
                 logger.debug('Process {} is running.'.format(
@@ -92,9 +83,12 @@ class ExposureMonitoring(Process):
                     'went from {} seconds'.format(str(allowed_delay))
                 ))
                 continue
-
-            logger.info('Exposure {} available.'.format(
-                exposure.get('expid')))
+               
+            logger.info('Exposure {} ({} {}) available.'.format(
+                exposure.get('exposure_id'),
+                exposure.get('program').capitalize(),
+                exposure.get('flavor')
+            ))
 
             self.process = Thread(target=process_run,
                                   args=(exposure, self.process_id,))

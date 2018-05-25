@@ -99,7 +99,7 @@ class ExposureSerializer(DynamicFieldsModelSerializer):
         fields = (
             'exposure_id', 'tile', 'telra', 'teldec',
             'dateobs', 'exptime', 'flavor', 'night',
-            'airmass', 'links'
+            'airmass', 'program', 'links'
         )
 
     def get_links(self, obj):
@@ -155,7 +155,7 @@ class ProcessingHistoryExposureSerializer(serializers.ModelSerializer):
         fields = (
             'exposure_id', 'tile', 'telra', 'teldec',
             'dateobs', 'exptime', 'flavor', 'night',
-            'airmass'
+            'airmass', 'program'
         )
 
 
@@ -210,7 +210,8 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             'airmass',
             'last_exposure_process_id',
             'last_exposure_process_qa_tests',
-            'flavor'
+            'flavor',
+            'program'
         )
 
     def get_datemjd(self, obj):

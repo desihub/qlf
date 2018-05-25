@@ -37,36 +37,14 @@ def delete_exposures():
     cfg = get_config()
 
     desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-    desi_spectro_data = os.path.normpath(cfg.get(
-        "namespace",
-        "desi_spectro_data"
-        )
-    )
+    desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
 
-    delete_files(os.path.join(
-        desi_spectro_redux,
-        'exposures',
-    ))
-
-    delete_files(os.path.join(
-        desi_spectro_data,
-    ))
-
-    delete_files(os.path.join(
-        desi_spectro_redux,
-        'calib2d',
-    ))
-
-    delete_files(os.path.join(
-        desi_spectro_redux,
-        'calib2d',
-        'psf',
-    ))
+    delete_files(desi_spectro_redux)
+    delete_files(desi_spectro_data)
 
 
 def delete_files(path):
-    for night in os.listdir(path):
-        if night != '20190101' and night != 'psf':
-            night_path = os.path.join(path, night)
-            if os.path.exists(night_path):
-                shutil.rmtree(night_path)
+    for directory in os.listdir(path):
+        _path = os.path.join(path, directory)
+        if os.path.isdir(_path):
+            shutil.rmtree(_path)
