@@ -1,5 +1,8 @@
 from django.shortcuts import render
-from rest_framework import authentication, permissions, viewsets, filters, status, views
+from rest_framework import (
+    authentication, permissions, viewsets, filters,
+    status, views
+)
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
@@ -34,8 +37,6 @@ from django.contrib import messages
 import logging
 
 qlf = get_exposure_monitoring()
-
-# qlf_manual = get_processing_manual()
 
 logger = logging.getLogger(__name__)
 
@@ -168,6 +169,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         'exposure__night',
         'exposure__exptime',
         'exposure__flavor',
+        'exposure__program',
         'exposure__dateobs',
         'exposure__airmass',
         'exposure__teldec')
@@ -180,6 +182,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         'exposure__night',
         'exposure__exptime',
         'exposure__flavor',
+        'exposure__program',
         'exposure__dateobs',
         'exposure__airmass',
         'exposure__teldec')

@@ -10,7 +10,7 @@ from log import get_logger
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
 import time
-from util import delete_exposures, get_config
+from util import get_config
 
 cfg = get_config()
 
@@ -99,7 +99,7 @@ class QLFProcess(object):
 
         logger.info('...\n\n')
         logger.info('Process {}'.format(process.id))
-        logger.info('Exposure {} started.'.format(self.data.get('expid')))
+        logger.info('Exposure {} started.'.format(self.data.get('exposure_id')))
 
         return process.id
 
@@ -159,7 +159,7 @@ class QLFProcess(object):
             '-i', qlconfig,
             '-n', data.get('night'),
             '-c', camera.get('name'),
-            '-e', str(data.get('expid')),
+            '-e', str(data.get('exposure_id')),
             '--rawdata_dir', data.get('desi_spectro_data'),
             '--specprod_dir', desi_spectro_redux
         ]
@@ -209,7 +209,7 @@ class QLFProcess(object):
         self.data['duration'] = self.data.get('end') - self.data.get('start')
 
         logger.info("Exposure {} ended ({}).".format(
-           self.data.get('expid'),
+           self.data.get('exposure_id'),
            str(self.data.get('duration'))
         ))
 
@@ -263,8 +263,7 @@ class QLFProcess(object):
 
         logger.info("Ingestion complete: {}.".format(duration_ingestion))
         logger.info("Total runtime: {}.".format(total_duration))
-        logger.info("Exposure {} is ready.".format(self.data.get('expid')))
-        delete_exposures()
+        logger.info("Exposure {} is ready.".format(self.data.get('exposure_id')))
 
     def generate_qa_tests(self):
         qa_tests = list()
@@ -273,7 +272,7 @@ class QLFProcess(object):
                 lm = LoadMetrics(
                     self.data.get('process_id'),
                     camera.get('name'),
-                    self.data.get('expid'),
+                    self.data.get('exposure_id'),
                     self.data.get('night')
                 )
                 qa_tests.append({camera.get('name'): lm.load_qa_tests()})

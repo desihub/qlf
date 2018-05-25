@@ -26,7 +26,8 @@ logger = logging.getLogger()
 
 
 class QLFModels(object):
-    """ Class responsible by manage the database models from Quick Look pipeline. """
+    """ Class responsible by manage the database models from
+    Quick Look pipeline. """
 
     def __init__(self):
         """ Due to the continuous processing of exposures and consequently the long
@@ -35,38 +36,34 @@ class QLFModels(object):
 
         db.connection.close()
 
-    def insert_exposure(
-            self, expid, night, telra=None, teldec=None,
-            tile=None, dateobs=None, flavor=None, exptime=None
-    ):
+    def insert_exposure(self, **kwargs):
         """ Inserts and gets exposure and night if necessary. """
 
-        # Check if expid is already registered
-        if not Exposure.objects.filter(exposure_id=expid):
+        exposure_id = kwargs.get('exposure_id')
+
+        # Check if exposure_id is already registered
+        if not Exposure.objects.filter(exposure_id=exposure_id):
             exposure = Exposure(
-                exposure_id=expid, night=night,
-                telra=telra, teldec=teldec,
-                tile=tile, dateobs=dateobs,
-                flavor=flavor, exptime=exptime
+                exposure_id=kwargs.get('exposure_id'),
+                night=kwargs.get('night'),
+                telra=kwargs.get('telra'),
+                teldec=kwargs.get('teldec'),
+                tile=kwargs.get('tile'),
+                dateobs=kwargs.get('dateobs'),
+                flavor=kwargs.get('flavor'),
+                program=kwargs.get('program', None),
+                airmass=kwargs.get('airmass', None),
+                exptime=kwargs.get('exptime', None)
             )
             exposure.save()
 
         # Save Process for this exposure
-        return Exposure.objects.get(exposure_id=expid)
+        return Exposure.objects.get(exposure_id=exposure_id)
 
     def insert_process(self, data, pipeline_name, configuration):
         """ Inserts initial data in process table. """
 
-        exposure = self.insert_exposure(
-            data.get('expid'),
-            data.get('night'),
-            data.get('telra', None),
-            data.get('teldec', None),
-            data.get('tile', None),
-            data.get('dateobs', None),
-            data.get('flavor', None),
-            data.get('exptime', None)
-        )
+        exposure = self.insert_exposure(**data)
 
         process = Process(
             exposure_id=exposure.exposure_id,
@@ -84,12 +81,14 @@ class QLFModels(object):
 
         # TODO: get configuration coming of interface
         # Make sure there is a configuration to refer to
-        if not Configuration.objects.all() or not Configuration.objects.get(name=name):
+
+        try:
+            configuration = Configuration.objects.get(name=name)
+        except Configuration.DoesNotExist:
             configuration = Configuration(
                 name=name,
                 configuration=default_configuration,
             )
-
             configuration.save()
 
         return Configuration.objects.get(name=name)
@@ -98,7 +97,9 @@ class QLFModels(object):
         """ Inserts used camera. """
 
         # Check if camera is already registered
-        if not Camera.objects.filter(camera=camera):
+        try:
+            camera_obj = Camera.objects.get(camera=camera)
+        except Camera.DoesNotExist:
             camera_obj = Camera(
                 camera=camera,
                 arm=camera[0],
@@ -217,7 +218,8 @@ class QLFModels(object):
     def get_qa(self, process_id, cam, qa_name):
         """ Gets QA """
         try:
-            qa = Process.objects.get(pk=process_id).process_jobs.get(camera_id=cam).job_qas.get(name=qa_name)
+            qa = Process.objects.get(pk=process_id).process_jobs.get(
+                camera_id=cam).job_qas.get(name=qa_name)
         except QA.DoesNotExist:
             qa = None
 
@@ -245,10 +247,10 @@ class QLFModels(object):
             jobs.append(job)
         return jobs
 
-    def get_expid_in_process(self, expid):
-        """ Gets process object by expid """
+    def get_expid_in_process(self, exposure_id):
+        """ Gets process object by exposure_id """
 
-        return Process.objects.filter(exposure_id=expid)
+        return Process.objects.filter(exposure_id=exposure_id)
 
     def get_last_exposure(self):
         """ Gets last processed exposures """
@@ -290,10 +292,10 @@ class QLFModels(object):
 
         Process.objects.filter(id=process_id).delete()
 
-    def delete_exposure(self, expid):
+    def delete_exposure(self, exposure_id):
         """ Delete by exposure id """
 
-        Exposure.objects.filter(exposure_id=expid).delete()
+        Exposure.objects.filter(exposure_id=exposure_id).delete()
 
 
 def jsonify(data):
