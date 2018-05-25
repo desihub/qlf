@@ -294,6 +294,7 @@ class QLFProcess(object):
             )
 
         while self.monitor_generated_qa_files:
+            time.sleep(0.5)
             current_files = os.listdir(
                 os.path.join(
                     desi_spectro_redux,
@@ -302,7 +303,6 @@ class QLFProcess(object):
             )
 
             if len(set(current_files) - set(files)) > 0:
-                time.sleep(1)
                 qa_tests = list()
                 for new_file in list(set(current_files) - set(files)):
                     file_array = new_file.split('-')
