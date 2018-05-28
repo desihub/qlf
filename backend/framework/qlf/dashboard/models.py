@@ -10,20 +10,18 @@ class Exposure(models.Model):
 
     exposure_id = models.IntegerField(primary_key=True,
                                       help_text='Exposure number')
-    telra = models.FloatField(blank=True, null=True,
-                              help_text='Central RA of the exposure')
-    teldec = models.FloatField(blank=True, null=True,
-                               help_text='Central Dec of the exposure')
-    tile = models.IntegerField(blank=True, null=True,
-                                 help_text='Tile ID')
-    dateobs = models.DateTimeField(blank=True, null=True,
-                                   help_text='Date of observation')
+    telra = models.FloatField(help_text='Central RA of the exposure')
+    teldec = models.FloatField(help_text='Central Dec of the exposure')
+    tile = models.IntegerField(help_text='Tile ID')
+    dateobs = models.DateTimeField(help_text='Date of observation')
     flavor = models.CharField(max_length=45, default='Object',
                               help_text='Type of observation')
-    night = models.CharField(max_length=45, blank=True,
+    night = models.CharField(max_length=45,
                              help_text='Night ID', db_index=True)
     airmass = models.FloatField(blank=True, null=True,
                                 help_text='Airmass')
+    program = models.CharField(max_length=45, blank=True, null=True,
+                               help_text='Program')
     exptime = models.FloatField(blank=True, null=True,
                                 help_text='Exposure time')
 
@@ -35,8 +33,10 @@ class Configuration(models.Model):
                             help_text='Name of the configuration.',
                             primary_key=True)
     configuration = JSONField(default={}, help_text='Configuration used.')
-    creation_date = models.DateTimeField(auto_now=True,
-                                         help_text='Datetime when the configuration was created')
+    creation_date = models.DateTimeField(
+        auto_now=True,
+        help_text='Datetime when the configuration was created'
+    )
 
 
 class Process(models.Model):
@@ -46,17 +46,23 @@ class Process(models.Model):
     STATUS_FAILED = 1
 
     pipeline_name = models.CharField(max_length=60,
-                            help_text='Name of the pipeline.')
+                                     help_text='Name of the pipeline.')
     process_dir = models.CharField(max_length=145,
-                            help_text='Path to process')
+                                   help_text='Path to process')
     version = models.CharField(max_length=45,
-                            help_text='Path to process')
-    start = models.DateTimeField(auto_now=True,
-                                help_text='Datetime when the process was started')
-    end = models.DateTimeField(blank=True, null=True,
-                               help_text='Datetime when the process was finished.')
-    status = models.SmallIntegerField(default=STATUS_OK,
-                                      help_text='Process status, 0=OK, 1=Failed')
+                               help_text='Path to process')
+    start = models.DateTimeField(
+        auto_now=True,
+        help_text='Datetime when the process was started'
+    )
+    end = models.DateTimeField(
+        blank=True, null=True,
+        help_text='Datetime when the process was finished.'
+    )
+    status = models.SmallIntegerField(
+        default=STATUS_OK,
+        help_text='Process status, 0=OK, 1=Failed'
+    )
     exposure = models.ForeignKey(Exposure, related_name='process_exposure')
     qa_tests = JSONField(default={}, help_text='QA tests summary.')
     configuration = models.ForeignKey(
@@ -89,11 +95,19 @@ class Job(models.Model):
                                  help_text='Datetime when the job was started')
     end = models.DateTimeField(blank=True, null=True,
                                help_text='Datetime when the job was finished.')
-    status = models.SmallIntegerField(default=STATUS_RUNNING,
-                                      help_text='Job status, 0=OK, 1=Failed, 2=Running')
-    version = models.CharField(max_length=16, null=True, help_text='Version of the pipeline')
+    status = models.SmallIntegerField(
+        default=STATUS_RUNNING,
+        help_text='Job status, 0=OK, 1=Failed, 2=Running'
+    )
+    version = models.CharField(
+        max_length=16, null=True,
+        help_text='Version of the pipeline'
+    )
     camera = models.ForeignKey(Camera, related_name='camera_jobs')
-    process = models.ForeignKey(Process, related_name='process_jobs', on_delete=models.CASCADE)
+    process = models.ForeignKey(
+        Process, related_name='process_jobs',
+        on_delete=models.CASCADE
+    )
     logname = models.CharField(max_length=45, null=True,
                                help_text='Name of the log file.')
 

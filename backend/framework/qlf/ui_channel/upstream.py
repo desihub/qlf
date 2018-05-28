@@ -111,7 +111,6 @@ class Upstream:
     def get_current_state(self):
         camera_status = get_camera_status()
         process = get_current_process()
-        qa_results = self.get_current_qa_tests(process)
         available_cameras = self.avaiable_cameras(process)
         daemon_status = qlf.get_status()
         logfile = self.tail_file(open_file('logfile'), 100)
@@ -124,9 +123,11 @@ class Upstream:
         mjd = str()
         process_id = int()
         date_time = str()
+        qa_results = list()
         if len(process) > 0:
             pipelinelog = self.get_pipeline_log()
             exposure = process[0].get("exposure")
+            qa_results = process[0].get("qa_tests")
             process_id = process[0].get("id")
             date = get_date(exposure)
             date_time = date.value if date else ''
@@ -146,13 +147,6 @@ class Upstream:
                 "process_id": process_id
             })
 
-    def get_current_qa_tests(self, process):
-        if process != []:
-            qa_tests = qlf.qa_tests(process[0]['id'])
-            return { 'qa_tests': qa_tests }
-        else:
-            return { 'Error': 'Missing process_id' }
-
     def job(self):
         state = self.get_current_state()
 
@@ -167,7 +161,7 @@ class Upstream:
 
     def start_uptream(self):
         if self.startedUpStreamJob == False:
-            schedule.every(3).seconds.do(self.run_threaded, self.job)
+            schedule.every(int(os.environ.get('UPDATE_INTERVAL', 3))).seconds.do(self.run_threaded, self.job)
             job_thread = threading.Thread(target=self.run_pending)
             job_thread.start()
         self.startedUpStreamJob = True
@@ -175,4 +169,4 @@ class Upstream:
     def run_pending(self):
         while 1:
             schedule.run_pending()
-            time.sleep(3)
+            time.sleep(int(os.environ.get('UPDATE_INTERVAL', 3)))

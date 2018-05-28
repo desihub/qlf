@@ -49,7 +49,7 @@ class ExposureGenerator(Process):
             last_exposure = self.generate_exposure()
             log.info(
                 "Exposure id '%s' generated at '%s' as night '%s'."
-                % (last_exposure['expid'],
+                % (last_exposure['exposure_id'],
                    last_exposure['dateobs'], last_exposure['night'])
             )
 
@@ -93,36 +93,38 @@ class ExposureGenerator(Process):
 
         gen_time = datetime.datetime.utcnow()
 
-        exp_id = self.__gen_new_expid()
-        exp_id_zfill = str(exp_id).zfill(8)
+        exposure_id = self.__gen_new_expid()
+        exposure_zfill = str(exposure_id).zfill(8)
 
-        self.__gen_desi_file(exp_id_zfill, gen_time)
-        self.__gen_fibermap_file(exp_id_zfill, gen_time)
+        self.__gen_desi_file(exposure_zfill, gen_time)
+        self.__gen_fibermap_file(exposure_zfill, gen_time)
         self.__gen_fiberflat_folder(gen_time)
         self.__gen_psfboot_folder(gen_time)
 
         night = self.__night_to_generate(gen_time)
-        expo_name = "desi-{}.fits.fz".format(exp_id_zfill)
+        expo_name = "desi-{}.fits.fz".format(exposure_zfill)
 
         file_path = os.path.join(spectro_path, night, expo_name)
 
         try:
             hdr = astropy.io.fits.getheader(file_path)
         except Exception as err:
-            log.error("error to load fits file: %s" % err)
+            log.error("Error to load fits file: %s" % err)
             return {}
 
         return {
-            "expid": exp_id,
+            "exposure_id": exposure_id,
             "dateobs": self.__date_obs(gen_time),
             "night": night,
-            "zfill": exp_id_zfill,
+            "zfill": exposure_zfill,
             "desi_spectro_data": spectro_path,
             "desi_spectro_redux": spectro_redux,
             'telra': hdr.get('telra', None),
             'teldec': hdr.get('teldec', None),
             'tile': hdr.get('tileid', None),
             'flavor': hdr.get('flavor', None),
+            'program': hdr.get('program', None),
+            'airmass': hdr.get('airmass', None),
             'exptime': hdr.get('exptime', None),
             'time': datetime.datetime.utcnow()
         }

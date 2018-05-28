@@ -25,6 +25,7 @@ export default class QA extends Component {
     navigateToProcessingHistory: PropTypes.func,
     petalSizeFactor: PropTypes.number.isRequired,
     processId: PropTypes.number,
+    monitor: PropTypes.bool,
   };
 
   componentDidMount() {
@@ -54,6 +55,7 @@ export default class QA extends Component {
         time={this.props.time}
         petalSizeFactor={this.props.petalSizeFactor}
         processId={this.props.processId}
+        monitor={this.props.monitor}
       />
     );
   };

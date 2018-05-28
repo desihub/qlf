@@ -181,6 +181,7 @@ class OfflineContainer extends Component {
               navigateToMetrics={this.props.navigateToMetrics}
               petalSizeFactor={16}
               processId={this.props.processId}
+              monitor={false}
             />
           )}
         />
