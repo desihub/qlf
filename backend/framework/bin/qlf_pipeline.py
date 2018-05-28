@@ -23,13 +23,14 @@ local_config = {
         "execution" : {
             "executor" : "threads",
             "provider" : None,
-            "max_workers" : os.environ.get('AVAILABLE_THREADS', 4)
+            "maxThreads" : int(os.environ.get('AVAILABLE_THREADS', 2))
         }
         }],
     "globals" : {"lazyErrors" : True}
 }
 
 dfk = DataFlowKernel(config=local_config)
+parsl.set_file_logger('parsl.log')
 # PARSL_END
 
 cfg = get_config()
