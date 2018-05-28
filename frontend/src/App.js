@@ -159,7 +159,9 @@ class App extends React.Component {
             DESI Quick Look {this.renderRouteName()}
           </span>
           <div style={{ display: 'flex' }}>
-            <Notification />
+            {history.location.pathname === '/monitor-realtime' ? (
+              <Notification />
+            ) : null}
             <Icon
               onClick={() => window.open('/', 'home', 'width=950, height=650')}
               style={styles.homeIcon}

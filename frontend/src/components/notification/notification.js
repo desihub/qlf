@@ -99,16 +99,19 @@ class Notification extends React.Component {
           );
         })}
         {this.state.warnings.map(warn => (
-          <ListItem key={1}>
-            <ListItemText
-              primary={warn.msg}
-              secondary={warn.time}
-              classes={{
-                primary: classes.warning,
-                secondary: classes.secondary,
-              }}
-            />
-          </ListItem>
+          <div key={warn.time}>
+            <ListItem key={1}>
+              <ListItemText
+                primary={warn.msg}
+                secondary={warn.time}
+                classes={{
+                  primary: classes.warning,
+                  secondary: classes.secondary,
+                }}
+              />
+            </ListItem>
+            <Divider />
+          </div>
         ))}
         <Button onClick={this.clear} className={classes.button}>
           Clear
