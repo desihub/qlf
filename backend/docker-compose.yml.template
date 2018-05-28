@@ -39,6 +39,7 @@ services:
       - REDIS_NAME=redis
       - BOKEH_TEST=false
       - UPDATE_INTERVAL=3
+      - AVAILABLE_THREADS=4
     volumes:
       - .:/app
     working_dir: /app/

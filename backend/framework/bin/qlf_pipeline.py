@@ -23,7 +23,7 @@ local_config = {
         "execution" : {
             "executor" : "threads",
             "provider" : None,
-            "max_workers" : 4
+            "max_workers" : os.environ.get('AVAILABLE_THREADS', 4)
         }
         }],
     "globals" : {"lazyErrors" : True}
