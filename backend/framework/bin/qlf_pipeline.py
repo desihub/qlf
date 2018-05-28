@@ -5,6 +5,7 @@ import subprocess
 from datetime import datetime
 from multiprocessing import Lock, Manager, Process
 from threading import Thread
+import glob
 
 from log import get_logger
 from qlf_models import QLFModels
@@ -288,29 +289,27 @@ class QLFProcess(object):
             cameras[camera.get('name')] = LoadMetrics(
                 None,
                 camera.get('name'),
-                self.data.get('expid'),
+                self.data.get('exposure_id'),
                 self.data.get('night')
             )
 
         while self.monitor_generated_qa_files:
             time.sleep(0.5)
-            current_files = os.listdir(
-                os.path.join(
-                    desi_spectro_redux,
-                    self.data.get('output_dir')
-                )
-            )
+            current_files = glob.glob(os.path.join(
+                desi_spectro_redux,
+                self.data.get('output_dir'),
+                'ql*.json'
+            ))
 
             if len(set(current_files) - set(files)) > 0:
                 qa_tests = list()
                 for new_file in list(set(current_files) - set(files)):
-                    file_array = new_file.split('-')
-                    if file_array[0] == 'ql':
-                        try:
-                            cameras[file_array[2]].update_status(file_array[1])
-                        except TypeError as e:
-                            current_files = list(set(current_files) - set([new_file]))
-                            print("Error {}: {}".format(new_file, e))
+                    file_array = os.path.basename(new_file).split('-')
+                    try:
+                        cameras[file_array[2]].update_status(file_array[1])
+                    except TypeError as e:
+                        current_files = list(set(current_files) - set([new_file]))
+                        print("Error {}: {}".format(new_file, e))
 
                 for camera in self.data.get('cameras'):
                     qa_tests.append(
