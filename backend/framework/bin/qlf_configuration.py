@@ -21,6 +21,11 @@ class QLFConfiguration:
 
     def get_default_configuration(self):
         configuration = dict(
+            base_exposures_path=self.cfg.get("namespace", "base_exposures_path"),
+            min_interval=self.cfg.get("main", "min_interval"),
+            max_interval=self.cfg.get("main", "max_interval"),
+            allowed_delay=self.cfg.get("main", "allowed_delay"),
+            max_exposures=self.cfg.get("main", "max_exposures"),
             logfile=self.cfg.get("main", "logfile"),
             loglevel=self.cfg.get("main", "loglevel"),
             logpipeline=self.cfg.get("main", "logpipeline"),

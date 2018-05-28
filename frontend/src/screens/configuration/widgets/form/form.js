@@ -11,6 +11,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import _ from 'lodash';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
 
 const styles = {
   container: {
@@ -40,16 +41,34 @@ export default class Form extends React.Component {
     input: '',
     output: '',
     exposures: '',
-    logfile: '',
-    logpipeline: '',
-    loglevel: '',
     qlconfig: '',
     spectrographs: [],
     loading: false,
+    minInterval: '',
+    maxInterval: '',
+    maxExposures: '',
+    allowedDelay: '',
+    baseExposures: '',
   };
 
-  updateNight = night => {
-    this.setState({ night });
+  updateMinInterval = minInterval => {
+    this.setState({ minInterval });
+  };
+
+  updateMaxInterval = maxInterval => {
+    this.setState({ maxInterval });
+  };
+
+  updateMaxExposures = maxExposures => {
+    this.setState({ maxExposures });
+  };
+
+  updateAllowedDelay = allowedDelay => {
+    this.setState({ allowedDelay });
+  };
+
+  updateBaseExposures = baseExposures => {
+    this.setState({ baseExposures });
   };
 
   updateExposures = exposures => {
@@ -58,20 +77,32 @@ export default class Form extends React.Component {
 
   updateArm = arm => {
     if (this.state.arms.includes(arm)) {
-      this.setState({ arms: this.state.arms.filter(a => a !== arm) });
-    } else {
-      this.setState({ arms: this.state.arms.concat(arm) });
-    }
-  };
-
-  updateSpectrograph = spectrograph => {
-    if (this.state.spectrographs.includes(spectrograph)) {
       this.setState({
-        spectrographs: this.state.spectrographs.filter(a => a !== spectrograph),
+        arms: this.state.arms.filter(a => a !== arm),
+        spectrographs: this.state.spectrographs.filter(
+          spec => !spec.includes(arm)
+        ),
       });
     } else {
       this.setState({
-        spectrographs: this.state.spectrographs.concat(spectrograph),
+        arms: this.state.arms.concat(arm),
+        spectrographs: this.state.spectrographs
+          .filter(spec => !spec.includes(arm))
+          .concat(_.range(0, 10).map(spec => `${arm}${spec}`)),
+      });
+    }
+  };
+
+  updateSpectrograph = (spectrograph, arm) => {
+    if (this.state.spectrographs.includes(`${arm}${spectrograph}`)) {
+      this.setState({
+        spectrographs: this.state.spectrographs.filter(
+          spec => spec !== `${arm}${spectrograph}`
+        ),
+      });
+    } else {
+      this.setState({
+        spectrographs: this.state.spectrographs.concat(`${arm}${spectrograph}`),
       });
     }
   };
@@ -103,28 +134,37 @@ export default class Form extends React.Component {
   updateConfiguration = configuration => {
     if (configuration && configuration.results) {
       const {
-        night,
+        allowed_delay,
         arms,
         desi_spectro_data,
         desi_spectro_redux,
         exposures,
-        logfile,
-        logpipeline,
-        loglevel,
+        min_interval,
+        max_interval,
+        max_exposures,
         qlconfig,
         spectrographs,
+        base_exposures_path,
       } = configuration.results;
+      let flatSpectrographs = [];
+      if (spectrographs && arms)
+        flatSpectrographs = _.flatten(
+          spectrographs
+            .split(',')
+            .map(spec => arms.split(',').map(arm => `${arm}${spec}`))
+        );
       this.setState({
-        night: night,
         arms: arms.split(','),
         input: desi_spectro_data,
         output: desi_spectro_redux,
         exposures: exposures,
-        logfile: logfile,
-        logpipeline: logpipeline,
-        loglevel: loglevel,
         qlconfig: qlconfig,
-        spectrographs: spectrographs.split(','),
+        spectrographs: flatSpectrographs,
+        minInterval: min_interval,
+        maxInterval: max_interval,
+        maxExposures: max_exposures,
+        allowedDelay: allowed_delay,
+        baseExposures: base_exposures_path,
       });
     }
   };
@@ -148,78 +188,114 @@ export default class Form extends React.Component {
       <div style={styles.container}>
         {this.state.loading ? <CircularProgress size={50} /> : null}
         <Typography style={styles.title} variant="headline" component="h2">
-          Data
+          Exposure Generator
         </Typography>
         <TextField
-          id="full-width"
-          label="Night"
+          label="Min Interval"
           InputLabelProps={{
             shrink: true,
           }}
-          helperText="Which night to process? we do not support a list of nights yet."
+          helperText="Minimum interval for exposure generation (minutes)"
           fullWidth
           margin="normal"
-          value={this.state.night}
-          onChange={evt => this.updateNight(evt.value)}
+          value={this.state.minInterval}
+          onChange={evt => this.updateMinInterval(evt.value)}
         />
         <TextField
-          id="full-width"
-          label="Exposures"
+          label="Max Interval"
           InputLabelProps={{
             shrink: true,
           }}
-          helperText="Exposure ids to be processed"
+          helperText="Maximum interval for exposure generation (minutes)"
           fullWidth
           margin="normal"
-          value={this.state.exposures}
-          onChange={evt => this.updateExposures(evt.value)}
+          value={this.state.maxInterval}
+          onChange={evt => this.updateMaxInterval(evt.value)}
         />
+        <TextField
+          label="Allowed Delay"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          helperText="Delay for the next available exposure (seconds)"
+          fullWidth
+          margin="normal"
+          value={this.state.allowedDelay}
+          onChange={evt => this.updateAllowedDelay(evt.value)}
+        />
+        <TextField
+          label="Max Exposures"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          helperText="Maximum number exposures generated per run"
+          fullWidth
+          margin="normal"
+          value={this.state.maxExposures}
+          onChange={evt => this.updateMaxExposures(evt.value)}
+        />
+        <Typography style={styles.title} variant="headline" component="h2">
+          Pipeline
+        </Typography>
         <FormControl component="fieldset">
-          <FormLabel style={styles.label}>Arms to process</FormLabel>
-          <FormGroup row>
-            {['b', 'r', 'z'].map(arm => (
-              <FormControlLabel
-                key={arm}
-                control={
-                  <Checkbox
-                    checked={this.state.arms.includes(arm)}
-                    onChange={() => this.updateArm(arm)}
-                    value={arm}
-                  />
-                }
-                label={arm}
-              />
-            ))}
-          </FormGroup>
-        </FormControl>
-        <Divider />
-        <FormControl component="fieldset">
-          <FormLabel style={styles.label}>Spectrographs to process</FormLabel>
-          <FormGroup row>
-            {_.range(0, 10).map(id => {
-              const spectrograph = id.toString();
-              return (
-                <FormControlLabel
-                  key={id}
-                  control={
-                    <Checkbox
-                      checked={this.state.spectrographs.includes(spectrograph)}
-                      onChange={() => this.updateSpectrograph(spectrograph)}
-                      value={spectrograph}
+          <Grid container spacing={24}>
+            <Grid item>
+              <FormLabel style={styles.label}>Arms to process</FormLabel>
+              <FormGroup column="true">
+                {['b', 'r', 'z'].map(arm => (
+                  <FormGroup key={arm} row>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={this.state.arms.includes(arm)}
+                          onChange={() => this.updateArm(arm)}
+                          value={arm}
+                        />
+                      }
+                      label={arm}
                     />
-                  }
-                  label={id}
-                />
-              );
-            })}
-          </FormGroup>
+                  </FormGroup>
+                ))}
+              </FormGroup>
+            </Grid>
+            <Grid item xs>
+              <FormLabel style={styles.label}>
+                Spectrographs to process
+              </FormLabel>
+              <FormGroup column="true">
+                {['b', 'r', 'z'].map(arm => (
+                  <FormGroup key={arm} row>
+                    {_.range(0, 10).map(id => {
+                      const spectrograph = id.toString();
+                      return (
+                        <FormControlLabel
+                          key={id}
+                          control={
+                            <Checkbox
+                              checked={this.state.spectrographs.includes(
+                                `${arm}${spectrograph}`
+                              )}
+                              onChange={() =>
+                                this.updateSpectrograph(spectrograph, arm)
+                              }
+                              value={spectrograph}
+                            />
+                          }
+                          label={id}
+                        />
+                      );
+                    })}
+                  </FormGroup>
+                ))}
+              </FormGroup>
+            </Grid>
+          </Grid>
         </FormControl>
         <Divider />
         <Typography style={styles.title} variant="headline" component="h2">
           Input/Output
         </Typography>
         <TextField
-          id="full-width"
           label="Input Directory"
           InputLabelProps={{
             shrink: true,
@@ -231,7 +307,6 @@ export default class Form extends React.Component {
           onChange={evt => this.updateInput(evt.value)}
         />
         <TextField
-          id="full-width"
           label="Output Directory"
           InputLabelProps={{
             shrink: true,
@@ -242,48 +317,18 @@ export default class Form extends React.Component {
           value={this.state.output}
           onChange={evt => this.updateOutput(evt.value)}
         />
-        <Divider />
-        <Typography style={styles.title} variant="headline" component="h2">
-          Log
-        </Typography>
         <TextField
-          id="full-width"
-          label="Log Level"
+          label="Base Exposures"
           InputLabelProps={{
             shrink: true,
           }}
-          helperText="Log level, e.g. DEBUG, INFO, WARNING or ERROR"
+          helperText="Base exposures used by Exposure Generator"
           fullWidth
           margin="normal"
-          value={this.state.loglevel}
-          onChange={evt => this.updateLoglevel(evt.value)}
+          value={this.state.baseExposures}
+          onChange={evt => this.updateBaseExposures(evt.value)}
         />
         <TextField
-          id="full-width"
-          label="Log File"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Log file name, e.g. full/path/to/qlf.log this is the main place for following the progress of the data reduction"
-          fullWidth
-          margin="normal"
-          value={this.state.logfile}
-          onChange={evt => this.updateLogfile(evt.value)}
-        />
-        <TextField
-          id="full-width"
-          label="Log Pipeline"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Log Pipeline name, e.g. full/path/to/pipeline.log this is the main place for following ICS"
-          fullWidth
-          margin="normal"
-          value={this.state.logpipeline}
-          onChange={evt => this.updateLogpipeline(evt.value)}
-        />
-        <TextField
-          id="full-width"
           label="Configuration file for the quick look pipeline"
           InputLabelProps={{
             shrink: true,

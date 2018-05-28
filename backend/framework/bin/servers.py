@@ -108,14 +108,19 @@ class Monitoring(object):
         current = configuration.get_current_configuration()
         return current.configuration
 
+    def get_default_configuration(self):
+        configuration = QLFConfiguration()
+        default = configuration.get_default_configuration()
+        return default
+
     def get_qlconfig(self):
         try:
-            config = self.get_current_configuration()
-            file = config['qlconfig']
-            return file.read()
+            config = self.get_default_configuration()
+            with open(config['qlconfig']) as f:
+                return f.read()
         except Exception as err:
             logger.info(err)
-            return 'Error reading qlconfig'
+            return 'Error reading qlconfig: {}'.format(err)
 
 
 @Pyro4.expose

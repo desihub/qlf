@@ -74,7 +74,7 @@ export default class QlfApi {
   static async getCurrentConfiguration() {
     try {
       const configuration = await fetch(
-        `${apiUrl}dashboard/api/current_configuration/?format=json`,
+        `${apiUrl}dashboard/api/default_configuration/?format=json`,
         {
           method: 'GET',
           headers: headers,
