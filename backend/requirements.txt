@@ -26,4 +26,3 @@ requests==2.13.0
 sphinx==1.5.4
 flake8==3.3.0
 astropy==2.0
-parsl==0.5.1

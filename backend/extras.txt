@@ -20,3 +20,4 @@ pyyaml==3.12
 psutil
 psycopg2-binary
 django-postgrespool
+parsl==0.5.1
