@@ -1,5 +1,8 @@
 from django.shortcuts import render
-from rest_framework import authentication, permissions, viewsets, filters, status, views
+from rest_framework import (
+    authentication, permissions, viewsets, filters,
+    status, views
+)
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
@@ -12,7 +15,7 @@ from .serializers import (
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
-    ExposureFlavorSerializer
+    ExposureFlavorSerializer, CurrentProcessJobsSerializer
 )
 
 from datetime import datetime, timedelta
@@ -34,8 +37,6 @@ from django.contrib import messages
 import logging
 
 qlf = get_exposure_monitoring()
-
-# qlf_manual = get_processing_manual()
 
 logger = logging.getLogger(__name__)
 
@@ -137,7 +138,7 @@ class LastProcessViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessJobsSerializer
 
 
-class CurrentProcessViewSet(viewsets.ModelViewSet):
+class CurrentProcessViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint listing current process"""
 
     def get_queryset(self):
@@ -153,7 +154,7 @@ class CurrentProcessViewSet(viewsets.ModelViewSet):
 
         return Process.objects.filter(id=process_id)
 
-    serializer_class = ProcessJobsSerializer
+    serializer_class = CurrentProcessJobsSerializer
 
 
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
@@ -168,6 +169,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         'exposure__night',
         'exposure__exptime',
         'exposure__flavor',
+        'exposure__program',
         'exposure__dateobs',
         'exposure__airmass',
         'exposure__teldec')
@@ -180,6 +182,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
         'exposure__night',
         'exposure__exptime',
         'exposure__flavor',
+        'exposure__program',
         'exposure__dateobs',
         'exposure__airmass',
         'exposure__teldec')
@@ -505,15 +508,6 @@ def reset(request):
 
     qlf.reset()
     return HttpResponseRedirect('dashboard/monitor')
-
-
-def qa_tests(request):
-    process_id = request.GET.get('process_id')
-    if process_id is not None:
-        qa_tests = qlf.qa_tests(process_id)
-        return JsonResponse({'status': qa_tests})
-    else:
-        return JsonResponse({'Error': 'Missing process_id'})
 
 
 def daemon_status(request):

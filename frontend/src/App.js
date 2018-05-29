@@ -11,6 +11,7 @@ import logo from './assets/DESILogo.png';
 import OnlineContainer from './containers/online/online-container';
 import OfflineContainer from './containers/offline/offline-container';
 import Icon from '@material-ui/core/Icon';
+import Notification from './components/notification/notification';
 
 const theme = {
   spacing: {
@@ -158,6 +159,9 @@ class App extends React.Component {
             DESI Quick Look {this.renderRouteName()}
           </span>
           <div style={{ display: 'flex' }}>
+            {history.location.pathname === '/monitor-realtime' ? (
+              <Notification />
+            ) : null}
             <Icon
               onClick={() => window.open('/', 'home', 'width=950, height=650')}
               style={styles.homeIcon}
@@ -224,9 +228,7 @@ class App extends React.Component {
       <div style={styles.bottom}>
         <span>© Copyright 2018, LIneA/DESI</span>
         <span>
-          {process.env.REACT_APP_VERSION
-            ? process.env.REACT_APP_VERSION.substring(0, 7)
-            : ''}
+          {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
         </span>
       </div>
     );

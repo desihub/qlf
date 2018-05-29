@@ -38,6 +38,7 @@ services:
       - DB_NAME=db
       - REDIS_NAME=redis
       - BOKEH_TEST=false
+      - UPDATE_INTERVAL=3
     volumes:
       - .:/app
     working_dir: /app/
