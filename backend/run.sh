@@ -15,6 +15,7 @@ for package in desispec desiutil desimodel; do
 done
 
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
+export DESIMODEL=$QLF_ROOT/desimodel/0.9.4
 
 python -Wi framework/qlf/manage.py migrate
 # echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
