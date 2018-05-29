@@ -141,14 +141,18 @@ for j in qlf_fiberid:
 xsigma_hover = HoverTool(tooltips=xsigma_tooltip)
 wsigma_hover = HoverTool(tooltips=wsigma_tooltip)
 
-xsigma = xwsigma['XSIGMA']
-wsigma = xwsigma['WSIGMA']
+#xsigma = xwsigma['XSIGMA']
+#wsigma = xwsigma['WSIGMA']
+xsigma = xwsigma['XWSIGMA'][0]
+wsigma = xwsigma['XWSIGMA'][1]
+
+
 
 source = ColumnDataSource(data={
     'x1'     : xwsigma['RA'][c1:c2],
     'y1'     : xwsigma['DEC'][c1:c2],
-    'xsigma' : xwsigma['XSIGMA'],
-    'wsigma' : xwsigma['WSIGMA'],
+    'xsigma' : xsigma,
+    'wsigma' : wsigma,
     'QLF_FIBERID': qlf_fiberid,
     'OBJ_TYPE': obj_type
 })
@@ -289,7 +293,7 @@ hist_tooltip_x = """
 """
 
 
-hist, edges = np.histogram(xwsigma['XSIGMA'],'auto')# auto: Maximum of the ‘sturges’ and ‘fd’ estimators.
+hist, edges = np.histogram(xsigma,'auto')# auto: Maximum of the ‘sturges’ and ‘fd’ estimators.
 
 source_hist = ColumnDataSource(data={
     'hist': hist,
@@ -332,7 +336,7 @@ hist_tooltip_w = """
 """
 
 
-hist, edges = np.histogram(xwsigma['WSIGMA'], 'auto') # Freedman Diaconis Estimator
+hist, edges = np.histogram(wsigma, 'auto') # Freedman Diaconis Estimator
 
 source_hist = ColumnDataSource(data={
     'hist': hist,
