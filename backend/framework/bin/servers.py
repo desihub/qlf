@@ -145,11 +145,17 @@ class GeneratorControl(object):
             logger.debug("Exposure generator is not initialized.")
 
     def last_exposure(self):
-        if self.generator and self.generator.is_alive():
-            return dict(self.generator.get_last_exposure())
+        if self.generator:
+            try:
+                last = dict(self.generator.get_last_exposure())
+            except Exception as err:
+                logger.error(err)
+                last = dict()
         else:
             logger.debug("Exposure generator is not initialized.")
-            return dict()
+            last = dict()
+
+        return last
 
     # def get_exposure_summary(self, date_range=None, expid_range=None,
     #  require_data_written=True):

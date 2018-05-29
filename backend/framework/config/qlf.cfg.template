@@ -1,11 +1,11 @@
 [main]
-# Always True if you are running QLF in development
-# mode
+# Always True if you are running QLF in development mode
 emulate_dos=True
 min_interval=3
 max_interval=15
 allowed_delay=20
-max_exposures=10
+max_exposures=5
+max_nights=5
 
 # Log level, e.g. DEBUG, INFO, WARNING or ERROR
 loglevel=INFO
