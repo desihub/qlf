@@ -99,6 +99,10 @@ const styles = {
     paddingRight: '8px',
     cursor: 'pointer',
   },
+  container: {
+    maxHeight: '87.5vh',
+    overflowY: 'scroll',
+  },
 };
 
 class App extends React.Component {
@@ -235,22 +239,27 @@ class App extends React.Component {
   };
 
   render() {
+    const containerStyle = this.state.displayHeaders ? styles.container : null;
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
             <div>
               {this.renderTopBar()}
-              {['/', '/about', '/help', '/tutorials', '/contact'].map(path => (
-                <Route
-                  exact
-                  key={path}
-                  path={path}
-                  render={() => <Landing updateUrl={this.updateUrl} />}
-                />
-              ))}
-              <OnlineContainer />
-              <OfflineContainer toggleHeader={this.toggleHeader} />
+              <div style={containerStyle}>
+                {['/', '/about', '/help', '/tutorials', '/contact'].map(
+                  path => (
+                    <Route
+                      exact
+                      key={path}
+                      path={path}
+                      render={() => <Landing updateUrl={this.updateUrl} />}
+                    />
+                  )
+                )}
+                <OnlineContainer />
+                <OfflineContainer toggleHeader={this.toggleHeader} />
+              </div>
               {this.renderBottomBar()}
             </div>
           </MuiThemeProvider>
