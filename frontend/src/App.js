@@ -11,6 +11,7 @@ import logo from './assets/DESILogo.png';
 import OnlineContainer from './containers/online/online-container';
 import OfflineContainer from './containers/offline/offline-container';
 import Icon from '@material-ui/core/Icon';
+import Notification from './components/notification/notification';
 
 const theme = {
   spacing: {
@@ -98,6 +99,10 @@ const styles = {
     paddingRight: '8px',
     cursor: 'pointer',
   },
+  container: {
+    maxHeight: '87.5vh',
+    overflowY: 'scroll',
+  },
 };
 
 class App extends React.Component {
@@ -158,6 +163,9 @@ class App extends React.Component {
             DESI Quick Look {this.renderRouteName()}
           </span>
           <div style={{ display: 'flex' }}>
+            {history.location.pathname === '/monitor-realtime' ? (
+              <Notification />
+            ) : null}
             <Icon
               onClick={() => window.open('/', 'home', 'width=950, height=650')}
               style={styles.homeIcon}
@@ -231,22 +239,27 @@ class App extends React.Component {
   };
 
   render() {
+    const containerStyle = this.state.displayHeaders ? styles.container : null;
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
             <div>
               {this.renderTopBar()}
-              {['/', '/about', '/help', '/tutorials', '/contact'].map(path => (
-                <Route
-                  exact
-                  key={path}
-                  path={path}
-                  render={() => <Landing updateUrl={this.updateUrl} />}
-                />
-              ))}
-              <OnlineContainer />
-              <OfflineContainer toggleHeader={this.toggleHeader} />
+              <div style={containerStyle}>
+                {['/', '/about', '/help', '/tutorials', '/contact'].map(
+                  path => (
+                    <Route
+                      exact
+                      key={path}
+                      path={path}
+                      render={() => <Landing updateUrl={this.updateUrl} />}
+                    />
+                  )
+                )}
+                <OnlineContainer />
+                <OfflineContainer toggleHeader={this.toggleHeader} />
+              </div>
               {this.renderBottomBar()}
             </div>
           </MuiThemeProvider>
