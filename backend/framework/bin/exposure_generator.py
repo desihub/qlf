@@ -11,6 +11,7 @@ import astropy.io.fits
 
 from log import get_logger
 from util import get_config
+from qlf_models import QLFModels
 
 cfg = get_config()
 qlf_root = cfg.get("environment", "qlf_root")
@@ -43,18 +44,19 @@ class ExposureGenerator(Process):
         self.__print_vars()
 
     def run(self):
-        last_registered = self.__get_last_registered()
-        last_date_obs_str = last_registered.get(
-            'date_obs',
-            self.__datetime_to_str(datetime.datetime.utcnow())
-        )
-        last_exposure_id = last_registered.get('exposure_id', 1)
-        last_date_obs = self.__str_to_datetime(last_date_obs_str)
+        last_registered = QLFModels().get_last_exposure()
+
+        if last_registered:
+            last_date_obs = last_registered.dateobs
+            last_exposure_id = last_registered.pk
+        else:
+            last_date_obs = datetime.datetime.utcnow()
+            last_exposure_id = 2
 
         for x in self.__xrange(1, max_nights):
             new_date_obs = last_date_obs + datetime.timedelta(days=x)
             night = self.__format_night(new_date_obs)
-            log.info("Night {} starting\n".format(night))
+            log.info("Night {} starting".format(night))
 
             for y in self.__xrange(1, max_exposures_per_night):
                 exposure_id = last_exposure_id + y
@@ -69,39 +71,15 @@ class ExposureGenerator(Process):
 
                 self.__last_exposure.update(last_exposure)
 
-                self.__set_last_registered(
-                    last_exposure['dateobs'],
-                    last_exposure['exposure_id']
-                )
-
                 if y == max_exposures_per_night and x == max_nights:
                     continue
 
                 minutes = random.randint(min_interval, max_interval)
-                log.info("--> Next generation in %s minutes...\n" % minutes)
+                log.info("Next generation in {} minutes...".format(minutes))
 
                 time.sleep(minutes * 60)
 
             last_exposure_id += max_exposures_per_night
-
-    def __get_last_registered(self):
-        last_file = os.path.join(spectro_data, 'last.json')
-        last = dict()
-
-        if os.path.isfile(last_file):
-            with open(last_file) as last_json:
-                last.update(json.load(last_json))
-
-        return last
-
-    def __set_last_registered(self, date_obs, exposure_id):
-        last_file = os.path.join(spectro_data, 'last.json')
-
-        with open(last_file, 'w') as last_json:
-            json.dump(
-                {'date_obs': date_obs, 'exposure_id': exposure_id},
-                last_json
-            )
 
     def __get_random_base_exposure(self):
         """ """
@@ -125,7 +103,7 @@ class ExposureGenerator(Process):
 
         self.__base_exposure = self.__get_random_base_exposure()
 
-        log.info("--> Base exposure: {}".format(self.__base_exposure))
+        log.info("Base exposure: {}".format(self.__base_exposure))
 
         exposure_zfill = str(exposure_id).zfill(8)
 
@@ -254,7 +232,7 @@ class ExposureGenerator(Process):
         log.info("max_exposures:     {}".format(max_exposures_per_night))
         log.info("spectro_data:      {}".format(spectro_data))
         log.info("spectro_redux:     {}".format(spectro_redux))
-        log.info("base_exposures:    {}\n\n".format(base_exposures_path))
+        log.info("base_exposures:    {}".format(base_exposures_path))
 
 
 if __name__ == "__main__":
