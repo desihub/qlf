@@ -12,6 +12,8 @@ from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
 import time
 from util import get_config
+import matplotlib
+matplotlib.use('Agg')  
 
 cfg = get_config()
 
@@ -165,6 +167,8 @@ class QLFProcess(object):
             '--specprod_dir', desi_spectro_redux
         ]
 
+        print(" ".join(str(x) for x in cmd))
+
         # TODO: Add --mergeQA in cmd
 
         logname = io.open(os.path.join(
@@ -183,7 +187,7 @@ class QLFProcess(object):
                 line = process.stdout.readline()
                 if not line:
                     break
-                self.resume_log(line, camera.get('name'), lock)
+                # self.resume_log(line, camera.get('name'), lock)
                 logname.write(line)
                 logname.flush()
 
