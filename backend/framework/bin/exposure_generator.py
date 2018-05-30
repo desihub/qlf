@@ -1,17 +1,17 @@
 import datetime
 import os
+import json
 import random
 import re
 import shutil
 import time
-from glob import glob
 from multiprocessing import Manager, Process
 
 import astropy.io.fits
 
 from log import get_logger
-from qlf_models import QLFModels
 from util import get_config
+from qlf_models import QLFModels
 
 cfg = get_config()
 qlf_root = cfg.get("environment", "qlf_root")
@@ -21,8 +21,8 @@ log = get_logger(
     os.path.join(qlf_root, "logs", "exposure_generator.log")
 )
 
-spectro_path = os.path.normpath(cfg.get("namespace", "desi_spectro_data"))
-spectro_redux = os.path.normpath(cfg.get("namespace", "desi_spectro_redux"))
+spectro_data = cfg.get("namespace", "desi_spectro_data")
+spectro_redux = cfg.get("namespace", "desi_spectro_redux")
 base_exposures_path = cfg.get("namespace", "base_exposures_path")
 
 # TODO: verify desispec.io.findfile function to get the files correctly
@@ -31,7 +31,8 @@ psf_path = os.path.join(base_exposures_path, "psf")
 
 min_interval = cfg.getint("main", "min_interval")
 max_interval = cfg.getint("main", "max_interval")
-max_exposures = cfg.getint("main", "max_exposures")
+max_exposures_per_night = cfg.getint("main", "max_exposures")
+max_nights = cfg.getint("main", "max_nights")
 
 
 class ExposureGenerator(Process):
@@ -39,35 +40,48 @@ class ExposureGenerator(Process):
     def __init__(self):
         super().__init__()
         self.__last_exposure = Manager().dict()
-        self.__base_exposure = None
-        self.__generation_count = 0
+        self.__base_exposure = 0
+        self.__print_vars()
 
     def run(self):
-        while self.__generation_count < max_exposures:
-            log.info("Starting generation of new exposure...")
+        last_registered = QLFModels().get_last_exposure()
 
-            last_exposure = self.generate_exposure()
-            log.info(
-                "Exposure id '%s' generated at '%s' as night '%s'."
-                % (last_exposure['exposure_id'],
-                   last_exposure['dateobs'], last_exposure['night'])
-            )
+        if last_registered:
+            last_date_obs = last_registered.dateobs
+            last_exposure_id = last_registered.pk
+        else:
+            last_date_obs = datetime.datetime.utcnow()
+            last_exposure_id = 2
 
-            self.__last_exposure.update(last_exposure)
-            self.__generation_count += 1
+        for x in self.__xrange(1, max_nights):
+            new_date_obs = last_date_obs + datetime.timedelta(days=x)
+            night = self.__format_night(new_date_obs)
+            log.info("Night {} starting".format(night))
 
-            if self.__generation_count == max_exposures:
-                continue
+            for y in self.__xrange(1, max_exposures_per_night):
+                exposure_id = last_exposure_id + y
+                dateobs = self.__datetime_to_str(new_date_obs)
 
-            minutes = random.randint(min_interval, max_interval)
-            log.info("Next generation in %s minutes..." % minutes)
+                log.info("-> Exposure ID {} generating".format(
+                    exposure_id
+                ))
 
-            time.sleep(minutes * 60)
+                last_exposure = self.generate_exposure(
+                    exposure_id, dateobs, night)
 
-        log.info("The generation of {} exposures has ended.".format(
-            max_exposures))
+                self.__last_exposure.update(last_exposure)
 
-    def __get_random_exposure(self):
+                if y == max_exposures_per_night and x == max_nights:
+                    continue
+
+                minutes = random.randint(min_interval, max_interval)
+                log.info("Next generation in {} minutes...".format(minutes))
+
+                time.sleep(minutes * 60)
+
+            last_exposure_id += max_exposures_per_night
+
+    def __get_random_base_exposure(self):
         """ """
 
         if not os.path.exists(base_exposures_path):
@@ -85,26 +99,21 @@ class ExposureGenerator(Process):
     def get_last_exposure(self):
         return Manager().dict(self.__last_exposure)
 
-    def generate_exposure(self):
+    def generate_exposure(self, exposure_id, date_obs, night):
 
-        self.__base_exposure = self.__get_random_exposure()
+        self.__base_exposure = self.__get_random_base_exposure()
 
         log.info("Base exposure: {}".format(self.__base_exposure))
 
-        gen_time = datetime.datetime.utcnow()
-
-        exposure_id = self.__gen_new_expid()
         exposure_zfill = str(exposure_id).zfill(8)
 
-        self.__gen_desi_file(exposure_zfill, gen_time)
-        self.__gen_fibermap_file(exposure_zfill, gen_time)
-        self.__gen_fiberflat_folder(gen_time)
-        self.__gen_psfboot_folder(gen_time)
+        self.__gen_desi_file(exposure_zfill, night, date_obs)
+        self.__gen_fibermap_file(exposure_zfill, night, date_obs)
+        self.__gen_fiberflat_folder(night)
+        self.__gen_psfboot_folder(night)
 
-        night = self.__night_to_generate(gen_time)
         expo_name = "desi-{}.fits.fz".format(exposure_zfill)
-
-        file_path = os.path.join(spectro_path, night, expo_name)
+        file_path = os.path.join(spectro_data, night, expo_name)
 
         try:
             hdr = astropy.io.fits.getheader(file_path)
@@ -114,14 +123,14 @@ class ExposureGenerator(Process):
 
         return {
             "exposure_id": exposure_id,
-            "dateobs": self.__date_obs(gen_time),
+            "dateobs": date_obs,
             "night": night,
             "zfill": exposure_zfill,
-            "desi_spectro_data": spectro_path,
+            "desi_spectro_data": spectro_data,
             "desi_spectro_redux": spectro_redux,
-            'telra': hdr.get('telra', None),
-            'teldec': hdr.get('teldec', None),
-            'tile': hdr.get('tileid', None),
+            'telra': hdr.get('telra'),
+            'teldec': hdr.get('teldec'),
+            'tile': hdr.get('tileid'),
             'flavor': hdr.get('flavor', None),
             'program': hdr.get('program', None),
             'airmass': hdr.get('airmass', None),
@@ -129,103 +138,63 @@ class ExposureGenerator(Process):
             'time': datetime.datetime.utcnow()
         }
 
-    def __gen_new_expid(self):
-        last_id = self.__get_database_last_expid()
-
-        return int(last_id) + 1
-
-    def __get_last_expid(self):
-        # spectro 'desi-X.fits.fz' is mandatory,
-        # so should be fine to use it to detect the last exp_id
-
-        last_night = self.__get_last_night()
-
-        # If you do not have the last night, the generation of exposure
-        # begins with id 1 + 1
-        if not last_night:
-            return 1
-
-        listdir = glob(os.path.join(spectro_path, last_night,
-                                    'desi-*.fits.fz'))
-        last_exp_file = sorted([os.path.basename(x) for x in listdir])[-1]
-
-        return re.findall(r"^desi-(\d+).fits.fz$", last_exp_file)[0]
-
-    def __get_database_last_expid(self):
-        last_expid = QLFModels().get_last_exposure()
-        return last_expid.pk if last_expid else 5
-
-    def __get_last_night(self):
-        listdir = os.listdir(spectro_path)
-
-        if not listdir:
-            return None
-
-        regex = re.compile(r"^\d+$")
-        regex_match = list(filter(regex.match, listdir))
-
-        return sorted(regex_match)[-1]
-
-    def __gen_desi_file(self, exp_id, gen_time):
-        src = os.path.join(base_exposures_path)
-
-        dest = os.path.join(
-            spectro_path, self.__night_to_generate(gen_time))
+    def __gen_desi_file(self, exposure_id, night, date_obs):
+        dest = os.path.join(spectro_data, night)
         self.__ensure_dir(dest)
         src_file = os.path.join(
-            src, ("desi-{}.fits.fz".format(self.__base_exposure)))
-        dest_file = os.path.join(dest, ("desi-{}.fits.fz".format(exp_id)))
+            base_exposures_path,
+            "desi-{}.fits.fz".format(self.__base_exposure)
+        )
+        dest_file = os.path.join(dest, "desi-{}.fits.fz".format(exposure_id))
         shutil.copy(src_file, dest_file)
-        self.__update_fitsfile_metadata(dest_file, exp_id, gen_time)
+        self.__update_fitsfile_metadata(
+            dest_file, exposure_id, night, date_obs)
 
-    def __gen_fibermap_file(self, exp_id, gen_time):
-        src = os.path.join(base_exposures_path)
-        dest = os.path.join(
-            spectro_path, self.__night_to_generate(gen_time))
+    def __gen_fibermap_file(self, exposure_id, night, date_obs):
+        dest = os.path.join(spectro_data, night)
         self.__ensure_dir(dest)
         src_file = os.path.join(
-            src, ("fibermap-{}.fits".format(self.__base_exposure)))
-        dest_file = os.path.join(dest, ("fibermap-{}.fits".format(exp_id)))
+            base_exposures_path,
+            "fibermap-{}.fits".format(self.__base_exposure)
+        )
+        dest_file = os.path.join(dest, "fibermap-{}.fits".format(exposure_id))
         shutil.copy(src_file, dest_file)
-        self.__update_fitsfile_metadata(dest_file, exp_id, gen_time)
+        self.__update_fitsfile_metadata(
+            dest_file, exposure_id, night, date_obs)
 
-    def __update_fitsfile_metadata(self, exp_file, exp_id, gen_time):
+    def __update_fitsfile_metadata(self, exp_file, exposure_id,
+                                   night, date_obs):
         hdulist = astropy.io.fits.open(exp_file, mode="update")
+
         for hduid in range(0, len(hdulist)):
             if "EXPID" in hdulist[hduid].header:
-                hdulist[hduid].header["EXPID"] = (
-                    int(exp_id))
+                hdulist[hduid].header["EXPID"] = int(exposure_id)
             if "DATE-OBS" in hdulist[hduid].header:
-                hdulist[hduid].header["DATE-OBS"] = (
-                    self.__date_obs(gen_time))
+                hdulist[hduid].header["DATE-OBS"] = date_obs
             if "NIGHT" in hdulist[hduid].header:
-                hdulist[hduid].header["NIGHT"] = (
-                    self.__night_to_generate(gen_time))
+                hdulist[hduid].header["NIGHT"] = night
             if "ARCNIGHT" in hdulist[hduid].header:
-                hdulist[hduid].header["ARCNIGHT"] = (
-                    self.__night_to_generate(gen_time))
+                hdulist[hduid].header["ARCNIGHT"] = night
             if "FLANIGHT" in hdulist[hduid].header:
-                hdulist[hduid].header["FLANIGHT"] = (
-                    self.__night_to_generate(gen_time))
+                hdulist[hduid].header["FLANIGHT"] = night
+
         hdulist.flush()
         hdulist.close()
 
-    def __gen_fiberflat_folder(self, gen_time):
+    def __gen_fiberflat_folder(self, night):
         """ """
 
-        dest = os.path.join(spectro_redux, "exposures",
-                            self.__night_to_generate(gen_time))
+        dest = os.path.join(spectro_redux, "exposures", night)
         self.__ensure_dir(dest)
         dest = os.path.join(dest, "00000001")
 
         if not os.path.islink(dest):
             os.symlink(fiberflat_path, dest)
 
-    def __gen_psfboot_folder(self, gen_time):
+    def __gen_psfboot_folder(self, night):
         """ """
 
-        dest = os.path.join(spectro_redux, "exposures",
-                            self.__night_to_generate(gen_time))
+        dest = os.path.join(spectro_redux, "exposures", night)
         self.__ensure_dir(dest)
         dest = os.path.join(dest, "00000000")
 
@@ -233,12 +202,16 @@ class ExposureGenerator(Process):
             os.symlink(psf_path, dest)
 
     @staticmethod
-    def __night_to_generate(gen_time):
-        return (gen_time - datetime.timedelta(hours=12)).strftime("%Y%m%d")
+    def __datetime_to_str(date_obj):
+        return date_obj.strftime("%Y-%m-%dT%H:%M:%S")
 
     @staticmethod
-    def __date_obs(gen_time):
-        return gen_time.strftime("%Y-%m-%dT%H:%M:%S")
+    def __str_to_datetime(date_str):
+        return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+
+    @staticmethod
+    def __format_night(new_date):
+        return new_date.strftime("%Y%m%d")
 
     @staticmethod
     def __ensure_dir(path):
@@ -246,15 +219,24 @@ class ExposureGenerator(Process):
             os.makedirs(path)
 
     @staticmethod
+    def __xrange(start, stop, step=1):
+        while start <= stop:
+            yield start
+            start += step
+
+    @staticmethod
     def __print_vars():
         log.info("min_interval:      {}".format(min_interval))
         log.info("max_interval:      {}".format(max_interval))
-        log.info("spectro_path:      {}".format(spectro_path))
+        log.info("max_nights:        {}".format(max_nights))
+        log.info("max_exposures:     {}".format(max_exposures_per_night))
+        log.info("spectro_data:      {}".format(spectro_data))
+        log.info("spectro_redux:     {}".format(spectro_redux))
+        log.info("base_exposures:    {}".format(base_exposures_path))
 
 
 if __name__ == "__main__":
-    print('Start Exposure Generator...')
-
+    log.info('Start Exposure Generator...')
     generator = ExposureGenerator()
     generator.start()
     generator.join()
