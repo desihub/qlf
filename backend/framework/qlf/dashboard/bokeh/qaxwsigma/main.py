@@ -293,7 +293,7 @@ hist_tooltip_x = """
 """
 
 
-hist, edges = np.histogram(xsigma,'auto')# auto: Maximum of the ‘sturges’ and ‘fd’ estimators.
+hist, edges = np.histogram(xsigma,'sqrt')# auto: Maximum of the ‘sturges’ and ‘fd’ estimators.
 
 source_hist = ColumnDataSource(data={
     'hist': hist,
@@ -336,7 +336,7 @@ hist_tooltip_w = """
 """
 
 
-hist, edges = np.histogram(wsigma, 'auto') # Freedman Diaconis Estimator
+hist, edges = np.histogram(wsigma, 'sqrt')#'auto') # Freedman Diaconis Estimator
 
 source_hist = ColumnDataSource(data={
     'hist': hist,
@@ -368,7 +368,7 @@ from bokeh.models import Spacer
 info_col=Div(text=write_description('xwsigma'), width=2*pw.plot_width)
 pxh = column(px,p_hist_x)
 pwh = column(pw,p_hist_w)
-layoutplot= row([pxh, Spacer(width=80),pwh], responsive=False)#, sizing_mode='scale_width')
+layoutplot= row([pxh, Spacer(width=80),pwh])#, sizing_mode='scale_width')
 layout = column(widgetbox(info_col),layoutplot)
 
 curdoc().add_root(layout)
