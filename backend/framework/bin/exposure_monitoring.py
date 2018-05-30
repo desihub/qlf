@@ -95,7 +95,7 @@ class ExposureMonitoring(Process):
             self.process.start()
             self.running.set()
 
-        #delete_exposures()
+        delete_exposures()
         logger.debug("Bye!")
 
 
