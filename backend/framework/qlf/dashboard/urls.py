@@ -20,6 +20,8 @@ api_router.register(r'distinct_flavors',
 api_router.register(r'processing_history', views.ProcessingHistoryViewSet, 'processing_history')
 api_router.register(r'observing_history', views.ObservingHistoryViewSet, 'observing_history')
 api_router.register(r'qlconfig', views.QlConfigViewSet, 'qlconfig')
+api_router.register(r'ql_calibration',
+                    views.QlCalibrationViewSet, 'ql_calibration')
 api_router.register(r'configuration', views.ConfigurationViewSet)
 api_router.register(r'current_configuration',
                     views.CurrentConfigurationViewSet, 'current_configuration')
