@@ -26,3 +26,11 @@ if [ $1 = "prod" ]; then
   docker-compose -f frontend/docker-compose.yml up -d
 	docker-compose -f backend/docker-compose.yml up -d
 fi
+
+if [ $1 = "bokeh" ]; then
+  docker exec -it $(docker ps -f "name=qlf" --format "{{.Names}}") ./startBokeh.sh
+fi
+
+if [ $1 = "daemon" ]; then
+  docker exec -it $(docker ps -f "name=qlf" --format "{{.Names}}") ./startDaemon.sh
+fi
