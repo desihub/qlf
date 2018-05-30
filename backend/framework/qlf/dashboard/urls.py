@@ -51,6 +51,7 @@ urlpatterns = [
     url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
+    url(r'^dashboard/fits_to_png', views.fits_to_png, name='fits_to_png'),
     url(r'^dashboard/(?P<bokeh_app>\w+)/$', views.embed_bokeh, name='embed-bokeh'),
     url(r'^dashboard/observing_history', views.observing_history, name='observing_history')
 ]
