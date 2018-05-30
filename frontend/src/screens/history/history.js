@@ -19,7 +19,7 @@ const styles = {
   },
   tableBody: {
     overflowY: 'scroll',
-    maxHeight: '60vh',
+    maxHeight: '55vh',
   },
   submit: {
     paddingLeft: '16px',

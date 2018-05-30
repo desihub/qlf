@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^1.0.0-rc.1",
+    "create-react-app": "^1.5.2",
     "dotenv": "^4.0.0",
     "halogenium": "^2.2.3",
     "history": "^4.7.2",
@@ -31,7 +32,8 @@
     "react-websocket": "^1.2.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "serve": "^6.4.8",
+    "serve": "^7.1.1",
+    "util.promisify": "^1.0.0",
     "victory": "^0.24.2"
   },
   "scripts": {
