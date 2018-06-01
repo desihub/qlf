@@ -4,6 +4,7 @@ import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 // import Checkbox from '@material-ui/core/Checkbox';
+import Icon from '@material-ui/core/Icon';
 
 const styles = {
   link: {
@@ -153,6 +154,15 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             {row.datemjd.toFixed(3)}
+          </TableCell>
+        );
+      case 'image':
+        return (
+          <TableCell
+            key={`PROCV${key}`}
+            style={{ ...styles.tableCell, ...lastProcessed }}
+          >
+            <Icon style={styles.notificationsIcon}>image</Icon>
           </TableCell>
         );
       case 'runtime':
