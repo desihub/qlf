@@ -13,6 +13,26 @@ from scalar_metrics import LoadMetrics
 import time
 from util import get_config
 
+# PARSL
+import parsl
+from parsl import *
+local_config = {
+    "sites" : [
+        { "site" : "Threads",
+        "auth" : { "channel" : None },
+        "execution" : {
+            "executor" : "threads",
+            "provider" : None,
+            "maxThreads" : int(os.environ.get('AVAILABLE_THREADS', 2))
+        }
+        }],
+    "globals" : {"lazyErrors" : True}
+}
+
+dfk = DataFlowKernel(config=local_config)
+parsl.set_file_logger('parsl.log')
+# PARSL_END
+
 cfg = get_config()
 
 qlconfig = cfg.get('main', 'qlconfig')
@@ -137,8 +157,11 @@ class QLFProcess(object):
                 resumelog_lock,
             )
 
-            proc = Thread(target=self.start_parallel_job, args=args)
-            proc.start()
+            # proc = Thread(target=self.start_parallel_job, args=args)
+            # proc.start()
+            # procs.append(proc)
+
+            proc = self.start_parallel_job(self, *args)
             procs.append(proc)
 
         self.monitor_generated_qa_files = True
@@ -146,12 +169,14 @@ class QLFProcess(object):
         monitor_qa_files.start()
 
         for proc in procs:
-            proc.join()
+            proc.result()
+            # proc.join()
 
         self.monitor_generated_qa_files = False
 
         self.data['cameras'] = return_cameras
 
+    @App('python', dfk)
     def start_parallel_job(self, data, camera, return_cameras, lock):
         """ Execute QL Pipeline by camera """
 
