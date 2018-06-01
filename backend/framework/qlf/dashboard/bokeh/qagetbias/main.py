@@ -171,7 +171,8 @@ hist_tooltip = """
     </div>
 """
 
-hist, edges  = np.histogram(getbias['MEANBIAS_ROW'], bins='sqrt')
+#hist, edges  = np.histogram(getbias['MEANBIAS_ROW'], bins='sqrt')
+hist, edges  = np.histogram(getbias['BIAS_ROW'], bins='sqrt')
 
 source_hist = ColumnDataSource(data={
     'hist': hist,

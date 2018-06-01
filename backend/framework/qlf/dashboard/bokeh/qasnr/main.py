@@ -44,6 +44,19 @@ except:
     sys.exit('Could not load metrics')
 
 snr = metrics['snr']
+elg_snr  = snr['SNR_MAG_TGT'][2]
+lrg_snr  = snr['SNR_MAG_TGT'][0]
+qso_snr  = snr['SNR_MAG_TGT'][1]
+star_snr = snr['SNR_MAG_TGT'][3]
+
+
+#!f 
+for i in range(4):
+    print(len(snr['SNR_MAG_TGT'][i][0]))
+print("----"*8)
+for i in ['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']:
+    print( i, len(snr[i]))
+
 
 def fit_func(xdata, coeff):
     a, b, c = coeff[0]
@@ -78,36 +91,39 @@ lrg_fit = ColumnDataSource(data=data_fit.copy())
 qso_fit = ColumnDataSource(data=data_fit.copy())
 star_fit = ColumnDataSource(data=data_fit.copy())
 
-elg.data['x'] = snr['ELG_SNR_MAG'][1]
-elg.data['y'] = snr['ELG_SNR_MAG'][0]
-elg.data['logy'] = np.log10(np.array(snr['ELG_SNR_MAG'][0]))
+elg.data['x'] = elg_snr[1] #snr['ELG_SNR_MAG'][1]
+elg.data['y'] = elg_snr[0] #snr['ELG_SNR_MAG'][0]
+elg.data['logy'] = np.log10(np.array(elg_snr[0]))
 elg.data['fiber_id'] = snr['ELG_FIBERID']
-elg.data['ra'] = snr['RA']
-elg.data['dec'] = snr['DEC']
+elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
+elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
 
 
-lrg.data['x'] = snr['LRG_SNR_MAG'][1]
-lrg.data['y'] = snr['LRG_SNR_MAG'][0]
-lrg.data['logy'] = np.log10(np.array(snr['LRG_SNR_MAG'][0]))
+lrg.data['x'] = lrg_snr[1] #snr['LRG_SNR_MAG'][1]
+lrg.data['y'] = lrg_snr[0] #snr['LRG_SNR_MAG'][0]
+lrg.data['logy'] = np.log10(np.array(lrg_snr[0]))
 lrg.data['fiber_id'] = snr['LRG_FIBERID']
-lrg.data['ra'] = snr['RA']
-lrg.data['dec'] = snr['DEC']
+lrg.data['ra'] = [snr['RA'][i] for i in snr['LRG_FIBERID'] ]
+lrg.data['dec'] = [snr['DEC'][i] for i in snr['LRG_FIBERID'] ]
 
-qso.data['x'] = snr['QSO_SNR_MAG'][1]
-qso.data['y'] = snr['QSO_SNR_MAG'][0]
-qso.data['logy'] = np.log10(np.array(snr['QSO_SNR_MAG'][0]))
+qso.data['x'] = qso_snr[1] #snr['QSO_SNR_MAG'][1]
+qso.data['y'] = qso_snr[0] #snr['QSO_SNR_MAG'][0]
+qso.data['logy'] = np.log10(np.array(qso_snr[0]))
 qso.data['fiber_id'] = snr['QSO_FIBERID']
-qso.data['ra'] = snr['RA']
-qso.data['dec'] = snr['DEC']
+qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
+qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
 
-star.data['x'] = snr['STAR_SNR_MAG'][1]
-star.data['y'] = snr['STAR_SNR_MAG'][0]
-star.data['logy'] = np.log10(np.array(snr['STAR_SNR_MAG'][0]))
+star.data['x'] = star_snr[1] #snr['STAR_SNR_MAG'][1]
+star.data['y'] = star_snr[0] #snr['STAR_SNR_MAG'][0]
+star.data['logy'] = np.log10(np.array(star_snr[0]))
 star.data['fiber_id'] = snr['STAR_FIBERID']
-star.data['ra'] = snr['RA']
-star.data['dec'] = snr['DEC']
+star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
+star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
 
-xfit, yfit = fit_func(snr['ELG_SNR_MAG'][1], snr['ELG_FITRESULTS'])
+print("\n\n\n\n\n  {}".format( len(snr['QSO_FIBERID']) ), len(qso_snr[1])  )
+
+'''
+xfit, yfit = fit_func(elg_snr[1], snr['ELG_FITRESULTS'])
 elg_fit.data['x'] = xfit
 elg_fit.data['logy'] = yfit
 elg_fit.data['y'] = 10**(yfit)
@@ -115,7 +131,7 @@ for key in ['fiber_id', 'ra', 'dec']:
     elg_fit.data[key] = ['']*len(yfit)
 #elg_fit.stream(elg_fit.data, 30)
 
-xfit, yfit = fit_func(snr['LRG_SNR_MAG'][1], snr['LRG_FITRESULTS'])
+xfit, yfit = fit_func(lrg_snr[1], snr['LRG_FITRESULTS'])
 lrg_fit.data['x'] = xfit
 lrg_fit.data['logy'] = yfit
 lrg_fit.data['y'] = 10**(yfit)
@@ -123,7 +139,7 @@ for key in ['fiber_id', 'ra', 'dec']:
     lrg_fit.data[key] = ['']*len(yfit)
 #lrg_fit.stream(lrg_fit.data, 30)
 
-xfit, yfit = fit_func(snr['QSO_SNR_MAG'][1], snr['QSO_FITRESULTS'])
+xfit, yfit = fit_func(qso_snr[1], snr['QSO_FITRESULTS'])
 qso_fit.data['x'] = xfit
 qso_fit.data['logy'] = yfit
 qso_fit.data['y'] = 10**(yfit)
@@ -131,14 +147,13 @@ for key in ['fiber_id', 'ra', 'dec']:
     qso_fit.data[key] = ['']*len(yfit)
 #qso_fit.stream(qso_fit.data, 30)
 
-xfit, yfit = fit_func(
-    snr['STAR_SNR_MAG'][1], snr['STAR_FITRESULTS'])
+xfit, yfit = fit_func( star_snr[1], snr['STAR_FITRESULTS'])
 star_fit.data['x'] = xfit
 star_fit.data['logy'] = yfit
 star_fit.data['y'] = 10**(yfit)
 for key in ['fiber_id', 'ra', 'dec']:
     star_fit.data[key] = ['']*len(yfit)
-
+'''
 # here we make the plots
 html_tooltip = """
     <div>
@@ -169,20 +184,20 @@ url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
 hover = HoverTool(tooltips=html_tooltip)
 elg_plot = init_xy_plot(hover=hover)
-elg_plot.line(x='x', y='y', source=elg_fit, color="black")
+#elg_plot.line(x='x', y='y', source=elg_fit, color="black")
 elg_plot.circle(x='x', y='y', source=elg, color="blue", size=8, line_color='black', alpha=0.7
             ,hover_color="blue", hover_alpha=1, hover_line_color='red')
 
 elg_plot.xaxis.axis_label = "DECAM_R"
 elg_plot.yaxis.axis_label = "SNR"
-elg_plot.title.text = "ELG"
+elg_plot.title.text = "ELG (***)"
 
 taptool = elg_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
 
 hover = HoverTool(tooltips=html_tooltip)
 lrg_plot = init_xy_plot(hover=hover)
-lrg_plot.line(x='x', y='y', source=lrg_fit, color="black")
+#lrg_plot.line(x='x', y='y', source=lrg_fit, color="black")
 lrg_plot.circle(x='x', y='y', source=lrg, color="red", size=8, line_color='black', alpha=0.7
             , hover_color="red",hover_alpha=1, hover_line_color='red')
 
@@ -195,7 +210,7 @@ taptool.callback = OpenURL(url=url)
 
 hover = HoverTool(tooltips=html_tooltip)
 qso_plot = init_xy_plot(hover=hover)
-qso_plot.line(x='x', y='y', source=qso_fit, color="black")
+#qso_plot.line(x='x', y='y', source=qso_fit, color="black")
 qso_plot.circle(x='x', y='y', source=qso, color="green", size=8, line_color='black', alpha=0.7
             ,hover_color="green", hover_alpha=1, hover_line_color='red')
 
@@ -208,7 +223,7 @@ taptool.callback = OpenURL(url=url)
 
 hover = HoverTool(tooltips=html_tooltip)
 star_plot = init_xy_plot(hover=hover)
-star_plot.line(x='x', y='y', source=star_fit, color="black")
+#star_plot.line(x='x', y='y', source=star_fit, color="black")
 star_plot.circle(x='x', y='y', source=star, color="orange", size=8, line_color='black', alpha=0.7
             ,hover_color="orange", hover_alpha=1, hover_line_color='red')
 
