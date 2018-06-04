@@ -20,6 +20,8 @@ api_router.register(r'distinct_flavors',
 api_router.register(r'processing_history', views.ProcessingHistoryViewSet, 'processing_history')
 api_router.register(r'observing_history', views.ObservingHistoryViewSet, 'observing_history')
 api_router.register(r'qlconfig', views.QlConfigViewSet, 'qlconfig')
+api_router.register(r'ql_calibration',
+                    views.QlCalibrationViewSet, 'ql_calibration')
 api_router.register(r'configuration', views.ConfigurationViewSet)
 api_router.register(r'current_configuration',
                     views.CurrentConfigurationViewSet, 'current_configuration')
@@ -51,6 +53,7 @@ urlpatterns = [
     url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
+    url(r'^dashboard/fits_to_png', views.fits_to_png, name='fits_to_png'),
     url(r'^dashboard/(?P<bokeh_app>\w+)/$', views.embed_bokeh, name='embed-bokeh'),
     url(r'^dashboard/observing_history', views.observing_history, name='observing_history')
 ]

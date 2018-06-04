@@ -70,9 +70,9 @@ hist_tooltip = """
         </div>
     </div>
 """
-name_hi = 'NBINSHIGH'
+name_hi = 'NBINSHI'
 name_med = 'NBINSMED'
-name_low = 'NBINSLOW'
+name_low = 'NBINSLO'
 
 
 hover = HoverTool(tooltips=hist_tooltip)

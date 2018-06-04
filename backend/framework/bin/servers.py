@@ -16,6 +16,7 @@ from util import get_config
 cfg = get_config()
 loglevel = cfg.get("main", "loglevel")
 qlf_root = cfg.get("environment", "qlf_root")
+base_exposures_path = cfg.get("namespace", "base_exposures_path")
 
 logger = get_logger(
     "pyro.servers",
@@ -121,6 +122,9 @@ class Monitoring(object):
         except Exception as err:
             logger.info(err)
             return 'Error reading qlconfig: {}'.format(err)
+
+    def get_calibration(self):
+        return os.listdir(os.path.join(base_exposures_path, 'psf'))
 
 
 @Pyro4.expose

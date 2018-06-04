@@ -28,6 +28,8 @@ from django.template import loader
 from django.http import HttpResponse
 from django.http import JsonResponse
 
+from dashboard.bokeh.fits2png.fits2png import Fits2png
+
 from django.core.mail import send_mail
 import os
 
@@ -297,6 +299,7 @@ class DefaultConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
         response.data = {'results': default_configuration}
         return response
 
+
 class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Configuration.objects.order_by('creation_date')
     serializer_class = ConfigurationSerializer
@@ -306,6 +309,18 @@ class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
             request, args, kwargs)
         qlconfig = qlf.get_qlconfig()
         response.data = qlconfig
+        return response
+
+
+class QlCalibrationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(QlCalibrationViewSet, self).list(
+            request, args, kwargs)
+        calibration = qlf.get_calibration()
+        response.data = calibration
         return response
 
 
@@ -605,6 +620,18 @@ def embed_bokeh(request, bokeh_app):
     # app can use this info
 
     response.set_cookie('django_full_path', request.get_full_path())
+    return response
+
+
+def fits_to_png(request):
+    """Generates and render png"""
+    template = loader.get_template('dashboard/fits_to_png.html')
+    # Generate Image
+    cam = request.GET.get('cam')
+    png_image = Fits2png(cam).convert_fits2png()
+    context = {'image': png_image}
+    response = HttpResponse(template.render(context, request))
+
     return response
 
 

@@ -172,7 +172,8 @@ hist_tooltip = """
     </div>
 """
 
-hist, edges  = np.histogram(getrms['RMS_ROW'],'doane') # auto, fd or doane
+#hist, edges  = np.histogram(getrms['RMS_ROW'],'doane') # auto, fd or doane
+hist, edges  = np.histogram(getrms['NOISE_ROW'][0],'doane') # auto, fd or doane
 
 source_hist = ColumnDataSource(data={
     'hist': hist,

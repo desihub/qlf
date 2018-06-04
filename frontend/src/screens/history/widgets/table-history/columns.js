@@ -93,6 +93,6 @@ export const tableColumns = [
     processKey: '',
     exposureKey: '',
     name: 'CCDs',
-    type: null,
+    type: 'image',
   },
 ];
