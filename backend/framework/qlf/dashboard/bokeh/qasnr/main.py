@@ -44,18 +44,25 @@ except:
     sys.exit('Could not load metrics')
 
 snr = metrics['snr']
-elg_snr  = snr['SNR_MAG_TGT'][2]
-lrg_snr  = snr['SNR_MAG_TGT'][0]
-qso_snr  = snr['SNR_MAG_TGT'][1]
-star_snr = snr['SNR_MAG_TGT'][3]
 
-
+#sort the correct vector:
 #!f 
-for i in range(4):
-    print(len(snr['SNR_MAG_TGT'][i][0]))
-print("----"*8)
-for i in ['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']:
-    print( i, len(snr[i]))
+fiberlen = []
+snrlen = []
+for i, key in enumerate(['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']):
+    fiberlen.append( len(snr[key]))
+    snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
+sort_idx=[ snrlen.index(fiberlen[i]) for i in range(4)]
+print("\n ", fiberlen, snrlen)
+print("sort_idx", sort_idx)
+        
+
+elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
+lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
+qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
+star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
+
+
 
 
 def fit_func(xdata, coeff):
