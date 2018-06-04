@@ -36,6 +36,7 @@ class ExposureMonitoring(Process):
 
     def run(self):
         """ """
+        delete_exposures()
         while not self.exit.is_set():
             time.sleep(1.5)
 
@@ -95,7 +96,6 @@ class ExposureMonitoring(Process):
             self.process.start()
             self.running.set()
 
-        delete_exposures()
         logger.debug("Bye!")
 
 

@@ -14,6 +14,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import ImageModal from '../image-modal/image-modal';
 
 class TableHistory extends Component {
   static propTypes = {
@@ -44,6 +45,7 @@ class TableHistory extends Component {
       filters: '',
       tableColumnsHidden: [],
       openColumnsModal: false,
+      openImageModal: false,
     };
   }
 
@@ -91,6 +93,7 @@ class TableHistory extends Component {
               selectExposure={this.props.selectExposure}
               selectable={this.props.selectable}
               tableColumns={this.availableColumns()}
+              handleImageModalOpen={this.handleImageModalOpen}
             />
           );
         })}
@@ -178,8 +181,6 @@ class TableHistory extends Component {
         : tableColumns.filter(tc => tc.exposureKey !== null);
     return (
       <Modal
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
         open={this.state.openColumnsModal}
         onClose={this.handleColumnModalClose}
         className={this.props.classes.modal}
@@ -248,9 +249,28 @@ class TableHistory extends Component {
     });
   };
 
+  renderImageModal = () => {
+    return this.state.openImageModal ? (
+      <ImageModal handleClose={this.handleImageModalClose} />
+    ) : null;
+  };
+
+  handleImageModalOpen = () => {
+    this.setState({
+      openImageModal: true,
+    });
+  };
+
+  handleImageModalClose = () => {
+    this.setState({
+      openImageModal: false,
+    });
+  };
+
   render() {
     return (
       <div className={this.props.classes.root}>
+        {this.renderImageModal()}
         {this.renderColumnsModal()}
         <Table style={styles.table}>
           <HistoryHeader
