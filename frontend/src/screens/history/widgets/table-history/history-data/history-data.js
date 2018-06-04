@@ -16,6 +16,9 @@ const styles = {
     padding: '4px',
     textAlign: 'center',
   },
+  notificationsIcon: {
+    cursor: 'pointer',
+  },
 };
 
 export default class HistoryData extends React.Component {
