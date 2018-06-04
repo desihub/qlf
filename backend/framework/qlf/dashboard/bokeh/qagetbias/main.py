@@ -11,7 +11,7 @@ from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
 
-from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
+from bokeh.palettes import ( Colorblind, Viridis256)
 
 from bokeh.io import output_notebook
 import numpy as np
@@ -61,7 +61,18 @@ dx = [0,1,0,1]
 dy = [1,1,0,0]
 dz = metr[name] #getbias['BIAS_AMP']
 
-mapper = LinearColorMapper(palette= Viridis256, low=min(dz),high=max(dz) )
+
+def palette(name_of_mpl_palette):
+    """ Transforms a matplotlib palettes into a bokeh 
+    palettes
+    """
+    from matplotlib.colors import rgb2hex
+    import matplotlib.cm as cm
+    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
+    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
+    return bokehpalette
+Reds =palette("Reds_r")
+mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
 
 dzmax, dzmin = max(dz), min(dz) 
 if np.log10(dzmax) > 4 or np.log10(dzmin) <-3:
@@ -105,7 +116,7 @@ hover = HoverTool(tooltips=cmap_tooltip)
 #[         ("counts", "@z"),
 #         ("AMP", "@amp"),         ])
 
-p = Figure(title=name, tools=[hover],
+p = Figure(title=name, tools=[hover, "save"],
            x_range= list([-0.5,1.5]),           # length = 18
            y_range= list([-0.5,1.5]), #numeros romanos
            plot_width=450, plot_height=400
