@@ -6,10 +6,12 @@ import _ from 'lodash';
 export default class Petals extends Component {
   static propTypes = {
     size: PropTypes.number.isRequired,
+    selected: PropTypes.number,
     onClick: PropTypes.func.isRequired,
   };
 
   stageColor = index => {
+    if (index === this.props.selected) return 'green';
     return 'gray';
   };
 
@@ -50,7 +52,7 @@ export default class Petals extends Component {
                     {
                       mutation: props => {
                         this.props.onClick(props.index);
-                        return props;
+                        return { style: { fill: 'green', cursor: 'pointer' } };
                       },
                     },
                   ];
@@ -59,8 +61,12 @@ export default class Petals extends Component {
                   return [
                     {
                       target: 'data',
-                      mutation: () => {
-                        return { style: { fill: 'gray', cursor: 'pointer' } };
+                      mutation: props => {
+                        const color =
+                          props.index === this.props.selected
+                            ? 'green'
+                            : 'gray';
+                        return { style: { fill: color, cursor: 'pointer' } };
                       },
                     },
                     {

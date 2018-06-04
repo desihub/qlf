@@ -34,6 +34,7 @@ export default class HistoryData extends React.Component {
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
     tableColumns: PropTypes.array.isRequired,
+    handleImageModalOpen: PropTypes.func.isRequired,
   };
 
   formatDate = dateString => {
@@ -162,7 +163,12 @@ export default class HistoryData extends React.Component {
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
-            <Icon style={styles.notificationsIcon}>image</Icon>
+            <Icon
+              onClick={this.props.handleImageModalOpen}
+              style={styles.notificationsIcon}
+            >
+              image
+            </Icon>
           </TableCell>
         );
       case 'runtime':
