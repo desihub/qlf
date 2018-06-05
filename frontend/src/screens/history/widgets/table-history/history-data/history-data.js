@@ -38,6 +38,7 @@ export default class HistoryData extends React.Component {
     striped: PropTypes.bool,
     tableColumns: PropTypes.array.isRequired,
     handleImageModalOpen: PropTypes.func.isRequired,
+    handleCommentModalOpen: PropTypes.func.isRequired,
   };
 
   formatDate = dateString => {
@@ -171,6 +172,20 @@ export default class HistoryData extends React.Component {
               style={styles.notificationsIcon}
             >
               image
+            </Icon>
+          </TableCell>
+        );
+      case 'comments':
+        return (
+          <TableCell
+            key={`PROCV${key}`}
+            style={{ ...styles.tableCell, ...lastProcessed }}
+          >
+            <Icon
+              onClick={this.props.handleCommentModalOpen}
+              style={styles.notificationsIcon}
+            >
+              comment
             </Icon>
           </TableCell>
         );

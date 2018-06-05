@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from .models import Job, Exposure, Camera, QA, Process, Configuration
+from .models import Job, Exposure, Camera, QA, Process, Configuration, Comment
 from .utils import get_date
 from clients import get_exposure_monitoring
 
@@ -246,6 +246,7 @@ class ExposureFlavorSerializer(DynamicFieldsModelSerializer):
         model = Exposure
         fields = ('flavor',)
 
+
 class CurrentProcessJobsSerializer(serializers.ModelSerializer):
 
     process_jobs = JobSerializer(many=True, read_only=True)
@@ -253,3 +254,10 @@ class CurrentProcessJobsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Process
         fields = ('id', 'exposure', 'process_jobs', 'qa_tests')
+
+
+class CommentSerializer(DynamicFieldsModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'comment', 'user', 'date', 'process')

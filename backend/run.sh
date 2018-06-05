@@ -17,7 +17,7 @@ done
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
 
 python -Wi framework/qlf/manage.py migrate
-# echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
+echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python framework/qlf/manage.py shell
 
 cd $QLF_ROOT
 echo "Initializing QLF Daemon..."

@@ -9,13 +9,14 @@ from rest_framework.pagination import LimitOffsetPagination
 from django.db.models import Max, Min
 from django.db.models import Q
 
-from .models import Job, Exposure, Camera, QA, Process, Configuration
+from .models import Job, Exposure, Camera, QA, Process, Configuration, Comment
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
-    ExposureFlavorSerializer, CurrentProcessJobsSerializer
+    ExposureFlavorSerializer, CurrentProcessJobsSerializer,
+    CommentSerializer
 )
 
 from datetime import datetime, timedelta
@@ -501,6 +502,14 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
+
+
+class CommentViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing comments"""
+
+    queryset = Comment.objects.order_by('pk')
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 def start(request):

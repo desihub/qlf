@@ -1,5 +1,7 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.contrib.auth.models import User
+from datetime import date
 
 
 class Exposure(models.Model):
@@ -123,6 +125,16 @@ class QA(models.Model):
     metrics = JSONField(help_text='JSON structure with the QA result')
     params = JSONField(help_text='JSON structure with the QA tests')
     job = models.ForeignKey(Job, related_name='job_qas')
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Comment(models.Model):
+    comment = models.TextField(blank=True, null=True)
+    user = models.ForeignKey(User, default=1)
+    process = models.ForeignKey(Process)
+    date = models.DateField(default=date.today)
 
     def __str__(self):
         return str(self.name)
