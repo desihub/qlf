@@ -139,6 +139,9 @@ class CommentModal extends React.Component {
     if (!this.state.comments) return null;
     return (
       <div className={classes.list}>
+        {this.props.readOnly? <Typography variant="title" id="modal-title">
+          Comments
+        </Typography>: null}
         <List>
           {this.state.comments.map(comment => {
             return (
