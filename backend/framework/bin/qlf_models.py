@@ -1,11 +1,12 @@
-import os
-import sys
 import glob
 import json
-import numpy
-import django
-import math
 import logging
+import math
+import os
+import sys
+
+import django
+import numpy
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -17,11 +18,9 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 
 django.setup()
 
-from django import db
 from dashboard.models import (
-    Job, Exposure, Camera, QA, Process, Configuration
+    QA, Camera, Configuration, Exposure, Job, Process
 )
-
 logger = logging.getLogger()
 
 
@@ -34,7 +33,7 @@ class QLFModels(object):
         waiting period of Django's ORM. Whenever instantiated, the connection
         is closed to be recreated when requested. """
 
-        db.connection.close()
+        django.db.connection.close()
 
     def insert_exposure(self, **kwargs):
         """ Inserts and gets exposure and night if necessary. """

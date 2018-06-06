@@ -16,6 +16,7 @@ from util import get_config
 cfg = get_config()
 loglevel = cfg.get("main", "loglevel")
 qlf_root = cfg.get("environment", "qlf_root")
+base_exposures_path = cfg.get("namespace", "base_exposures_path")
 
 logger = get_logger(
     "pyro.servers",
@@ -122,6 +123,9 @@ class Monitoring(object):
             logger.info(err)
             return 'Error reading qlconfig: {}'.format(err)
 
+    def get_calibration(self):
+        return os.listdir(os.path.join(base_exposures_path, 'psf'))
+
 
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
@@ -145,11 +149,17 @@ class GeneratorControl(object):
             logger.debug("Exposure generator is not initialized.")
 
     def last_exposure(self):
-        if self.generator and self.generator.is_alive():
-            return dict(self.generator.get_last_exposure())
+        if self.generator:
+            try:
+                last = dict(self.generator.get_last_exposure())
+            except Exception as err:
+                logger.error(err)
+                last = dict()
         else:
             logger.debug("Exposure generator is not initialized.")
-            return dict()
+            last = dict()
+
+        return last
 
     # def get_exposure_summary(self, date_range=None, expid_range=None,
     #  require_data_written=True):
