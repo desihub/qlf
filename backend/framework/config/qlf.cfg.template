@@ -32,10 +32,10 @@ exposures=3,4
 
 # cameras to be processed, camera=arm+spectrograph
 
-# b,r,z
-arms=b,r,z
+# e.g. b,r,z
+arms=b
 
-# 0,1,2,3,4,5,6,7,8,9
+# e.g. 0,1,2,3,4,5,6,7,8,9
 spectrographs=0
 
 [namespace]
