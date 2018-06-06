@@ -2,6 +2,8 @@ import logging
 import configparser
 import os
 import shutil
+import astropy.io.fits
+import datetime
 
 logger = logging.getLogger()
 
@@ -36,11 +38,11 @@ def get_config(config_path=None):
 def delete_exposures():
     cfg = get_config()
 
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-    desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
+    # desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+    # desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
 
-    delete_files(desi_spectro_redux)
-    delete_files(desi_spectro_data)
+    # delete_files(desi_spectro_redux)
+    # delete_files(desi_spectro_data)
 
 
 def delete_files(path):
@@ -48,3 +50,48 @@ def delete_files(path):
         _path = os.path.join(path, directory)
         if os.path.isdir(_path):
             shutil.rmtree(_path)
+
+
+def extract_exposure_data(exposure_id, night):
+    """ Extracts exposure data from fits file.
+    
+    Arguments:
+        exposure_id {int} -- exposure ID
+        night {str} -- night (format: YYYYMMDD)
+    
+    Returns:
+        dict -- exposure data from fits file.
+    """
+
+    cfg = get_config()
+    desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
+    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+
+    exposure_zfill = str(exposure_id).zfill(8)
+    expo_name = "desi-{}.fits.fz".format(exposure_zfill)
+
+    file_path = os.path.join(desi_spectro_data, night, expo_name)
+
+    try:
+        hdr = astropy.io.fits.getheader(file_path)
+    except Exception as err:
+        logger.error("Error to load fits file: %s" % err)
+        return {}
+
+    return {
+        "exposure_id": exposure_id,
+        "dateobs": hdr.get('date-obs'),
+        "night": night,
+        "zfill": exposure_zfill,
+        "desi_spectro_data": desi_spectro_data,
+        "desi_spectro_redux": desi_spectro_redux,
+        'telra': hdr.get('telra', None),
+        'teldec': hdr.get('teldec', None),
+        'tile': hdr.get('tileid', None),
+        'flavor': hdr.get('flavor', None),
+        'program': hdr.get('program', None),
+        'airmass': hdr.get('airmass', None),
+        'exptime': hdr.get('exptime', None),
+        'time': datetime.datetime.utcnow()
+    }
+    

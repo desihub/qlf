@@ -11,9 +11,11 @@ from log import get_logger
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
 import time
-from util import get_config
+from util import get_config, extract_exposure_data
 import matplotlib
-matplotlib.use('Agg')  
+
+
+matplotlib.use('Agg')
 
 cfg = get_config()
 
@@ -383,3 +385,39 @@ class QLFProcess(object):
                     stage_start['time'] = start_time
                     logger.info('{} started.'.format(
                         stage.get('display_name')))
+
+
+if __name__ == "__main__":
+    print('Manually starting the QL pipeline.')
+
+    from qlf_configuration import QLFConfiguration
+    import sys
+
+    try:
+        exposure_id = int(sys.argv[1])
+        night = sys.argv[2]
+    except Exception:
+        logger.exception('Failed to get exposure ID and night')
+
+    exposure = extract_exposure_data(exposure_id, night)
+
+    arms = cfg.get('data', 'arms').split(',')
+    spectrographs = cfg.get('data', 'spectrographs').split(',')
+
+    cameras = list()
+
+    for arm in arms:
+        for spec in spectrographs:
+            cameras.append({'name': arm + spec})
+
+    exposure['cameras'] = cameras
+
+    configuration = QLFConfiguration()
+
+    print(exposure)
+
+    qlf_process = QLFProcess(
+        exposure, configuration.get_current_configuration())
+    process_id = qlf_process.start_process()
+    qlf_process.start_jobs()
+    qlf_process.finish_process()

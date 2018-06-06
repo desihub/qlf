@@ -8,14 +8,14 @@ export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
 export QLF_REDIS=True
 
-for package in desispec desiutil desimodel; do
+for package in desispec desiutil desimodel specter; do
 	echo "Setting $package..."
 	export PATH=$QLF_ROOT/$package/bin:$PATH
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
 done
 
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
-export DESIMODEL=$QLF_ROOT/desimodel/0.9.4
+export DESIMODEL=$QLF_ROOT/desimodel
 
 python -Wi framework/qlf/manage.py migrate
 # echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell

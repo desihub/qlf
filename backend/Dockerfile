@@ -5,7 +5,10 @@ ADD . /app/
 ENV QLF_ROOT /app
 
 # BEGIN INSTALL: miniconda3
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+RUN apt-get install -y locales && locale-gen en_US.UTF-8  
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 git
