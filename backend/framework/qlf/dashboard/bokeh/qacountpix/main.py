@@ -18,6 +18,7 @@ import numpy as np
 
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics
+from dashboard.bokeh.helper import get_palette
 
 import numpy as np
 import logging
@@ -60,7 +61,8 @@ metr = countpix
 dx = [0,1,0,1]
 dy = [1,1,0,0]
 dz = metr[name] 
-mapper = LinearColorMapper(palette= Viridis256, low=min(dz),high=max(dz) )
+Reds=get_palette("Reds_r")
+mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
 
 dzmax, dzmin = max(dz), min(dz) 
 if np.log10(dzmax) > 4 or np.log10(dzmin) <-3:

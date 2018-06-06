@@ -10,6 +10,8 @@ from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
+from dashboard.bokeh.helper import get_palette
+
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 
@@ -45,18 +47,8 @@ xwsigma   = metrics['xwsigma']
 snr       = metrics['snr'] #RA and DEC info
 skycont   = metrics['skycont']
 
-def palette(name_of_mpl_palette):
-    """ Transforms a matplotlib palettes into a bokeh 
-    palettes
-    """
-    from matplotlib.colors import rgb2hex
-    import matplotlib.cm as cm
-    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
-    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
-    return bokehpalette
 
-#nipy_spectral)#Viridis256)#,RdYlBu11)#Viridis256)#, low=0, high=100)
-my_palette = palette("viridis")
+my_palette = get_palette("viridis") #"seismic")#"RdYlBu_r")#"viridis")
 
 
 xsigma_tooltip = """
@@ -190,6 +182,8 @@ px = Figure( title = 'XSIGMA', x_axis_label='RA', y_axis_label='DEC'
            , plot_width=700, plot_height=600
            , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
            , tools= [xsigma_hover, "pan,box_zoom,reset,crosshair, tap"])
+#px.background_fill_color = "lightgray"
+#px.background_fill_alpha = 0.3
 
 # Color Map
 px.circle('x1','y1', source = source, name="data", radius = radius,

@@ -14,6 +14,8 @@ from dashboard.bokeh.helper import write_description, write_info, \
 
 from dashboard.bokeh.helper import get_data, get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs
+
+
 import numpy as np
 
 
@@ -62,7 +64,7 @@ lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
 qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
 star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
 
-
+# Sort Resid
 
 
 def fit_func(xdata, coeff):
@@ -127,7 +129,7 @@ star.data['fiber_id'] = snr['STAR_FIBERID']
 star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
 star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
 
-print("\n\n\n\n\n  {}".format( len(snr['QSO_FIBERID']) ), len(qso_snr[1])  )
+print("\n\n\n\n\n  {}".format( len(snr['QSO_FIBERID']) ), len(qso_snr[1]), len(qso.data['ra'])  )
 
 '''
 xfit, yfit = fit_func(elg_snr[1], snr['ELG_FITRESULTS'])

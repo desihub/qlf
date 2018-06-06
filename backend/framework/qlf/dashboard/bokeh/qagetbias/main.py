@@ -17,7 +17,7 @@ from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics,\
-                            eval_histpar
+                            eval_histpar, get_palette
 
 import numpy as np
 import logging
@@ -62,16 +62,7 @@ dy = [1,1,0,0]
 dz = metr[name] #getbias['BIAS_AMP']
 
 
-def palette(name_of_mpl_palette):
-    """ Transforms a matplotlib palettes into a bokeh 
-    palettes
-    """
-    from matplotlib.colors import rgb2hex
-    import matplotlib.cm as cm
-    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
-    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
-    return bokehpalette
-Reds =palette("Reds_r")
+Reds = get_palette("Reds_r")
 mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
 
 dzmax, dzmin = max(dz), min(dz) 
