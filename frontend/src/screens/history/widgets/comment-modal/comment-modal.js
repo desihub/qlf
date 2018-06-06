@@ -168,13 +168,13 @@ class CommentModal extends React.Component {
         <div>
           <Icon
             className={classes.icon}
-            onClick={() => this.editComment(comment.id, comment.comment)}
+            onClick={() => this.editComment(comment.id, comment.text)}
           >
             edit
           </Icon>
           <Icon
             className={classes.icon}
-            onClick={() => this.deleteComment(comment.id, comment.comment)}
+            onClick={() => this.deleteComment(comment.id, comment.text)}
           >
             delete
           </Icon>
@@ -217,7 +217,7 @@ class CommentModal extends React.Component {
     ) : (
       <ListItemText
         classes={{ primary: classes.primaryText }}
-        primary={comment.comment}
+        primary={comment.text}
         secondary={comment.date}
       />
     );

@@ -206,35 +206,38 @@ export default class QlfApi {
     }
   }
 
-  static async addProcessComment(comment, process) {
+  static async addProcessComment(text, process) {
     const body = {
-      comment,
+      text,
       process,
       user: 1,
     };
-    const commentResponse = await fetch(`${apiUrl}dashboard/api/comment/`, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(body),
-    });
+    const commentResponse = await fetch(
+      `${apiUrl}dashboard/api/process_comment/`,
+      {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(body),
+      }
+    );
     const responseJson = await commentResponse.json();
     return responseJson;
   }
 
   static async deleteProcessComment(commentId) {
-    await fetch(`${apiUrl}dashboard/api/comment/${commentId}/`, {
+    await fetch(`${apiUrl}dashboard/api/process_comment/${commentId}/`, {
       method: 'DELETE',
       headers: headers,
     });
   }
 
-  static async updateProcessComment(commentId, process, comment) {
+  static async updateProcessComment(commentId, process, text) {
     const body = {
-      comment,
+      text,
       process,
     };
     const commentResponse = await fetch(
-      `${apiUrl}dashboard/api/comment/${commentId}/`,
+      `${apiUrl}dashboard/api/process_comment/${commentId}/`,
       {
         method: 'PUT',
         headers: headers,
@@ -246,7 +249,7 @@ export default class QlfApi {
 
   static async getProcessComments(processId) {
     const commentResponse = await fetch(
-      `${apiUrl}dashboard/api/comment/?process=${processId}`,
+      `${apiUrl}dashboard/api/process_comment/?process=${processId}`,
       {
         method: 'GET',
         headers: headers,

@@ -130,8 +130,9 @@ class QA(models.Model):
         return str(self.name)
 
 
-class Comment(models.Model):
-    comment = models.TextField(blank=True, null=True)
+class ProcessComment(models.Model):
+    """Process comment"""
+    text = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, default=1)
     process = models.ForeignKey(Process)
     date = models.DateField(default=date.today)
