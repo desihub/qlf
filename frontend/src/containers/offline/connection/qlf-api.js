@@ -153,14 +153,11 @@ export default class QlfApi {
 
   static async getFlavors() {
     try {
-      const exposures = await fetch(
-        `${apiUrl}dashboard/api/distinct_flavors/`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await exposures.json();
+      const flavors = await fetch(`${apiUrl}dashboard/api/distinct_flavors/`, {
+        method: 'GET',
+        headers: headers,
+      });
+      const responseJson = await flavors.json();
       return responseJson;
     } catch (e) {
       return null;
@@ -207,6 +204,32 @@ export default class QlfApi {
     } catch (e) {
       return null;
     }
+  }
+
+  static async postProcessComment(comment, processId) {
+    const body = {
+      comment,
+      process: processId,
+      user: 1,
+    };
+    const commentResponse = await fetch(`${apiUrl}dashboard/api/comment/`, {
+      method: 'POST',
+      headers: headers,
+      body: body,
+    });
+    const responseJson = await commentResponse.json();
+    return responseJson;
+  }
+
+  static async getProcessComments(processId) {
+    const commentResponse = await fetch(
+      `${apiUrl}dashboard/api/comment/?process=${processId}`,
+      {
+        method: 'GET',
+        headers: headers,
+      }
+    );
+    return commentResponse.json();
   }
 
   static async sendTicketMail(email, message, subject, name) {

@@ -507,9 +507,10 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 class CommentViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing comments"""
 
-    queryset = Comment.objects.order_by('pk')
+    queryset = Comment.objects.order_by('-pk')
     serializer_class = CommentSerializer
     permission_classes = [permissions.AllowAny]
+    filter_fields = ('process',)
 
 
 def start(request):

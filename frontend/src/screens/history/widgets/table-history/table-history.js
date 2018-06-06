@@ -47,7 +47,8 @@ class TableHistory extends Component {
       tableColumnsHidden: [],
       openColumnsModal: false,
       openImageModal: false,
-      openCommentModal: true,
+      openCommentModal: false,
+      commentProcessId: 1,
     };
   }
 
@@ -272,12 +273,16 @@ class TableHistory extends Component {
 
   renderCommentModal = () => {
     return this.state.openCommentModal ? (
-      <CommentModal handleClose={this.handleCommentModalClose} />
+      <CommentModal
+        processId={this.state.commentProcessId}
+        handleClose={this.handleCommentModalClose}
+      />
     ) : null;
   };
 
-  handleCommentModalOpen = () => {
+  handleCommentModalOpen = commentProcessId => {
     this.setState({
+      commentProcessId,
       openCommentModal: true,
     });
   };

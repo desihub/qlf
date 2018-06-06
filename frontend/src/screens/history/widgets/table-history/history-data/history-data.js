@@ -182,7 +182,7 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             <Icon
-              onClick={this.props.handleCommentModalOpen}
+              onClick={() => this.props.handleCommentModalOpen(processId)}
               style={styles.notificationsIcon}
             >
               comment

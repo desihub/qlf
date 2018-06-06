@@ -5,6 +5,12 @@ import PropTypes from 'prop-types';
 import { FadeLoader } from 'halogenium';
 import TextField from '@material-ui/core/TextField';
 import Icon from '@material-ui/core/Icon';
+import QlfApi from '../../../../containers/offline/connection/qlf-api';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
 
 const styles = {
   modalBody: {
@@ -15,30 +21,31 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    minHeight: 80,
+    maxWidth: '80vw',
   },
   modal: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iframe: {
-    height: '60vh',
-    width: '70vw',
+  textField: {
+    marginTop: 0,
   },
-  controls: {
+  inline: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    width: '80%',
-    minWidth: 400,
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
+    minWidth: '80vw',
   },
-  radioGroup: {
-    display: 'flex',
-    flexDirection: 'row',
+  list: {
+    maxWidth: '80vw',
+    maxHeight: '80vh',
+    overflowY: 'scroll',
   },
-  button: {
-    float: 'right',
+  primaryText: {
+    wordBreak: 'break-all',
   },
 };
 
@@ -48,12 +55,26 @@ class CommentModal extends React.Component {
     this.state = {
       loading: false,
       comment: '',
+      comments: undefined,
     };
   }
 
   static propTypes = {
     classes: PropTypes.object,
     handleClose: PropTypes.func.isRequired,
+    processId: PropTypes.number.isRequired,
+  };
+
+  componentWillMount() {
+    this.fetchComments();
+  }
+
+  fetchComments = async () => {
+    this.loadStart();
+    const comments = await QlfApi.getProcessComments(this.props.processId);
+    this.loadEnd();
+    if (comments && comments.results)
+      this.setState({ comments: comments.results });
   };
 
   handleChange = name => evt => {
@@ -79,21 +100,55 @@ class CommentModal extends React.Component {
     );
   };
 
+  renderComments = () => {
+    const { classes } = this.props;
+    if (!this.state.comments) return null;
+    return (
+      <div className={classes.list}>
+        <List>
+          {this.state.comments.map(comment => (
+            <div key={comment.id}>
+              <ListItem>
+                <ListItemText
+                  classes={{ primary: classes.primaryText }}
+                  primary={comment.comment}
+                  secondary={comment.date}
+                />
+              </ListItem>
+              <Divider />
+            </div>
+          ))}
+        </List>
+      </div>
+    );
+  };
+
   render() {
     const { classes } = this.props;
     return (
       <Modal className={classes.modal} open={true} onClose={this.handleClose}>
         <div className={classes.modalBody}>
-          <TextField
-            id="Comment"
-            label="Comment"
-            // className={classes.textField}
-            value={this.state.comment}
-            onChange={this.handleChange('comment')}
-            margin="normal"
-          />
-          <Icon>send</Icon>
+          <div className={classes.inline}>
+            <TextField
+              id="Comment"
+              label="Comment"
+              className={classes.textField}
+              value={this.state.comment}
+              onChange={this.handleChange('comment')}
+              fullWidth
+            />
+            <Icon>send</Icon>
+          </div>
+          {this.renderComments()}
           {this.renderLoading()}
+          <Button
+            onClick={this.props.handleClose}
+            variant="flat"
+            size="small"
+            className={classes.button}
+          >
+            close
+          </Button>
         </div>
       </Modal>
     );

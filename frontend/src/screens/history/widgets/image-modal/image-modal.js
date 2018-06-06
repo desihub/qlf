@@ -135,7 +135,7 @@ class ImageModal extends React.Component {
               </RadioGroup>
               <Button
                 onClick={this.props.handleClose}
-                variant="contained"
+                variant="flat"
                 size="small"
                 className={classes.button}
               >
@@ -143,7 +143,7 @@ class ImageModal extends React.Component {
               </Button>
               <Button
                 onClick={this.clearSelection}
-                variant="contained"
+                variant="flat"
                 size="small"
                 className={classes.button}
               >
