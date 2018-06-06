@@ -247,6 +247,7 @@ def write_description(qa_name):
             <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0],info_dic[qa_name][1])                  
     return text
 
+
 def eval_histpar(yscale, hist):
     """ Common parameters for histograms"""
     from numpy import log10
@@ -261,6 +262,19 @@ def eval_histpar(yscale, hist):
         bottomval = 'bottom'
         histval = 'hist'
     return [ylabel,yrange,bottomval,histval]
+
+
+def get_palette(name_of_mpl_palette):
+    """ Transforms a matplotlib palettes into a bokeh 
+    palettes
+    """
+    import numpy as np
+    from matplotlib.colors import rgb2hex
+    import matplotlib.cm as cm
+    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
+    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
+    return bokehpalette
+
 
 if __name__ == '__main__':
     logger.info('Standalone execution...')
