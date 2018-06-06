@@ -134,8 +134,5 @@ class ProcessComment(models.Model):
     """Process comment"""
     text = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, default=1)
-    process = models.ForeignKey(Process)
+    process = models.ForeignKey(Process, related_name='process_comments')
     date = models.DateField(default=date.today)
-
-    def __str__(self):
-        return str(self.name)

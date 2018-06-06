@@ -276,7 +276,7 @@ class TableHistory extends Component {
       <CommentModal
         processId={this.state.commentProcessId}
         handleClose={this.handleCommentModalClose}
-        readOnly={this.props.type != 'process'}
+        readOnly={this.props.type !== 'process'}
       />
     ) : null;
   };
