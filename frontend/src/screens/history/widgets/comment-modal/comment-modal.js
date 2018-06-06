@@ -11,6 +11,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import Fade from '@material-ui/core/Fade';
+import Typography from '@material-ui/core/Typography';
 
 const styles = {
   modalBody: {
@@ -40,12 +42,29 @@ const styles = {
     minWidth: '80vw',
   },
   list: {
-    maxWidth: '80vw',
+    width: '80vw',
     maxHeight: '80vh',
     overflowY: 'scroll',
+    animationDuration: '2s',
   },
   primaryText: {
-    wordBreak: 'break-all',
+    wordBreak: 'break-word',
+  },
+  commentControls: {
+    display: 'flex',
+  },
+  hiddenControls: {
+    display: 'none',
+  },
+  icon: {
+    cursor: 'pointer',
+  },
+  deleteTitle: {
+    color: 'red',
+    paddingBottom: 10,
+  },
+  deleteBody: {
+    wordBreak: 'break-word',
   },
 };
 
@@ -55,7 +74,13 @@ class CommentModal extends React.Component {
     this.state = {
       loading: false,
       comment: '',
+      editedComment: '',
       comments: undefined,
+      selectedComment: undefined,
+      editCommentId: undefined,
+      deleteComment: false,
+      confirmCommentToDelete: undefined,
+      deleteId: undefined,
     };
   }
 
@@ -100,27 +125,218 @@ class CommentModal extends React.Component {
     );
   };
 
+  hoverComment = selectedComment => {
+    this.setState({ selectedComment });
+  };
+
+  hoverCommentEnd = () => {
+    this.setState({ selectedComment: undefined });
+  };
+
   renderComments = () => {
     const { classes } = this.props;
     if (!this.state.comments) return null;
     return (
       <div className={classes.list}>
         <List>
-          {this.state.comments.map(comment => (
-            <div key={comment.id}>
-              <ListItem>
-                <ListItemText
-                  classes={{ primary: classes.primaryText }}
-                  primary={comment.comment}
-                  secondary={comment.date}
-                />
-              </ListItem>
-              <Divider />
-            </div>
-          ))}
+          {this.state.comments.map(comment => {
+            return (
+              <div key={comment.id}>
+                <ListItem
+                  onMouseEnter={() => this.hoverComment(comment.id)}
+                  onMouseLeave={this.hoverCommentEnd}
+                >
+                  {this.renderOrEditComment(comment)}
+                  {this.renderCommentControls(comment)}
+                </ListItem>
+                <Divider />
+              </div>
+            );
+          })}
         </List>
       </div>
     );
+  };
+
+  renderCommentControls = comment => {
+    const { classes } = this.props;
+    const selected = this.state.selectedComment === comment.id;
+    return this.state.editCommentId !== comment.id ? (
+      <Fade in={selected}>
+        <div>
+          <Icon
+            className={classes.icon}
+            onClick={() => this.editComment(comment.id, comment.comment)}
+          >
+            edit
+          </Icon>
+          <Icon
+            className={classes.icon}
+            onClick={() => this.deleteComment(comment.id, comment.comment)}
+          >
+            delete
+          </Icon>
+        </div>
+      </Fade>
+    ) : (
+      <Fade in={true} className={classes.commentControls}>
+        <div>
+          <Icon className={classes.icon} onClick={this.updateComment}>
+            save
+          </Icon>
+          <Icon className={classes.icon} onClick={this.clearEdit}>
+            cancel
+          </Icon>
+        </div>
+      </Fade>
+    );
+  };
+
+  deleteComment = (id, comment) => {
+    this.setState({
+      confirmCommentToDelete: comment,
+      deleteComment: true,
+      deleteId: id,
+    });
+  };
+
+  renderOrEditComment = comment => {
+    const { classes } = this.props;
+    return this.state.editCommentId === comment.id ? (
+      <TextField
+        id="Comment"
+        label="Edit Comment"
+        className={classes.textField}
+        value={this.state.editedComment}
+        onChange={this.handleChange('editedComment')}
+        fullWidth
+        onKeyPress={this.handleEnterPressedUpdateComment}
+      />
+    ) : (
+      <ListItemText
+        classes={{ primary: classes.primaryText }}
+        primary={comment.comment}
+        secondary={comment.date}
+      />
+    );
+  };
+
+  handleEnterPressedUpdateComment = e => {
+    if (e.key === 'Enter') {
+      this.updateComment();
+    }
+  };
+
+  clearEdit = () => {
+    this.setState({ editCommentId: undefined, editedComment: undefined });
+  };
+
+  editComment = (editCommentId, comment) => {
+    this.setState({ editCommentId, editedComment: comment });
+  };
+
+  updateComment = async () => {
+    if (this.state.editedComment === '') return;
+    const comment = await QlfApi.updateProcessComment(
+      this.state.editCommentId,
+      this.props.processId,
+      this.state.editedComment
+    );
+    if (comment.id) {
+      this.clearEdit();
+      this.fetchComments();
+    }
+  };
+
+  renderDeleteConfirmation = () => (
+    <Modal
+      className={this.props.classes.modal}
+      open={this.state.deleteComment}
+      onClose={this.closeDeleteCommentDialog}
+    >
+      <div className={this.props.classes.modalBody}>
+        <Typography
+          className={this.props.classes.deleteTitle}
+          variant="title"
+          id="modal-title"
+        >
+          Are you sure you want to delete
+        </Typography>
+        <Typography
+          className={this.props.classes.deleteBody}
+          variant="body2"
+          id="simple-modal-description"
+        >
+          {this.state.confirmCommentToDelete}
+        </Typography>
+        <div>
+          <Button
+            onClick={this.deleteCommentConfirm}
+            variant="flat"
+            size="small"
+            className={this.props.classes.button}
+          >
+            ok
+          </Button>
+          <Button
+            onClick={this.closeDeleteCommentDialog}
+            variant="flat"
+            size="small"
+            className={this.props.classes.button}
+          >
+            cancel
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+
+  closeDeleteCommentDialog = () => {
+    this.setState({ deleteComment: false, deleteId: undefined });
+  };
+
+  deleteCommentConfirm = async () => {
+    await QlfApi.deleteProcessComment(this.state.deleteId);
+    this.closeDeleteCommentDialog();
+    this.fetchComments();
+  };
+
+  renderAddComment = () => {
+    const { classes } = this.props;
+    return (
+      <div className={classes.inline}>
+        <TextField
+          id="Comment"
+          label="Comment"
+          className={classes.textField}
+          value={this.state.comment}
+          onChange={this.handleChange('comment')}
+          fullWidth
+          onKeyPress={this.handleEnterPressedAddComment}
+        />
+        <Icon className={classes.icon} onClick={this.addComment}>
+          send
+        </Icon>
+      </div>
+    );
+  };
+
+  addComment = async () => {
+    if (this.state.comment === '') return;
+    const comment = await QlfApi.addProcessComment(
+      this.state.comment,
+      this.props.processId
+    );
+    if (comment.id) {
+      this.setState({ comment: '' });
+      this.fetchComments();
+    }
+  };
+
+  handleEnterPressedAddComment = e => {
+    if (e.key === 'Enter') {
+      this.addComment();
+    }
   };
 
   render() {
@@ -128,17 +344,8 @@ class CommentModal extends React.Component {
     return (
       <Modal className={classes.modal} open={true} onClose={this.handleClose}>
         <div className={classes.modalBody}>
-          <div className={classes.inline}>
-            <TextField
-              id="Comment"
-              label="Comment"
-              className={classes.textField}
-              value={this.state.comment}
-              onChange={this.handleChange('comment')}
-              fullWidth
-            />
-            <Icon>send</Icon>
-          </div>
+          {this.renderDeleteConfirmation()}
+          {this.renderAddComment()}
           {this.renderComments()}
           {this.renderLoading()}
           <Button

@@ -206,19 +206,42 @@ export default class QlfApi {
     }
   }
 
-  static async postProcessComment(comment, processId) {
+  static async addProcessComment(comment, process) {
     const body = {
       comment,
-      process: processId,
+      process,
       user: 1,
     };
     const commentResponse = await fetch(`${apiUrl}dashboard/api/comment/`, {
       method: 'POST',
       headers: headers,
-      body: body,
+      body: JSON.stringify(body),
     });
     const responseJson = await commentResponse.json();
     return responseJson;
+  }
+
+  static async deleteProcessComment(commentId) {
+    await fetch(`${apiUrl}dashboard/api/comment/${commentId}/`, {
+      method: 'DELETE',
+      headers: headers,
+    });
+  }
+
+  static async updateProcessComment(commentId, process, comment) {
+    const body = {
+      comment,
+      process,
+    };
+    const commentResponse = await fetch(
+      `${apiUrl}dashboard/api/comment/${commentId}/`,
+      {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(body),
+      }
+    );
+    return commentResponse.json();
   }
 
   static async getProcessComments(processId) {
