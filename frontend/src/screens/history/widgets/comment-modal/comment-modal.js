@@ -88,6 +88,7 @@ class CommentModal extends React.Component {
     classes: PropTypes.object,
     handleClose: PropTypes.func.isRequired,
     processId: PropTypes.number.isRequired,
+    readOnly: PropTypes.bool.isRequired,
   };
 
   componentWillMount() {
@@ -159,6 +160,7 @@ class CommentModal extends React.Component {
   };
 
   renderCommentControls = comment => {
+    if (this.props.readOnly) return null;
     const { classes } = this.props;
     const selected = this.state.selectedComment === comment.id;
     return this.state.editCommentId !== comment.id ? (
@@ -302,6 +304,7 @@ class CommentModal extends React.Component {
   };
 
   renderAddComment = () => {
+    if (this.props.readOnly) return null;
     const { classes } = this.props;
     return (
       <div className={classes.inline}>
@@ -342,7 +345,11 @@ class CommentModal extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <Modal className={classes.modal} open={true} onClose={this.handleClose}>
+      <Modal
+        className={classes.modal}
+        open={true}
+        onClose={this.props.handleClose}
+      >
         <div className={classes.modalBody}>
           {this.renderDeleteConfirmation()}
           {this.renderAddComment()}
