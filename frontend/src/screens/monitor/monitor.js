@@ -115,7 +115,7 @@ export default class Monitor extends Component {
         ingestionTerminal,
         mainTerminal,
         mjd,
-        processId: processId ? processId.toString() : '',
+        processId: processId,
         qaTests,
         spectrographs,
         time,
@@ -170,7 +170,7 @@ export default class Monitor extends Component {
               layout={styles.layout}
               mjd={this.state.mjd}
               date={this.state.date}
-              processId={this.state.processId}
+              processId={String(this.state.processId)}
             />
             <Controls
               daemonStatus={this.props.daemonStatus}
