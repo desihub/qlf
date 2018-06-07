@@ -49,7 +49,6 @@ describe('Websocket', () => {
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
       mainTerminal: ['2017-11-23 12:59:04 [INFO]: QLF Daemon status: False'],
-      qaTests: undefined,
       mjd: '58484.917',
       time: 'time',
       date: 'date',
@@ -57,6 +56,7 @@ describe('Websocket', () => {
       step: 0,
       spectrograph: 0,
       processId: undefined,
+      qaTests: [],
     });
   });
 
@@ -81,7 +81,7 @@ describe('Websocket', () => {
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
       mainTerminal: ['2017-11-23 12:59:04 [INFO]: QLF Daemon status: False'],
-      qaTests: undefined,
+      qaTests: [],
       arm: 0,
       spectrograph: 0,
       step: 0,
