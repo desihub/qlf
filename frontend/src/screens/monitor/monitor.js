@@ -122,6 +122,23 @@ export default class Monitor extends Component {
       });
     else if (daemonStatus !== 'Not Running')
       this.setState({ clearMonitor: false, daemonStatus: 'Idle' });
+    else if (this.props.daemonStatus === 'Running' && daemonStatus === 'Idle') {
+      this.setState({
+        arms,
+        cameraTerminal,
+        camerasStages,
+        daemonStatus,
+        date,
+        exposure,
+        ingestionTerminal,
+        mainTerminal,
+        mjd,
+        processId: processId,
+        qaTests,
+        spectrographs,
+        time,
+      });
+    }
   }
 
   openDialog = (cameraIndex, arm) => {
