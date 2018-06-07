@@ -12,7 +12,7 @@ const styles = {
     margin: '1.5vh 1vw 1vh 1vw',
   },
   titleStyle: {
-    fontSize: '16px',
+    fontSize: 14,
     color: 'rgba(0, 0, 0, 1)',
     padding: 4,
   },

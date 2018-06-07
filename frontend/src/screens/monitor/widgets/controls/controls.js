@@ -123,35 +123,35 @@ class Controls extends Component {
             <Button
               className={this.props.classes.clearButton}
               variant="raised"
-              onMouseDown={this.deleteFiles}
+              onMouseDown={() => this.deleteFiles('deleteAll')}
             >
               all
             </Button>
             <Button
               className={this.props.classes.clearButton}
               variant="raised"
-              onMouseDown={this.deleteFiles}
+              onMouseDown={() => this.deleteFiles('deleteRaw')}
             >
               raw
             </Button>
             <Button
               className={this.props.classes.clearButton}
               variant="raised"
-              onMouseDown={this.deleteFiles}
+              onMouseDown={() => this.deleteFiles('deleteReduced')}
             >
               reduced
             </Button>
             <Button
               className={this.props.classes.clearButton}
               variant="raised"
-              onMouseDown={this.deleteFiles}
+              onMouseDown={() => this.deleteFiles('deleteLogs')}
             >
               logs
             </Button>
             <Button
               className={this.props.classes.clearButton}
               variant="raised"
-              onMouseDown={this.deleteFiles}
+              onMouseDown={() => this.deleteFiles('')}
             >
               spectra
             </Button>
@@ -161,9 +161,10 @@ class Controls extends Component {
     );
   };
 
-  deleteFiles = () => {
+  deleteFiles = type => {
+    this.props.socket.state.ws.send(type);
     this.setState({ anchorEl: null });
-  }
+  };
 
   render() {
     return (
