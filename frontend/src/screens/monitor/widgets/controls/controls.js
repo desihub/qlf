@@ -12,7 +12,8 @@ const styles = {
     alignItems: 'center',
   },
   button: { fontSize: 12, marginRight: 12, padding: 2, minHeight: 0 },
-  green: { backgroundColor: 'green' },
+  green: { backgroundColor: 'green', color: 'white' },
+  red: { backgroundColor: 'red', color: 'white' },
 };
 
 class Controls extends Component {
@@ -20,6 +21,7 @@ class Controls extends Component {
     socket: PropTypes.object,
     daemonStatus: PropTypes.string,
     classes: PropTypes.object,
+    resetMonitor: PropTypes.func.isRequired,
   };
 
   startPipeline = () => {
@@ -40,7 +42,7 @@ class Controls extends Component {
       this.props.daemonStatus === 'Idle' ? (
       <Button
         className={classes.button}
-        classes={{raised: classes.green}}
+        classes={{ raised: classes.red }}
         variant="raised"
         onMouseDown={this.stopPipeline}
       >
@@ -49,6 +51,7 @@ class Controls extends Component {
     ) : (
       <Button
         className={classes.button}
+        classes={{ raised: classes.green }}
         variant="raised"
         onMouseDown={this.startPipeline}
       >
@@ -57,18 +60,19 @@ class Controls extends Component {
     );
   };
 
-  renderClear = () => (
-    <Button className={this.props.classes.button} variant="raised">
-      Clear Disk
-    </Button>
-  );
-
   renderReset = () => (
     <Button
       className={this.props.classes.button}
       variant="raised"
+      onMouseDown={this.props.resetMonitor}
     >
       Reset
+    </Button>
+  );
+
+  renderClear = () => (
+    <Button className={this.props.classes.button} variant="raised">
+      Clear Disk
     </Button>
   );
 

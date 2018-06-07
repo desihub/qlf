@@ -38,10 +38,7 @@ class Connection extends Component {
       };
       if (result.qa_results && Array.isArray(result.qa_results)) {
         this.props.updateQA({ qaTests: result.qa_results });
-      } else if (
-        result.qa_results &&
-        result.qa_results.Error === 'Missing process_id'
-      ) {
+      } else {
         this.props.updateQA({ qaTests: [] });
       }
       this.props.updateLastProcessAndMonitor(state);

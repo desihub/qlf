@@ -15,7 +15,7 @@ export default class Status extends Component {
     exposure: PropTypes.string.isRequired,
     mjd: PropTypes.string,
     date: PropTypes.string,
-    processId: PropTypes.number,
+    processId: PropTypes.string,
   };
 
   render() {
