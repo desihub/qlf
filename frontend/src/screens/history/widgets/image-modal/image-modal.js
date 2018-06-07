@@ -10,6 +10,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import { FadeLoader } from 'halogenium';
 import Button from '@material-ui/core/Button';
 
+const apiUrl = process.env.REACT_APP_API;
+
 const styles = {
   modalBody: {
     position: 'absolute',
@@ -69,7 +71,7 @@ class ImageModal extends React.Component {
           title="image-modal"
           className={classes.iframe}
           frameBorder="0"
-          src={`http://localhost:8001/dashboard/fits_to_png/?process_id=1&cam=${
+          src={`${apiUrl}dashboard/fits_to_png/?process_id=1&cam=${
             this.state.arm
           }${this.state.spectrograph}`}
           onLoad={this.loadEnd}

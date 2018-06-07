@@ -102,6 +102,14 @@ export default class HistoryData extends React.Component {
       ? null
       : this.props.lastProcessedId === row.pk;
     const lastProcessed = processing ? styles.bold : {};
+    let comment;
+    if (this.props.type === 'process') {
+      comment = row.comments_count ? 'chat_bubble' : 'chat_bubble_outline';
+    } else {
+      comment = row.last_process_comments_count
+        ? 'chat_bubble'
+        : 'chat_bubble_outline';
+    }
     switch (type) {
       case 'parent':
         return (
@@ -185,7 +193,7 @@ export default class HistoryData extends React.Component {
               onClick={() => this.props.handleCommentModalOpen(processId)}
               style={styles.notificationsIcon}
             >
-              comment
+              {comment}
             </Icon>
           </TableCell>
         );
