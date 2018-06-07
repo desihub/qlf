@@ -35,6 +35,7 @@ class Connection extends Component {
         date: result.date === '' ? '' : result.date.split(' ')[0],
         time: result.date === '' ? '' : result.date.split(' ')[1],
         processId: result.process_id,
+        qaTests: [],
       };
       if (result.qa_results && Array.isArray(result.qa_results)) {
         this.props.updateQA({ qaTests: result.qa_results });

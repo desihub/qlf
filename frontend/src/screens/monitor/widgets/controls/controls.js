@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import Popover from '@material-ui/core/Popover';
+import Typography from '@material-ui/core/Typography';
 
 const styles = {
   controls: {
@@ -14,6 +16,8 @@ const styles = {
   button: { fontSize: 12, marginRight: 12, padding: 2, minHeight: 0 },
   green: { backgroundColor: 'green', color: 'white' },
   red: { backgroundColor: 'red', color: 'white' },
+  clearButton: { fontSize: 12, padding: 2, minHeight: 0 },
+  clearButtons: { display: 'flex', flexDirection: 'column' },
 };
 
 class Controls extends Component {
@@ -71,14 +75,100 @@ class Controls extends Component {
   );
 
   renderClear = () => (
-    <Button className={this.props.classes.button} variant="raised">
+    <Button
+      className={this.props.classes.button}
+      variant="raised"
+      onMouseDown={this.handleClick}
+    >
       Clear Disk
     </Button>
   );
 
+  state = {
+    anchorEl: null,
+  };
+
+  handleClick = event => {
+    this.setState({
+      anchorEl: event.currentTarget,
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      anchorEl: null,
+    });
+  };
+
+  renderClearPopover = () => {
+    const { anchorEl } = this.state;
+    const { classes } = this.props;
+    return (
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={this.handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <div>
+          <Typography variant="caption">Cleaning:</Typography>
+          <div className={classes.clearButtons}>
+            <Button
+              className={this.props.classes.clearButton}
+              variant="raised"
+              onMouseDown={this.deleteFiles}
+            >
+              all
+            </Button>
+            <Button
+              className={this.props.classes.clearButton}
+              variant="raised"
+              onMouseDown={this.deleteFiles}
+            >
+              raw
+            </Button>
+            <Button
+              className={this.props.classes.clearButton}
+              variant="raised"
+              onMouseDown={this.deleteFiles}
+            >
+              reduced
+            </Button>
+            <Button
+              className={this.props.classes.clearButton}
+              variant="raised"
+              onMouseDown={this.deleteFiles}
+            >
+              logs
+            </Button>
+            <Button
+              className={this.props.classes.clearButton}
+              variant="raised"
+              onMouseDown={this.deleteFiles}
+            >
+              spectra
+            </Button>
+          </div>
+        </div>
+      </Popover>
+    );
+  };
+
+  deleteFiles = () => {
+    this.setState({ anchorEl: null });
+  }
+
   render() {
     return (
       <div style={styles.controls}>
+        {this.renderClearPopover()}
         {this.renderStartOrStop()}
         {this.renderReset()}
         {this.renderClear()}
