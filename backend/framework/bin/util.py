@@ -12,6 +12,13 @@ qlf_root = os.getenv('QLF_ROOT')
 if not qlf_root:
     raise ValueError('QLF_ROOT not define.')
 
+program_mapping = {
+    'arcs': 'arcs',
+    'dark': 'darksurvey',
+    'grey': 'greysurvey',
+    'bright': 'brightsurvey'
+}
+
 
 def get_config(config_path=None):
     """ Gets config """
@@ -78,6 +85,12 @@ def extract_exposure_data(exposure_id, night):
         logger.error("Error to load fits file: %s" % err)
         return {}
 
+    # TODO: improve after understanding the QL pipeline cycle.
+    program = hdr.get('program')
+    program_file = program_mapping.get(program, 'darksurvey')
+
+    config_file = cfg.get('main', 'qlconfig').format(program_file)
+
     return {
         "exposure_id": exposure_id,
         "dateobs": hdr.get('date-obs'),
@@ -92,6 +105,6 @@ def extract_exposure_data(exposure_id, night):
         'program': hdr.get('program', None),
         'airmass': hdr.get('airmass', None),
         'exptime': hdr.get('exptime', None),
+        'qlconfig': config_file,
         'time': datetime.datetime.utcnow()
     }
-    

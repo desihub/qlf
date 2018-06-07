@@ -19,7 +19,6 @@ matplotlib.use('Agg')
 
 cfg = get_config()
 
-qlconfig = cfg.get('main', 'qlconfig')
 desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 loglevel = cfg.get("main", "loglevel")
 logpipeline = cfg.get('main', 'logpipeline')
@@ -104,7 +103,9 @@ class QLFProcess(object):
 
         logger.info('...\n\n')
         logger.info('Process {}'.format(process.id))
-        logger.info('Exposure {} started.'.format(self.data.get('exposure_id')))
+        logger.info('Exposure {} started.'.format(
+            self.data.get('exposure_id')
+        ))
 
         return process.id
 
@@ -161,7 +162,7 @@ class QLFProcess(object):
 
         cmd = [
             'desi_quicklook',
-            '-i', qlconfig,
+            '-i', data.get('qlconfig'),
             '-n', data.get('night'),
             '-c', camera.get('name'),
             '-e', str(data.get('exposure_id')),
@@ -270,7 +271,9 @@ class QLFProcess(object):
 
         logger.info("Ingestion complete: {}.".format(duration_ingestion))
         logger.info("Total runtime: {}.".format(total_duration))
-        logger.info("Exposure {} is ready.".format(self.data.get('exposure_id')))
+        logger.info("Exposure {} is ready.".format(
+            self.data.get('exposure_id')
+        ))
 
     def generate_qa_tests(self):
         qa_tests = list()
@@ -314,12 +317,15 @@ class QLFProcess(object):
                     try:
                         cameras[file_array[2]].update_status(file_array[1])
                     except TypeError as e:
-                        current_files = list(set(current_files) - set([new_file]))
+                        current_files = list(
+                            set(current_files) - set([new_file])
+                        )
                         print("Error {}: {}".format(new_file, e))
 
                 for camera in self.data.get('cameras'):
-                    qa_tests.append(
-                        {camera.get('name'): cameras[camera.get('name')].status})
+                    qa_tests.append({
+                        camera.get('name'): cameras[camera.get('name')].status
+                    })
 
                 if len(qa_tests) > 0:
                     self.models.update_process(
@@ -384,7 +390,8 @@ class QLFProcess(object):
                     start_time = datetime.now().replace(microsecond=0)
                     stage_start['time'] = start_time
                     logger.info('{} started.'.format(
-                        stage.get('display_name')))
+                        stage.get('display_name')
+                    ))
 
 
 if __name__ == "__main__":
