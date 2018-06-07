@@ -9,7 +9,6 @@ import QA from '../qa/qa';
 
 const styles = {
   topMenu: {
-    marginTop: '1vh',
     marginRight: '1vw',
     marginLeft: '1vw',
   },
@@ -33,7 +32,7 @@ const styles = {
     flex: 1,
     display: 'flex',
     marginBottom: '1vh',
-    flexDirection: 'row',
+    flexDirection: 'column',
     gridTemplateColumns: 'auto auto',
   },
   column: {
@@ -104,10 +103,6 @@ export default class Monitor extends Component {
         />
         <div style={styles.topMenu}>
           <div style={styles.menu}>
-            <Controls
-              daemonStatus={this.props.daemonStatus}
-              socket={this.props.socketRef}
-            />
             <Status
               exposure={this.state.exposure}
               daemonStatus={this.state.daemonStatus}
@@ -115,6 +110,10 @@ export default class Monitor extends Component {
               mjd={this.state.mjd}
               date={this.props.date}
               processId={this.props.processId}
+            />
+            <Controls
+              daemonStatus={this.props.daemonStatus}
+              socket={this.props.socketRef}
             />
           </div>
         </div>
