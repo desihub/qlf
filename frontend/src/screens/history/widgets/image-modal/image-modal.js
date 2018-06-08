@@ -51,7 +51,7 @@ class ImageModal extends React.Component {
     super(props);
     this.state = {
       arm: null,
-      spectrograph: null,
+      spectrograph: [],
       loading: false,
     };
   }
@@ -63,7 +63,7 @@ class ImageModal extends React.Component {
 
   renderImage = () => {
     const { classes } = this.props;
-    if (this.state.arm !== null && this.state.spectrograph !== null)
+    if (this.state.arm !== null && this.state.spectrograph !== [])
       return (
         <iframe
           title="image-modal"
@@ -71,20 +71,20 @@ class ImageModal extends React.Component {
           frameBorder="0"
           src={`http://localhost:8001/dashboard/fits_to_png/?process_id=1&cam=${
             this.state.arm
-          }${this.state.spectrograph}`}
+          }${this.state.spectrograph[0]}`}
           onLoad={this.loadEnd}
         />
       );
   };
 
   handleChangeSpectrograph = spectrograph => {
-    this.setState({ spectrograph });
+    this.setState({ spectrograph: [spectrograph] });
     if (this.state.arm !== null) this.loadStart();
   };
 
   handleChangeArm = evt => {
     this.setState({ arm: evt.target.value });
-    if (this.state.spectrograph !== null) this.loadStart();
+    if (this.state.spectrograph !== []) this.loadStart();
   };
 
   loadStart = () => {
@@ -105,7 +105,7 @@ class ImageModal extends React.Component {
   };
 
   clearSelection = () => {
-    this.setState({ spectrograph: null, arm: null, loading: false });
+    this.setState({ spectrograph: [], arm: null, loading: false });
   };
 
   render() {
