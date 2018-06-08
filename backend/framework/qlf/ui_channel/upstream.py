@@ -161,7 +161,8 @@ class Upstream:
 
     def start_uptream(self):
         if self.startedUpStreamJob == False:
-            schedule.every(int(os.environ.get('UPDATE_INTERVAL', 3))).seconds.do(self.run_threaded, self.job)
+            schedule.every(int(os.environ.get('WEBSOCKET_UPDATE_INTERVAL', 3))).seconds.do(
+                self.run_threaded, self.job)
             job_thread = threading.Thread(target=self.run_pending)
             job_thread.start()
         self.startedUpStreamJob = True
@@ -169,4 +170,4 @@ class Upstream:
     def run_pending(self):
         while 1:
             schedule.run_pending()
-            time.sleep(int(os.environ.get('UPDATE_INTERVAL', 3)))
+            time.sleep(int(os.environ.get('WEBSOCKET_UPDATE_INTERVAL', 3)))

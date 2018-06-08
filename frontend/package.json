@@ -50,7 +50,8 @@
     "pack": "electron-builder --dir",
     "dist-win": "electron-builder --win",
     "dist-mac": "electron-builder --mac",
-    "dist-linux": "electron-builder --linux"
+    "dist-linux": "electron-builder --linux",
+    "serve": "serve -s build -l $QLF_UI_PORT"
   },
   "jest": {
     "testURL": "http://qlf-ui.com/",
@@ -81,3 +82,4 @@
     "sinon": "^4.1.2"
   }
 }
+

@@ -1,8 +1,10 @@
 #!/bin/bash
 source activate quicklook 
 
-conda install -y --file requirements.txt
-pip install -r extras.txt
+if [ $UPDATE_DEPENDENCIES = "true" ]; then
+	conda install -y --file requirements.txt
+	pip install -r extras.txt
+fi
 
 export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
