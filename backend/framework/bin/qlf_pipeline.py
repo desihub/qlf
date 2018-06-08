@@ -1,19 +1,20 @@
+import glob
 import io
 import os
 import shutil
 import subprocess
+import time
 from datetime import datetime
 from multiprocessing import Lock, Manager, Process
 from threading import Thread
-import glob
 
-from log import get_logger
-from qlf_models import QLFModels
-from scalar_metrics import LoadMetrics
-import time
-from util import get_config, extract_exposure_data
 import matplotlib
 
+from log import get_logger
+from qlf_configuration import QLFConfiguration
+from qlf_models import QLFModels
+from scalar_metrics import LoadMetrics
+from util import extract_exposure_data, get_config
 
 matplotlib.use('Agg')
 
@@ -338,12 +339,13 @@ class QLFProcess(object):
                 files = current_files
 
     def resume_log(self, line, camera, lock):
-        """[summary]
+        """ Monitors log per line in camera execution
+        and writes to the QL pipeline log.
 
         Arguments:
-            line {str} -- [description]
-            camera {str} -- [description]
-            lock {[type]} -- [description]
+            line {str} -- QL execution log file line
+            camera {str} -- camera
+            lock {object} -- write lock in QL pipeline log
         """
 
         lock.acquire()
@@ -394,17 +396,22 @@ class QLFProcess(object):
                     ))
 
 
-if __name__ == "__main__":
-    print('Manually starting the QL pipeline.')
+def run_process(exposure_id, night, qaconfig=None, return_process_id=None):
+    """ Runs QL pipeline in parallel
 
-    from qlf_configuration import QLFConfiguration
-    import sys
+    Arguments:
+        exposure_id {int} -- exposure ID
+        night {str} -- night (YYYYMMDD)
 
-    try:
-        exposure_id = int(sys.argv[1])
-        night = sys.argv[2]
-    except Exception:
-        logger.exception('Failed to get exposure ID and night')
+    Keyword Arguments:
+        qaconfig {str} -- path to QA config (default: {None})
+        return_process_id {object 'multiprocessing.sharedctypes.Value'} --
+            process ID object allocated from shared memory.
+            (default: {None})
+
+    Returns:
+        int -- process ID
+    """
 
     exposure = extract_exposure_data(exposure_id, night)
 
@@ -421,10 +428,35 @@ if __name__ == "__main__":
 
     configuration = QLFConfiguration()
 
-    print(exposure)
+    if qaconfig:
+        exposure['qaconfig'] = qaconfig
 
     qlf_process = QLFProcess(
         exposure, configuration.get_current_configuration())
     process_id = qlf_process.start_process()
+
+    if return_process_id:
+        return_process_id.value = process_id
+
     qlf_process.start_jobs()
     qlf_process.finish_process()
+
+    return process_id
+
+
+if __name__ == "__main__":
+    print('Manually starting the QL pipeline.')
+    import sys
+
+    try:
+        exposure_id = int(sys.argv[1])
+        night = sys.argv[2]
+    except Exception:
+        logger.exception('Failed to get exposure ID and night')
+
+    qaconfig = None
+
+    if len(sys.argv) > 3:
+        qaconfig = sys.argv[3]
+
+    run_process(exposure_id, night, qaconfig)

@@ -12,9 +12,12 @@ qlf_root = os.getenv('QLF_ROOT')
 if not qlf_root:
     raise ValueError('QLF_ROOT not define.')
 
+# TODO: flat program can also use flat_preproc.
 program_mapping = {
-    'arcs': 'arcs',
+    'flat': 'flat', #flat_preproc
+    'arc': 'arcs',
     'dark': 'darksurvey',
+    'gray': 'greysurvey',
     'grey': 'greysurvey',
     'bright': 'brightsurvey'
 }
