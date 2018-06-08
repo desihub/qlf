@@ -77,6 +77,8 @@ class ImageModal extends React.Component {
   static propTypes = {
     classes: PropTypes.object,
     handleClose: PropTypes.func.isRequired,
+    exposure: PropTypes.string.isRequired,
+    night: PropTypes.string.isRequired,
   };
 
   renderImage = () => {
@@ -89,7 +91,9 @@ class ImageModal extends React.Component {
     )
       url = `${apiUrl}dashboard/fits_to_png/?process_id=1&cam=${
         this.state.arm
-      }${this.state.spectrograph}`;
+      }${this.state.spectrograph}&night=${this.props.night}&exposure=${
+        this.props.exposure
+      }&processing=${this.state.processing}`;
     return (
       <iframe
         title="image-modal"
@@ -180,9 +184,9 @@ class ImageModal extends React.Component {
                 value={this.state.processing}
                 onChange={this.handleChangeProcessing}
               >
-                <FormControlLabel value="b" control={<Radio />} label="raw" />
+                <FormControlLabel value="raw" control={<Radio />} label="raw" />
                 <FormControlLabel
-                  value="r"
+                  value="reduced"
                   control={<Radio />}
                   label="reduced"
                 />
