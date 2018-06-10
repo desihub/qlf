@@ -55,7 +55,7 @@ countpix  = metrics['countpix']
 #       we have the bokeh plots
 
 
-name = 'NPIX_AMP'
+name = 'LITFRAC_AMP'
 metr = countpix
 
 dx = [0,1,0,1]
@@ -137,23 +137,26 @@ p.text(x="x", y="y_offset1", text="amp",
 formatter = PrintfTickFormatter(format=cbarformat)#format='%2.1e')
 color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                 major_label_text_font_size='10pt', label_standoff=2, location=(0, 0)
-                   ,formatter=formatter, title="(ADU)", title_text_baseline="alphabetic" )
+                   ,formatter=formatter, title="", title_text_baseline="alphabetic" )
 
 p.add_layout(color_bar, 'right')
 
 
-p.xaxis.major_label_text_font_size = '0pt'  # turn off x-axis tick labels
-p.yaxis.major_label_text_font_size = '0pt'  # turn off y-axis tick labels
-p.xaxis.major_tick_line_color = None  # turn off x-axis major ticks
-p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
+p.xaxis.major_label_text_font_size = '0pt'  
+p.yaxis.major_label_text_font_size = '0pt'  
+p.xaxis.major_tick_line_color = None  
+p.xaxis.minor_tick_line_color = None  
 
-p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
-p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
+p.yaxis.major_tick_line_color = None  
+p.yaxis.minor_tick_line_color = None  
 
 #infos
 info, nlines = write_info('countpix', tests['countpix'])
 txt = PreText(text=info, height=nlines*20, width= 2*p.plot_width)
-info_col=Div(text=write_description('countpix'), width= 2*p.plot_width)
+txt_descr="Fraction over {} sigma read noise (per amp)".format(tests['countpix']['CUTPIX']) #write_description('countpix')
+txt = """<body><p  style="text-align:left; color:#262626; font-size:20px;">
+            <b>{}</b> <br>{}</body>""".format('countpix', txt_descr)
+info_col=Div(text=txt, width= 2*p.plot_width)
 ptxt = column(widgetbox(info_col),p)
 
 
