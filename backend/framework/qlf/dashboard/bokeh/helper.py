@@ -137,7 +137,7 @@ def get_cameras():
     return requests.get(api['camera'], params={'paginate': 'null'}).json()
 
 
-def get_scalar_metrics(process_id, cam):
+def get_scalar_metrics_original(process_id, cam):
     """
     Returns cam scalar metrics
     """
@@ -147,11 +147,39 @@ def get_scalar_metrics(process_id, cam):
     return requests.get(api['load_scalar_metrics'], params={'process_id': process_id, 'cam': cam}).json()
 
 
-def init_xy_plot(hover):
+def get_scalar_metrics(process_id, cam):
+    """
+    Returns cam scalar metrics from the json
+    files obtained by Singulani.
+    Just a test for desispec 0.21.0
+    """
+    import json
+
+    qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
+    folder = "/home/foliveira/qlf-root/dataql/ql-021/00003900/"
+    folder = "ql-021/00003900/"
+    cam = 'z2'
+    met = {} 
+    par = {}
+    for iqa in qanames:
+        file = "ql-{}-{}-00003900.json".format(iqa, cam)
+
+        try:
+            f = json.load(open(folder+file))
+            met.update({iqa: f['METRICS']})
+            par.update({iqa: f['PARAMS']})
+        except:
+            print('%s not found'%file)
+
+    lm={'results':{'metrics':met, 'tests':par}}
+    return lm
+
+
+def init_xy_plot(hover, yscale):
     """
     Defaults for xy plots
     """
-    plot = Figure(tools="pan,wheel_zoom,box_zoom,reset,tap")
+    plot = Figure(tools="pan,wheel_zoom,box_zoom,reset,tap", y_axis_type=yscale)
     plot.add_tools(hover)
 
     return plot
@@ -208,7 +236,7 @@ def write_info(qa_name, params):
         skypeak=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
                  'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
         getbias=['BIAS_NORMAL_RANGE',  'BIAS_WARN_RANGE', 'PERCENTILES'],
-        countpix=['NPIX_NORMAL_RANGE', 'NPIX_WARN_RANGE', 'CUTLO', 'CUTHI'],
+        countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'LITFRAC_AMP_REF', 'CUTPIX'],
         integ=['MAGDIFF_WARN_RANGE', 'MAGDIFF_NORMAL_RANGE'],
         snr=['FIDSNR_NORMAL_RANGE', 'FIDSNR_WARN_RANGE', 'FIDMAG'])
 
@@ -224,7 +252,7 @@ def write_description(qa_name):
     info_dic={"getbias":
           ["Bias From Overscan", "Mean of values in overscan covered by each amplifier" ],#"Used to calculate mean and median of region of 2D image, including overscan"],
             "getrms":["Get RMS", "RMS of full region covered by each amplifier"],#"Used to calculate RMS of region of 2D image, including overscan."],
-        "countpix": ["Count Pixels", "Number pixels above 'CUTHI' threshold per amplifier" ],#"Count number of pixels above three configured thresholds."],
+        "countpix": ["Count Pixels", "Fraction of pixels lit after preproc" ],#"Count number of pixels above three configured thresholds."],
           #+"Quantities should be independent of exposure length."],
         "xwsigma":["XWSigma","Calculate PSF sigma in spatial and wavelength directions independently using "
           +"configured sky lines"],
