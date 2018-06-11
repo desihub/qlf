@@ -62,7 +62,7 @@ dy = [1,1,0,0]
 dz = metr[name] #getbias['BIAS_AMP']
 
 
-Reds = get_palette("Reds_r")
+Reds = get_palette("Reds")
 mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
 
 dzmax, dzmin = max(dz), min(dz) 
@@ -104,8 +104,6 @@ cmap_tooltip = """
 """.replace("counts:", name+":")
 
 hover = HoverTool(tooltips=cmap_tooltip)
-#[         ("counts", "@z"),
-#         ("AMP", "@amp"),         ])
 
 p = Figure(title=name, tools=[hover, "save"],
            x_range= list([-0.5,1.5]),           # length = 18
@@ -140,7 +138,7 @@ p.text(x="x", y="y_offset1", text="amp",
 formatter = PrintfTickFormatter(format=cbarformat)#format='%2.1e')
 color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                 major_label_text_font_size='10pt', label_standoff=2, location=(0, 0)
-                   ,formatter=formatter, title="(ADU)", title_text_baseline="alphabetic" )
+                   ,formatter=formatter, title="", title_text_baseline="alphabetic" )
 
 p.add_layout(color_bar, 'right')
 
@@ -153,7 +151,7 @@ p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
 p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
 p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
-
+'''
 #-------------------------------------
 # histogram
 
@@ -202,7 +200,7 @@ p_hist.quad(top=histval, bottom=bottomval, left='left', right='right',
        hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
 
 
-
+'''
 #infos
 info, nlines = write_info('getbias', tests['getbias'])
 info_hist ="""
@@ -212,7 +210,7 @@ txt = Div(text=info_hist, width= 2*p.plot_width)
 
 
 info_col=Div(text=write_description('getbias'), width=2*p.plot_width)
-ptxt = column(widgetbox(info_col), p, txt,p_hist)
+ptxt = column(widgetbox(info_col), p, txt)#,p_hist)
 
 
 #output_notebook()

@@ -145,21 +145,16 @@ hist_source = ColumnDataSource(
 #yrange=[0, max(skyresid['MED_RESID_FIBER']) *1.1]
 fiber_hist = plot_hist(hist_hover,None, ph=300)
 
-fiber_hist.vbar(top='median_resid', x='x', width=0.8,#bottom='bottom', left='left', right='right', name='data'
+fiber_hist.vbar(top='median_resid', x='x', width=0.8,
             source=hist_source,
             fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
             hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
 fiber_hist.xaxis.axis_label="Fiber number"
 fiber_hist.yaxis.axis_label="Median resid."
 
-
-#xaxis_dict={}
-#for i in range(0, len(skyresid['SKYFIBERID']),10):
-#    xaxis_dict.update({i: skeyresid[]})
-#    
 strx=[str(i) for i in range(len(skyresid['SKYFIBERID']))]
 strf=[str(i) for i in skyresid['SKYFIBERID'] ]
-fiber_hist.xaxis.major_label_overrides = dict(zip(strx,strf))#dict(zip(str(skyresid['SKYFIBERID']), str(np.arange(len(skyresid['SKYFIBERID'])))  )  )
+fiber_hist.xaxis.major_label_overrides = dict(zip(strx,strf))
 
 '''
 #-------------------------------------

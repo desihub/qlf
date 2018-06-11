@@ -6,7 +6,7 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
-from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.models import HoverTool, ColumnDataSource, Range1d, Label, FixedTicker
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
 
@@ -16,6 +16,7 @@ from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
+from dashboard.bokeh.qlf_plot import plot_hist
 
 import numpy as np
 import logging
@@ -51,13 +52,56 @@ except:
 
 countbins = metrics['countbins']
 
-
-
+print(countbins.keys())
+print(tests['countbins'].keys())
 # ============================================
 # THIS: Given the set up in the block above, 
 #       we have the bokeh plots
 
+hist_tooltip=""" 
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER STATUS: </span>
+            <span style="font-size: 13px; color: #515151;">@status</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER ID: </span>
+            <span style="font-size: 13px; color: #515151;">@fiberid</span>
+        </div>
+    </div>
+        """
+y=np.array(countbins['GOOD_FIBER'])
+x=np.array(range(len(countbins['GOOD_FIBER'])))
+hist_hover = HoverTool(tooltips=hist_tooltip)
+hist_source = ColumnDataSource(
+                data={'goodfiber': y,
+                      'fiberid' : x,
+                        'x0': x -0.4,
+                        'x1': x +0.4,
+                        'y0': y ,
+                        'y1': y ,
+                        'status': ['good' if i==1 else 'bad' for i in y]
+                     })
 
+
+p = Figure(tools = [hist_hover,"pan,wheel_zoom,box_zoom,reset, crosshair, tap"],
+            plot_width=700, plot_height=300, y_range = Range1d(-.1,1.1),
+            x_axis_label='Fiber', y_axis_label=' Fiber Status' )
+from bokeh.models.glyphs import Segment
+
+seg=Segment(x0='x0', x1='x1', y0='y0',y1='y1', line_width=2, line_color='#1e90ff')#, source=hist_source)
+
+p.add_glyph(hist_source, seg)
+#(x0='fiberid', top='goodfiber', width=0.5, source=hist_source        )
+label = Label(x=330, y=0.7, x_units='data', y_units='data',
+                 text='NGOOD_FIBER: {}'.format(countbins['NGOODFIB']), render_mode='css',
+                 border_line_color='black', border_line_alpha=1.0,
+                 background_fill_color='white', background_fill_alpha=1.0)
+
+p.yaxis.ticker=FixedTicker(ticks=[0,1])
+p.yaxis.major_label_overrides = {'0':'bad', '1':'good'}
+p.add_layout(label)
+'''
 hist_tooltip = """
     <div>
         <div>
@@ -204,6 +248,8 @@ div=Div(text=html_str,
 # layout = gridplot( [phi,pmed,plow,None], ncols=2, plot_width=600, plot_height=600)
 
 layout_plot = gridplot( [plow,pmed,phi,div], ncols=2, responsive=False, plot_width=600, plot_height=600)
+'''
+layout_plot=p
 info_col=Div(text=write_description('countbins'), width=1200)
 layout = column(widgetbox(info_col), layout_plot)
 
