@@ -3,14 +3,15 @@ import sys
 
 from bokeh.io import curdoc
 from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
+from bokeh.plotting import Figure
 from bokeh.models.widgets import Select, Slider
 from bokeh.layouts import row, column, widgetbox, gridplot
-
+from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models.widgets import PreText, Div
-from bokeh.models import PrintfTickFormatter
+from bokeh.models import PrintfTickFormatter, Spacer
 from dashboard.bokeh.helper import write_description, write_info, \
     get_scalar_metrics
-
+from dashboard.bokeh.helper import get_palette
 
 from dashboard.bokeh.helper import get_data, get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs
@@ -194,7 +195,7 @@ url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
 lw=1.5
 y_plot = 'y'
-plt_scale = 'linear'
+plt_scale = 'log'
 
 hover = HoverTool(tooltips=html_tooltip)
 elg_plot = init_xy_plot(hover=hover, yscale=plt_scale)
@@ -245,17 +246,133 @@ star_plot.xaxis.axis_label = "DECAM_R"
 star_plot.yaxis.axis_label = "MEDIAN SNR"
 star_plot.title.text = "STAR"
 
-taptool = star_plot.select(type=TapTool)
-taptool.callback = OpenURL(url=url)
+#taptool = star_plot.select(type=TapTool)
+#taptool.callback = OpenURL(url=url)
 
-plot = gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]], responsive=False)
 
+r1=row(children=[elg_plot, lrg_plot], sizing_mode='fixed') 
+r2=row( children=[qso_plot, star_plot], sizing_mode='fixed')
+plot = column([r1,r2], sizing_mode='fixed')
 # infos
 key_name = 'snr'
 info, nlines = write_info(key_name, tests[key_name])
 txt = PreText(text=info, height=nlines*20)
-info_col = Div(text=write_description('snr'), width=2*star_plot.plot_width)
-layout = column(widgetbox(info_col), plot)
+info_col = Div(text=write_description('snr'), width= 1400)#*star_plot.plot_width)
+
+
+#---------------
+#wedges
+
+
+snr_tooltip = """
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Resid: </span>
+            <span style="font-size: 13px; color: #515151">@resid_snr</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
+            <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
+            <span style="font-size: 13px; color: #515151;">@x1</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
+            <span style="font-size: 13px; color: #515151;">@y1</span>
+        </div>
+
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
+            <span style="font-size: 13px; color: #515151;">@QLF_FIBERID</span>
+        </div>
+
+    </div>
+"""
+snr_hover = HoverTool(tooltips=snr_tooltip)
+snr = metrics['snr']
+skycont=metrics['skycont']
+median = snr['MEDIAN_SNR']
+resid = snr['SNR_RESID']
+qlf_fiberid = range(0,500)
+my_palette = get_palette('bwr')
+
+obj_type = []
+fibersnr = []
+for i in qlf_fiberid:
+    if i in snr['ELG_FIBERID']:
+        obj_type.append('ELG')
+        fibersnr.append(i) 
+    elif i in snr['QSO_FIBERID']:
+        obj_type.append('QSO')
+        fibersnr.append(i)
+    elif i in snr['LRG_FIBERID']:
+        obj_type.append('LRG')
+        fibersnr.append(i)
+    elif i in snr['STAR_FIBERID']:
+        obj_type.append('STAR')
+        fibersnr.append(i)
+    elif i in skycont['SKYFIBERID']:
+        obj_type.append('SKY')
+    else:
+        obj_type.append('UNKNOWN')
+
+
+source = ColumnDataSource(data={
+    'x1': [snr['RA'][i] for i in fibersnr ],
+    'y1': [snr['DEC'][i] for i in fibersnr ],
+    'resid_snr': snr['SNR_RESID'],
+    'QLF_FIBERID': fibersnr,
+    'OBJ_TYPE': [obj_type[i] for i in fibersnr],
+
+})
+
+print( len(fibersnr) )
+dy = (np.max(resid) - np.min(resid))*0.02
+mapper = LinearColorMapper(palette=my_palette,
+                           low=np.min(resid)- dy, high= np.max(resid)+dy)
+radius = 0.015
+radius_hover = 0.0165
+
+# axes limit
+xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
+ymin, ymax = [min(snr['DEC'][:]), max(snr['DEC'][:])]
+xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
+left, right = xmin -xfac, xmax+xfac
+bottom, top = ymin-yfac, ymax+yfac
+
+p = Figure(title='Median SNR'
+        , x_axis_label='RA', y_axis_label='DEC'
+        , plot_width=700, plot_height=601            
+        , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"])
+
+# Color Map
+p.circle('x1', 'y1', source=source, name="data", radius=radius,
+         fill_color={'field': 'resid_snr', 'transform': mapper},
+         line_color='black', line_width=0.4,
+         hover_line_color='red')
+
+# marking the Hover point
+p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
+         'field': 'resid_snr', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+
+xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
+                      title="",
+                      major_label_text_font_style="bold", padding=26,
+                      major_label_text_align='right',
+                      major_label_text_font_size="10pt",
+                      location=(0, 0))
+
+p.add_layout(xcolor_bar, 'right')
+
+#plot= gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
+
+layout = column(widgetbox(info_col),p, row(plot, Spacer(width=700, height=500)), sizing_mode='fixed')
+
+
+
+
 
 curdoc().add_root(layout)
 curdoc().title = "MEDIAN SNR"
