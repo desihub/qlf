@@ -6,6 +6,7 @@ import {
   updateLastProcessAndMonitor,
   updateCameraState,
   updateQA,
+  updateNotifications,
 } from '../online-store';
 
 class Connection extends Component {
@@ -14,10 +15,15 @@ class Connection extends Component {
     updateLastProcessAndMonitor: PropTypes.func.isRequired,
     updateCameraState: PropTypes.func.isRequired,
     updateQA: PropTypes.func.isRequired,
+    updateNotifications: PropTypes.func.isRequired,
   };
 
   handleData = data => {
     const result = JSON.parse(data);
+    if (result.notification) {
+      const notification = JSON.parse(result.notification);
+      this.props.updateNotifications(notification);
+    }
     if (result.lines) {
       const state = {
         daemonStatus: result.daemon_status
@@ -74,4 +80,5 @@ export default connect(null, dispatch => ({
     dispatch(updateLastProcessAndMonitor(state)),
   updateCameraState: state => dispatch(updateCameraState(state)),
   updateQA: state => dispatch(updateQA(state)),
+  updateNotifications: state => dispatch(updateNotifications(state)),
 }))(Connection);

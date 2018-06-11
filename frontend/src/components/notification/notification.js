@@ -9,6 +9,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import { connect } from 'react-redux';
+import moment from 'moment';
+import { clearNotifications } from '../../containers/online/online-store';
 
 const styles = {
   container: {
@@ -40,6 +43,8 @@ const styles = {
   },
   listStyle: {
     padding: 0,
+    maxHeight: 300,
+    overflowY: 'scroll',
   },
   none: {
     display: 'none',
@@ -51,13 +56,14 @@ class Notification extends React.Component {
     super(props);
     this.state = {
       anchorEl: null,
-      errors: [
-        { msg: 'Error processing exposure 106', time: '12 minutes ago' },
-        { msg: 'Available Disk Space 8%', time: '1 hour ago' },
-      ],
-      warnings: [{ msg: 'Available Disk Space 20%', time: '20 hours ago' }],
     };
   }
+
+  static propTypes = {
+    notifications: PropTypes.array.isRequired,
+    clearNotifications: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
+  };
 
   handleNotificationClick = event => {
     this.setState({
@@ -72,57 +78,48 @@ class Notification extends React.Component {
   };
 
   clear = () => {
-    this.setState({ warnings: [], errors: [], anchorEl: null });
+    this.props.clearNotifications();
+    this.setState({ anchorEl: null });
   };
 
   renderNotifications = () => {
     const { classes } = this.props;
-    const count = this.state.errors.length + this.state.warnings.length;
+    const count = this.props.notifications.length;
     if (!count) return;
     return (
-      <List style={styles.listStyle}>
-        {this.state.errors.map(err => {
-          return (
-            <div key={err.time}>
-              <ListItem>
-                <ListItemText
-                  primary={err.msg}
-                  secondary={err.time}
-                  classes={{
-                    primary: classes.alert,
-                    secondary: classes.secondary,
-                  }}
-                />
-              </ListItem>
-              <Divider />
-            </div>
-          );
-        })}
-        {this.state.warnings.map(warn => (
-          <div key={warn.time}>
-            <ListItem key={1}>
-              <ListItemText
-                primary={warn.msg}
-                secondary={warn.time}
-                classes={{
-                  primary: classes.warning,
-                  secondary: classes.secondary,
-                }}
-              />
-            </ListItem>
-            <Divider />
-          </div>
-        ))}
+      <div>
+        <List style={styles.listStyle}>
+          {this.props.notifications.map((notif, id) => {
+            const stylePrimary =
+              notif.type === 'Error' ? classes.alert : classes.warning;
+            const date = moment(new Date(notif.date)).fromNow();
+            return (
+              <div key={id}>
+                <ListItem>
+                  <ListItemText
+                    primary={notif.text}
+                    secondary={date}
+                    classes={{
+                      primary: stylePrimary,
+                      secondary: classes.secondary,
+                    }}
+                  />
+                </ListItem>
+                <Divider />
+              </div>
+            );
+          })}
+        </List>
         <Button onClick={this.clear} className={classes.button}>
           Clear
         </Button>
-      </List>
+      </div>
     );
   };
 
   render() {
     const { classes } = this.props;
-    const count = this.state.errors.length + this.state.warnings.length;
+    const count = this.props.notifications.length;
     const badge = count ? classes.badge : classes.none;
     return (
       <div style={styles.container}>
@@ -157,4 +154,13 @@ Notification.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Notification);
+const NotificationWithStyles = withStyles(styles)(Notification);
+
+export default connect(
+  state => ({
+    notifications: state.qlfOnline.notifications,
+  }),
+  dispatch => ({
+    clearNotifications: () => dispatch(clearNotifications()),
+  })
+)(NotificationWithStyles);
