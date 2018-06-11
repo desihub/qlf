@@ -88,9 +88,10 @@ class Upstream:
             schedule.every(int(
                 os.environ.get('WEBSOCKET_UPDATE_INTERVAL', 3)
             )).seconds.do(self.run_threaded, self.monitor_job)
-            schedule.every(int(
-                os.environ.get('WEBSOCKET_UPDATE_INTERVAL', 30)
-            )).minutes.do(self.run_threaded, self.disk_space_job)
+            schedule.every(30).minutes.do(
+                self.run_threaded,
+                self.disk_space_job
+            )
             job_thread = threading.Thread(target=self.run_pending)
             job_thread.start()
         self.startedUpStreamJob = True

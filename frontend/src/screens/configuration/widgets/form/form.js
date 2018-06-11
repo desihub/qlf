@@ -12,6 +12,10 @@ import _ from 'lodash';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Paper from '@material-ui/core/Paper';
+import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 const styles = {
   container: {
@@ -19,60 +23,56 @@ const styles = {
   },
   label: {
     fontSize: '0.75rem',
-    marginTop: '16px',
+    marginTop: 16,
   },
   title: {
-    marginTop: '16px',
+    marginTop: 16,
     textAlign: 'center',
   },
   button: {
     margin: '1em',
   },
+  labelThreshold: {
+    fontSize: '0.75rem',
+    marginTop: 0,
+  },
+  threshold: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItens: 'left',
+    padding: 8,
+    width: 70,
+  },
 };
 
-export default class Form extends React.Component {
+class Form extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      night: '',
+      arms: [],
+      input: '',
+      output: '',
+      exposures: '',
+      qlconfig: '',
+      spectrographs: [],
+      loading: false,
+      minInterval: '',
+      maxInterval: '',
+      maxExposures: '',
+      allowedDelay: '',
+      baseExposures: '',
+      diskAlert: 20,
+      diskWarning: 80,
+    };
+  }
+
   componentDidMount() {
     this.getCurrentConfiguration();
   }
 
-  state = {
-    night: '',
-    arms: [],
-    input: '',
-    output: '',
-    exposures: '',
-    qlconfig: '',
-    spectrographs: [],
-    loading: false,
-    minInterval: '',
-    maxInterval: '',
-    maxExposures: '',
-    allowedDelay: '',
-    baseExposures: '',
-  };
-
-  updateMinInterval = minInterval => {
-    this.setState({ minInterval });
-  };
-
-  updateMaxInterval = maxInterval => {
-    this.setState({ maxInterval });
-  };
-
-  updateMaxExposures = maxExposures => {
-    this.setState({ maxExposures });
-  };
-
-  updateAllowedDelay = allowedDelay => {
-    this.setState({ allowedDelay });
-  };
-
-  updateBaseExposures = baseExposures => {
-    this.setState({ baseExposures });
-  };
-
-  updateExposures = exposures => {
-    this.setState({ exposures });
+  static propTypes = {
+    classes: PropTypes.object,
   };
 
   updateArm = arm => {
@@ -107,28 +107,10 @@ export default class Form extends React.Component {
     }
   };
 
-  updateInput = input => {
-    this.setState({ input });
-  };
-
-  updateOutput = output => {
-    this.setState({ output });
-  };
-
-  updateLoglevel = loglevel => {
-    this.setState({ loglevel });
-  };
-
-  updateLogfile = logfile => {
-    this.setState({ logfile });
-  };
-
-  updateLogpipeline = logpipeline => {
-    this.setState({ logpipeline });
-  };
-
-  updateQlconfig = qlconfig => {
-    this.setState({ qlconfig });
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
   };
 
   updateConfiguration = configuration => {
@@ -199,7 +181,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.minInterval}
-          onChange={evt => this.updateMinInterval(evt.value)}
+          onChange={this.handleChange('minInterval')}
         />
         <TextField
           label="Max Interval"
@@ -210,7 +192,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.maxInterval}
-          onChange={evt => this.updateMaxInterval(evt.value)}
+          onChange={this.handleChange('maxInterval')}
         />
         <TextField
           label="Allowed Delay"
@@ -221,7 +203,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.allowedDelay}
-          onChange={evt => this.updateAllowedDelay(evt.value)}
+          onChange={this.handleChange('allowedDelay')}
         />
         <TextField
           label="Max Exposures"
@@ -232,7 +214,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.maxExposures}
-          onChange={evt => this.updateMaxExposures(evt.value)}
+          onChange={this.handleChange('maxExposures')}
         />
         <Typography style={styles.title} variant="headline" component="h2">
           Pipeline
@@ -304,7 +286,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.input}
-          onChange={evt => this.updateInput(evt.value)}
+          onChange={this.handleChange('input')}
         />
         <TextField
           label="Output Directory"
@@ -315,7 +297,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.output}
-          onChange={evt => this.updateOutput(evt.value)}
+          onChange={this.handleChange('output')}
         />
         <TextField
           label="Base Exposures"
@@ -326,7 +308,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.baseExposures}
-          onChange={evt => this.updateBaseExposures(evt.value)}
+          onChange={this.handleChange('baseExposures')}
         />
         <TextField
           label="Configuration file for the quick look pipeline"
@@ -337,8 +319,48 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.qlconfig}
-          onChange={evt => this.updateQlconfig(evt.value)}
+          onChange={this.handleChange('qlconfig')}
         />
+        <FormLabel style={styles.label}>Threshold Values</FormLabel>
+        <Paper style={styles.threshold} elevation={2}>
+          <FormLabel style={styles.labelThreshold}>Disk Space</FormLabel>
+          <TextField
+            label="Warning"
+            type="number"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              min: 0,
+              max: 100,
+              step: 10,
+            }}
+            margin="normal"
+            value={this.state.diskWarning}
+            onChange={this.handleChange('diskWarning')}
+            InputProps={{ // eslint-disable-line
+              endAdornment: <InputAdornment position="end">%</InputAdornment>,
+            }}
+          />
+          <TextField
+            label="Critical"
+            type="number"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              min: 0,
+              max: 100,
+              step: 10,
+            }}
+            margin="normal"
+            value={this.state.diskAlert}
+            onChange={this.handleChange('diskAlert')}
+            InputProps={{ // eslint-disable-line
+              endAdornment: <InputAdornment position="end">%</InputAdornment>,
+            }}
+          />
+        </Paper>
         <Button
           disabled={true}
           variant="raised"
@@ -359,3 +381,5 @@ export default class Form extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(Form);
