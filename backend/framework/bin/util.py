@@ -14,7 +14,7 @@ if not qlf_root:
 
 # TODO: flat program can also use flat_preproc.
 program_mapping = {
-    'flat': 'flat', #flat_preproc
+    'flat': 'flat',  # flat_preproc
     'arc': 'arcs',
     'dark': 'darksurvey',
     'gray': 'greysurvey',
@@ -64,11 +64,11 @@ def delete_files(path):
 
 def extract_exposure_data(exposure_id, night):
     """ Extracts exposure data from fits file.
-    
+
     Arguments:
         exposure_id {int} -- exposure ID
         night {str} -- night (format: YYYYMMDD)
-    
+
     Returns:
         dict -- exposure data from fits file.
     """

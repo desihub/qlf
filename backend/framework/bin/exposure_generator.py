@@ -113,8 +113,6 @@ class ExposureGenerator(Process):
         self.__gen_fiberflat_folder(night)
         self.__gen_psfboot_folder(night)
 
-        night = self.__night_to_generate(gen_time)
-
         return extract_exposure_data(exposure_id, night)
 
         # expo_name = "desi-{}.fits.fz".format(exposure_zfill)
