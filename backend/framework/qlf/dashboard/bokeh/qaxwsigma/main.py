@@ -121,8 +121,6 @@ except:
     skycont ={'SKYFIBERID':[]}
 # marking type of objects:
 obj_type=[]
-#for j in qlf_fiberid:
-#    i = j - c1
 for i in range(500):
     if  i in snr['ELG_FIBERID']:
         obj_type.append('ELG')
