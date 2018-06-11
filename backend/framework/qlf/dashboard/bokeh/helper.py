@@ -179,8 +179,9 @@ def init_xy_plot(hover, yscale):
     """
     Defaults for xy plots
     """
-    plot = Figure(tools="pan,wheel_zoom,box_zoom,reset,tap", y_axis_type=yscale)
-    plot.add_tools(hover)
+    plot = Figure(tools=[hover,"pan,wheel_zoom,box_zoom,reset,tap"], y_axis_type=yscale
+    , plot_width=400, plot_height=300)
+    #plot.add_tools(hover)
 
     return plot
 
@@ -235,9 +236,9 @@ def write_info(qa_name, params):
                    'NGOODFIB_WARN_RANGE', 'NGOODFIB_NORMAL_RANGE'],
         skypeak=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
                  'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
-        getbias=['BIAS_NORMAL_RANGE',  'BIAS_WARN_RANGE', 'PERCENTILES'],
+        getbias=['BIAS_NORMAL_RANGE',  'BIAS_WARN_RANGE'],#, 'PERCENTILES'],
         countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'LITFRAC_AMP_REF', 'CUTPIX'],
-        integ=['MAGDIFF_WARN_RANGE', 'MAGDIFF_NORMAL_RANGE'],
+        integ=['DELTAMAG_WARN_RANGE', 'DELTAMAG_NORMAL_RANGE'],
         snr=['FIDSNR_NORMAL_RANGE', 'FIDSNR_WARN_RANGE', 'FIDMAG'])
 
     keys = dict_test_keys[qa_name]
