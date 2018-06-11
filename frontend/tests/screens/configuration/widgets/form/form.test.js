@@ -58,7 +58,7 @@ describe('Configuration Form', () => {
       baseExposures: '/app/spectro/base_exposures',
       qlconfig:
         '/app/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml',
-      spectrographs: 'r0,b0'.split(','),
+      spectrographs: '0',
     });
   });
 
@@ -147,7 +147,7 @@ describe('Configuration Form', () => {
     ).toBe('/app/spectro/data');
     await wrapper
       .find('input')
-      .at(37)
+      .at(7)
       .simulate('change', { value: 'input' });
     expect(
       wrapper
@@ -166,7 +166,7 @@ describe('Configuration Form', () => {
     ).toBe('/app/spectro/redux');
     await wrapper
       .find('input')
-      .at(38)
+      .at(8)
       .simulate('change', { value: 'output' });
     expect(
       wrapper
@@ -185,7 +185,7 @@ describe('Configuration Form', () => {
     ).toBe('/app/spectro/base_exposures');
     await wrapper
       .find('input')
-      .at(39)
+      .at(9)
       .simulate('change', { value: 'baseExposures' });
     expect(
       wrapper
@@ -204,7 +204,7 @@ describe('Configuration Form', () => {
     ).toBe('/app/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml');
     await wrapper
       .find('input')
-      .at(40)
+      .at(10)
       .simulate('change', { value: 'qlconfig' });
     expect(
       wrapper
@@ -214,58 +214,54 @@ describe('Configuration Form', () => {
     ).toBe('qlconfig');
   });
 
-  it('changes checked spectrograph', async () => {
-    expect(
-      wrapper
-        .find('input')
-        .at(7)
-        .props().checked
-    ).toBe(false);
-    await wrapper
-      .find('input')
-      .at(7)
-      .simulate('change');
-    expect(
-      wrapper
-        .find('input')
-        .at(7)
-        .props().checked
-    ).toBe(true);
-  });
-
   it('changes checked arm and select all', async () => {
     expect(
       wrapper
+        .find('path')
+        .at(18)
+        .props().style.fill
+    ).toBe('green');
+    expect(
+      wrapper
         .find('input')
-        .at(4)
+        .at(5)
         .props().checked
     ).toBe(true);
     await wrapper
       .find('input')
-      .at(4)
+      .at(5)
       .simulate('change');
     expect(
       wrapper
-        .find('input')
-        .at(4)
-        .props().checked
-    ).toBe(false);
+        .find('path')
+        .at(18)
+        .props().style.fill
+    ).toBe('gray');
     expect(
       wrapper
         .find('input')
-        .at(8)
+        .at(5)
         .props().checked
     ).toBe(false);
-    await wrapper
-      .find('input')
-      .at(4)
-      .simulate('change');
+  });
+
+  it('changes spectrograph selection', async () => {
     expect(
       wrapper
-        .find('input')
-        .at(8)
-        .props().checked
-    ).toBe(true);
+        .find('path')
+        .at(18)
+        .props().style.fill
+    ).toBe('gray');
+    wrapper
+      .find('path')
+      .at(18)
+      .simulate('click');
+    expect(
+      wrapper
+        .find('path')
+        .at(18)
+        .props().style.fill
+    ).toBe('green');
   });
 
   it('clicks default button calls getDefaultConfiguration', async () => {

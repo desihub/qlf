@@ -163,7 +163,7 @@ export default class Form extends React.Component {
         base_exposures_path,
       } = configuration.results;
 
-      const specs = spectrographs.split(',').map(s => parseInt(s));
+      const specs = spectrographs.split(',').map(s => parseInt(s, 10));
 
       const spectrographsObj = {
         b: arms.includes('b') ? specs : [],
