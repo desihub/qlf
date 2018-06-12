@@ -177,7 +177,6 @@ class Form extends React.Component {
   };
 
   render() {
-    console.log(this.state)
     return (
       <div style={styles.container}>
         {this.state.loading ? <CircularProgress size={50} /> : null}
