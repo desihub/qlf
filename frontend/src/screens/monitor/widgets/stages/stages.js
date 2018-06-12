@@ -11,10 +11,6 @@ import _ from 'lodash';
 import { Card } from 'material-ui/Card';
 import PropTypes from 'prop-types';
 
-const tableData = _.map(_.range(10), function() {
-  return { pre: '', spec: '', fib: '', sky: '' };
-});
-
 const headerSize = '11px';
 
 const styles = {
@@ -144,9 +140,11 @@ export default class Stages extends Component {
   };
 
   render() {
-    let stage_status = tableData;
+    let stage_status = _.map(_.range(10), function() {
+      return { pre: '', spec: '', fib: '', sky: '' };
+    });
     if (this.props.status.length > 0) {
-      stage_status = tableData.map((row, index) => {
+      stage_status = stage_status.map((row, index) => {
         row.pre = this.props.status[0].camera[index];
         row.spec = this.props.status[1].camera[index];
         row.fib = this.props.status[2].camera[index];

@@ -33,6 +33,10 @@ jest.mock('../../../../../src/containers/offline/connection/qlf-api', () => {
   return {
     getCurrentConfiguration: jest.fn(() => qlfConfig),
     getDefaultConfiguration: jest.fn(() => qlfConfig),
+    getCurrentThresholds: jest.fn(() => ({
+      disk_percent_alert: '20',
+      disk_percent_warning: '40',
+    })),
   };
 });
 
@@ -45,34 +49,20 @@ describe('Configuration Form', () => {
       </MuiThemeProvider>
     );
     wrapper = await mount(form);
-    wrapper.setState({
-      night: '20190101',
-      arms: 'b,r',
-      input: '/app/spectro/data',
-      output: '/app/spectro/redux',
-      exposures: '3,4',
-      minInterval: '3',
-      maxInterval: '15',
-      maxExposures: '10',
-      allowedDelay: '20',
-      baseExposures: '/app/spectro/base_exposures',
-      qlconfig:
-        '/app/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml',
-      spectrographs: '0',
-    });
   });
 
   it('changes minInterval', async () => {
+    wrapper.update();
     expect(
       wrapper
-        .find('input')
+        .find('TextField')
         .at(0)
         .props().value
     ).toBe('3');
     await wrapper
       .find('input')
       .at(0)
-      .simulate('change', { value: 'minInterval' });
+      .simulate('change', { target: { value: 'minInterval' } });
     expect(
       wrapper
         .find('TextField')
@@ -91,7 +81,7 @@ describe('Configuration Form', () => {
     await wrapper
       .find('input')
       .at(1)
-      .simulate('change', { value: 'maxInterval' });
+      .simulate('change', { target: { value: 'maxInterval' } });
     expect(
       wrapper
         .find('TextField')
@@ -110,7 +100,7 @@ describe('Configuration Form', () => {
     await wrapper
       .find('input')
       .at(2)
-      .simulate('change', { value: 'delay' });
+      .simulate('change', { target: { value: 'delay' } });
     expect(
       wrapper
         .find('TextField')
@@ -129,7 +119,7 @@ describe('Configuration Form', () => {
     await wrapper
       .find('input')
       .at(3)
-      .simulate('change', { value: 'maxExposures' });
+      .simulate('change', { target: { value: 'maxExposures' } });
     expect(
       wrapper
         .find('TextField')
