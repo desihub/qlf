@@ -46,6 +46,8 @@ class TableHistory extends Component {
       tableColumnsHidden: [],
       openColumnsModal: false,
       openImageModal: false,
+      currentExposure: undefined,
+      currentNight: undefined,
     };
   }
 
@@ -251,13 +253,19 @@ class TableHistory extends Component {
 
   renderImageModal = () => {
     return this.state.openImageModal ? (
-      <ImageModal handleClose={this.handleImageModalClose} />
+      <ImageModal
+        handleClose={this.handleImageModalClose}
+        night={this.state.currentNight}
+        exposure={this.state.currentExposure}
+      />
     ) : null;
   };
 
-  handleImageModalOpen = () => {
+  handleImageModalOpen = (night, exposure) => {
     this.setState({
       openImageModal: true,
+      currentExposure: exposure,
+      currentNight: night,
     });
   };
 

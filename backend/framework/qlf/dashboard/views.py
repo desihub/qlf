@@ -630,7 +630,10 @@ def fits_to_png(request):
     template = loader.get_template('dashboard/fits_to_png.html')
     # Generate Image
     cam = request.GET.get('cam')
-    png_image = Fits2png(cam).convert_fits2png()
+    processing = request.GET.get('processing')
+    night = request.GET.get('night')
+    exposure = request.GET.get('exposure')
+    png_image = Fits2png(cam, processing, night, exposure).convert_fits2png()
     context = {'image': png_image}
     response = HttpResponse(template.render(context, request))
 

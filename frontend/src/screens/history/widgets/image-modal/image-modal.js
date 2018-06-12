@@ -10,6 +10,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import { FadeLoader } from 'halogenium';
 import Button from '@material-ui/core/Button';
 
+const apiUrl = process.env.REACT_APP_API;
+
 const styles = {
   modalBody: {
     position: 'absolute',
@@ -26,20 +28,35 @@ const styles = {
     justifyContent: 'center',
   },
   iframe: {
-    height: '60vh',
+    height: '70vh',
     width: '70vw',
   },
-  controls: {
+  controlsContainer: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    width: '80%',
-    minWidth: 400,
+    height: '100%',
+    minWidth: 200,
     justifyContent: 'space-evenly',
+    borderRight: '1px solid darkgrey',
   },
-  radioGroup: {
+  column: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  row: {
     display: 'flex',
     flexDirection: 'row',
+  },
+  preview: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loading: {
+    position: 'relative',
+    top: 200,
   },
   button: {
     float: 'right',
@@ -52,6 +69,7 @@ class ImageModal extends React.Component {
     this.state = {
       arm: null,
       spectrograph: null,
+      processing: null,
       loading: false,
     };
   }
@@ -59,32 +77,50 @@ class ImageModal extends React.Component {
   static propTypes = {
     classes: PropTypes.object,
     handleClose: PropTypes.func.isRequired,
+    exposure: PropTypes.string.isRequired,
+    night: PropTypes.string.isRequired,
   };
 
   renderImage = () => {
     const { classes } = this.props;
-    if (this.state.arm !== null && this.state.spectrograph !== null)
-      return (
-        <iframe
-          title="image-modal"
-          className={classes.iframe}
-          frameBorder="0"
-          src={`http://localhost:8001/dashboard/fits_to_png/?process_id=1&cam=${
-            this.state.arm
-          }${this.state.spectrograph}`}
-          onLoad={this.loadEnd}
-        />
-      );
+    let url = '';
+    if (
+      this.state.arm !== null &&
+      this.state.processing !== null &&
+      this.state.spectrograph !== null
+    )
+      url = `${apiUrl}dashboard/fits_to_png/?process_id=1&cam=${
+        this.state.arm
+      }${this.state.spectrograph}&night=${this.props.night}&exposure=${
+        this.props.exposure
+      }&processing=${this.state.processing}`;
+    return (
+      <iframe
+        title="image-modal"
+        className={classes.iframe}
+        frameBorder="0"
+        src={url}
+        onLoad={this.loadEnd}
+      />
+    );
   };
 
   handleChangeSpectrograph = spectrograph => {
     this.setState({ spectrograph });
-    if (this.state.arm !== null) this.loadStart();
+    if (this.state.arm !== null && this.state.processing !== null)
+      this.loadStart();
   };
 
   handleChangeArm = evt => {
     this.setState({ arm: evt.target.value });
-    if (this.state.spectrograph !== null) this.loadStart();
+    if (this.state.spectrograph !== null && this.state.processing !== null)
+      this.loadStart();
+  };
+
+  handleChangeProcessing = evt => {
+    this.setState({ processing: evt.target.value });
+    if (this.state.spectrograph !== null && this.state.arm !== null)
+      this.loadStart();
   };
 
   loadStart = () => {
@@ -98,34 +134,39 @@ class ImageModal extends React.Component {
   renderLoading = () => {
     if (!this.state.loading) return null;
     return (
-      <div style={{ ...styles.loading }}>
+      <div className={this.props.classes.loading}>
         <FadeLoader color="#424242" size="16px" margin="4px" />
       </div>
     );
   };
 
   clearSelection = () => {
-    this.setState({ spectrograph: null, arm: null, loading: false });
+    this.setState({
+      processing: null,
+      spectrograph: null,
+      arm: null,
+      loading: false,
+    });
   };
 
-  render() {
+  renderControls = () => {
     const { classes } = this.props;
     return (
-      <Modal className={classes.modal} open={true} onClose={this.handleClose}>
-        <div className={classes.modalBody}>
-          <div className={classes.controls}>
-            <div>
-              <FormLabel component="legend">Spectrograph:</FormLabel>
-              <Petals
-                selected={this.state.spectrograph}
-                onClick={this.handleChangeSpectrograph}
-                size={100}
-              />
-            </div>
-            <div>
-              <FormLabel component="legend">Arm:</FormLabel>
+      <div className={classes.controlsContainer}>
+        <div>
+          <FormLabel component="legend">Spectrograph:</FormLabel>
+          <Petals
+            selected={this.state.spectrograph}
+            onClick={this.handleChangeSpectrograph}
+            size={100}
+          />
+        </div>
+        <div className={classes.row}>
+          <div>
+            <FormLabel component="legend">Arm:</FormLabel>
+            <div className={classes.row}>
               <RadioGroup
-                className={classes.radioGroup}
+                className={classes.column}
                 value={this.state.arm}
                 onChange={this.handleChangeArm}
               >
@@ -133,26 +174,67 @@ class ImageModal extends React.Component {
                 <FormControlLabel value="r" control={<Radio />} label="r" />
                 <FormControlLabel value="z" control={<Radio />} label="z" />
               </RadioGroup>
-              <Button
-                onClick={this.props.handleClose}
-                variant="contained"
-                size="small"
-                className={classes.button}
-              >
-                Back
-              </Button>
-              <Button
-                onClick={this.clearSelection}
-                variant="contained"
-                size="small"
-                className={classes.button}
-              >
-                Clear
-              </Button>
             </div>
           </div>
-          {this.renderLoading()}
-          {this.renderImage()}
+          <div>
+            <FormLabel component="legend">Processing:</FormLabel>
+            <div className={classes.row}>
+              <RadioGroup
+                className={classes.column}
+                value={this.state.processing}
+                onChange={this.handleChangeProcessing}
+              >
+                <FormControlLabel value="raw" control={<Radio />} label="raw" />
+                <FormControlLabel
+                  value="reduced"
+                  control={<Radio />}
+                  label="reduced"
+                />
+              </RadioGroup>
+            </div>
+          </div>
+        </div>
+        {this.renderClear()}
+      </div>
+    );
+  };
+
+  renderClose = () => (
+    <Button
+      onClick={this.props.handleClose}
+      variant="raised"
+      size="small"
+      className={this.props.classes.button}
+    >
+      Close
+    </Button>
+  );
+
+  renderClear = () => (
+    <Button
+      onClick={this.clearSelection}
+      variant="raised"
+      size="small"
+      className={this.props.classes.button}
+    >
+      Clear
+    </Button>
+  );
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <Modal className={classes.modal} open={true} onClose={this.handleClose}>
+        <div className={classes.modalBody}>
+          <div className={classes.row}>
+            <div>{this.renderControls()}</div>
+            <div className={classes.preview}>
+              <FormLabel component="legend">Preview:</FormLabel>
+              {this.renderLoading()}
+              {this.renderImage()}
+              {this.renderClose()}
+            </div>
+          </div>
         </div>
       </Modal>
     );
