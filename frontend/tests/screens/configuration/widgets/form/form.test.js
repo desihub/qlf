@@ -138,7 +138,7 @@ describe('Configuration Form', () => {
     await wrapper
       .find('input')
       .at(7)
-      .simulate('change', { value: 'input' });
+      .simulate('change', { target: { value: 'input' } });
     expect(
       wrapper
         .find('TextField')
@@ -157,7 +157,7 @@ describe('Configuration Form', () => {
     await wrapper
       .find('input')
       .at(8)
-      .simulate('change', { value: 'output' });
+      .simulate('change', { target: { value: 'output' } });
     expect(
       wrapper
         .find('TextField')
@@ -176,7 +176,7 @@ describe('Configuration Form', () => {
     await wrapper
       .find('input')
       .at(9)
-      .simulate('change', { value: 'baseExposures' });
+      .simulate('change', { target: { value: 'baseExposures' } });
     expect(
       wrapper
         .find('TextField')
@@ -195,7 +195,7 @@ describe('Configuration Form', () => {
     await wrapper
       .find('input')
       .at(10)
-      .simulate('change', { value: 'qlconfig' });
+      .simulate('change', { target: { value: 'qlconfig' } });
     expect(
       wrapper
         .find('TextField')
