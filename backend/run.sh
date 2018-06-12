@@ -1,8 +1,10 @@
 #!/bin/bash
 source activate quicklook 
 
-conda install -y --file requirements.txt
-pip install -r extras.txt
+if [ $UPDATE_DEPENDENCIES = "true" ]; then
+	conda install -y --file requirements.txt
+	pip install -r extras.txt
+fi
 
 apt-get install -y locales && locale-gen en_US.UTF-8
 
