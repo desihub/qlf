@@ -11,7 +11,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import _ from 'lodash';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
+import Petals from '../../../../components/petals/petals';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
@@ -31,6 +31,20 @@ const styles = {
   },
   button: {
     margin: '1em',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingTop: 16,
+    justifyContent: 'space-around',
+    width: '90vw',
+  },
+  formDiv: {
+    display: 'grid',
+  },
+  formCheckbox: {
+    margin: 0,
+    justifySelf: 'center',
   },
   labelThreshold: {
     fontSize: '0.75rem',
@@ -55,7 +69,7 @@ class Form extends React.Component {
       output: '',
       exposures: '',
       qlconfig: '',
-      spectrographs: [],
+      spectrographs: { b: [], r: [], z: [] },
       loading: false,
       minInterval: '',
       maxInterval: '',
@@ -76,33 +90,35 @@ class Form extends React.Component {
   };
 
   updateArm = arm => {
+    const newArm = {};
     if (this.state.arms.includes(arm)) {
+      newArm[arm] = [];
       this.setState({
         arms: this.state.arms.filter(a => a !== arm),
-        spectrographs: this.state.spectrographs.filter(
-          spec => !spec.includes(arm)
-        ),
+        spectrographs: Object.assign(this.state.spectrographs, newArm),
       });
     } else {
+      newArm[arm] = _.range(0, 10);
       this.setState({
         arms: this.state.arms.concat(arm),
-        spectrographs: this.state.spectrographs
-          .filter(spec => !spec.includes(arm))
-          .concat(_.range(0, 10).map(spec => `${arm}${spec}`)),
+        spectrographs: Object.assign(this.state.spectrographs, newArm),
       });
     }
   };
 
-  updateSpectrograph = (spectrograph, arm) => {
-    if (this.state.spectrographs.includes(`${arm}${spectrograph}`)) {
+  updateSpectrograph = (arm, spectrograph) => {
+    const newArm = {};
+    if (this.state.spectrographs[arm].includes(spectrograph)) {
+      newArm[arm] = this.state.spectrographs[arm].filter(
+        s => s !== spectrograph
+      );
       this.setState({
-        spectrographs: this.state.spectrographs.filter(
-          spec => spec !== `${arm}${spectrograph}`
-        ),
+        spectrographs: Object.assign(this.state.spectrographs, newArm),
       });
     } else {
+      newArm[arm] = this.state.spectrographs[arm].concat(spectrograph);
       this.setState({
-        spectrographs: this.state.spectrographs.concat(`${arm}${spectrograph}`),
+        spectrographs: Object.assign(this.state.spectrographs, newArm),
       });
     }
   };
@@ -146,20 +162,22 @@ class Form extends React.Component {
         spectrographs,
         base_exposures_path,
       } = configuration.results;
-      let flatSpectrographs = [];
-      if (spectrographs && arms)
-        flatSpectrographs = _.flatten(
-          spectrographs
-            .split(',')
-            .map(spec => arms.split(',').map(arm => `${arm}${spec}`))
-        );
+
+      const specs = spectrographs.split(',').map(s => parseInt(s, 10));
+
+      const spectrographsObj = {
+        b: arms.includes('b') ? specs : [],
+        r: arms.includes('r') ? specs : [],
+        z: arms.includes('z') ? specs : [],
+      };
+
       this.setState({
         arms: arms.split(','),
         input: desi_spectro_data,
         output: desi_spectro_redux,
         exposures: exposures,
         qlconfig: qlconfig,
-        spectrographs: flatSpectrographs,
+        spectrographs: spectrographsObj,
         minInterval: min_interval,
         maxInterval: max_interval,
         maxExposures: max_exposures,
@@ -170,10 +188,11 @@ class Form extends React.Component {
   };
 
   updateThresholds = thresholds => {
-    this.setState({
-      diskAlert: thresholds.disk_percent_alert,
-      diskWarning: thresholds.disk_percent_warning,
-    });
+    if (thresholds && thresholds.disk_percent_alert)
+      this.setState({
+        diskAlert: thresholds.disk_percent_alert,
+        diskWarning: thresholds.disk_percent_warning,
+      });
   };
 
   render() {
@@ -231,58 +250,33 @@ class Form extends React.Component {
           Pipeline
         </Typography>
         <FormControl component="fieldset">
-          <Grid container spacing={24}>
-            <Grid item>
-              <FormLabel style={styles.label}>Arms to process</FormLabel>
-              <FormGroup column="true">
-                {['b', 'r', 'z'].map(arm => (
-                  <FormGroup key={arm} row>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.arms.includes(arm)}
-                          onChange={() => this.updateArm(arm)}
-                          value={arm}
-                        />
-                      }
-                      label={arm}
+          <FormLabel style={styles.label}>
+            Arms / Spectrographs to process
+          </FormLabel>
+          <FormGroup style={styles.formGroup}>
+            {['b', 'r', 'z'].map(arm => (
+              <div key={arm} style={styles.formDiv}>
+                <Petals
+                  selected={this.state.spectrographs[arm]}
+                  onClick={spectrograph =>
+                    this.updateSpectrograph(arm, spectrograph)
+                  }
+                  size={100}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={this.state.arms.includes(arm)}
+                      onChange={() => this.updateArm(arm)}
+                      value={arm}
                     />
-                  </FormGroup>
-                ))}
-              </FormGroup>
-            </Grid>
-            <Grid item xs>
-              <FormLabel style={styles.label}>
-                Spectrographs to process
-              </FormLabel>
-              <FormGroup column="true">
-                {['b', 'r', 'z'].map(arm => (
-                  <FormGroup key={arm} row>
-                    {_.range(0, 10).map(id => {
-                      const spectrograph = id.toString();
-                      return (
-                        <FormControlLabel
-                          key={id}
-                          control={
-                            <Checkbox
-                              checked={this.state.spectrographs.includes(
-                                `${arm}${spectrograph}`
-                              )}
-                              onChange={() =>
-                                this.updateSpectrograph(spectrograph, arm)
-                              }
-                              value={spectrograph}
-                            />
-                          }
-                          label={id}
-                        />
-                      );
-                    })}
-                  </FormGroup>
-                ))}
-              </FormGroup>
-            </Grid>
-          </Grid>
+                  }
+                  label={arm}
+                  style={styles.formCheckbox}
+                />
+              </div>
+            ))}
+          </FormGroup>
         </FormControl>
         <Divider />
         <Typography style={styles.title} variant="headline" component="h2">

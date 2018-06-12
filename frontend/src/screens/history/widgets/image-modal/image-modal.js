@@ -68,7 +68,7 @@ class ImageModal extends React.Component {
     super(props);
     this.state = {
       arm: null,
-      spectrograph: null,
+      spectrograph: [],
       processing: null,
       loading: false,
     };
@@ -87,7 +87,7 @@ class ImageModal extends React.Component {
     if (
       this.state.arm !== null &&
       this.state.processing !== null &&
-      this.state.spectrograph !== null
+      this.state.spectrograph !== []
     )
       url = `${apiUrl}dashboard/fits_to_png/?process_id=1&cam=${
         this.state.arm
@@ -106,20 +106,20 @@ class ImageModal extends React.Component {
   };
 
   handleChangeSpectrograph = spectrograph => {
-    this.setState({ spectrograph });
+    this.setState({ spectrograph: [spectrograph] });
     if (this.state.arm !== null && this.state.processing !== null)
       this.loadStart();
   };
 
   handleChangeArm = evt => {
     this.setState({ arm: evt.target.value });
-    if (this.state.spectrograph !== null && this.state.processing !== null)
+    if (this.state.spectrograph !== [] && this.state.processing !== null)
       this.loadStart();
   };
 
   handleChangeProcessing = evt => {
     this.setState({ processing: evt.target.value });
-    if (this.state.spectrograph !== null && this.state.arm !== null)
+    if (this.state.spectrograph !== [] && this.state.arm !== null)
       this.loadStart();
   };
 
@@ -143,7 +143,7 @@ class ImageModal extends React.Component {
   clearSelection = () => {
     this.setState({
       processing: null,
-      spectrograph: null,
+      spectrograph: [],
       arm: null,
       loading: false,
     });
