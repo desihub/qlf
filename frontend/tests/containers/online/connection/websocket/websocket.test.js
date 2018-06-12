@@ -57,6 +57,7 @@ describe('Websocket', () => {
       spectrograph: 0,
       processId: undefined,
       qaTests: [],
+      notifications: [],
     });
   });
 
@@ -86,6 +87,7 @@ describe('Websocket', () => {
       spectrograph: 0,
       step: 0,
       processId: undefined,
+      notifications: [],
     });
   });
 });
