@@ -31,6 +31,9 @@ jest.mock('../../../src/containers/offline/connection/qlf-api', () => {
     getDefaultConfiguration: () => {
       return qlfConfig;
     },
+    getCurrentThresholds: () => {
+      return { disk_percent_alert: '20', disk_percent_warning: '40' };
+    },
     getQlConfig: () => {
       return 'QLConfig';
     },

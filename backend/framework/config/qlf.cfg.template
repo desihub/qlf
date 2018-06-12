@@ -7,6 +7,9 @@ allowed_delay=20
 max_exposures=5
 max_nights=5
 
+disk_percent_warning=40
+disk_percent_alert=20
+
 # Log level, e.g. DEBUG, INFO, WARNING or ERROR
 loglevel=INFO
 

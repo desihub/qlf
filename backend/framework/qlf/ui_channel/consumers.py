@@ -1,8 +1,12 @@
 from channels import Group
 import json
 from ui_channel.upstream import Upstream
+from ui_channel.alerts import Alerts
+import datetime
 
 us = Upstream()
+alerts = Alerts()
+
 
 # Connected to websocket.connect
 def ws_add(message):
@@ -18,9 +22,11 @@ def ws_add(message):
     Group("monitor").add(message.reply_channel)
     message.reply_channel.send({
         "text": json.dumps({
-            "status": "connected monitor"
+            "status": "connected monitor",
+            "notification": alerts.available_space()
         })
     })
+
 
 # Connected to websocket.receive
 def ws_message(message):
@@ -46,12 +52,16 @@ def ws_message(message):
     if "camera" in message.content['text']:
         message.reply_channel.send({
             "text": json.dumps({
-                "cameralog": us.get_camera_log(str(message.content['text'].split(":")[1]))
+                "cameralog": us.get_camera_log(
+                    str(message.content['text'].split(":")[1])
+                )
             })
         })
     # User Channel
     if "uuid" in message.content['text']:
-        Group(str(message.content['text'].split("uuid=")[1])).add(message.reply_channel)
+        Group(str(message.content['text'].split("uuid=")[1])).add(
+            message.reply_channel
+        )
 
         Group(str(message.content['text'].split("uuid=")[1])).send({
             "text": json.dumps({
@@ -64,6 +74,7 @@ def ws_message(message):
             "text": "%s" % message.content['text']
         })
     })
+
 
 # Connected to websocket.disconnect
 def ws_disconnect(message):

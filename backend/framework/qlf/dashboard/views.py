@@ -38,6 +38,8 @@ from clients import get_exposure_monitoring
 from django.contrib import messages
 import logging
 
+from util import get_config
+
 qlf = get_exposure_monitoring()
 
 logger = logging.getLogger(__name__)
@@ -649,3 +651,13 @@ def send_ticket_email(request):
             return JsonResponse({'status': 'sent'})
         except:
             return JsonResponse({'status': 'send_mail fail'})
+
+def disk_thresholds(request):
+    cfg = get_config()
+
+    disk_percent_warning = cfg.get('main', 'disk_percent_warning')
+    disk_percent_alert = cfg.get('main', 'disk_percent_alert')
+    return JsonResponse({
+        "disk_percent_warning": disk_percent_warning,
+        "disk_percent_alert": disk_percent_alert
+    })
