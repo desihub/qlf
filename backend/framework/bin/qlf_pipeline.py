@@ -396,7 +396,7 @@ class QLFProcess(object):
                     ))
 
 
-def run_process(exposure_id, night, qaconfig=None, return_process_id=None):
+def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
     """ Runs QL pipeline in parallel
 
     Arguments:
@@ -404,7 +404,7 @@ def run_process(exposure_id, night, qaconfig=None, return_process_id=None):
         night {str} -- night (YYYYMMDD)
 
     Keyword Arguments:
-        qaconfig {str} -- path to QA config (default: {None})
+        qlconfig {str} -- path to QL config (default: {None})
         return_process_id {object 'multiprocessing.sharedctypes.Value'} --
             process ID object allocated from shared memory.
             (default: {None})
@@ -428,8 +428,8 @@ def run_process(exposure_id, night, qaconfig=None, return_process_id=None):
 
     configuration = QLFConfiguration()
 
-    if qaconfig:
-        exposure['qaconfig'] = qaconfig
+    if qlconfig:
+        exposure['qlconfig'] = qlconfig
 
     qlf_process = QLFProcess(
         exposure, configuration.get_current_configuration())
@@ -454,9 +454,9 @@ if __name__ == "__main__":
     except Exception:
         logger.exception('Failed to get exposure ID and night')
 
-    qaconfig = None
+    qlconfig = None
 
     if len(sys.argv) > 3:
-        qaconfig = sys.argv[3]
+        qlconfig = sys.argv[3]
 
-    run_process(exposure_id, night, qaconfig)
+    run_process(exposure_id, night, qlconfig)
