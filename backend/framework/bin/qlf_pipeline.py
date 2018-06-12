@@ -1,21 +1,25 @@
+import glob
 import io
 import os
 import shutil
 import subprocess
+import time
 from datetime import datetime
 from multiprocessing import Lock, Manager, Process
 from threading import Thread
-import glob
+
+import matplotlib
 
 from log import get_logger
+from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
-import time
-from util import get_config
+from util import extract_exposure_data, get_config
+
+matplotlib.use('Agg')
 
 cfg = get_config()
 
-qlconfig = cfg.get('main', 'qlconfig')
 desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 loglevel = cfg.get("main", "loglevel")
 logpipeline = cfg.get('main', 'logpipeline')
@@ -100,7 +104,9 @@ class QLFProcess(object):
 
         logger.info('...\n\n')
         logger.info('Process {}'.format(process.id))
-        logger.info('Exposure {} started.'.format(self.data.get('exposure_id')))
+        logger.info('Exposure {} started.'.format(
+            self.data.get('exposure_id')
+        ))
 
         return process.id
 
@@ -157,13 +163,15 @@ class QLFProcess(object):
 
         cmd = [
             'desi_quicklook',
-            '-i', qlconfig,
+            '-i', data.get('qlconfig'),
             '-n', data.get('night'),
             '-c', camera.get('name'),
             '-e', str(data.get('exposure_id')),
             '--rawdata_dir', data.get('desi_spectro_data'),
             '--specprod_dir', desi_spectro_redux
         ]
+
+        print(" ".join(str(x) for x in cmd))
 
         # TODO: Add --mergeQA in cmd
 
@@ -183,7 +191,7 @@ class QLFProcess(object):
                 line = process.stdout.readline()
                 if not line:
                     break
-                self.resume_log(line, camera.get('name'), lock)
+                # self.resume_log(line, camera.get('name'), lock)
                 logname.write(line)
                 logname.flush()
 
@@ -264,7 +272,9 @@ class QLFProcess(object):
 
         logger.info("Ingestion complete: {}.".format(duration_ingestion))
         logger.info("Total runtime: {}.".format(total_duration))
-        logger.info("Exposure {} is ready.".format(self.data.get('exposure_id')))
+        logger.info("Exposure {} is ready.".format(
+            self.data.get('exposure_id')
+        ))
 
     def generate_qa_tests(self):
         qa_tests = list()
@@ -308,12 +318,15 @@ class QLFProcess(object):
                     try:
                         cameras[file_array[2]].update_status(file_array[1])
                     except TypeError as e:
-                        current_files = list(set(current_files) - set([new_file]))
+                        current_files = list(
+                            set(current_files) - set([new_file])
+                        )
                         print("Error {}: {}".format(new_file, e))
 
                 for camera in self.data.get('cameras'):
-                    qa_tests.append(
-                        {camera.get('name'): cameras[camera.get('name')].status})
+                    qa_tests.append({
+                        camera.get('name'): cameras[camera.get('name')].status
+                    })
 
                 if len(qa_tests) > 0:
                     self.models.update_process(
@@ -326,12 +339,13 @@ class QLFProcess(object):
                 files = current_files
 
     def resume_log(self, line, camera, lock):
-        """[summary]
+        """ Monitors log per line in camera execution
+        and writes to the QL pipeline log.
 
         Arguments:
-            line {str} -- [description]
-            camera {str} -- [description]
-            lock {[type]} -- [description]
+            line {str} -- QL execution log file line
+            camera {str} -- camera
+            lock {object} -- write lock in QL pipeline log
         """
 
         lock.acquire()
@@ -378,4 +392,71 @@ class QLFProcess(object):
                     start_time = datetime.now().replace(microsecond=0)
                     stage_start['time'] = start_time
                     logger.info('{} started.'.format(
-                        stage.get('display_name')))
+                        stage.get('display_name')
+                    ))
+
+
+def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
+    """ Runs QL pipeline in parallel
+
+    Arguments:
+        exposure_id {int} -- exposure ID
+        night {str} -- night (YYYYMMDD)
+
+    Keyword Arguments:
+        qlconfig {str} -- path to QL config (default: {None})
+        return_process_id {object 'multiprocessing.sharedctypes.Value'} --
+            process ID object allocated from shared memory.
+            (default: {None})
+
+    Returns:
+        int -- process ID
+    """
+
+    exposure = extract_exposure_data(exposure_id, night)
+
+    arms = cfg.get('data', 'arms').split(',')
+    spectrographs = cfg.get('data', 'spectrographs').split(',')
+
+    cameras = list()
+
+    for arm in arms:
+        for spec in spectrographs:
+            cameras.append({'name': arm + spec})
+
+    exposure['cameras'] = cameras
+
+    configuration = QLFConfiguration()
+
+    if qlconfig:
+        exposure['qlconfig'] = qlconfig
+
+    qlf_process = QLFProcess(
+        exposure, configuration.get_current_configuration())
+    process_id = qlf_process.start_process()
+
+    if return_process_id:
+        return_process_id.value = process_id
+
+    qlf_process.start_jobs()
+    qlf_process.finish_process()
+
+    return process_id
+
+
+if __name__ == "__main__":
+    print('Manually starting the QL pipeline.')
+    import sys
+
+    try:
+        exposure_id = int(sys.argv[1])
+        night = sys.argv[2]
+    except Exception:
+        logger.exception('Failed to get exposure ID and night')
+
+    qlconfig = None
+
+    if len(sys.argv) > 3:
+        qlconfig = sys.argv[3]
+
+    run_process(exposure_id, night, qlconfig)

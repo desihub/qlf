@@ -10,8 +10,9 @@ from multiprocessing import Manager, Process
 import astropy.io.fits
 
 from log import get_logger
-from util import get_config
 from qlf_models import QLFModels
+from util import get_config, extract_exposure_data
+
 
 cfg = get_config()
 qlf_root = cfg.get("environment", "qlf_root")
@@ -112,31 +113,34 @@ class ExposureGenerator(Process):
         self.__gen_fiberflat_folder(night)
         self.__gen_psfboot_folder(night)
 
-        expo_name = "desi-{}.fits.fz".format(exposure_zfill)
-        file_path = os.path.join(spectro_data, night, expo_name)
+        return extract_exposure_data(exposure_id, night)
 
-        try:
-            hdr = astropy.io.fits.getheader(file_path)
-        except Exception as err:
-            log.error("Error to load fits file: %s" % err)
-            return {}
+        # expo_name = "desi-{}.fits.fz".format(exposure_zfill)
 
-        return {
-            "exposure_id": exposure_id,
-            "dateobs": date_obs,
-            "night": night,
-            "zfill": exposure_zfill,
-            "desi_spectro_data": spectro_data,
-            "desi_spectro_redux": spectro_redux,
-            'telra': hdr.get('telra'),
-            'teldec': hdr.get('teldec'),
-            'tile': hdr.get('tileid'),
-            'flavor': hdr.get('flavor', None),
-            'program': hdr.get('program', None),
-            'airmass': hdr.get('airmass', None),
-            'exptime': hdr.get('exptime', None),
-            'time': datetime.datetime.utcnow()
-        }
+        # file_path = os.path.join(spectro_path, night, expo_name)
+
+        # try:
+        #     hdr = astropy.io.fits.getheader(file_path)
+        # except Exception as err:
+        #     log.error("Error to load fits file: %s" % err)
+        #     return {}
+
+        # return {
+        #     "exposure_id": exposure_id,
+        #     "dateobs": self.__date_obs(gen_time),
+        #     "night": night,
+        #     "zfill": exposure_zfill,
+        #     "desi_spectro_data": spectro_path,
+        #     "desi_spectro_redux": spectro_redux,
+        #     'telra': hdr.get('telra', None),
+        #     'teldec': hdr.get('teldec', None),
+        #     'tile': hdr.get('tileid', None),
+        #     'flavor': hdr.get('flavor', None),
+        #     'program': hdr.get('program', None),
+        #     'airmass': hdr.get('airmass', None),
+        #     'exptime': hdr.get('exptime', None),
+        #     'time': datetime.datetime.utcnow()
+        # }
 
     def __gen_desi_file(self, exposure_id, night, date_obs):
         dest = os.path.join(spectro_data, night)
