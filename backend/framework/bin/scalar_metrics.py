@@ -228,10 +228,14 @@ class LoadMetrics:
                 continue
 
         data = self.Load_qa(qa)
-        qa_status = data['METRICS'][self.alert_keys[qa]]
 
-        if current_step:
-            self.status[current_step]['steps_status'][index] = qa_status
+        try:
+            qa_status = data['METRICS'][self.alert_keys[qa]]
+
+            if current_step:
+                self.status[current_step]['steps_status'][index] = qa_status
+        except Exception as err:
+            logger.warning('Failed to update camera status: {}'.format(err))
 
 
 if __name__ == "__main__":
