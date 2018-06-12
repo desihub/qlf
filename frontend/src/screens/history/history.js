@@ -19,12 +19,13 @@ const styles = {
   },
   tableBody: {
     overflowY: 'scroll',
-    maxHeight: '55vh',
+    maxHeight: '65vh',
   },
   submit: {
     paddingLeft: '16px',
     cursor: ' pointer',
   },
+  historyContainer: { WebkitAppRegion: 'no-drag' },
 };
 
 export default class History extends Component {
@@ -280,7 +281,7 @@ export default class History extends Component {
     ];
 
     return (
-      <div style={{ WebkitAppRegion: 'no-drag' }}>
+      <div style={styles.historyContainer}>
         <Dialog
           actions={actions}
           modal={false}

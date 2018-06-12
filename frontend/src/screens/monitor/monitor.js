@@ -9,7 +9,6 @@ import QA from '../qa/qa';
 
 const styles = {
   topMenu: {
-    marginTop: '1vh',
     marginRight: '1vw',
     marginLeft: '1vw',
   },
@@ -33,7 +32,7 @@ const styles = {
     flex: 1,
     display: 'flex',
     marginBottom: '1vh',
-    flexDirection: 'row',
+    flexDirection: 'column',
     gridTemplateColumns: 'auto auto',
   },
   column: {
@@ -59,11 +58,13 @@ export default class Monitor extends Component {
     qaTests: PropTypes.array,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
+    time: PropTypes.string.isRequired,
+    mjd: PropTypes.string.isRequired,
   };
 
   state = {
-    daemonStatus: 'idle',
-    exposure: 'none',
+    daemonStatus: 'Not Running',
+    exposure: '',
     width: '0',
     height: '0',
     openDialog: false,
@@ -74,6 +75,12 @@ export default class Monitor extends Component {
     layout: {},
     camerasStages: { b: [], r: [], z: [] },
     mjd: '',
+    arms: [],
+    spectrographs: [],
+    clearMonitor: false,
+    processId: '',
+    date: '',
+    qaTests: [],
   };
 
   componentDidMount() {
@@ -81,7 +88,57 @@ export default class Monitor extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ ...nextProps });
+    const {
+      arms,
+      cameraTerminal,
+      camerasStages,
+      daemonStatus,
+      date,
+      exposure,
+      ingestionTerminal,
+      mainTerminal,
+      mjd,
+      processId,
+      qaTests,
+      spectrographs,
+      time,
+    } = nextProps;
+
+    if (!this.state.clearMonitor && daemonStatus === 'Running')
+      this.setState({
+        arms,
+        cameraTerminal,
+        camerasStages,
+        daemonStatus,
+        date,
+        exposure,
+        ingestionTerminal,
+        mainTerminal,
+        mjd,
+        processId: processId,
+        qaTests,
+        spectrographs,
+        time,
+      });
+    else if (daemonStatus !== 'Not Running')
+      this.setState({ clearMonitor: false, daemonStatus: 'Idle' });
+    else if (this.props.daemonStatus === 'Running' && daemonStatus === 'Idle') {
+      this.setState({
+        arms,
+        cameraTerminal,
+        camerasStages,
+        daemonStatus,
+        date,
+        exposure,
+        ingestionTerminal,
+        mainTerminal,
+        mjd,
+        processId: processId,
+        qaTests,
+        spectrographs,
+        time,
+      });
+    }
   }
 
   openDialog = (cameraIndex, arm) => {
@@ -91,6 +148,26 @@ export default class Monitor extends Component {
 
   closeDialog = () => {
     this.setState({ openDialog: false });
+  };
+
+  resetMonitor = () => {
+    this.setState({
+      daemonStatus: 'Idle',
+      exposure: '',
+      openDialog: false,
+      cameraIndex: 0,
+      mainTerminal: [],
+      ingestionTerminal: [],
+      cameraTerminal: [],
+      camerasStages: { b: [], r: [], z: [] },
+      mjd: '',
+      arms: [],
+      spectrographs: [],
+      clearMonitor: true,
+      date: '',
+      processId: '',
+      qaTests: [],
+    });
   };
 
   render() {
@@ -104,17 +181,18 @@ export default class Monitor extends Component {
         />
         <div style={styles.topMenu}>
           <div style={styles.menu}>
-            <Controls
-              daemonStatus={this.props.daemonStatus}
-              socket={this.props.socketRef}
-            />
             <Status
               exposure={this.state.exposure}
               daemonStatus={this.state.daemonStatus}
               layout={styles.layout}
               mjd={this.state.mjd}
-              date={this.props.date}
-              processId={this.props.processId}
+              date={this.state.date}
+              processId={String(this.state.processId)}
+            />
+            <Controls
+              daemonStatus={this.props.daemonStatus}
+              socket={this.props.socketRef}
+              resetMonitor={this.resetMonitor}
             />
           </div>
         </div>
@@ -141,9 +219,9 @@ export default class Monitor extends Component {
           </div>
           <div style={styles.gridItem}>
             <QA
-              qaTests={this.props.qaTests}
-              arms={this.props.arms}
-              spectrographs={this.props.spectrographs}
+              qaTests={this.state.qaTests}
+              arms={this.state.arms}
+              spectrographs={this.state.spectrographs}
               petalSizeFactor={22}
               monitor={true}
             />

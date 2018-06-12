@@ -56,6 +56,13 @@ class Notification extends React.Component {
     super(props);
     this.state = {
       anchorEl: null,
+      errors: [],
+      warnings: [],
+      // errors: [
+      //   { msg: 'Error processing exposure 106', time: '12 minutes ago' },
+      //   { msg: 'Available Disk Space 8%', time: '1 hour ago' },
+      // ],
+      // warnings: [{ msg: 'Available Disk Space 20%', time: '20 hours ago' }],
     };
   }
 

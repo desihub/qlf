@@ -1,6 +1,9 @@
 import React from 'react';
-import { Card, CardTitle } from 'material-ui/Card';
+// import { Card, CardTitle } from 'material-ui/Card';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   card: {
@@ -9,39 +12,33 @@ const styles = {
     margin: '1.5vh 1vw 1vh 1vw',
   },
   titleStyle: {
-    fontSize: '13px',
-    color: 'rgba(0, 0, 0, 0.6)',
-    lineHeight: '3vh',
-  },
-  subtitleStyle: {
-    fontSize: '13px',
-    float: 'right',
-    paddingBottom: '8px',
-    paddingRight: '8px',
-    color: 'rgba(0, 0, 0, 0.80)',
+    fontSize: 14,
+    color: 'rgba(0, 0, 0, 1)',
+    padding: 4,
   },
   cardStyle: {
-    padding: '0px 0px 0px 8px',
+    padding: 0,
   },
 };
 
-export default class Cards extends React.Component {
+class Cards extends React.Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
-    subtitle: PropTypes.string.isRequired,
+    classes: PropTypes.object,
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <Card style={styles.card}>
-        <CardTitle
-          style={styles.cardStyle}
-          titleStyle={styles.titleStyle}
-          subtitleStyle={styles.subtitleStyle}
+      <Card className={classes.card}>
+        <CardHeader
+          className={classes.cardStyle}
+          classes={{ title: classes.titleStyle }}
           title={this.props.title}
-          subtitle={this.props.subtitle}
         />
       </Card>
     );
   }
 }
+
+export default withStyles(styles)(Cards);

@@ -94,15 +94,17 @@ export default class Steps extends Component {
   };
 
   componentWillMount() {
-    window.addEventListener('resize', this.updatePetalSize);
+    if (!this.props.monitor)
+      window.addEventListener('resize', this.updatePetalSize);
   }
 
   componentDidMount() {
-    this.updatePetalSize();
+    if (!this.props.monitor) this.updatePetalSize();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.updatePetalSize);
+    if (!this.props.monitor)
+      window.removeEventListener('resize', this.updatePetalSize);
   }
 
   updatePetalSize = () => {
@@ -204,7 +206,7 @@ export default class Steps extends Component {
           mjd={this.props.mjd}
           date={this.props.date}
           time={this.props.time}
-          processId={this.props.processId}
+          processId={String(this.props.processId)}
         />
       </div>
     );

@@ -206,7 +206,7 @@ export default class Metrics extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
-              processId={this.props.processId}
+              processId={String(this.props.processId)}
             />
             <div style={styles.grid}>
               <Control

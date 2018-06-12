@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Cards from '../card/card';
+import Card from '../card/card';
 import PropTypes from 'prop-types';
 
 const styles = {
@@ -15,7 +15,7 @@ export default class Status extends Component {
     exposure: PropTypes.string.isRequired,
     mjd: PropTypes.string,
     date: PropTypes.string,
-    processId: PropTypes.number,
+    processId: PropTypes.string,
   };
 
   render() {
@@ -28,12 +28,12 @@ export default class Status extends Component {
     return (
       <div style={{ ...styles.container }}>
         {this.props.daemonStatus ? (
-          <Cards title={'Status'} subtitle={this.props.daemonStatus} />
+          <Card title={`Status: ${this.props.daemonStatus}`} />
         ) : null}
-        <Cards title={'Process Id'} subtitle={processId} />
-        <Cards title={'Exposure Id'} subtitle={this.props.exposure} />
-        <Cards title={'MJD'} subtitle={mjd} />
-        <Cards title={'Date'} subtitle={this.props.date} />
+        <Card title={`Process Id: ${processId}`} />
+        <Card title={`Exposure Id: ${this.props.exposure}`} />
+        <Card title={`MJD: ${mjd}`} />
+        <Card title={`Date: ${this.props.date}`} />
       </div>
     );
   }

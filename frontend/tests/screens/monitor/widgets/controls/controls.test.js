@@ -1,8 +1,7 @@
 import React from 'react';
 import Controls from '../../../../../src/screens/monitor/widgets/controls/controls';
-import { shallow, configure } from 'enzyme';
+import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import RaisedButton from 'material-ui/RaisedButton';
 
 configure({ adapter: new Adapter() });
 
@@ -20,10 +19,10 @@ const socket = {
 };
 
 describe('Controls', () => {
-  let controls, controlsShallow;
+  let controls, controlsMount;
   beforeEach(() => {
-    controlsShallow = shallow(<Controls socket={socket} />);
-    controls = controlsShallow.find(RaisedButton);
+    controlsMount = mount(<Controls socket={socket} />);
+    controls = controlsMount.find('Button');
   });
 
   it('starts pipeline', () => {

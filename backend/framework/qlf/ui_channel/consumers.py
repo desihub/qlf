@@ -1,6 +1,7 @@
 from channels import Group
 import json
 from ui_channel.upstream import Upstream
+from ui_channel.delete_files import delete_logs, delete_raw, delete_reduced
 from ui_channel.alerts import Alerts
 import datetime
 
@@ -47,6 +48,20 @@ def ws_message(message):
         message.reply_channel.send({
             "text": us.get_current_state()
         })
+        return
+    if message.content['text'] == "deleteAll":
+        delete_logs()
+        delete_raw()
+        delete_reduced()
+        return
+    if message.content['text'] == "deleteRaw":
+        delete_raw()
+        return
+    if message.content['text'] == "deleteReduced":
+        delete_reduced()
+        return
+    if message.content['text'] == "deleteLogs":
+        delete_logs()
         return
     # Get Single Camera
     if "camera" in message.content['text']:
