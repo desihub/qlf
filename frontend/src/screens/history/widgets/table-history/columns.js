@@ -18,6 +18,12 @@ export const tableColumns = [
     type: 'normal',
   },
   {
+    processKey: 'exposure__flavor',
+    exposureKey: 'flavor',
+    name: 'Flavor',
+    type: 'normal',
+  },
+  {
     processKey: 'exposure__tile',
     exposureKey: 'tile',
     name: 'Tile ID',
@@ -63,12 +69,6 @@ export const tableColumns = [
     processKey: 'exposure__exptime',
     exposureKey: 'exptime',
     name: 'Exp Time(s)',
-    type: 'normal',
-  },
-  {
-    processKey: 'exposure__flavor',
-    exposureKey: 'flavor',
-    name: 'Flavor',
     type: 'normal',
   },
   {
