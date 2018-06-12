@@ -79,6 +79,7 @@ describe('TableHistory Controls', () => {
           getHistory={getHistory}
           navigateToQA={navigateToQA}
           getHistoryOrdered={getHistoryOrdered}
+          limit={10}
           type={'process'}
         />
       </MuiThemeProvider>
@@ -118,14 +119,14 @@ describe('TableHistory Controls', () => {
   it('calls navigateToQA error', async () => {
     await wrapper
       .find('TableCell')
-      .at(46)
+      .at(48)
       .find('span')
       .at(0)
       .simulate('click');
     expect(
       wrapper
         .find('TableCell')
-        .at(46)
+        .at(48)
         .find('span')
         .at(0)
         .text()
@@ -136,14 +137,14 @@ describe('TableHistory Controls', () => {
   it('calls navigateToQA ok', async () => {
     await wrapper
       .find('TableCell')
-      .at(30)
+      .at(31)
       .find('span')
       .at(0)
       .simulate('click');
     expect(
       wrapper
         .find('TableCell')
-        .at(30)
+        .at(31)
         .find('span')
         .at(0)
         .text()

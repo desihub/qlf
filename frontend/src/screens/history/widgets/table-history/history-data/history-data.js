@@ -38,6 +38,7 @@ export default class HistoryData extends React.Component {
     striped: PropTypes.bool,
     tableColumns: PropTypes.array.isRequired,
     handleImageModalOpen: PropTypes.func.isRequired,
+    handleCommentModalOpen: PropTypes.func.isRequired,
   };
 
   formatDate = dateString => {
@@ -108,6 +109,14 @@ export default class HistoryData extends React.Component {
       ? null
       : this.props.lastProcessedId === row.pk;
     const lastProcessed = processing ? styles.bold : {};
+    let comment;
+    if (this.props.type === 'process') {
+      comment = row.comments_count ? 'chat_bubble' : 'chat_bubble_outline';
+    } else {
+      comment = row.last_process_comments_count
+        ? 'chat_bubble'
+        : 'chat_bubble_outline';
+    }
     const night = this.formatNight(
       isNotProcessingHistory ? row.dateobs : row.exposure.dateobs
     );
@@ -184,6 +193,20 @@ export default class HistoryData extends React.Component {
               style={styles.notificationsIcon}
             >
               image
+            </Icon>
+          </TableCell>
+        );
+      case 'comments':
+        return (
+          <TableCell
+            key={`PROCV${key}`}
+            style={{ ...styles.tableCell, ...lastProcessed }}
+          >
+            <Icon
+              onClick={() => this.props.handleCommentModalOpen(processId)}
+              style={styles.notificationsIcon}
+            >
+              {comment}
             </Icon>
           </TableCell>
         );

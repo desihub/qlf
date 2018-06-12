@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from .models import Job, Exposure, Camera, QA, Process, Configuration
+from .models import Job, Exposure, Camera, QA, Process, Configuration, ProcessComment
 from .utils import get_date
 from clients import get_exposure_monitoring
 
@@ -164,6 +164,7 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
     runtime = serializers.SerializerMethodField()
     datemjd = serializers.SerializerMethodField()
     exposure = ProcessingHistoryExposureSerializer(required=True)
+    comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Process
@@ -175,6 +176,7 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
             'start',
             'end',
             'qa_tests',
+            'comments_count',
         )
 
     def get_runtime(self, obj):
@@ -190,12 +192,16 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
         else:
             return time.mjd
 
+    def get_comments_count(self, obj):
+        return obj.process_comments.count()
+
 
 class ObservingHistorySerializer(DynamicFieldsModelSerializer):
 
     datemjd = serializers.SerializerMethodField()
     last_exposure_process_id = serializers.SerializerMethodField()
     last_exposure_process_qa_tests = serializers.SerializerMethodField()
+    last_process_comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Exposure
@@ -211,7 +217,8 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             'last_exposure_process_id',
             'last_exposure_process_qa_tests',
             'flavor',
-            'program'
+            'program',
+            'last_process_comments_count',
         )
 
     def get_datemjd(self, obj):
@@ -233,6 +240,9 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             return None
         return process.last().qa_tests
 
+    def get_last_process_comments_count(self, obj):
+        return obj.process_exposure.last().process_comments.count()
+
 
 class ExposuresDateRangeSerializer(DynamicFieldsModelSerializer):
 
@@ -246,6 +256,7 @@ class ExposureFlavorSerializer(DynamicFieldsModelSerializer):
         model = Exposure
         fields = ('flavor',)
 
+
 class CurrentProcessJobsSerializer(serializers.ModelSerializer):
 
     process_jobs = JobSerializer(many=True, read_only=True)
@@ -253,3 +264,10 @@ class CurrentProcessJobsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Process
         fields = ('id', 'exposure', 'process_jobs', 'qa_tests')
+
+
+class ProcessCommentSerializer(DynamicFieldsModelSerializer):
+
+    class Meta:
+        model = ProcessComment
+        fields = ('id', 'text', 'user', 'date', 'process')

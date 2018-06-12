@@ -6,8 +6,6 @@ if [ $UPDATE_DEPENDENCIES = "true" ]; then
 	pip install -r extras.txt
 fi
 
-apt-get install -y locales && locale-gen en_US.UTF-8
-
 export LANG=en_US.UTF-8  
 export LANGUAGE=en_US:en  
 export LC_ALL=en_US.UTF-8
@@ -25,8 +23,8 @@ done
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
 export DESIMODEL=$QLF_ROOT/desimodel
 
-python -Wi $QLF_PROJECT/manage.py migrate
-# echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
+python -Wi framework/qlf/manage.py migrate
+echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass') if not User.objects.all() else None" | python framework/qlf/manage.py shell
 
 # Start QLF daemon
 if [ $DAEMON_TEST = "false" ]; then

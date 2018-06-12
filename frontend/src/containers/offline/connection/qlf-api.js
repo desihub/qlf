@@ -169,14 +169,11 @@ export default class QlfApi {
 
   static async getFlavors() {
     try {
-      const exposures = await fetch(
-        `${apiUrl}dashboard/api/distinct_flavors/`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await exposures.json();
+      const flavors = await fetch(`${apiUrl}dashboard/api/distinct_flavors/`, {
+        method: 'GET',
+        headers: headers,
+      });
+      const responseJson = await flavors.json();
       return responseJson;
     } catch (e) {
       return null;
@@ -223,6 +220,58 @@ export default class QlfApi {
     } catch (e) {
       return null;
     }
+  }
+
+  static async addProcessComment(text, process) {
+    const body = {
+      text,
+      process,
+      user: 1,
+    };
+    const commentResponse = await fetch(
+      `${apiUrl}dashboard/api/process_comment/`,
+      {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(body),
+      }
+    );
+    const responseJson = await commentResponse.json();
+    return responseJson;
+  }
+
+  static async deleteProcessComment(commentId) {
+    await fetch(`${apiUrl}dashboard/api/process_comment/${commentId}/`, {
+      method: 'DELETE',
+      headers: headers,
+    });
+  }
+
+  static async updateProcessComment(commentId, process, text) {
+    const body = {
+      text,
+      process,
+    };
+    const commentResponse = await fetch(
+      `${apiUrl}dashboard/api/process_comment/${commentId}/`,
+      {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(body),
+      }
+    );
+    return commentResponse.json();
+  }
+
+  static async getProcessComments(processId) {
+    const commentResponse = await fetch(
+      `${apiUrl}dashboard/api/process_comment/?process=${processId}`,
+      {
+        method: 'GET',
+        headers: headers,
+      }
+    );
+    return commentResponse.json();
   }
 
   static async sendTicketMail(email, message, subject, name) {

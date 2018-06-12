@@ -95,4 +95,10 @@ export const tableColumns = [
     name: 'CCDs',
     type: 'image',
   },
+  {
+    processKey: '',
+    exposureKey: '',
+    name: 'COM',
+    type: 'comments',
+  },
 ];
