@@ -33,6 +33,10 @@ jest.mock('../../../../../src/containers/offline/connection/qlf-api', () => {
   return {
     getCurrentConfiguration: jest.fn(() => qlfConfig),
     getDefaultConfiguration: jest.fn(() => qlfConfig),
+    getCurrentThresholds: jest.fn(() => ({
+      disk_percent_alert: '20',
+      disk_percent_warning: '40',
+    })),
   };
 });
 
@@ -45,24 +49,10 @@ describe('Configuration Form', () => {
       </MuiThemeProvider>
     );
     wrapper = await mount(form);
-    wrapper.setState({
-      night: '20190101',
-      arms: 'b,r',
-      input: '/app/spectro/data',
-      output: '/app/spectro/redux',
-      exposures: '3,4',
-      minInterval: '3',
-      maxInterval: '15',
-      maxExposures: '10',
-      allowedDelay: '20',
-      baseExposures: '/app/spectro/base_exposures',
-      qlconfig:
-        '/app/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml',
-      spectrographs: 'r0,b0'.split(','),
-    });
   });
 
   it('changes minInterval', async () => {
+    wrapper.update();
     expect(
       wrapper
         .find('TextField')

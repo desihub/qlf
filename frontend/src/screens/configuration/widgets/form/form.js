@@ -113,6 +113,24 @@ class Form extends React.Component {
     });
   };
 
+  getCurrentConfiguration = async () => {
+    this.setState({ loading: true });
+    const configuration = await QLFApi.getCurrentConfiguration();
+    const thresholds = await QLFApi.getCurrentThresholds();
+    this.updateThresholds(thresholds);
+    this.setState({ loading: false });
+    this.updateConfiguration(configuration);
+  };
+
+  getDefaultConfiguration = async () => {
+    this.setState({ loading: true });
+    const configuration = await QLFApi.getDefaultConfiguration();
+    const thresholds = await QLFApi.getCurrentThresholds();
+    this.updateThresholds(thresholds);
+    this.setState({ loading: false });
+    this.updateConfiguration(configuration);
+  };
+
   updateConfiguration = configuration => {
     if (configuration && configuration.results) {
       const {
@@ -151,21 +169,15 @@ class Form extends React.Component {
     }
   };
 
-  getCurrentConfiguration = async () => {
-    this.setState({ loading: true });
-    const configuration = await QLFApi.getCurrentConfiguration();
-    this.setState({ loading: false });
-    this.updateConfiguration(configuration);
-  };
-
-  getDefaultConfiguration = async () => {
-    this.setState({ loading: true });
-    const configuration = await QLFApi.getDefaultConfiguration();
-    this.setState({ loading: false });
-    this.updateConfiguration(configuration);
+  updateThresholds = thresholds => {
+    this.setState({
+      diskAlert: thresholds.disk_percent_alert,
+      diskWarning: thresholds.disk_percent_warning,
+    });
   };
 
   render() {
+    console.log(this.state)
     return (
       <div style={styles.container}>
         {this.state.loading ? <CircularProgress size={50} /> : null}
