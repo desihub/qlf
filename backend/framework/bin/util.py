@@ -62,6 +62,23 @@ def delete_files(path):
             shutil.rmtree(_path)
 
 
+def change_config_file(config_file):
+    with open(config_file, 'r') as file:
+        config = file.readlines()
+
+    for i, line in enumerate(config):
+        if 'PSFExpid:' in line:
+            config[i] = 'PSFExpid: 0\n'
+        elif 'FiberflatExpid:' in line:
+            config[i] = 'FiberflatExpid: 1\n'
+
+    cfg = get_config()
+    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+    current_config = '{}/current_config.yaml'.format(desi_spectro_redux)
+    with open(current_config, 'w') as file:
+        file.writelines(config)
+    return current_config
+
 def extract_exposure_data(exposure_id, night):
     """ Extracts exposure data from fits file.
 
@@ -93,6 +110,7 @@ def extract_exposure_data(exposure_id, night):
     program_file = program_mapping.get(program, 'darksurvey')
 
     config_file = cfg.get('main', 'qlconfig').format(program_file)
+    current_config = change_config_file(config_file)
 
     return {
         "exposure_id": exposure_id,
@@ -108,6 +126,6 @@ def extract_exposure_data(exposure_id, night):
         'program': hdr.get('program', None),
         'airmass': hdr.get('airmass', None),
         'exptime': hdr.get('exptime', None),
-        'qlconfig': config_file,
+        'qlconfig': current_config,
         'time': datetime.datetime.utcnow()
     }
