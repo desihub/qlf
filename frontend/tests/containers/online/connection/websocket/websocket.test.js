@@ -57,6 +57,7 @@ describe('Websocket', () => {
       step: 0,
       spectrograph: 0,
       processId: undefined,
+      notifications: [],
     });
   });
 
@@ -86,6 +87,7 @@ describe('Websocket', () => {
       spectrograph: 0,
       step: 0,
       processId: undefined,
+      notifications: [],
     });
   });
 });
