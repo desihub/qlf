@@ -32,14 +32,14 @@ describe('Monitor Status', () => {
       wrapper
         .find('Cards')
         .at(2)
-        .props().subtitle
-    ).toBe('3');
+        .props().title
+    ).toBe('Exposure Id: 3');
     expect(
       wrapper
         .find('Cards')
         .at(0)
-        .props().subtitle
-    ).toBe('Running');
+        .props().title
+    ).toBe('Status: Running');
     wrapper.unmount();
   });
 });

@@ -87,6 +87,22 @@ export default class QlfApi {
     }
   }
 
+  static async getCurrentThresholds() {
+    try {
+      const configuration = await fetch(
+        `${apiUrl}dashboard/api/disk_thresholds/?format=json`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await configuration.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getDefaultConfiguration() {
     try {
       const configuration = await fetch(

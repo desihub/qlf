@@ -20,7 +20,12 @@ function defaultState() {
     arm: 0,
     spectrograph: 0,
     step: 0,
+    notifications: [],
   };
+}
+
+function addNotification(state) {
+  return { type: 'ADD_NOTIFICATION', state };
 }
 
 function updateMonitorState(state) {
@@ -62,6 +67,20 @@ export function navigateToOnlineMetrics(step, spectrograph, arm) {
 export function navigateToOnlineQA() {
   return function(dispatch) {
     dispatch(push('/qa-realtime'));
+  };
+}
+
+export function updateNotifications(notification) {
+  return function(dispatch, getState) {
+    const notifications = getState().qlfOnline.notifications.splice(0);
+    notifications.unshift(notification);
+    dispatch(addNotification({ notifications }));
+  };
+}
+
+export function clearNotifications() {
+  return function(dispatch) {
+    dispatch(addNotification({ notifications: [] }));
   };
 }
 
@@ -108,6 +127,10 @@ export function qlfOnlineReducers(state = defaultState(), action) {
     case 'UPDATE_QA':
       return Object.assign({}, state, {
         qaTests: action.state.qaTests,
+      });
+    case 'ADD_NOTIFICATION':
+      return Object.assign({}, state, {
+        notifications: action.state.notifications,
       });
     case 'UPDATE_CAMERA_STATE':
       if (action.state.cameraTerminal === 'Error') return state;
