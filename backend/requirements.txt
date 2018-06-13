@@ -23,7 +23,6 @@ healpy
 # Packages required by the DESI Quick Look framework
 
 django==1.11
-markdown==2.6.2
 django-filter==1.1.0
 djangorestframework==3.6.2
 django-debug-toolbar==1.8
