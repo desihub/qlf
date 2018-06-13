@@ -21,7 +21,7 @@ export default class PieChart extends Component {
   getColor = test => {
     if (test && !test.steps_status) return 'gray';
     if (
-      (test && test.steps_status && test.steps_status.includes('FAILURE')) ||
+      (test && test.steps_status && test.steps_status.includes('ALARM')) ||
       (!this.props.monitor &&
         test.steps_status.includes('None') &&
         test.steps_status.includes('NORMAL'))
@@ -55,7 +55,7 @@ export default class PieChart extends Component {
   };
 
   renderData = () => {
-    return _.map(_.range(10), index => {
+    return _.map(_.range(9, -1), index => {
       return {
         x: index,
         y: 1,
@@ -90,10 +90,10 @@ export default class PieChart extends Component {
                   return [
                     {
                       mutation: props => {
-                        if (this.getCurrentTest(props.index)) {
+                        if (this.getCurrentTest(9 - props.index)) {
                           this.props.renderMetrics(
                             this.props.step,
-                            props.index,
+                            9 - props.index,
                             this.props.arm
                           );
                         }
@@ -107,7 +107,7 @@ export default class PieChart extends Component {
                     {
                       target: 'data',
                       mutation: props => {
-                        const camera = arms[this.props.arm] + props.index;
+                        const camera = arms[this.props.arm] + (9 - props.index);
                         this.props.showQaAlarms(camera, this.props.step);
                         return { style: { fill: 'gray', cursor: 'pointer' } };
                       },

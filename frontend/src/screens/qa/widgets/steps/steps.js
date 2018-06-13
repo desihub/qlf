@@ -9,8 +9,8 @@ const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
 const stepsQa = {
   preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
   extract: ['countbins'],
-  fiberfl: ['integ', 'skycont', 'skypeak', 'skyresid'],
-  skysubs: ['snr'],
+  fiberfl: ['skycont', 'skypeak'],
+  skysubs: ['integ', 'skyresid', 'snr'],
 };
 
 const arms = ['b', 'r', 'z'];

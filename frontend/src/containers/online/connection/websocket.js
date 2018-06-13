@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Websocket from 'react-websocket';
+import Websocket from './connection';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -16,6 +16,8 @@ class Connection extends Component {
     updateCameraState: PropTypes.func.isRequired,
     updateQA: PropTypes.func.isRequired,
     updateNotifications: PropTypes.func.isRequired,
+    connected: PropTypes.func.isRequired,
+    disconnected: PropTypes.func.isRequired,
   };
 
   handleData = data => {
@@ -67,6 +69,10 @@ class Connection extends Component {
           ref={this.storeWebsocketRef}
           url={url}
           onMessage={this.handleData}
+          onOpen={this.props.connected}
+          onClose={this.props.disconnected}
+          debug={true}
+          reconnectIntervalInMilliSeconds={2000}
         />
       </div>
     );
