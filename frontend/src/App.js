@@ -103,6 +103,10 @@ const styles = {
     maxHeight: '87.5vh',
     overflowY: 'scroll',
   },
+  footerRight: {
+    display: 'flex',
+    alignItems: 'center',
+  },
   connected: {
     fontSize: 16,
     color: 'green',
@@ -242,7 +246,7 @@ class App extends React.Component {
     return (
       <div style={styles.bottom}>
         <span>© Copyright 2018, LIneA/DESI</span>
-        <div>
+        <div style={styles.footerRight}>
           <span>
             {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
           </span>
