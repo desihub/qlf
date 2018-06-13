@@ -8,7 +8,7 @@ from log import get_logger
 from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
 from qlf_pipeline import QLFProcess
-from util import delete_exposures, get_config
+from util import get_config
 
 cfg = get_config()
 
@@ -36,7 +36,6 @@ class ExposureMonitoring(Process):
 
     def run(self):
         """ """
-        delete_exposures()
         while not self.exit.is_set():
             time.sleep(1.5)
 
