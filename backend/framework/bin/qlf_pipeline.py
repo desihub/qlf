@@ -191,7 +191,7 @@ class QLFProcess(object):
                 line = process.stdout.readline()
                 if not line:
                     break
-                # self.resume_log(line, camera.get('name'), lock)
+                self.resume_log(line, camera.get('name'), lock)
                 logname.write(line)
                 logname.flush()
 

@@ -44,24 +44,6 @@ def get_config(config_path=None):
 
     return cfg
 
-
-def delete_exposures():
-    cfg = get_config()
-
-    # desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-    # desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
-
-    # delete_files(desi_spectro_redux)
-    # delete_files(desi_spectro_data)
-
-
-def delete_files(path):
-    for directory in os.listdir(path):
-        _path = os.path.join(path, directory)
-        if os.path.isdir(_path):
-            shutil.rmtree(_path)
-
-
 def change_config_file(config_file):
     with open(config_file, 'r') as file:
         config = file.readlines()
