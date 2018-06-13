@@ -10,6 +10,16 @@
 h5py
 scikit-learn
 matplotlib
+scipy
+numpy
+astropy
+pyyaml
+requests
+ipython
+numba
+speclite 
+healpy
+fitsio
 
 # Packages required by the DESI Quick Look framework
 
@@ -22,7 +32,5 @@ pytest==3.0.7
 tornado==4.4.2 # make sure bokeh uses this version of tornado
 bokeh==0.12.16
 pandas==0.20.1
-requests==2.13.0
 sphinx==1.5.4
 flake8==3.3.0
-astropy==2.0
