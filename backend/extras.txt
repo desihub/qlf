@@ -10,7 +10,8 @@ fitsio==0.9.11
 furl==0.5.7
 Pyro4==4.59
 
-scipy==0.19.1
+scipy==1.1.0
+numpy==1.14.5
 django-cors-headers==2.2.0
 
 channels==1.1.8
