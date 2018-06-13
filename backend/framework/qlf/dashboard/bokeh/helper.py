@@ -137,7 +137,7 @@ def get_cameras():
     return requests.get(api['camera'], params={'paginate': 'null'}).json()
 
 
-def get_scalar_metrics_original(process_id, cam):
+def get_scalar_metrics(process_id, cam):
     """
     Returns cam scalar metrics
     """
@@ -147,7 +147,7 @@ def get_scalar_metrics_original(process_id, cam):
     return requests.get(api['load_scalar_metrics'], params={'process_id': process_id, 'cam': cam}).json()
 
 
-def get_scalar_metrics(process_id, cam):
+def get_scalar_metrics_aux(process_id, cam):
     """
     Returns cam scalar metrics from the json
     files obtained by Singulani.
