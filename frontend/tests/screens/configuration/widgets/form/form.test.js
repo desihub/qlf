@@ -208,7 +208,7 @@ describe('Configuration Form', () => {
     expect(
       wrapper
         .find('path')
-        .at(18)
+        .at(2)
         .props().style.fill
     ).toBe('green');
     expect(

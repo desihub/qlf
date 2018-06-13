@@ -58,8 +58,10 @@ class Connection extends Component {
 
   storeWebsocketRef = socket => {
     this.socket = socket;
-    socket.state.ws.onopen = this.props.connected;
-    socket.state.ws.onclose = this.props.disconnected;
+    if (socket && socket.state && socket.state.ws) {
+      socket.state.ws.onopen = this.props.connected;
+      socket.state.ws.onclose = this.props.disconnected;
+    }
     this.props.getWebsocketRef(socket);
   };
 
