@@ -40,8 +40,8 @@ const styles = {
 const stepsQa = {
   preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
   extract: ['countbins'],
-  fiberfl: ['integ', 'skycont', 'skypeak', 'skyresid'],
-  skysubs: ['snr'],
+  fiberfl: ['skycont', 'skypeak'],
+  skysubs: ['integ', 'skyresid', 'snr'],
 };
 
 export default class MetricSelect extends Component {

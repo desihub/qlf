@@ -139,7 +139,7 @@ export default class HistoryData extends React.Component {
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
-            {exposureId}
+            {isNotProcessingHistory ? row[id] : row.exposure[id]}
           </TableCell>
         );
       case 'date':

@@ -16,7 +16,7 @@ export default class Petals extends Component {
   };
 
   renderData = () => {
-    return _.map(_.range(10), index => {
+    return _.map(_.range(9, -1), index => {
       return {
         x: index,
         y: 1,
@@ -51,7 +51,7 @@ export default class Petals extends Component {
                   return [
                     {
                       mutation: props => {
-                        this.props.onClick(props.index);
+                        this.props.onClick(9 - props.index);
                         return { style: { fill: 'green', cursor: 'pointer' } };
                       },
                     },
@@ -62,7 +62,9 @@ export default class Petals extends Component {
                     {
                       target: 'data',
                       mutation: props => {
-                        const color = this.props.selected.includes(props.index)
+                        const color = this.props.selected.includes(
+                          9 - props.index
+                        )
                           ? 'green'
                           : 'gray';
                         return { style: { fill: color, cursor: 'pointer' } };

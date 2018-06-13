@@ -36,6 +36,8 @@ class OnlineContainer extends Component {
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
+    connected: PropTypes.func.isRequired,
+    disconnected: PropTypes.func.isRequired,
   };
 
   state = {
@@ -70,7 +72,13 @@ class OnlineContainer extends Component {
   }
 
   startWebsocket = () => {
-    return <Websocket getWebsocketRef={this.getWebsocketRef} />;
+    return (
+      <Websocket
+        connected={this.props.connected}
+        disconnected={this.props.disconnected}
+        getWebsocketRef={this.getWebsocketRef}
+      />
+    );
   };
 
   render() {

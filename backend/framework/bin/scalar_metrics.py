@@ -52,8 +52,8 @@ class LoadMetrics:
         self.steps_dic = {
             'preproc': ['countpix', 'getbias', 'getrms', 'xwsigma'],
             'extract': ['countbins'],
-            'fiberfl': ['integ', 'skycont', 'skypeak', 'skyresid'],
-            'skysubs': ['snr'],
+            'fiberfl': ['integ', 'skycont', 'skypeak'],
+            'skysubs': ['skyresid', 'integ', 'snr'],
         }
 
         self.alert_keys = {
@@ -72,8 +72,8 @@ class LoadMetrics:
         self.status = {
             'extract': {'steps_status': ['None']},
             'preproc': {'steps_status': ['None', 'None', 'None', 'None']},
-            'fiberfl': {'steps_status': ['None', 'None', 'None', 'None']},
-            'skysubs': {'steps_status': ['None']},
+            'fiberfl': {'steps_status': ['None', 'None']},
+            'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
 
     def Load_qa(self, qa):
