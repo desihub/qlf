@@ -18,6 +18,12 @@ export const tableColumns = [
     type: 'normal',
   },
   {
+    processKey: 'exposure__flavor',
+    exposureKey: 'flavor',
+    name: 'Flavor',
+    type: 'normal',
+  },
+  {
     processKey: 'exposure__tile',
     exposureKey: 'tile',
     name: 'Tile ID',
@@ -66,12 +72,6 @@ export const tableColumns = [
     type: 'normal',
   },
   {
-    processKey: 'exposure__flavor',
-    exposureKey: 'flavor',
-    name: 'Flavor',
-    type: 'normal',
-  },
-  {
     processKey: 'exposure__airmass',
     exposureKey: 'airmass',
     name: 'Airmass',
@@ -93,6 +93,12 @@ export const tableColumns = [
     processKey: '',
     exposureKey: '',
     name: 'CCDs',
-    type: null,
+    type: 'image',
+  },
+  {
+    processKey: '',
+    exposureKey: '',
+    name: 'COM',
+    type: 'comments',
   },
 ];

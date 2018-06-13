@@ -11,7 +11,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import _ from 'lodash';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
+import Petals from '../../../../components/petals/petals';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Paper from '@material-ui/core/Paper';
+import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 const styles = {
   container: {
@@ -19,116 +23,128 @@ const styles = {
   },
   label: {
     fontSize: '0.75rem',
-    marginTop: '16px',
+    marginTop: 16,
   },
   title: {
-    marginTop: '16px',
+    marginTop: 16,
     textAlign: 'center',
   },
   button: {
     margin: '1em',
   },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingTop: 16,
+    justifyContent: 'space-around',
+    width: '90vw',
+  },
+  formDiv: {
+    display: 'grid',
+  },
+  formCheckbox: {
+    margin: 0,
+    justifySelf: 'center',
+  },
+  labelThreshold: {
+    fontSize: '0.75rem',
+    marginTop: 0,
+  },
+  threshold: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItens: 'left',
+    padding: 8,
+    width: 70,
+  },
 };
 
-export default class Form extends React.Component {
+class Form extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      night: '',
+      arms: [],
+      input: '',
+      output: '',
+      exposures: '',
+      qlconfig: '',
+      spectrographs: { b: [], r: [], z: [] },
+      loading: false,
+      minInterval: '',
+      maxInterval: '',
+      maxExposures: '',
+      allowedDelay: '',
+      baseExposures: '',
+      diskAlert: 20,
+      diskWarning: 80,
+    };
+  }
+
   componentDidMount() {
     this.getCurrentConfiguration();
   }
 
-  state = {
-    night: '',
-    arms: [],
-    input: '',
-    output: '',
-    exposures: '',
-    qlconfig: '',
-    spectrographs: [],
-    loading: false,
-    minInterval: '',
-    maxInterval: '',
-    maxExposures: '',
-    allowedDelay: '',
-    baseExposures: '',
-  };
-
-  updateMinInterval = minInterval => {
-    this.setState({ minInterval });
-  };
-
-  updateMaxInterval = maxInterval => {
-    this.setState({ maxInterval });
-  };
-
-  updateMaxExposures = maxExposures => {
-    this.setState({ maxExposures });
-  };
-
-  updateAllowedDelay = allowedDelay => {
-    this.setState({ allowedDelay });
-  };
-
-  updateBaseExposures = baseExposures => {
-    this.setState({ baseExposures });
-  };
-
-  updateExposures = exposures => {
-    this.setState({ exposures });
+  static propTypes = {
+    classes: PropTypes.object,
   };
 
   updateArm = arm => {
+    const newArm = {};
     if (this.state.arms.includes(arm)) {
+      newArm[arm] = [];
       this.setState({
         arms: this.state.arms.filter(a => a !== arm),
-        spectrographs: this.state.spectrographs.filter(
-          spec => !spec.includes(arm)
-        ),
+        spectrographs: Object.assign(this.state.spectrographs, newArm),
       });
     } else {
+      newArm[arm] = _.range(0, 10);
       this.setState({
         arms: this.state.arms.concat(arm),
-        spectrographs: this.state.spectrographs
-          .filter(spec => !spec.includes(arm))
-          .concat(_.range(0, 10).map(spec => `${arm}${spec}`)),
+        spectrographs: Object.assign(this.state.spectrographs, newArm),
       });
     }
   };
 
-  updateSpectrograph = (spectrograph, arm) => {
-    if (this.state.spectrographs.includes(`${arm}${spectrograph}`)) {
+  updateSpectrograph = (arm, spectrograph) => {
+    const newArm = {};
+    if (this.state.spectrographs[arm].includes(spectrograph)) {
+      newArm[arm] = this.state.spectrographs[arm].filter(
+        s => s !== spectrograph
+      );
       this.setState({
-        spectrographs: this.state.spectrographs.filter(
-          spec => spec !== `${arm}${spectrograph}`
-        ),
+        spectrographs: Object.assign(this.state.spectrographs, newArm),
       });
     } else {
+      newArm[arm] = this.state.spectrographs[arm].concat(spectrograph);
       this.setState({
-        spectrographs: this.state.spectrographs.concat(`${arm}${spectrograph}`),
+        spectrographs: Object.assign(this.state.spectrographs, newArm),
       });
     }
   };
 
-  updateInput = input => {
-    this.setState({ input });
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
   };
 
-  updateOutput = output => {
-    this.setState({ output });
+  getCurrentConfiguration = async () => {
+    this.setState({ loading: true });
+    const configuration = await QLFApi.getCurrentConfiguration();
+    const thresholds = await QLFApi.getCurrentThresholds();
+    this.updateThresholds(thresholds);
+    this.setState({ loading: false });
+    this.updateConfiguration(configuration);
   };
 
-  updateLoglevel = loglevel => {
-    this.setState({ loglevel });
-  };
-
-  updateLogfile = logfile => {
-    this.setState({ logfile });
-  };
-
-  updateLogpipeline = logpipeline => {
-    this.setState({ logpipeline });
-  };
-
-  updateQlconfig = qlconfig => {
-    this.setState({ qlconfig });
+  getDefaultConfiguration = async () => {
+    this.setState({ loading: true });
+    const configuration = await QLFApi.getDefaultConfiguration();
+    const thresholds = await QLFApi.getCurrentThresholds();
+    this.updateThresholds(thresholds);
+    this.setState({ loading: false });
+    this.updateConfiguration(configuration);
   };
 
   updateConfiguration = configuration => {
@@ -146,20 +162,22 @@ export default class Form extends React.Component {
         spectrographs,
         base_exposures_path,
       } = configuration.results;
-      let flatSpectrographs = [];
-      if (spectrographs && arms)
-        flatSpectrographs = _.flatten(
-          spectrographs
-            .split(',')
-            .map(spec => arms.split(',').map(arm => `${arm}${spec}`))
-        );
+
+      const specs = spectrographs.split(',').map(s => parseInt(s, 10));
+
+      const spectrographsObj = {
+        b: arms.includes('b') ? specs : [],
+        r: arms.includes('r') ? specs : [],
+        z: arms.includes('z') ? specs : [],
+      };
+
       this.setState({
         arms: arms.split(','),
         input: desi_spectro_data,
         output: desi_spectro_redux,
         exposures: exposures,
         qlconfig: qlconfig,
-        spectrographs: flatSpectrographs,
+        spectrographs: spectrographsObj,
         minInterval: min_interval,
         maxInterval: max_interval,
         maxExposures: max_exposures,
@@ -169,18 +187,12 @@ export default class Form extends React.Component {
     }
   };
 
-  getCurrentConfiguration = async () => {
-    this.setState({ loading: true });
-    const configuration = await QLFApi.getCurrentConfiguration();
-    this.setState({ loading: false });
-    this.updateConfiguration(configuration);
-  };
-
-  getDefaultConfiguration = async () => {
-    this.setState({ loading: true });
-    const configuration = await QLFApi.getDefaultConfiguration();
-    this.setState({ loading: false });
-    this.updateConfiguration(configuration);
+  updateThresholds = thresholds => {
+    if (thresholds && thresholds.disk_percent_alert)
+      this.setState({
+        diskAlert: thresholds.disk_percent_alert,
+        diskWarning: thresholds.disk_percent_warning,
+      });
   };
 
   render() {
@@ -199,7 +211,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.minInterval}
-          onChange={evt => this.updateMinInterval(evt.value)}
+          onChange={this.handleChange('minInterval')}
         />
         <TextField
           label="Max Interval"
@@ -210,7 +222,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.maxInterval}
-          onChange={evt => this.updateMaxInterval(evt.value)}
+          onChange={this.handleChange('maxInterval')}
         />
         <TextField
           label="Allowed Delay"
@@ -221,7 +233,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.allowedDelay}
-          onChange={evt => this.updateAllowedDelay(evt.value)}
+          onChange={this.handleChange('allowedDelay')}
         />
         <TextField
           label="Max Exposures"
@@ -232,64 +244,39 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.maxExposures}
-          onChange={evt => this.updateMaxExposures(evt.value)}
+          onChange={this.handleChange('maxExposures')}
         />
         <Typography style={styles.title} variant="headline" component="h2">
           Pipeline
         </Typography>
         <FormControl component="fieldset">
-          <Grid container spacing={24}>
-            <Grid item>
-              <FormLabel style={styles.label}>Arms to process</FormLabel>
-              <FormGroup column="true">
-                {['b', 'r', 'z'].map(arm => (
-                  <FormGroup key={arm} row>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.arms.includes(arm)}
-                          onChange={() => this.updateArm(arm)}
-                          value={arm}
-                        />
-                      }
-                      label={arm}
+          <FormLabel style={styles.label}>
+            Arms / Spectrographs to process
+          </FormLabel>
+          <FormGroup style={styles.formGroup}>
+            {['b', 'r', 'z'].map(arm => (
+              <div key={arm} style={styles.formDiv}>
+                <Petals
+                  selected={this.state.spectrographs[arm]}
+                  onClick={spectrograph =>
+                    this.updateSpectrograph(arm, spectrograph)
+                  }
+                  size={100}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={this.state.arms.includes(arm)}
+                      onChange={() => this.updateArm(arm)}
+                      value={arm}
                     />
-                  </FormGroup>
-                ))}
-              </FormGroup>
-            </Grid>
-            <Grid item xs>
-              <FormLabel style={styles.label}>
-                Spectrographs to process
-              </FormLabel>
-              <FormGroup column="true">
-                {['b', 'r', 'z'].map(arm => (
-                  <FormGroup key={arm} row>
-                    {_.range(0, 10).map(id => {
-                      const spectrograph = id.toString();
-                      return (
-                        <FormControlLabel
-                          key={id}
-                          control={
-                            <Checkbox
-                              checked={this.state.spectrographs.includes(
-                                `${arm}${spectrograph}`
-                              )}
-                              onChange={() =>
-                                this.updateSpectrograph(spectrograph, arm)
-                              }
-                              value={spectrograph}
-                            />
-                          }
-                          label={id}
-                        />
-                      );
-                    })}
-                  </FormGroup>
-                ))}
-              </FormGroup>
-            </Grid>
-          </Grid>
+                  }
+                  label={arm}
+                  style={styles.formCheckbox}
+                />
+              </div>
+            ))}
+          </FormGroup>
         </FormControl>
         <Divider />
         <Typography style={styles.title} variant="headline" component="h2">
@@ -304,7 +291,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.input}
-          onChange={evt => this.updateInput(evt.value)}
+          onChange={this.handleChange('input')}
         />
         <TextField
           label="Output Directory"
@@ -315,7 +302,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.output}
-          onChange={evt => this.updateOutput(evt.value)}
+          onChange={this.handleChange('output')}
         />
         <TextField
           label="Base Exposures"
@@ -326,7 +313,7 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.baseExposures}
-          onChange={evt => this.updateBaseExposures(evt.value)}
+          onChange={this.handleChange('baseExposures')}
         />
         <TextField
           label="Configuration file for the quick look pipeline"
@@ -337,8 +324,48 @@ export default class Form extends React.Component {
           fullWidth
           margin="normal"
           value={this.state.qlconfig}
-          onChange={evt => this.updateQlconfig(evt.value)}
+          onChange={this.handleChange('qlconfig')}
         />
+        <FormLabel style={styles.label}>Threshold Values</FormLabel>
+        <Paper style={styles.threshold} elevation={2}>
+          <FormLabel style={styles.labelThreshold}>Disk Space</FormLabel>
+          <TextField
+            label="Warning"
+            type="number"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              min: 0,
+              max: 100,
+              step: 10,
+            }}
+            margin="normal"
+            value={this.state.diskWarning}
+            onChange={this.handleChange('diskWarning')}
+            InputProps={{ // eslint-disable-line
+              endAdornment: <InputAdornment position="end">%</InputAdornment>,
+            }}
+          />
+          <TextField
+            label="Critical"
+            type="number"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              min: 0,
+              max: 100,
+              step: 10,
+            }}
+            margin="normal"
+            value={this.state.diskAlert}
+            onChange={this.handleChange('diskAlert')}
+            InputProps={{ // eslint-disable-line
+              endAdornment: <InputAdornment position="end">%</InputAdornment>,
+            }}
+          />
+        </Paper>
         <Button
           disabled={true}
           variant="raised"
@@ -359,3 +386,5 @@ export default class Form extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(Form);

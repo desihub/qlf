@@ -1,35 +1,43 @@
 #!/bin/bash
 source activate quicklook 
 
-conda install -y --file requirements.txt
-pip install -r extras.txt
+if [ $UPDATE_DEPENDENCIES = "true" ]; then
+	conda install -y --file requirements.txt
+	pip install -r extras.txt
+fi
+
+export LANG=en_US.UTF-8  
+export LANGUAGE=en_US:en  
+export LC_ALL=en_US.UTF-8
 
 export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
 export QLF_REDIS=True
 
-for package in desispec desiutil; do
+for package in desispec desiutil desimodel specter; do
 	echo "Setting $package..."
 	export PATH=$QLF_ROOT/$package/bin:$PATH
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
 done
 
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
+export DESIMODEL=$QLF_ROOT/desimodel
 
 python -Wi framework/qlf/manage.py migrate
-# echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
-
-cd $QLF_ROOT
-echo "Initializing QLF Daemon..."
+echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass') if not User.objects.all() else None" | python framework/qlf/manage.py shell
 
 # Start QLF daemon
-python -Wi framework/bin/servers.py &> $QLF_ROOT/logs/servers.log &
+if [ $DAEMON_TEST = "false" ]; then
+	echo "Initializing QLF Daemon..."
+	./startDaemon.sh &> $QLF_ROOT/logs/qlf_daemon.log &
+fi
+
+
+if [ $BOKEH_TEST = "false" ]; then
+	echo "Initializing Bokeh Server..."
+	./startBokeh.sh &> $QLF_ROOT/logs/bokeh.log &
+fi
 
 echo "QLF web application is running at http://$QLF_HOSTNAME:$QLF_PORT you may start Quick Look from the pipeline interface."
 
-cd $QLF_PROJECT
-
-if [ $BOKEH_TEST = "false" ]; then
-	bokeh serve $BOKEH_CONFIGURATION --port=$BOKEH_PORT dashboard/bokeh/qacountpix dashboard/bokeh/qaskycont dashboard/bokeh/qacountbins dashboard/bokeh/qagetbias dashboard/bokeh/qagetrms dashboard/bokeh/qainteg dashboard/bokeh/qaskypeak dashboard/bokeh/qasnr dashboard/bokeh/qaskyresid dashboard/bokeh/qaxwsigma dashboard/bokeh/monitor dashboard/bokeh/exposures dashboard/bokeh/footprint &> $QLF_ROOT/logs/bokeh.log &
-fi
-python -u manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
+python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log

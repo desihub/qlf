@@ -14,6 +14,8 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import ImageModal from '../image-modal/image-modal';
+import CommentModal from '../comment-modal/comment-modal';
 
 class TableHistory extends Component {
   static propTypes = {
@@ -44,6 +46,11 @@ class TableHistory extends Component {
       filters: '',
       tableColumnsHidden: [],
       openColumnsModal: false,
+      openImageModal: false,
+      openCommentModal: false,
+      commentProcessId: 1,
+      currentExposure: undefined,
+      currentNight: undefined,
     };
   }
 
@@ -91,6 +98,8 @@ class TableHistory extends Component {
               selectExposure={this.props.selectExposure}
               selectable={this.props.selectable}
               tableColumns={this.availableColumns()}
+              handleImageModalOpen={this.handleImageModalOpen}
+              handleCommentModalOpen={this.handleCommentModalOpen}
             />
           );
         })}
@@ -178,8 +187,6 @@ class TableHistory extends Component {
         : tableColumns.filter(tc => tc.exposureKey !== null);
     return (
       <Modal
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
         open={this.state.openColumnsModal}
         onClose={this.handleColumnModalClose}
         className={this.props.classes.modal}
@@ -248,9 +255,58 @@ class TableHistory extends Component {
     });
   };
 
+  renderImageModal = () => {
+    return this.state.openImageModal ? (
+      <ImageModal
+        handleClose={this.handleImageModalClose}
+        night={this.state.currentNight}
+        exposure={this.state.currentExposure}
+      />
+    ) : null;
+  };
+
+  handleImageModalOpen = (night, exposure) => {
+    this.setState({
+      openImageModal: true,
+      currentExposure: exposure,
+      currentNight: night,
+    });
+  };
+
+  handleImageModalClose = () => {
+    this.setState({
+      openImageModal: false,
+    });
+  };
+
+  renderCommentModal = () => {
+    return this.state.openCommentModal ? (
+      <CommentModal
+        processId={this.state.commentProcessId}
+        handleClose={this.handleCommentModalClose}
+        readOnly={this.props.type !== 'process'}
+      />
+    ) : null;
+  };
+
+  handleCommentModalOpen = commentProcessId => {
+    this.setState({
+      commentProcessId,
+      openCommentModal: true,
+    });
+  };
+
+  handleCommentModalClose = () => {
+    this.setState({
+      openCommentModal: false,
+    });
+  };
+
   render() {
     return (
       <div className={this.props.classes.root}>
+        {this.renderCommentModal()}
+        {this.renderImageModal()}
         {this.renderColumnsModal()}
         <Table style={styles.table}>
           <HistoryHeader

@@ -92,8 +92,8 @@ describe('QA', () => {
       wrapper
         .find('Cards')
         .at(1)
-        .props().subtitle
-    ).toBe('3');
+        .props().title
+    ).toBe('Exposure Id: 3');
     expect(
       wrapper
         .find('path')
