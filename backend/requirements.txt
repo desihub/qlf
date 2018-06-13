@@ -19,7 +19,6 @@ ipython
 numba
 speclite 
 healpy
-fitsio
 
 # Packages required by the DESI Quick Look framework
 

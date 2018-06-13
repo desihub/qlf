@@ -17,3 +17,5 @@ schedule==0.5.0
 psutil
 psycopg2-binary
 django-postgrespool
+
+fitsio==0.9.11
