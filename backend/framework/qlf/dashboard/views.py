@@ -9,13 +9,14 @@ from rest_framework.pagination import LimitOffsetPagination
 from django.db.models import Max, Min
 from django.db.models import Q
 
-from .models import Job, Exposure, Camera, QA, Process, Configuration
+from .models import Job, Exposure, Camera, QA, Process, Configuration, ProcessComment
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
-    ExposureFlavorSerializer, CurrentProcessJobsSerializer
+    ExposureFlavorSerializer, CurrentProcessJobsSerializer,
+    ProcessCommentSerializer
 )
 
 from datetime import datetime, timedelta
@@ -28,6 +29,8 @@ from django.template import loader
 from django.http import HttpResponse
 from django.http import JsonResponse
 
+from dashboard.bokeh.fits2png.fits2png import Fits2png
+
 from django.core.mail import send_mail
 import os
 
@@ -35,6 +38,8 @@ from clients import get_exposure_monitoring
 
 from django.contrib import messages
 import logging
+
+from util import get_config
 
 qlf = get_exposure_monitoring()
 
@@ -297,6 +302,7 @@ class DefaultConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
         response.data = {'results': default_configuration}
         return response
 
+
 class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Configuration.objects.order_by('creation_date')
     serializer_class = ConfigurationSerializer
@@ -306,6 +312,18 @@ class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
             request, args, kwargs)
         qlconfig = qlf.get_qlconfig()
         response.data = qlconfig
+        return response
+
+
+class QlCalibrationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(QlCalibrationViewSet, self).list(
+            request, args, kwargs)
+        calibration = qlf.get_calibration()
+        response.data = calibration
         return response
 
 
@@ -488,6 +506,15 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = CameraSerializer
 
 
+class ProcessCommentViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing comments"""
+
+    queryset = ProcessComment.objects.order_by('-pk')
+    serializer_class = ProcessCommentSerializer
+    permission_classes = [permissions.AllowAny]
+    filter_fields = ('process',)
+
+
 def start(request):
     # qlf_manual_status = qlf_manual.get_status()
     #
@@ -608,6 +635,21 @@ def embed_bokeh(request, bokeh_app):
     return response
 
 
+def fits_to_png(request):
+    """Generates and render png"""
+    template = loader.get_template('dashboard/fits_to_png.html')
+    # Generate Image
+    cam = request.GET.get('cam')
+    processing = request.GET.get('processing')
+    night = request.GET.get('night')
+    exposure = request.GET.get('exposure')
+    png_image = Fits2png(cam, processing, night, exposure).convert_fits2png()
+    context = {'image': png_image}
+    response = HttpResponse(template.render(context, request))
+
+    return response
+
+
 def send_ticket_email(request):
     email = request.GET.get('email')
     name = request.GET.get('name')
@@ -622,3 +664,13 @@ def send_ticket_email(request):
             return JsonResponse({'status': 'sent'})
         except:
             return JsonResponse({'status': 'send_mail fail'})
+
+def disk_thresholds(request):
+    cfg = get_config()
+
+    disk_percent_warning = cfg.get('main', 'disk_percent_warning')
+    disk_percent_alert = cfg.get('main', 'disk_percent_alert')
+    return JsonResponse({
+        "disk_percent_warning": disk_percent_warning,
+        "disk_percent_alert": disk_percent_alert
+    })
