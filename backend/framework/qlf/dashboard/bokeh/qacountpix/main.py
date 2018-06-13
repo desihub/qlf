@@ -61,7 +61,7 @@ metr = countpix
 dx = [0,1,0,1]
 dy = [1,1,0,0]
 dz = metr[name] 
-Reds=get_palette("Reds_r")
+Reds=get_palette("Reds")
 mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
 
 dzmax, dzmin = max(dz), min(dz) 

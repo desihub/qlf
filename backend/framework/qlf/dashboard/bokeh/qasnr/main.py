@@ -342,11 +342,10 @@ xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
 left, right = xmin -xfac, xmax+xfac
 bottom, top = ymin-yfac, ymax+yfac
 
-p = Figure(title='Median SNR'
+p = Figure(title='Residual SNR'
         , x_axis_label='RA', y_axis_label='DEC'
-        , plot_width=700, plot_height=601            
+        , plot_width=700, plot_height=550
         , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"])
-
 # Color Map
 p.circle('x1', 'y1', source=source, name="data", radius=radius,
          fill_color={'field': 'resid_snr', 'transform': mapper},

@@ -194,7 +194,7 @@ radius = 0.015
 radius_hover = 0.0165
 
 px = Figure( title = 'XSIGMA', x_axis_label='RA', y_axis_label='DEC'
-           , plot_width=700, plot_height=600
+           , plot_width=700, plot_height=550
            , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
            , tools= [xsigma_hover, "pan,box_zoom,reset,crosshair, tap"])
 
@@ -242,7 +242,7 @@ xhist.yaxis.axis_label="X std dev (number of pixels)"
 # ======
 # WSIGMA
 pw = Figure( title = 'WSIGMA', x_axis_label='RA', y_axis_label='DEC'
-           , plot_width=700, plot_height=600
+           , plot_width=700, plot_height=550
            , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
            , tools= [wsigma_hover, "pan,box_zoom,reset,crosshair,tap"])
 

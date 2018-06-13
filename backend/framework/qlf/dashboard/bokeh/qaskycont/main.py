@@ -118,7 +118,7 @@ radius_hover = 0.0165
 
 p2 = Figure(title='SKY_CONT', 
             x_axis_label='RA', y_axis_label='DEC',
-            plot_width=700, plot_height=599,
+            plot_width=700, plot_height=550,
             tools= [hover, "pan,box_zoom,reset,tap"])
 
 p2.circle('ra','dec', source=source2, radius=radius,

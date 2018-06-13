@@ -152,7 +152,7 @@ bottom, top = ymin-yfac, ymax+yfac
 
 p = Figure(title='PEAKCOUNT: sum of counts in peak regions '
         , x_axis_label='RA', y_axis_label='DEC'
-        , plot_width=700, plot_height=601            
+        , plot_width=700, plot_height=550            
         , tools=[peak_hover, "pan,box_zoom,reset,crosshair, tap"])
 
 # Color Map
