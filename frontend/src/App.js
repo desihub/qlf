@@ -103,12 +103,27 @@ const styles = {
     maxHeight: '87.5vh',
     overflowY: 'scroll',
   },
+  footerRight: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  connected: {
+    fontSize: 16,
+    color: 'green',
+    paddingLeft: 8,
+  },
+  disconnected: {
+    fontSize: 16,
+    color: 'red',
+    paddingLeft: 8,
+  },
 };
 
 class App extends React.Component {
   state = {
     url: '/',
     displayHeaders: true,
+    websocketConnected: false,
   };
 
   renderRouteName = () => {
@@ -231,11 +246,26 @@ class App extends React.Component {
     return (
       <div style={styles.bottom}>
         <span>© Copyright 2018, LIneA/DESI</span>
-        <span>
-          {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
-        </span>
+        <div style={styles.footerRight}>
+          <span>
+            {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
+          </span>
+          {this.state.websocketConnected ? (
+            <Icon style={styles.connected}>check</Icon>
+          ) : (
+            <Icon style={styles.disconnected}>close</Icon>
+          )}
+        </div>
       </div>
     );
+  };
+
+  websocketConnected = () => {
+    this.setState({ websocketConnected: true });
+  };
+
+  websocketDisconnected = () => {
+    this.setState({ websocketConnected: false });
   };
 
   render() {
@@ -257,7 +287,10 @@ class App extends React.Component {
                     />
                   )
                 )}
-                <OnlineContainer />
+                <OnlineContainer
+                  connected={this.websocketConnected}
+                  disconnected={this.websocketDisconnected}
+                />
                 <OfflineContainer toggleHeader={this.toggleHeader} />
               </div>
               {this.renderBottomBar()}
