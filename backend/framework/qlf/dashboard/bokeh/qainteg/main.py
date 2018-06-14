@@ -24,6 +24,9 @@ from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description
+from dashboard.bokeh.qlf_plot import plot_hist
+
+from bokeh.models import PrintfTickFormatter
 
 
 import logging
@@ -53,23 +56,50 @@ try:
 except:
     sys.exit('Could not load metrics')
 
+
+integ=metrics['integ']
+
+
+
+
+hist_tooltip=""" 
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">INTEG: </span>
+            <span style="font-size: 13px; color: #515151;">@integ</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER ID: </span>
+            <span style="font-size: 13px; color: #515151;">@x</span>
+        </div>
+    </div>
+        """
+hist_hover = HoverTool(tooltips=hist_tooltip)
+hist_source = ColumnDataSource(
+                data={'integ': integ['FIBER_MAG'],
+                       'x': np.arange(len(integ['FIBER_MAG'])),
+                       #'left': np.arange(len(skyresid['SKYFIBERID'])) -0.4,
+                       #'right':np.arange(len(skyresid['SKYFIBERID']))+0.4,
+                       #'bottom':[0]*len(skyresid['SKYFIBERID']),
+                     })
+
+yrange=[0, 1.1*max(integ['FIBER_MAG'])]
+fiber_hist = plot_hist(hist_hover, yrange, ph=300)
+
+fiber_hist.vbar(top='integ', x='x', width=0.8,
+            source=hist_source,
+            fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
+            hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
+fiber_hist.xaxis.axis_label="Fibers"
+fiber_hist.yaxis.axis_label="Integral (counts)"
+
+
+
+'''
 integ = metrics['integ']
 
-def palette(name_of_mpl_palette):
-    """ Transforms a matplotlib palettes into a bokeh 
-    palettes
-    """
-    from matplotlib.colors import rgb2hex
-    import matplotlib.cm as cm
-    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
-    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
-    return bokehpalette
+my_palette = get_palette("Reds")
 
-
-my_palette = palette("viridis")
-
-
-from bokeh.models import PrintfTickFormatter
 formatter = PrintfTickFormatter(format='%1.1e')
 
 skc_tooltips = """
@@ -90,7 +120,7 @@ skc_tooltips = """
 """
 url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
-c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
+c1,c2 = 0,500#int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
 
 hover = HoverTool(tooltips=skc_tooltips)
@@ -155,11 +185,8 @@ p2.circle('ra','dec', source=source2, radius=radius,
         fill_color={'field': 'integ', 'transform': mapper}, 
          line_color='black', line_width=0.1)
 
-
-
 taptool = p2.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
-
 
 # marking the Hover point
 p2.circle('ra','dec', source = source2, radius = radius_hover
@@ -180,7 +207,17 @@ p2txt = column(widgetbox(txt),p2)
 #layout = gridplot([[p2txt]], responsive=False)
 info_col=Div(text=write_description('integ'), width=p2.plot_width)
 layout = column(info_col, p2)
+'''
+#infos
+#info, nlines = write_info('integ', tests['integ'])
+#txt = PreText(text=info, height=nlines*20, width=fiber_hist.plot_width)
+#p2txt = column(widgetbox(txt),p2)
 
+
+info_col=Div(text=write_description('integ'), width=fiber_hist.plot_width)
+
+
+layout = column(info_col, fiber_hist)
 # End of Bokeh Block
 curdoc().add_root(layout)
 curdoc().title ="INTEG"
