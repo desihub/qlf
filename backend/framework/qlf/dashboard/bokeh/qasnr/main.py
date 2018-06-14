@@ -48,7 +48,14 @@ except:
     sys.exit('Could not load metrics')
 
 snr = metrics['snr']
-exptime = tests['checkHDUs']['EXPTIME']
+
+try:
+    exptime = tests['checkHDUs']['EXPTIME']
+    name_warn=[]
+except:
+    exptime=1000
+    name_warn = '(exptime fixed)'
+    print('EXPTIME NOT FOUND, USING 1000')
 
 
 #sort the correct vector:
@@ -328,7 +335,7 @@ source = ColumnDataSource(data={
 
 })
 
-print( len(fibersnr) )
+
 dy = (np.max(resid) - np.min(resid))*0.02
 mapper = LinearColorMapper(palette=my_palette,
                            low=np.min(resid)- dy, high= np.max(resid)+dy)
@@ -342,7 +349,7 @@ xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
 left, right = xmin -xfac, xmax+xfac
 bottom, top = ymin-yfac, ymax+yfac
 
-p = Figure(title='Residual SNR'
+p = Figure(title='Residual SNR'+name_warn
         , x_axis_label='RA', y_axis_label='DEC'
         , plot_width=700, plot_height=550
         , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"])
