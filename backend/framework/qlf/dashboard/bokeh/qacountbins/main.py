@@ -113,12 +113,12 @@ hist_source = ColumnDataSource(
                         'segx1': x +0.4,
                         'segy0': y ,
                         'segy1': y ,
-                        'status': ['good' if i==1 else 'bad' for i in y],
+                        'status': ['GOOD' if i==1 else 'BAD' for i in y],
                         'x1': snr['RA'],
                         'y1': snr['DEC'],   
                     'QLF_FIBERID': qlf_fiberid,
                     'OBJ_TYPE': obj_type,
-                    'color': ['green' if i==1 else 'black' for i in countbins['GOOD_FIBER']]
+                    'color': ['#319b5c' if i ==1 else '#282828' for i in countbins['GOOD_FIBER']]
                      })
 
 
