@@ -6,17 +6,16 @@ Twisted[tls,http2]
 
 django-json-field==0.5.7
 speclite==0.5
-fitsio==0.9.11
 furl==0.5.7
 Pyro4==4.59
 
-scipy==0.19.1
 django-cors-headers==2.2.0
 
 channels==1.1.8
 asgi_redis==1.4.3
 schedule==0.5.0
-pyyaml==3.12
 psutil
 psycopg2-binary
 django-postgrespool
+
+fitsio==0.9.11
