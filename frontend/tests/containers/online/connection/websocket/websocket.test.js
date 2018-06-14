@@ -43,7 +43,8 @@ describe('Websocket', () => {
       spectrographs: [],
       cameraTerminal: [],
       camerasStages: undefined,
-      daemonStatus: 'Not Running',
+      daemonRunning: false,
+      pipelineRunning: 'Not Running',
       exposure: '4',
       ingestionTerminal: [
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
@@ -75,7 +76,8 @@ describe('Websocket', () => {
       cameraTerminal: [
         '2017-11-21 14:05:39,263 QuickLook INFO : Running Quicklook',
       ],
-      daemonStatus: 'Not Running',
+      daemonRunning: false,
+      pipelineRunning: 'Not Running',
       camerasStages: undefined,
       exposure: '4',
       ingestionTerminal: [

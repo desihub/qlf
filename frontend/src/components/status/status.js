@@ -11,7 +11,7 @@ const styles = {
 
 export default class Status extends Component {
   static propTypes = {
-    daemonStatus: PropTypes.string,
+    pipelineRunning: PropTypes.string,
     exposure: PropTypes.string.isRequired,
     mjd: PropTypes.string,
     date: PropTypes.string,
@@ -22,13 +22,14 @@ export default class Status extends Component {
     const mjd = parseFloat(this.props.mjd)
       ? parseFloat(this.props.mjd).toFixed(3)
       : '';
-    const processId = this.props.processId
-      ? this.props.processId.toString()
-      : '';
+    const processId =
+      this.props.processId && !this.props.processId.includes('-')
+        ? this.props.processId
+        : '';
     return (
       <div style={{ ...styles.container }}>
-        {this.props.daemonStatus ? (
-          <Card title={`Status: ${this.props.daemonStatus}`} />
+        {this.props.pipelineRunning ? (
+          <Card title={`Status: ${this.props.pipelineRunning}`} />
         ) : null}
         <Card title={`Process Id: ${processId}`} />
         <Card title={`Exposure Id: ${this.props.exposure}`} />

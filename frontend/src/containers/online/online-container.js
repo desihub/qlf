@@ -24,7 +24,8 @@ class OnlineContainer extends Component {
     date: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
     navigateToMetrics: PropTypes.func.isRequired,
-    daemonStatus: PropTypes.string.isRequired,
+    daemonRunning: PropTypes.bool.isRequired,
+    pipelineRunning: PropTypes.string.isRequired,
     mainTerminal: PropTypes.array.isRequired,
     ingestionTerminal: PropTypes.array.isRequired,
     cameraTerminal: PropTypes.array.isRequired,
@@ -32,7 +33,7 @@ class OnlineContainer extends Component {
     navigateToQA: PropTypes.func.isRequired,
     pathname: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
-    processId: PropTypes.number,
+    processId: PropTypes.string,
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
@@ -94,7 +95,8 @@ class OnlineContainer extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
-              daemonStatus={this.props.daemonStatus}
+              daemonRunning={this.props.daemonRunning}
+              pipelineRunning={this.props.pipelineRunning}
               mainTerminal={this.props.mainTerminal}
               ingestionTerminal={this.props.ingestionTerminal}
               cameraTerminal={this.props.cameraTerminal}
@@ -161,7 +163,8 @@ export default connect(
     mjd: state.qlfOnline.mjd,
     date: state.qlfOnline.date,
     time: state.qlfOnline.time,
-    daemonStatus: state.qlfOnline.daemonStatus,
+    daemonRunning: state.qlfOnline.daemonRunning,
+    pipelineRunning: state.qlfOnline.pipelineRunning,
     mainTerminal: state.qlfOnline.mainTerminal,
     ingestionTerminal: state.qlfOnline.ingestionTerminal,
     cameraTerminal: state.qlfOnline.cameraTerminal,

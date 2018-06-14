@@ -4,7 +4,8 @@ import { fetchLastProcess } from '../offline/offline-store';
 
 function defaultState() {
   return {
-    daemonStatus: 'idle',
+    daemonRunning: false,
+    pipelineRunning: 'idle',
     exposure: 'none',
     mainTerminal: [],
     ingestionTerminal: [],
@@ -112,7 +113,8 @@ export function qlfOnlineReducers(state = defaultState(), action) {
       });
     case 'UPDATE_MONITOR_STATE':
       return Object.assign({}, state, {
-        daemonStatus: action.state.daemonStatus,
+        daemonRunning: action.state.daemonRunning,
+        pipelineRunning: action.state.pipelineRunning,
         processId: action.state.processId,
         mainTerminal: action.state.mainTerminal,
         ingestionTerminal: action.state.ingestionTerminal,

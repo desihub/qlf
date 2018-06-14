@@ -22,15 +22,17 @@ class Connection extends Component {
 
   handleData = data => {
     const result = JSON.parse(data);
+    console.log(result)
     if (result.notification) {
       const notification = JSON.parse(result.notification);
       this.props.updateNotifications(notification);
     }
     if (result.lines) {
       const state = {
-        daemonStatus: result.daemon_status
+        pipelineRunning: result.pipeline_running
           ? 'Running'
-          : result.daemon_status === false ? 'Not Running' : 'Idle',
+          : result.pipeline_running === false ? 'Not Running' : 'Idle',
+        daemonRunning: result.daemon_running,
         mainTerminal: result.lines ? result.lines.reverse() : [],
         ingestionTerminal:
           result.ingestion && result.ingestion !== 'Error'
@@ -42,7 +44,7 @@ class Connection extends Component {
         mjd: result.mjd === '' ? '' : result.mjd.toFixed(3),
         date: result.date === '' ? '' : result.date.split(' ')[0],
         time: result.date === '' ? '' : result.date.split(' ')[1],
-        processId: result.process_id,
+        processId: result.process_id.toString(),
         qaTests: [],
       };
       if (result.qa_results && Array.isArray(result.qa_results)) {

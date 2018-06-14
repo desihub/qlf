@@ -47,14 +47,15 @@ const styles = {
 export default class Monitor extends Component {
   static propTypes = {
     socketRef: PropTypes.object,
-    daemonStatus: PropTypes.string.isRequired,
+    daemonRunning: PropTypes.bool.isRequired,
+    pipelineRunning: PropTypes.string.isRequired,
     exposure: PropTypes.string.isRequired,
     date: PropTypes.string,
     mainTerminal: PropTypes.array.isRequired,
     ingestionTerminal: PropTypes.array.isRequired,
     cameraTerminal: PropTypes.array.isRequired,
     camerasStages: PropTypes.object.isRequired,
-    processId: PropTypes.number,
+    processId: PropTypes.string,
     qaTests: PropTypes.array,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
@@ -63,7 +64,8 @@ export default class Monitor extends Component {
   };
 
   state = {
-    daemonStatus: 'Not Running',
+    daemonRunning: false,
+    pipelineRunning: 'Not Running',
     exposure: '',
     width: '0',
     height: '0',
@@ -92,7 +94,7 @@ export default class Monitor extends Component {
       arms,
       cameraTerminal,
       camerasStages,
-      daemonStatus,
+      pipelineRunning,
       date,
       exposure,
       ingestionTerminal,
@@ -104,41 +106,21 @@ export default class Monitor extends Component {
       time,
     } = nextProps;
 
-    if (!this.state.clearMonitor && daemonStatus === 'Running')
-      this.setState({
-        arms,
-        cameraTerminal,
-        camerasStages,
-        daemonStatus,
-        date,
-        exposure,
-        ingestionTerminal,
-        mainTerminal,
-        mjd,
-        processId: processId,
-        qaTests,
-        spectrographs,
-        time,
-      });
-    else if (daemonStatus !== 'Not Running')
-      this.setState({ clearMonitor: false, daemonStatus: 'Idle' });
-    else if (this.props.daemonStatus === 'Running' && daemonStatus === 'Idle') {
-      this.setState({
-        arms,
-        cameraTerminal,
-        camerasStages,
-        daemonStatus,
-        date,
-        exposure,
-        ingestionTerminal,
-        mainTerminal,
-        mjd,
-        processId: processId,
-        qaTests,
-        spectrographs,
-        time,
-      });
-    }
+    this.setState({
+      arms,
+      cameraTerminal,
+      camerasStages,
+      pipelineRunning,
+      date,
+      exposure,
+      ingestionTerminal,
+      mainTerminal,
+      mjd,
+      processId: processId,
+      qaTests,
+      spectrographs,
+      time,
+    });
   }
 
   openDialog = (cameraIndex, arm) => {
@@ -150,24 +132,12 @@ export default class Monitor extends Component {
     this.setState({ openDialog: false });
   };
 
+  resetPipeline = () => {
+    this.props.socketRef.state.ws.send('resetPipeline');
+  };
+
   resetMonitor = () => {
-    this.setState({
-      daemonStatus: 'Idle',
-      exposure: '',
-      openDialog: false,
-      cameraIndex: 0,
-      mainTerminal: [],
-      ingestionTerminal: [],
-      cameraTerminal: [],
-      camerasStages: { b: [], r: [], z: [] },
-      mjd: '',
-      arms: [],
-      spectrographs: [],
-      clearMonitor: true,
-      date: '',
-      processId: '',
-      qaTests: [],
-    });
+    this.resetPipeline();
   };
 
   render() {
@@ -183,14 +153,14 @@ export default class Monitor extends Component {
           <div style={styles.menu}>
             <Status
               exposure={this.state.exposure}
-              daemonStatus={this.state.daemonStatus}
+              pipelineRunning={this.state.pipelineRunning}
               layout={styles.layout}
               mjd={this.state.mjd}
               date={this.state.date}
               processId={String(this.state.processId)}
             />
             <Controls
-              daemonStatus={this.props.daemonStatus}
+              daemonRunning={this.props.daemonRunning}
               socket={this.props.socketRef}
               resetMonitor={this.resetMonitor}
             />

@@ -146,19 +146,19 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 class CurrentProcessViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint listing current process"""
 
-    def get_queryset(self):
-        try:
-            process = Process.objects.latest('pk')
-            if process.end is None:
-                process_id = process.id
-            else:
-                process_id = None
-        except Process.DoesNotExist as error:
-            logger.debug(error)
-            process_id = None
+    # def get_queryset(self):
+    #     try:
+    #         process = Process.objects.latest('pk')
+    #         if process.process_jobs.last().status == 2:
+    #             process_id = process.id
+    #         else:
+    #             process_id = None
+    #     except Process.DoesNotExist as error:
+    #         logger.debug(error)
+    #         process_id = None
 
-        return Process.objects.filter(id=process_id)
-
+    #     return Process.objects.filter(id=process_id)
+    queryset = Process.objects.order_by('-pk')
     serializer_class = CurrentProcessJobsSerializer
 
 

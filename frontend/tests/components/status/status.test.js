@@ -18,7 +18,7 @@ describe('Monitor Status', () => {
           mjd={''}
           time={''}
           date={''}
-          daemonStatus={'Running'}
+          pipelineRunning={'Running'}
           exposure={'3'}
         />
       </MuiThemeProvider>

@@ -23,7 +23,7 @@ const styles = {
 class Controls extends Component {
   static propTypes = {
     socket: PropTypes.object,
-    daemonStatus: PropTypes.string,
+    daemonRunning: PropTypes.bool,
     classes: PropTypes.object,
     resetMonitor: PropTypes.func.isRequired,
   };
@@ -36,14 +36,9 @@ class Controls extends Component {
     this.props.socket.state.ws.send('stopPipeline');
   };
 
-  resetPipeline = () => {
-    this.props.socket.state.ws.send('resetPipeline');
-  };
-
   renderStartOrStop = () => {
     const { classes } = this.props;
-    return this.props.daemonStatus === 'Running' ||
-      this.props.daemonStatus === 'Idle' ? (
+    return this.props.daemonRunning ? (
       <Button
         className={classes.button}
         classes={{ raised: classes.red }}

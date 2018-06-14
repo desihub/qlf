@@ -5,7 +5,7 @@ from channels import Group
 import os
 import logging
 from util import get_config
-from ui_channel.qlf_state import QLFState
+
 from ui_channel.alerts import Alerts
 import json
 
@@ -15,7 +15,6 @@ from clients import get_exposure_monitoring
 alerts = Alerts()
 
 qlf = get_exposure_monitoring()
-qlf_state = QLFState()
 
 logger = logging.getLogger()
 
@@ -30,8 +29,9 @@ except Exception as error:
 
 
 class Upstream:
-    def __init__(self):
+    def __init__(self, qlf_state):
         self.startedUpStreamJob = False
+        self.qlf_state = qlf_state
 
     def get_camera_log(self, cam):
         process = get_current_process()
@@ -56,22 +56,24 @@ class Upstream:
 
     def start_daemon(self):
         qlf.start()
+        self.qlf_state.set_daemon_running(True, -1)
 
     def stop_daemon(self):
         qlf.stop()
+        self.qlf_state.set_daemon_running(False, -2)
 
     def reset_daemon(self):
         qlf.reset()
 
     def monitor_job(self):
-        state = qlf_state.get_current_state()
+        state = self.qlf_state.get_current_state()
 
         Group("monitor").send({
             "text": state
         })
 
     def disk_space_job(self):
-        state = qlf_state.get_current_state()
+        state = self.qlf_state.get_current_state()
 
         Group("monitor").send({
             "text": json.dumps({

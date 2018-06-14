@@ -58,7 +58,7 @@ class OfflineContainer extends Component {
     recentExposures: PropTypes.array,
     processId: PropTypes.number,
     toggleHeader: PropTypes.func.isRequired,
-    lastProcessedId: PropTypes.number,
+    lastProcessedId: PropTypes.string,
     rowsCount: PropTypes.number,
     getHistoryDateRange: PropTypes.func,
     fetchLastProcess: PropTypes.func,
