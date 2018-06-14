@@ -338,7 +338,7 @@ ylabel,yrange,bottomval,histval = histpar(yscale, hist)
 
 p_hist_x = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
            y_axis_label= ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-        , plot_width=700, plot_height=500
+        , plot_width=700, plot_height=400
         , x_axis_type="auto",    y_axis_type=yscale
         , y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
@@ -380,7 +380,7 @@ ylabel,yrange,bottomval,histval = histpar(yscale, hist)
 
 p_hist_w = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
            y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-        , plot_width=700, plot_height=500
+        , plot_width=700, plot_height=400
         , x_axis_type="auto",    y_axis_type=yscale
         ,y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
@@ -389,14 +389,57 @@ p_hist_w.quad(top= histval, bottom=bottomval, left='left', right='right',
         fill_color="dodgerblue", line_color="black", alpha=0.8,
        hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
 
+
+#--------------------------------------------------------------------------
+#AMP Plots
+from dashboard.bokeh.helper import get_palette
+from dashboard.bokeh.qlf_plot import set_amp, plot_amp
+from bokeh.models import PrintfTickFormatter
+
+dz = xwsigma['XWSIGMA_AMP'][0]
+name = 'XSIGMA AMP'
+Reds = get_palette('Reds')
+mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
+
+ztext, cbarformat = set_amp(dz)
+xamp = plot_amp(dz, mapper,name=name)
+
+formatter = PrintfTickFormatter(format=cbarformat)
+color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
+                major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
+                formatter=formatter, title="", title_text_baseline="alphabetic" )
+xamp.height=400
+xamp.width =500
+xamp.add_layout(color_bar, 'right')
+
+
+dz = xwsigma['XWSIGMA_AMP'][1]
+name = 'WSIGMA AMP'
+Reds = get_palette('Reds')
+mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
+
+ztext, cbarformat = set_amp(dz)
+wamp = plot_amp(dz, mapper,name=name)
+
+formatter = PrintfTickFormatter(format=cbarformat)
+color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
+                major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
+                formatter=formatter, title="", title_text_baseline="alphabetic" )
+wamp.height=400
+wamp.width =500
+
+wamp.add_layout(color_bar, 'right')
+
+
+
 # -------------------------------------------------------------------------
 from bokeh.models import Spacer
 
 info_col=Div(text=write_description('xwsigma'), width=2*pw.plot_width)
-pxh = column(px,xhist, p_hist_x)
-pwh = column(pw, whist, p_hist_w)
-layoutplot= row([pxh, Spacer(width=80),pwh])#, sizing_mode='scale_width')
-layout = column(widgetbox(info_col),layoutplot)
-
+pxh = column(px, xhist, p_hist_x, xamp )
+pwh = column(pw, whist, p_hist_w, wamp )
+layoutplot= row([pxh, Spacer(width=0),pwh]) #, sizing_mode='scale_width')
+layout = column(widgetbox(info_col),layoutplot) #, row( [xamp, Spacer(width=80), wamp]))
+ 
 curdoc().add_root(layout)
 curdoc().title = "XWSIGMA"
