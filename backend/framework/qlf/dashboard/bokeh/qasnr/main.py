@@ -57,6 +57,9 @@ except:
     name_warn = '(exptime fixed)'
     print('EXPTIME NOT FOUND, USING 1000')
 
+print(lm.keys())
+print(lm['results'].keys())
+print(lm['results']['metrics'].keys(), lm['results']['tests'].keys())
 
 #sort the correct vector:
 fiberlen = []
