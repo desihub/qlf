@@ -11,7 +11,10 @@ import astropy.io.fits
 
 from log import get_logger
 from qlf_models import QLFModels
-from util import get_config, extract_exposure_data
+from util import (
+    get_config, extract_exposure_data,
+    ensure_dir, format_night
+)
 
 
 cfg = get_config()
@@ -27,8 +30,8 @@ spectro_redux = cfg.get("namespace", "desi_spectro_redux")
 base_exposures_path = cfg.get("namespace", "base_exposures_path")
 
 # TODO: verify desispec.io.findfile function to get the files correctly
-fiberflat_path = os.path.join(base_exposures_path, "fiberflat")
-psf_path = os.path.join(base_exposures_path, "psf")
+# fiberflat_path = os.path.join(base_exposures_path, "fiberflat")
+# psf_path = os.path.join(base_exposures_path, "psf")
 
 min_interval = cfg.getint("main", "min_interval")
 max_interval = cfg.getint("main", "max_interval")
@@ -56,7 +59,7 @@ class ExposureGenerator(Process):
 
         for x in self.__xrange(1, max_nights):
             new_date_obs = last_date_obs + datetime.timedelta(days=x)
-            night = self.__format_night(new_date_obs)
+            night = format_night(new_date_obs)
             log.info("Night {} starting".format(night))
 
             for y in self.__xrange(1, max_exposures_per_night):
@@ -110,41 +113,12 @@ class ExposureGenerator(Process):
 
         self.__gen_desi_file(exposure_zfill, night, date_obs)
         self.__gen_fibermap_file(exposure_zfill, night, date_obs)
-        self.__gen_fiberflat_folder(night)
-        self.__gen_psfboot_folder(night)
 
         return extract_exposure_data(exposure_id, night)
 
-        # expo_name = "desi-{}.fits.fz".format(exposure_zfill)
-
-        # file_path = os.path.join(spectro_path, night, expo_name)
-
-        # try:
-        #     hdr = astropy.io.fits.getheader(file_path)
-        # except Exception as err:
-        #     log.error("Error to load fits file: %s" % err)
-        #     return {}
-
-        # return {
-        #     "exposure_id": exposure_id,
-        #     "dateobs": self.__date_obs(gen_time),
-        #     "night": night,
-        #     "zfill": exposure_zfill,
-        #     "desi_spectro_data": spectro_path,
-        #     "desi_spectro_redux": spectro_redux,
-        #     'telra': hdr.get('telra', None),
-        #     'teldec': hdr.get('teldec', None),
-        #     'tile': hdr.get('tileid', None),
-        #     'flavor': hdr.get('flavor', None),
-        #     'program': hdr.get('program', None),
-        #     'airmass': hdr.get('airmass', None),
-        #     'exptime': hdr.get('exptime', None),
-        #     'time': datetime.datetime.utcnow()
-        # }
-
     def __gen_desi_file(self, exposure_id, night, date_obs):
         dest = os.path.join(spectro_data, night)
-        self.__ensure_dir(dest)
+        ensure_dir(dest)
         src_file = os.path.join(
             base_exposures_path,
             "desi-{}.fits.fz".format(self.__base_exposure)
@@ -156,7 +130,7 @@ class ExposureGenerator(Process):
 
     def __gen_fibermap_file(self, exposure_id, night, date_obs):
         dest = os.path.join(spectro_data, night)
-        self.__ensure_dir(dest)
+        ensure_dir(dest)
         src_file = os.path.join(
             base_exposures_path,
             "fibermap-{}.fits".format(self.__base_exposure)
@@ -185,25 +159,25 @@ class ExposureGenerator(Process):
         hdulist.flush()
         hdulist.close()
 
-    def __gen_fiberflat_folder(self, night):
-        """ """
+    # def __gen_fiberflat_folder(self, night):
+    #     """ """
 
-        dest = os.path.join(spectro_redux, "exposures", night)
-        self.__ensure_dir(dest)
-        dest = os.path.join(dest, "00000001")
+    #     dest = os.path.join(spectro_redux, "exposures", night)
+    #     ensure_dir(dest)
+    #     dest = os.path.join(dest, "00000001")
 
-        if not os.path.islink(dest):
-            os.symlink(fiberflat_path, dest)
+    #     if not os.path.islink(dest):
+    #         os.symlink(fiberflat_path, dest)
 
-    def __gen_psfboot_folder(self, night):
-        """ """
+    # def __gen_psfboot_folder(self, night):
+    #     """ """
 
-        dest = os.path.join(spectro_redux, "exposures", night)
-        self.__ensure_dir(dest)
-        dest = os.path.join(dest, "00000000")
+    #     dest = os.path.join(spectro_redux, "exposures", night)
+    #     ensure_dir(dest)
+    #     dest = os.path.join(dest, "00000000")
 
-        if not os.path.islink(dest):
-            os.symlink(psf_path, dest)
+    #     if not os.path.islink(dest):
+    #         os.symlink(psf_path, dest)
 
     @staticmethod
     def __datetime_to_str(date_obj):
@@ -212,15 +186,6 @@ class ExposureGenerator(Process):
     @staticmethod
     def __str_to_datetime(date_str):
         return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
-
-    @staticmethod
-    def __format_night(new_date):
-        return new_date.strftime("%Y%m%d")
-
-    @staticmethod
-    def __ensure_dir(path):
-        if not os.path.exists(path):
-            os.makedirs(path)
 
     @staticmethod
     def __xrange(start, stop, step=1):
