@@ -34,7 +34,7 @@ class Upstream:
         self.qlf_state = qlf_state
 
     def get_camera_log(self, cam):
-        process = get_current_process()
+        process = get_monitor_process(None)
         cameralog = None
 
         try:
@@ -56,11 +56,11 @@ class Upstream:
 
     def start_daemon(self):
         qlf.start()
-        self.qlf_state.set_daemon_running(True, -1)
+        self.qlf_state.set_daemon_running(True)
 
     def stop_daemon(self):
         qlf.stop()
-        self.qlf_state.set_daemon_running(False, -2)
+        self.qlf_state.set_daemon_running(False)
 
     def reset_daemon(self):
         qlf.reset()

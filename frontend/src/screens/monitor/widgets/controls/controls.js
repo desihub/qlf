@@ -64,6 +64,7 @@ class Controls extends Component {
       className={this.props.classes.button}
       variant="raised"
       onMouseDown={this.props.resetMonitor}
+      disabled={this.props.daemonRunning}
     >
       Reset
     </Button>

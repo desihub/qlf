@@ -22,23 +22,25 @@ class Connection extends Component {
 
   handleData = data => {
     const result = JSON.parse(data);
-    console.log(result)
+
     if (result.notification) {
       const notification = JSON.parse(result.notification);
       this.props.updateNotifications(notification);
     }
+
     if (result.lines) {
       const state = {
-        pipelineRunning: result.pipeline_running
-          ? 'Running'
-          : result.pipeline_running === false ? 'Not Running' : 'Idle',
+        pipelineRunning:
+          result.pipeline_running === 2
+            ? 'Running'
+            : result.pipeline_running === 1 ? 'Idle' : 'Not Running',
         daemonRunning: result.daemon_running,
         mainTerminal: result.lines ? result.lines.reverse() : [],
         ingestionTerminal:
           result.ingestion && result.ingestion !== 'Error'
             ? result.ingestion.reverse()
             : [],
-        exposure: result.exposure.toString(),
+        exposureId: result.exposure.toString(),
         camerasStages: result.cameras,
         availableCameras: result.available_cameras,
         mjd: result.mjd === '' ? '' : result.mjd.toFixed(3),

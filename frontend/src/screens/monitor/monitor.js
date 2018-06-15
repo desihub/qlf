@@ -49,7 +49,7 @@ export default class Monitor extends Component {
     socketRef: PropTypes.object,
     daemonRunning: PropTypes.bool.isRequired,
     pipelineRunning: PropTypes.string.isRequired,
-    exposure: PropTypes.string.isRequired,
+    exposureId: PropTypes.string.isRequired,
     date: PropTypes.string,
     mainTerminal: PropTypes.array.isRequired,
     ingestionTerminal: PropTypes.array.isRequired,
@@ -66,7 +66,7 @@ export default class Monitor extends Component {
   state = {
     daemonRunning: false,
     pipelineRunning: 'Not Running',
-    exposure: '',
+    exposureId: '',
     width: '0',
     height: '0',
     openDialog: false,
@@ -96,7 +96,7 @@ export default class Monitor extends Component {
       camerasStages,
       pipelineRunning,
       date,
-      exposure,
+      exposureId,
       ingestionTerminal,
       mainTerminal,
       mjd,
@@ -112,7 +112,7 @@ export default class Monitor extends Component {
       camerasStages,
       pipelineRunning,
       date,
-      exposure,
+      exposureId,
       ingestionTerminal,
       mainTerminal,
       mjd,
@@ -152,7 +152,7 @@ export default class Monitor extends Component {
         <div style={styles.topMenu}>
           <div style={styles.menu}>
             <Status
-              exposure={this.state.exposure}
+              exposureId={this.state.exposureId}
               pipelineRunning={this.state.pipelineRunning}
               layout={styles.layout}
               mjd={this.state.mjd}

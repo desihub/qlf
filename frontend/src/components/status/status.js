@@ -12,7 +12,7 @@ const styles = {
 export default class Status extends Component {
   static propTypes = {
     pipelineRunning: PropTypes.string,
-    exposure: PropTypes.string.isRequired,
+    exposureId: PropTypes.string.isRequired,
     mjd: PropTypes.string,
     date: PropTypes.string,
     processId: PropTypes.string,
@@ -32,7 +32,7 @@ export default class Status extends Component {
           <Card title={`Status: ${this.props.pipelineRunning}`} />
         ) : null}
         <Card title={`Process Id: ${processId}`} />
-        <Card title={`Exposure Id: ${this.props.exposure}`} />
+        <Card title={`Exposure Id: ${this.props.exposureId}`} />
         <Card title={`MJD: ${mjd}`} />
         <Card title={`Date: ${this.props.date}`} />
       </div>

@@ -1,5 +1,5 @@
 from ui_channel.camera_status import get_camera_status
-from dashboard.bokeh.helper import get_current_process
+from dashboard.bokeh.helper import get_monitor_process
 from clients import get_exposure_monitoring
 from .views import open_file
 from util import get_config
@@ -15,15 +15,20 @@ logger = logging.getLogger()
 class QLFState:
     def __init__(self):
         self.reset_state()
-        self.update_qlf_status()
-        if self.pipeline_running is False or self.pipeline_running is None:
+        self.update_pipeline_status()
+        if self.pipeline_running is 0:
             self.daemon_running = False
         else:
             self.daemon_running = True
 
-    def set_daemon_running(self, status, current_process_id):
+    def set_daemon_running(self, status):
         self.daemon_running = status
-        self.current_process_id = current_process_id
+        if status:
+            self.reset_state()
+            self.pipeline_running = 1
+            self.daemon_running = True
+        else:
+            self.pipeline_running = 0
 
     def reset_state(self):
         self.camera_status = {"b": list(), "r": list(), "z": list()}
@@ -31,40 +36,51 @@ class QLFState:
         self.pipelinelog = list()
         self.mjd = str()
         self.date_time = str()
-        self.pipeline_running = False
+        self.pipeline_running = 0
         self.daemon_running = False
         self.exposure = str()
         self.qa_results = list()
         self.current_process_id = str()
-        self.current_process = list()
+        self.current_process = None
         self.available_cameras = list()
 
-    def update_qlf_status(self):
+    def update_pipeline_status(self):
+        """
+        0: Not Running
+        1: Idle
+        2: Running
+        """
         qlf = get_exposure_monitoring()
-        self.pipeline_running = qlf.get_status()
+        self.pipeline_running = 0 if not qlf.get_status() else 2
         if self.pipeline_running:
             if not qlf.is_running():
-                self.pipeline_running = None
+                self.pipeline_running = 1
 
     def update_qlf_state(self):
-        self.update_qlf_status()
-        if self.daemon_running:
+        self.update_pipeline_status()
+        if self.daemon_running and self.pipeline_running is not 0:
             self.update_current_process()
 
     def update_current_process(self):
-        if self.current_process_id is not -2:
-            self.current_process = get_current_process()
+        if self.pipeline_running is 2:
+            process = get_monitor_process(None)
+            if len(process) > 0:
+                self.current_process = process[0]
+        elif self.current_process_id is not str():
+            self.current_process = get_monitor_process(self.current_process_id)
+        else:
+            return
 
-        if len(self.current_process) > 0:
+        if 'detail' not in self.current_process:
             self.pipelinelog = self.get_pipeline_log()
             self.logfile = self.tail_file(open_file('logfile'), 100)
             self.camera_status = get_camera_status()
             self.available_cameras = self.get_avaiable_cameras(
-                self.current_process[0]
+                self.current_process
             )
-            self.exposure = self.current_process[0]["exposure"]
-            self.qa_results = self.current_process[0].get("qa_tests")
-            self.current_process_id = self.current_process[0].get("id")
+            self.exposure = self.current_process["exposure"]
+            self.qa_results = self.current_process.get("qa_tests")
+            self.current_process_id = self.current_process.get("id")
             date = get_date(self.exposure) if self.exposure else None
             self.date_time = date.value if date else ''
             self.mjd = date.mjd if date else ''

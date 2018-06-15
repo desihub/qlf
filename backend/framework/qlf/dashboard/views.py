@@ -160,6 +160,7 @@ class CurrentProcessViewSet(viewsets.ReadOnlyModelViewSet):
     #     return Process.objects.filter(id=process_id)
     queryset = Process.objects.order_by('-pk')
     serializer_class = CurrentProcessJobsSerializer
+    filter_fields = ('process_jobs__id',)
 
 
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
@@ -664,6 +665,7 @@ def send_ticket_email(request):
             return JsonResponse({'status': 'sent'})
         except:
             return JsonResponse({'status': 'send_mail fail'})
+
 
 def disk_thresholds(request):
     cfg = get_config()

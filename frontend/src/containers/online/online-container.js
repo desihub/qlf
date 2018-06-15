@@ -16,7 +16,7 @@ const spectrographs = _.range(0, 10);
 
 class OnlineContainer extends Component {
   static propTypes = {
-    exposure: PropTypes.string.isRequired,
+    exposureId: PropTypes.string.isRequired,
     qaTests: PropTypes.array,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
@@ -91,7 +91,7 @@ class OnlineContainer extends Component {
           render={() => (
             <Monitor
               socketRef={this.state.socket}
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
@@ -112,7 +112,7 @@ class OnlineContainer extends Component {
           path="/qa-realtime"
           render={() => (
             <QA
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               qaTests={this.props.qaTests}
               arms={arms}
               spectrographs={spectrographs}
@@ -131,7 +131,7 @@ class OnlineContainer extends Component {
           path="/metrics-realtime"
           render={() => (
             <Metrics
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               qaTests={this.props.qaTests}
               arms={arms}
               spectrographs={spectrographs}
@@ -156,7 +156,7 @@ class OnlineContainer extends Component {
 
 export default connect(
   state => ({
-    exposure: state.qlfOnline.exposure,
+    exposureId: state.qlfOnline.exposureId,
     qaTests: state.qlfOnline.qaTests,
     arms: state.qlfOnline.arms,
     spectrographs: state.qlfOnline.spectrographs,
