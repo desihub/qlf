@@ -93,6 +93,7 @@ def extract_exposure_data(exposure_id, night):
 
     config_file = cfg.get('main', 'qlconfig').format(program_file)
     current_config = change_config_file(config_file)
+    define_calibration_files(night)
 
     return {
         "exposure_id": exposure_id,
@@ -111,3 +112,37 @@ def extract_exposure_data(exposure_id, night):
         'qlconfig': current_config,
         'time': datetime.datetime.utcnow()
     }
+
+def define_calibration_files(night):
+    """ Sets the night calibration files
+    
+    Arguments:
+        night {str} -- night
+    """
+
+    cfg = get_config()
+    spectro_redux = cfg.get("namespace", "desi_spectro_redux")
+    calib_path = cfg.get("namespace", "calibration_path")
+    dest = os.path.join(spectro_redux, "exposures", night)
+    ensure_dir(dest)
+    links = [('psf', '00000000'), ('fiberflat', '00000001')]
+
+    for item in links:
+        item_path = os.path.join(calib_path, item[0])
+        dest_item = os.path.join(dest, item[1])
+
+        if not os.path.islink(dest_item):
+            os.symlink(item_path, dest_item)
+
+def ensure_dir(path):
+    """ Ensures that the directory exists.
+    
+    Arguments:
+        path {str} -- directory path
+    """
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+def format_night(new_date):
+    return new_date.strftime("%Y%m%d")
