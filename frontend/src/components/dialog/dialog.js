@@ -11,33 +11,29 @@ class ConfirmDialog extends React.Component {
   static propTypes = {
     title: PropTypes.string,
     subtitle: PropTypes.string,
+    onConfirm: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
   };
 
-  state = {
-    open: false,
-  };
-
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
+  handleConfirmation = () => {
+    this.props.onConfirm();
+    this.props.handleClose();
   };
 
   render() {
     return (
       <div>
-        <Dialog open={this.state.open} onClose={this.handleClose}>
+        <Dialog open={this.props.open} onClose={this.handleClose}>
           <DialogTitle>{this.props.title}</DialogTitle>
           <DialogContent>
             <DialogContentText>{this.props.subtitle}</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
+            <Button onClick={this.props.handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleClose} color="primary" autoFocus>
+            <Button onClick={this.handleConfirmation} color="primary" autoFocus>
               Ok
             </Button>
           </DialogActions>

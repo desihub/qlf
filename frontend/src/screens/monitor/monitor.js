@@ -6,6 +6,7 @@ import Status from '../../components/status/status';
 import Dialog from './widgets/dialog/dialog';
 import PropTypes from 'prop-types';
 import QA from '../qa/qa';
+import ConfirmDialog from '../../components/dialog/dialog';
 
 const styles = {
   topMenu: {
@@ -83,6 +84,8 @@ export default class Monitor extends Component {
     processId: '',
     date: '',
     qaTests: [],
+    confirmDialog: false,
+    confirmDialogSubtitle: '',
   };
 
   componentDidMount() {
@@ -137,12 +140,30 @@ export default class Monitor extends Component {
   };
 
   resetMonitor = () => {
+    this.setState({
+      confirmDialog: true,
+      confirmDialogSubtitle: 'Are you sure you want to reset the screen',
+    });
+  };
+
+  closeConfirmDialog = () => {
+    this.setState({ confirmDialog: false });
+  };
+
+  confirmReset = () => {
     this.resetPipeline();
   };
 
   render() {
     return (
       <div>
+        <ConfirmDialog
+          title={'Confirmation'}
+          subtitle={this.state.confirmDialogSubtitle}
+          open={this.state.confirmDialog}
+          handleClose={this.closeConfirmDialog}
+          onConfirm={this.confirmReset}
+        />
         <Dialog
           lines={this.state.cameraTerminal}
           openDialog={this.state.openDialog}
