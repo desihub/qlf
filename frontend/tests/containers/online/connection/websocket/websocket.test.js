@@ -35,7 +35,7 @@ describe('Websocket', () => {
 
   it('receives a state update from api', () => {
     mockServer.send(
-      '{"date": "date time", "mjd": 58484.916666666664, "upstream_status": false, "exposure": 4, "ingestion": ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"], "lines": ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"], "daemon_status": false}'
+      '{"process_id": 10, "date": "date time", "mjd": 58484.916666666664, "upstream_status": false, "exposure": 4, "ingestion": ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"], "lines": ["2017-11-23 12:59:04 [INFO]: QLF Daemon status: False"], "pipeline_running": 0, "daemon_running": false}'
     );
 
     expect(store.getState().qlfOnline).toEqual({
@@ -43,8 +43,9 @@ describe('Websocket', () => {
       spectrographs: [],
       cameraTerminal: [],
       camerasStages: undefined,
-      daemonStatus: 'Not Running',
-      exposure: '4',
+      daemonRunning: false,
+      pipelineRunning: 'Not Running',
+      exposureId: '4',
       ingestionTerminal: [
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
@@ -55,7 +56,7 @@ describe('Websocket', () => {
       arm: 0,
       step: 0,
       spectrograph: 0,
-      processId: undefined,
+      processId: '10',
       qaTests: [],
       notifications: [],
     });
@@ -75,9 +76,10 @@ describe('Websocket', () => {
       cameraTerminal: [
         '2017-11-21 14:05:39,263 QuickLook INFO : Running Quicklook',
       ],
-      daemonStatus: 'Not Running',
+      daemonRunning: false,
+      pipelineRunning: 'Not Running',
       camerasStages: undefined,
-      exposure: '4',
+      exposureId: '4',
       ingestionTerminal: [
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
@@ -86,7 +88,7 @@ describe('Websocket', () => {
       arm: 0,
       spectrograph: 0,
       step: 0,
-      processId: undefined,
+      processId: '10',
       notifications: [],
     });
   });

@@ -50,3 +50,4 @@ desi_spectro_data=/app/spectro/data
 desi_spectro_redux=/app/spectro/redux
 
 base_exposures_path=/app/spectro/base_exposures
+calibration_path=/app/spectro/calibration

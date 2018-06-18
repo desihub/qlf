@@ -3,7 +3,7 @@ import time
 from multiprocessing import Event, Process, Value
 from threading import Thread
 
-from clients import get_exposure_generator
+from clients import get_exposure_generator, get_qlf_interface
 from log import get_logger
 from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
@@ -12,6 +12,7 @@ from util import get_config
 
 cfg = get_config()
 
+emulate = cfg.getboolean('main', 'emulate_dos')
 logfile = cfg.get("main", "logfile")
 loglevel = cfg.get("main", "loglevel")
 allowed_delay = cfg.getfloat("main", "allowed_delay")
@@ -32,7 +33,7 @@ class ExposureMonitoring(Process):
         self.running = Event()
         self.ics_last_exposure = {}
         self.process_id = Value('i', 0)
-        self.generator = get_exposure_generator()
+        self.ics = get_exposure_generator() if emulate else get_qlf_interface()
 
     def run(self):
         """ """
@@ -42,7 +43,7 @@ class ExposureMonitoring(Process):
             if not self.process or not self.process.is_alive():
                 self.running.clear()
 
-            exposure = self.generator.last_exposure()
+            exposure = self.ics.last_exposure()
 
             if not exposure:
                 logger.debug('No exposure available')
@@ -122,6 +123,5 @@ def process_run(exposure, process_id):
 if __name__ == "__main__":
     print('Start Monitoring...')
     monitor = ExposureMonitoring()
-    monitor.generator.start()
     monitor.start()
     monitor.join()

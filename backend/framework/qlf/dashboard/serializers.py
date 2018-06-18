@@ -193,6 +193,8 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
             return time.mjd
 
     def get_comments_count(self, obj):
+        if not obj or not obj.process_comments:
+            return None
         return obj.process_comments.count()
 
 
@@ -241,6 +243,8 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
         return process.last().qa_tests
 
     def get_last_process_comments_count(self, obj):
+        if not obj or not obj.process_exposure.last():
+            return None
         return obj.process_exposure.last().process_comments.count()
 
 

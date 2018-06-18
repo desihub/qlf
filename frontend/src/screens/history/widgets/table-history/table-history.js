@@ -26,8 +26,8 @@ class TableHistory extends Component {
     type: PropTypes.string.isRequired,
     selectable: PropTypes.bool,
     orderable: PropTypes.bool,
-    processId: PropTypes.number,
-    lastProcessedId: PropTypes.number,
+    processId: PropTypes.string,
+    lastProcessedId: PropTypes.string,
     selectedExposures: PropTypes.array,
     rowsCount: PropTypes.number,
     startDate: PropTypes.string,
@@ -35,6 +35,7 @@ class TableHistory extends Component {
     classes: PropTypes.object.isRequired,
     changeLimit: PropTypes.func.isRequired,
     limit: PropTypes.number.isRequired,
+    fetchLastProcess: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -88,7 +89,7 @@ class TableHistory extends Component {
           return (
             <HistoryData
               key={id}
-              processId={processId}
+              processId={String(processId)}
               row={row}
               rowNumber={id}
               selectProcessQA={this.selectProcessQA}
@@ -213,15 +214,37 @@ class TableHistory extends Component {
               ))}
             </FormGroup>
           </FormControl>
-          <Button
-            className={this.props.classes.modalColumnsButtonClose}
-            onClick={this.handleColumnModalClose}
-          >
-            Close
-          </Button>
+          <div>
+            <Button
+              className={this.props.classes.modalColumnsButtonClose}
+              onClick={this.handleColumnModalClose}
+            >
+              Close
+            </Button>
+            <Button
+              className={this.props.classes.modalColumnsButtonClose}
+              onClick={this.hadleSelectNone}
+            >
+              None
+            </Button>
+            <Button
+              className={this.props.classes.modalColumnsButtonClose}
+              onClick={this.handleSelectall}
+            >
+              All
+            </Button>
+          </div>
         </div>
       </Modal>
     );
+  };
+
+  handleSelectall = () => {
+    this.setState({ tableColumnsHidden: [] });
+  };
+
+  hadleSelectNone = () => {
+    this.setState({ tableColumnsHidden: tableColumns.map(c => c.name) });
   };
 
   handleChangeColumns = name => {
@@ -260,7 +283,7 @@ class TableHistory extends Component {
       <ImageModal
         handleClose={this.handleImageModalClose}
         night={this.state.currentNight}
-        exposure={this.state.currentExposure}
+        exposureId={String(this.state.currentExposure)}
       />
     ) : null;
   };
@@ -285,6 +308,7 @@ class TableHistory extends Component {
         processId={this.state.commentProcessId}
         handleClose={this.handleCommentModalClose}
         readOnly={this.props.type !== 'process'}
+        fetchLastProcess={this.props.fetchLastProcess}
       />
     ) : null;
   };
