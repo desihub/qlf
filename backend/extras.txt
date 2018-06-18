@@ -4,6 +4,10 @@
 
 Twisted[tls,http2]
 
+django-debug-toolbar==1.8
+djangorestframework==3.6.2
+django==1.11
+django-filter==1.1.0
 django-json-field==0.5.7
 speclite==0.7
 furl==0.5.7

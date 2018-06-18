@@ -19,10 +19,10 @@
 # healpy
 
 # Packages required by the DESI Quick Look framework
-django==1.11
-django-filter==1.1.0
-djangorestframework==3.6.2
-django-debug-toolbar==1.8
+# django==1.11
+# django-filter==1.1.0
+# djangorestframework==3.6.2
+# django-debug-toolbar==1.8
 bokeh==0.12.16
 flake8==3.3.0
 
