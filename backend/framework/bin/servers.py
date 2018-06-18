@@ -15,6 +15,7 @@ from util import get_config
 
 cfg = get_config()
 loglevel = cfg.get("main", "loglevel")
+emulate = cfg.getboolean("main", "emulate_dos")
 qlf_root = cfg.get("environment", "qlf_root")
 base_exposures_path = cfg.get("namespace", "base_exposures_path")
 
@@ -30,9 +31,10 @@ logger = get_logger(
 class Monitoring(object):
 
     monitor = False
+    exposure_generator = None
 
-    # TODO: is provisional while we do not have the ICS.
-    exposure_generator = get_exposure_generator()
+    if emulate:
+        exposure_generator = get_exposure_generator()
 
     def start(self):
         if self.monitor and self.monitor.is_alive():
@@ -45,7 +47,8 @@ class Monitoring(object):
             self.monitor.start()
             logger.debug("Starting pid %i..." % self.monitor.pid)
 
-        self.exposure_generator.start()
+        if self.exposure_generator:
+            self.exposure_generator.start()
 
     def stop(self):
         if self.monitor and self.monitor.is_alive():
@@ -58,7 +61,8 @@ class Monitoring(object):
         else:
             logger.debug("Monitor is not initialized.")
 
-        self.exposure_generator.stop()
+        if self.exposure_generator:
+            self.exposure_generator.stop()
 
     def reset(self):
         self.stop()

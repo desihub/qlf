@@ -1,6 +1,7 @@
 import logging
 import Pyro4
 import os
+from qlf_interface import QLFInterface
 
 log = logging.getLogger()
 
@@ -30,3 +31,7 @@ def get_exposure_generator():
 def get_exposure_monitoring():
     """ """
     return Pyro4.Proxy(EXPOSURE_MONITORING)
+
+def get_qlf_interface():
+    """ """
+    return QLFInterface()

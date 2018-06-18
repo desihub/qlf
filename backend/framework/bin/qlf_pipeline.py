@@ -8,15 +8,11 @@ from datetime import datetime
 from multiprocessing import Lock, Manager, Process
 from threading import Thread
 
-import matplotlib
-
 from log import get_logger
 from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
 from util import extract_exposure_data, get_config
-
-matplotlib.use('Agg')
 
 cfg = get_config()
 

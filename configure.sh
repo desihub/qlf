@@ -25,13 +25,14 @@ if [ -z "$1" ]; then
     if [ "$(ls -A backend/spectro/data)" ]; then
         echo "=> spectro test data check OK"
     else
+        export FILE_SPECTRO=spectro.v1.tar.gz
         echo 'Downloading spectro test data'
         cd backend
-        wget -c ftp://srvdatatransfer.linea.gov.br/qlfdata/spectro.tar.gz
+        wget -c ftp://srvdatatransfer.linea.gov.br/qlfdata/$FILE_SPECTRO
 
         echo 'Unzipping...'
-        tar xvzf spectro.tar.gz
-        rm spectro.tar.gz
+        tar xvzf $FILE_SPECTRO
+        rm $FILE_SPECTRO
     fi
 fi
 
