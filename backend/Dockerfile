@@ -37,7 +37,7 @@ ENTRYPOINT [ "/usr/bin/tini", "--" ]
 # 		source /opt/conda/bin/activate quicklook && \
 # 		pip install -r extras.txt"
 
-RUN /bin/bash -c "source /opt/conda/bin/activate root && \
+RUN /bin/bash -c "conda install -y --file requirements.txt && \
     pip install -r extras.txt"
 
 # END INSTALL: dependencies

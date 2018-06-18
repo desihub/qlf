@@ -15,9 +15,9 @@ export QLF_ROOT=$(pwd)
 export QLF_REDIS=True
 
 export DESI_ROOT=$QLF_ROOT
-export DESI_PRODUCT_ROOT=$HOME/sarahE/desi/software/
+export DESI_PRODUCT_ROOT=$QLF_ROOT
 
-for package in desispec desiutil desimodel specter; do
+for package in desispec desiutil desimodel desisim desitarget specter; do
 	echo "Setting $package..."
 	export PATH=$QLF_ROOT/$package/bin:$PATH
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
