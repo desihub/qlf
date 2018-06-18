@@ -214,15 +214,37 @@ class TableHistory extends Component {
               ))}
             </FormGroup>
           </FormControl>
-          <Button
-            className={this.props.classes.modalColumnsButtonClose}
-            onClick={this.handleColumnModalClose}
-          >
-            Close
-          </Button>
+          <div>
+            <Button
+              className={this.props.classes.modalColumnsButtonClose}
+              onClick={this.handleColumnModalClose}
+            >
+              Close
+            </Button>
+            <Button
+              className={this.props.classes.modalColumnsButtonClose}
+              onClick={this.hadleSelectNone}
+            >
+              None
+            </Button>
+            <Button
+              className={this.props.classes.modalColumnsButtonClose}
+              onClick={this.handleSelectall}
+            >
+              All
+            </Button>
+          </div>
         </div>
       </Modal>
     );
+  };
+
+  handleSelectall = () => {
+    this.setState({ tableColumnsHidden: [] });
+  };
+
+  hadleSelectNone = () => {
+    this.setState({ tableColumnsHidden: tableColumns.map(c => c.name) });
   };
 
   handleChangeColumns = name => {
