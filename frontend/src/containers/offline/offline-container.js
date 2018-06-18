@@ -41,7 +41,7 @@ class OfflineContainer extends Component {
     rows: PropTypes.array.isRequired,
     getQA: PropTypes.func.isRequired,
     pathname: PropTypes.string,
-    exposure: PropTypes.string.isRequired,
+    exposureId: PropTypes.string.isRequired,
     qaTests: PropTypes.array.isRequired,
     mjd: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
@@ -58,7 +58,7 @@ class OfflineContainer extends Component {
     recentExposures: PropTypes.array,
     processId: PropTypes.number,
     toggleHeader: PropTypes.func.isRequired,
-    lastProcessedId: PropTypes.number,
+    lastProcessedId: PropTypes.string,
     rowsCount: PropTypes.number,
     getHistoryDateRange: PropTypes.func,
     fetchLastProcess: PropTypes.func,
@@ -168,7 +168,7 @@ class OfflineContainer extends Component {
           path="/qa"
           render={() => (
             <QA
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               qaTests={this.props.qaTests}
               arms={arms}
               spectrographs={spectrographs}
@@ -189,7 +189,7 @@ class OfflineContainer extends Component {
           path="/metrics"
           render={() => (
             <Metrics
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               qaTests={this.props.qaTests}
               arms={arms}
               spectrographs={spectrographs}
@@ -221,7 +221,7 @@ export default connect(
   state => ({
     rows: state.qlfOffline.rows,
     pathname: state.router.location ? state.router.location.pathname : null,
-    exposure: state.qlfOffline.exposure,
+    exposureId: state.qlfOffline.exposureId,
     qaTests: state.qlfOffline.qaTests,
     mjd: state.qlfOffline.mjd,
     date: state.qlfOffline.date,

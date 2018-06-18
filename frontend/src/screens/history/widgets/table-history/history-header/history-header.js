@@ -230,7 +230,7 @@ export default class HistoryHeader extends React.Component {
               );
             })
           : null}
-        <FormControlLabel value="none" control={<Radio />} label="none" />
+        <FormControlLabel value="all" control={<Radio />} label="All" />
       </RadioGroup>
     );
   };
@@ -238,7 +238,7 @@ export default class HistoryHeader extends React.Component {
   handleRadioChange = evt => {
     const selectedFlavor = evt.target.value;
     this.setState({ selectedFlavor });
-    if (selectedFlavor === 'none') {
+    if (selectedFlavor === 'all') {
       this.props.addFilters('');
     } else {
       this.props.addFilters(`${selectedFlavor}`);

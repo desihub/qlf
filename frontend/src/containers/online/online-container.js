@@ -6,7 +6,11 @@ import { Route } from 'react-router';
 import Metrics from '../../screens/metrics/metrics';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { navigateToOnlineMetrics, navigateToOnlineQA } from './online-store';
+import {
+  navigateToOnlineMetrics,
+  navigateToOnlineQA,
+  updateCameraState,
+} from './online-store';
 import { navigateToProcessingHistory } from '../offline/offline-store';
 
 import _ from 'lodash';
@@ -16,7 +20,7 @@ const spectrographs = _.range(0, 10);
 
 class OnlineContainer extends Component {
   static propTypes = {
-    exposure: PropTypes.string.isRequired,
+    exposureId: PropTypes.string.isRequired,
     qaTests: PropTypes.array,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
@@ -24,7 +28,8 @@ class OnlineContainer extends Component {
     date: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
     navigateToMetrics: PropTypes.func.isRequired,
-    daemonStatus: PropTypes.string.isRequired,
+    daemonRunning: PropTypes.bool.isRequired,
+    pipelineRunning: PropTypes.string.isRequired,
     mainTerminal: PropTypes.array.isRequired,
     ingestionTerminal: PropTypes.array.isRequired,
     cameraTerminal: PropTypes.array.isRequired,
@@ -32,12 +37,13 @@ class OnlineContainer extends Component {
     navigateToQA: PropTypes.func.isRequired,
     pathname: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
-    processId: PropTypes.number,
+    processId: PropTypes.string,
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     spectrograph: PropTypes.number.isRequired,
     connected: PropTypes.func.isRequired,
     disconnected: PropTypes.func.isRequired,
+    resetCameraLog: PropTypes.func.isRequired,
   };
 
   state = {
@@ -90,11 +96,12 @@ class OnlineContainer extends Component {
           render={() => (
             <Monitor
               socketRef={this.state.socket}
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
-              daemonStatus={this.props.daemonStatus}
+              daemonRunning={this.props.daemonRunning}
+              pipelineRunning={this.props.pipelineRunning}
               mainTerminal={this.props.mainTerminal}
               ingestionTerminal={this.props.ingestionTerminal}
               cameraTerminal={this.props.cameraTerminal}
@@ -103,6 +110,7 @@ class OnlineContainer extends Component {
               arms={arms}
               spectrographs={spectrographs}
               qaTests={this.props.qaTests}
+              resetCameraLog={this.props.resetCameraLog}
             />
           )}
         />
@@ -110,7 +118,7 @@ class OnlineContainer extends Component {
           path="/qa-realtime"
           render={() => (
             <QA
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               qaTests={this.props.qaTests}
               arms={arms}
               spectrographs={spectrographs}
@@ -129,7 +137,7 @@ class OnlineContainer extends Component {
           path="/metrics-realtime"
           render={() => (
             <Metrics
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               qaTests={this.props.qaTests}
               arms={arms}
               spectrographs={spectrographs}
@@ -154,14 +162,15 @@ class OnlineContainer extends Component {
 
 export default connect(
   state => ({
-    exposure: state.qlfOnline.exposure,
+    exposureId: state.qlfOnline.exposureId,
     qaTests: state.qlfOnline.qaTests,
     arms: state.qlfOnline.arms,
     spectrographs: state.qlfOnline.spectrographs,
     mjd: state.qlfOnline.mjd,
     date: state.qlfOnline.date,
     time: state.qlfOnline.time,
-    daemonStatus: state.qlfOnline.daemonStatus,
+    daemonRunning: state.qlfOnline.daemonRunning,
+    pipelineRunning: state.qlfOnline.pipelineRunning,
     mainTerminal: state.qlfOnline.mainTerminal,
     ingestionTerminal: state.qlfOnline.ingestionTerminal,
     cameraTerminal: state.qlfOnline.cameraTerminal,
@@ -177,5 +186,6 @@ export default connect(
       dispatch(navigateToOnlineMetrics(step, spectrograph, arm, exp)),
     navigateToProcessingHistory: () => dispatch(navigateToProcessingHistory()),
     navigateToQA: () => dispatch(navigateToOnlineQA()),
+    resetCameraLog: () => dispatch(updateCameraState([])),
   })
 )(OnlineContainer);

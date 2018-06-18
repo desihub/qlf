@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import _ from 'lodash';
 import { Card } from 'material-ui/Card';
 import PropTypes from 'prop-types';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
 
 const headerSize = '11px';
 
@@ -27,26 +26,26 @@ const styles = {
     color: '#9E9E9E',
     fontWeight: 'bold',
   },
+  header: {
+    fontSize: headerSize,
+    height: 1,
+    whiteSpace: 'normal',
+    paddingRight: '0px',
+    textAlign: 'center',
+  },
 };
 
-export default class Stages extends Component {
+class Stages extends Component {
   static propTypes = {
     arm: PropTypes.string.isRequired,
     openDialog: PropTypes.func.isRequired,
     status: PropTypes.array.isRequired,
     renderHeader: PropTypes.bool.isRequired,
+    classes: PropTypes.object,
   };
 
   state = {
-    fixedFooter: true,
-    stripedRows: true,
-    showRowHover: true,
-    selectable: false,
-    multiSelectable: false,
-    enableSelectAll: false,
-    deselectOnClickaway: true,
-    showCheckboxes: false,
-    columnHeight: '0.6vh',
+    columnHeight: 1,
     openDialog: true,
   };
 
@@ -76,66 +75,22 @@ export default class Stages extends Component {
   renderTableHeader = () => {
     if (!this.props.renderHeader) return;
     return (
-      <TableHeader
-        displaySelectAll={this.state.showCheckboxes}
-        adjustForCheckbox={this.state.showCheckboxes}
-        enableSelectAll={this.state.enableSelectAll}
-      >
+      <TableHead>
         <TableRow style={{ height: this.state.columnHeight }}>
-          <TableHeaderColumn
-            style={{
-              fontSize: headerSize,
-              height: this.state.columnHeight,
-              whiteSpace: 'normal',
-              paddingRight: '0px',
-            }}
-            tooltip={'Pre Processing'}
-          >
-            Step 1
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            style={{
-              fontSize: headerSize,
-              height: this.state.columnHeight,
-              whiteSpace: 'normal',
-              paddingRight: '0px',
-            }}
-            tooltip={'Spectral Extraction'}
-          >
-            Step 2
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            style={{
-              fontSize: headerSize,
-              height: this.state.columnHeight,
-              whiteSpace: 'normal',
-              paddingRight: '0px',
-            }}
-            tooltip={'Fiber Flattening'}
-          >
-            Step 3
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            style={{
-              fontSize: headerSize,
-              height: this.state.columnHeight,
-              whiteSpace: 'normal',
-              paddingRight: '0px',
-            }}
-            tooltip={'Sky Subtraction'}
-          >
-            Step 4
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            style={{
-              fontSize: this.state.columnHeight,
-              height: this.state.columnHeight,
-              whiteSpace: 'normal',
-              width: '1px',
-            }}
-          />
+          <Tooltip title={'Pre Processing'} placement="bottom">
+            <TableCell style={styles.header}>Step 1</TableCell>
+          </Tooltip>
+          <Tooltip title={'Spectral Extraction'} placement="bottom">
+            <TableCell style={styles.header}>Step 2</TableCell>
+          </Tooltip>
+          <Tooltip title={'Fiber Flattening'} placement="bottom">
+            <TableCell style={styles.header}>Step 3</TableCell>
+          </Tooltip>
+          <Tooltip title={'Sky Subtraction'} placement="bottom">
+            <TableCell style={styles.header}>Step 4</TableCell>
+          </Tooltip>
         </TableRow>
-      </TableHeader>
+      </TableHead>
     );
   };
 
@@ -164,74 +119,55 @@ export default class Stages extends Component {
             </div>
             <div style={styles.rightCol}>
               <div style={styles.flex}>
-                <Table
-                  id="stages"
-                  height={this.state.height}
-                  width={'10px'}
-                  fixedFooter={this.state.fixedFooter}
-                  multiSelectable={this.state.multiSelectable}
-                >
+                <Table id="stages" height={this.state.height} width={'10px'}>
                   {this.renderTableHeader()}
-                  <TableBody
-                    displayRowCheckbox={this.state.showCheckboxes}
-                    deselectOnClickaway={this.state.deselectOnClickaway}
-                    showRowHover={this.state.showRowHover}
-                    stripedRows={this.state.stripedRows}
-                  >
+                  <TableBody>
                     {stage_status.map((row, index) => (
-                      <TableRow
+                      <Tooltip
                         key={index}
-                        style={{ height: this.state.columnHeight }}
+                        title={`Camera ${this.props.arm}${index}`}
+                        placement="top"
                       >
-                        <TableRowColumn
+                        <TableRow
+                          hover
                           style={{
-                            fontSize: this.state.columnHeight,
                             height: this.state.columnHeight,
-                            ...this.getColor(row.pre),
+                            cursor: 'pointer',
                           }}
-                        />
-                        <TableRowColumn
-                          style={{
-                            fontSize: this.state.columnHeight,
-                            height: this.state.columnHeight,
-                            ...this.getColor(row.spec),
-                          }}
-                        />
-                        <TableRowColumn
-                          style={{
-                            fontSize: this.state.columnHeight,
-                            height: this.state.columnHeight,
-                            ...this.getColor(row.fib),
-                          }}
-                        />
-                        <TableRowColumn
-                          style={{
-                            fontSize: this.state.columnHeight,
-                            height: this.state.columnHeight,
-                            ...this.getColor(row.sky),
-                          }}
-                        />
-                        <TableRowColumn
-                          style={{
-                            fontSize: this.state.columnHeight,
-                            height: this.state.columnHeight,
-                            width: '1px',
-                          }}
+                          onClick={() =>
+                            this.props.openDialog(index, this.props.arm)
+                          }
                         >
-                          <span
+                          <TableCell
                             style={{
-                              cursor: 'pointer',
-                              color: '#9E9E9E',
-                              with: '100%',
+                              fontSize: this.state.columnHeight,
+                              height: this.state.columnHeight,
+                              ...this.getColor(row.pre),
                             }}
-                            onClick={() =>
-                              this.props.openDialog(index, this.props.arm)
-                            }
-                          >
-                            ✚
-                          </span>
-                        </TableRowColumn>
-                      </TableRow>
+                          />
+                          <TableCell
+                            style={{
+                              fontSize: this.state.columnHeight,
+                              height: this.state.columnHeight,
+                              ...this.getColor(row.spec),
+                            }}
+                          />
+                          <TableCell
+                            style={{
+                              fontSize: this.state.columnHeight,
+                              height: this.state.columnHeight,
+                              ...this.getColor(row.fib),
+                            }}
+                          />
+                          <TableCell
+                            style={{
+                              fontSize: this.state.columnHeight,
+                              height: this.state.columnHeight,
+                              ...this.getColor(row.sky),
+                            }}
+                          />
+                        </TableRow>
+                      </Tooltip>
                     ))}
                   </TableBody>
                 </Table>
@@ -243,3 +179,5 @@ export default class Stages extends Component {
     );
   }
 }
+
+export default withStyles(styles)(Stages);

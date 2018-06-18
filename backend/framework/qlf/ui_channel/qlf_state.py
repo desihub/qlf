@@ -1,5 +1,5 @@
 from ui_channel.camera_status import get_camera_status
-from dashboard.bokeh.helper import get_current_process
+from dashboard.bokeh.helper import get_monitor_process
 from clients import get_exposure_monitoring
 from .views import open_file
 from util import get_config
@@ -13,53 +13,100 @@ logger = logging.getLogger()
 
 
 class QLFState:
-    def get_current_state(self):
-        camera_status = get_camera_status()
-        process = get_current_process()
-        available_cameras = self.avaiable_cameras(process)
-        qlf = get_exposure_monitoring()
-        daemon_status = qlf.get_status()
-        logfile = self.tail_file(open_file('logfile'), 100)
-
-        if daemon_status:
-            if not qlf.is_running():
-                daemon_status = None
-
-        pipelinelog = list()
-        mjd = str()
-        process_id = int()
-        date_time = str()
-        qa_results = list()
-        if len(process) > 0:
-            pipelinelog = self.get_pipeline_log()
-            exposure = process[0].get("exposure")
-            qa_results = process[0].get("qa_tests")
-            process_id = process[0].get("id")
-            date = get_date(exposure)
-            date_time = date.value if date else ''
-            mjd = date.mjd if date else ''
+    def __init__(self):
+        self.reset_state()
+        self.update_pipeline_status()
+        if self.pipeline_running is 0:
+            self.daemon_running = False
         else:
-            exposure = ''
+            self.daemon_running = True
+
+    def set_daemon_running(self, status):
+        self.daemon_running = status
+        if status:
+            self.reset_state()
+            self.pipeline_running = 1
+            self.daemon_running = True
+        else:
+            self.pipeline_running = 0
+
+    def reset_state(self):
+        self.camera_status = {"b": list(), "r": list(), "z": list()}
+        self.logfile = list()
+        self.pipelinelog = list()
+        self.mjd = str()
+        self.date_time = str()
+        self.pipeline_running = 0
+        self.daemon_running = False
+        self.exposure = str()
+        self.qa_results = list()
+        self.current_process_id = str()
+        self.current_process = None
+        self.available_cameras = list()
+
+    def update_pipeline_status(self):
+        """
+        0: Not Running
+        1: Idle
+        2: Running
+        """
+        qlf = get_exposure_monitoring()
+        self.pipeline_running = 0 if not qlf.get_status() else 2
+        if self.pipeline_running:
+            if not qlf.is_running():
+                self.pipeline_running = 1
+
+    def update_qlf_state(self):
+        self.update_pipeline_status()
+        if self.daemon_running and self.pipeline_running is not 0:
+            self.update_current_process()
+
+    def update_current_process(self):
+        if self.pipeline_running is 2:
+            process = get_monitor_process(None)
+            if len(process) > 0:
+                self.current_process = process[0]
+        elif self.current_process_id is not str():
+            self.current_process = get_monitor_process(self.current_process_id)
+        else:
+            return
+
+        if 'detail' not in self.current_process:
+            self.pipelinelog = self.get_pipeline_log()
+            self.logfile = self.tail_file(open_file('logfile'), 100)
+            self.camera_status = get_camera_status()
+            self.available_cameras = self.get_avaiable_cameras(
+                self.current_process
+            )
+            self.exposure = self.current_process["exposure"]
+            self.qa_results = self.current_process.get("qa_tests")
+            self.current_process_id = self.current_process.get("id")
+            date = get_date(self.exposure) if self.exposure else None
+            self.date_time = date.value if date else ''
+            self.mjd = date.mjd if date else ''
+
+    def get_current_state(self):
+        self.update_qlf_state()
+
         return json.dumps({
-            "daemon_status": daemon_status,
-            "exposure": exposure,
-            "cameras": camera_status,
-            "available_cameras": available_cameras,
-            "qa_results": qa_results,
-            "lines": logfile,
-            "ingestion": pipelinelog,
-            "mjd": mjd,
-            "date": date_time,
-            "process_id": process_id
+            "pipeline_running": self.pipeline_running,
+            "daemon_running": self.daemon_running,
+            "exposure": self.exposure,
+            "cameras": self.camera_status,
+            "available_cameras": self.available_cameras,
+            "qa_results": self.qa_results,
+            "lines": self.logfile,
+            "ingestion": self.pipelinelog,
+            "mjd": self.mjd,
+            "date": self.date_time,
+            "process_id": self.current_process_id
         })
 
-    def avaiable_cameras(self, process):
-        if len(process) != 0:
-            cams = list()
-            for job in process[0]['process_jobs']:
-                cams.append(job['camera'])
-            return cams
-        return list()
+    def get_avaiable_cameras(self, process):
+        cams = list()
+        for job in process['process_jobs']:
+            cams.append(job['camera'])
+        return cams
 
     def tail_file(self, filename, number_lines):
         with io.open(filename) as logfile:

@@ -60,7 +60,7 @@ const steps = [
 
 export default class Metrics extends Component {
   static propTypes = {
-    exposure: PropTypes.string,
+    exposureId: PropTypes.string,
     arms: PropTypes.array,
     spectrographs: PropTypes.array,
     qa: PropTypes.string,
@@ -85,7 +85,7 @@ export default class Metrics extends Component {
   };
 
   componentWillMount() {
-    if (this.props.exposure === '') this.props.navigateToProcessingHistory();
+    if (this.props.exposureId === '') this.props.navigateToProcessingHistory();
   }
 
   componentDidMount() {
@@ -202,7 +202,7 @@ export default class Metrics extends Component {
           />
           <div style={{ ...styles.controlsContainerRight }}>
             <Status
-              exposure={this.props.exposure}
+              exposureId={this.props.exposureId}
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}

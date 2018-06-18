@@ -2,7 +2,7 @@
 import os
 import configparser
 import copy
-from dashboard.bokeh.helper import get_current_process
+from dashboard.bokeh.helper import get_last_process
 import logging
 
 logger = logging.getLogger(__name__)
@@ -10,9 +10,7 @@ logger = logging.getLogger(__name__)
 cams_stages_r = list()
 for i in range(4):
     cams_stages_r.append(
-            dict(
-            camera=[i for i in range(10)],
-        )
+            dict(camera=[i for i in range(10)])
     )
 
 cams_stages_b = copy.deepcopy(cams_stages_r)
@@ -28,8 +26,9 @@ except Exception as error:
     logger.error(error)
     logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
 
+
 def update_camera_status():
-    process = get_current_process()
+    process = get_last_process()
     label_name = list()
 
     for num in range(30):
@@ -40,14 +39,16 @@ def update_camera_status():
         elif 'b9' not in label_name:
             label_name.append('b' + str(num - 20))
 
-
         for cam in label_name:
             cameralog = None
             log = str()
             try:
                 for item in process[0].get("process_jobs", list()):
                     if cam == item.get("camera"):
-                        cameralog = os.path.join(desi_spectro_redux, item.get('logname'))
+                        cameralog = os.path.join(
+                            desi_spectro_redux,
+                            item.get('logname')
+                        )
                         break
                 if cameralog:
                     arq = open(cameralog, 'r')
@@ -88,6 +89,7 @@ def update_camera_status():
                 update_stage(cam[:1], 2, int(cam[1:]), 'none')
                 update_stage(cam[:1], 3, int(cam[1:]), 'none')
 
+
 def update_stage(band, stage, camera, status):
     if band == 'r':
         cams_stages_r[stage]['camera'][camera] = status
@@ -95,6 +97,7 @@ def update_stage(band, stage, camera, status):
         cams_stages_z[stage]['camera'][camera] = status
     if band == 'b':
         cams_stages_b[stage]['camera'][camera] = status
+
 
 def get_camera_status():
     update_camera_status()

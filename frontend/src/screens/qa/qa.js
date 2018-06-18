@@ -14,7 +14,7 @@ const styles = {
 
 export default class QA extends Component {
   static propTypes = {
-    exposure: PropTypes.string,
+    exposureId: PropTypes.string,
     qaTests: PropTypes.array,
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
@@ -38,7 +38,7 @@ export default class QA extends Component {
         step,
         spectrographNumber,
         arm,
-        this.props.exposure
+        this.props.exposureId
       );
     }
   };
@@ -50,7 +50,7 @@ export default class QA extends Component {
         qaTests={this.props.qaTests}
         renderMetrics={this.renderMetrics}
         mjd={this.props.mjd}
-        exposure={this.props.exposure}
+        exposureId={this.props.exposureId}
         date={this.props.date}
         time={this.props.time}
         petalSizeFactor={this.props.petalSizeFactor}

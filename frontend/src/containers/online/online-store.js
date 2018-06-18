@@ -4,8 +4,8 @@ import { fetchLastProcess } from '../offline/offline-store';
 
 function defaultState() {
   return {
-    daemonStatus: 'idle',
-    exposure: 'none',
+    daemonRunning: false,
+    pipelineRunning: 'idle',
     mainTerminal: [],
     ingestionTerminal: [],
     cameraTerminal: [],
@@ -16,7 +16,8 @@ function defaultState() {
     mjd: '',
     date: '',
     time: '',
-    processId: undefined,
+    processId: '',
+    exposureId: '',
     arm: 0,
     spectrograph: 0,
     step: 0,
@@ -32,7 +33,8 @@ function updateMonitorState(state) {
   return { type: 'UPDATE_MONITOR_STATE', state };
 }
 
-export function updateCameraState(state) {
+export function updateCameraState(cameralog) {
+  const state = { cameraTerminal: cameralog };
   return { type: 'UPDATE_CAMERA_STATE', state };
 }
 
@@ -112,11 +114,12 @@ export function qlfOnlineReducers(state = defaultState(), action) {
       });
     case 'UPDATE_MONITOR_STATE':
       return Object.assign({}, state, {
-        daemonStatus: action.state.daemonStatus,
+        daemonRunning: action.state.daemonRunning,
+        pipelineRunning: action.state.pipelineRunning,
         processId: action.state.processId,
         mainTerminal: action.state.mainTerminal,
         ingestionTerminal: action.state.ingestionTerminal,
-        exposure: action.state.exposure,
+        exposureId: action.state.exposureId,
         camerasStages: action.state.camerasStages,
         arms: getUnique(action.state.availableCameras, 0),
         spectrographs: getUnique(action.state.availableCameras, 1),

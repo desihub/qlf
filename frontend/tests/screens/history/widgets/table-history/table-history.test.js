@@ -131,7 +131,7 @@ describe('TableHistory Controls', () => {
         .at(0)
         .text()
     ).toBe('✖︎');
-    expect(navigateToQA).toBeCalledWith(70);
+    expect(navigateToQA).toBeCalledWith('70');
   });
 
   it('calls navigateToQA ok', async () => {
@@ -149,6 +149,6 @@ describe('TableHistory Controls', () => {
         .at(0)
         .text()
     ).toBe('✓');
-    expect(navigateToQA).toBeCalledWith(69);
+    expect(navigateToQA).toBeCalledWith('69');
   });
 });

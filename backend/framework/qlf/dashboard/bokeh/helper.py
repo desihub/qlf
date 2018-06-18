@@ -77,13 +77,15 @@ def get_last_process():
     return requests.get(api['last_process']).json()
 
 
-def get_current_process():
+def get_monitor_process(process_id):
     """
     Returns last process
     """
 
     api = requests.get(QLF_API_URL).json()
-    return requests.get(api['current_process']).json()
+    if process_id is None:
+        return requests.get(api['current_process']).json()
+    return requests.get('{}{}/'.format(api['current_process'], process_id)).json()
 
 
 def get_exposure_ids():

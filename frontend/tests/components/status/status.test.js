@@ -18,8 +18,8 @@ describe('Monitor Status', () => {
           mjd={''}
           time={''}
           date={''}
-          daemonStatus={'Running'}
-          exposure={'3'}
+          pipelineRunning={'Running'}
+          exposureId={'3'}
         />
       </MuiThemeProvider>
     );
