@@ -33,7 +33,8 @@ function updateMonitorState(state) {
   return { type: 'UPDATE_MONITOR_STATE', state };
 }
 
-export function updateCameraState(state) {
+export function updateCameraState(cameralog) {
+  const state = { cameraTerminal: cameralog };
   return { type: 'UPDATE_CAMERA_STATE', state };
 }
 

@@ -62,6 +62,7 @@ export default class Monitor extends Component {
     spectrographs: PropTypes.array.isRequired,
     time: PropTypes.string.isRequired,
     mjd: PropTypes.string.isRequired,
+    resetCameraLog: PropTypes.func.isRequired,
   };
 
   state = {
@@ -132,6 +133,7 @@ export default class Monitor extends Component {
   };
 
   closeDialog = () => {
+    this.props.resetCameraLog();
     this.setState({ openDialog: false });
   };
 
@@ -142,7 +144,7 @@ export default class Monitor extends Component {
   resetMonitor = () => {
     this.setState({
       confirmDialog: true,
-      confirmDialogSubtitle: 'Are you sure you want to reset the screen',
+      confirmDialogSubtitle: 'Are you sure you want to reset the screen?',
     });
   };
 

@@ -56,7 +56,7 @@ class Connection extends Component {
       }
       this.props.updateLastProcessAndMonitor(state);
     } else if (result.cameralog) {
-      this.props.updateCameraState({ cameraTerminal: result.cameralog });
+      this.props.updateCameraState(result.cameralog);
     }
   };
 

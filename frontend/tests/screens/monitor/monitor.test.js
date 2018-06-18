@@ -75,10 +75,10 @@ describe('Monitor', () => {
       };
     };
     await wrapper
-      .find('span')
-      .at(40)
+      .find('TableRow')
+      .at(2)
       .simulate('click');
-    expect(socket.state.ws.send).toHaveBeenCalledWith('camera:z3');
+    expect(socket.state.ws.send).toHaveBeenCalledWith('camera:b1');
   });
 
   it('resizes screen', () => {

@@ -39,7 +39,7 @@ describe('Confirm Dialog', () => {
         .find('Button')
         .at(1)
         .text()
-    ).toBe('Ok');
+    ).toBe('Yes');
   });
 
   it('calls handle close on cancel click', () => {

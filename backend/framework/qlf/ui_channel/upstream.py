@@ -5,6 +5,7 @@ from channels import Group
 import os
 import logging
 from util import get_config
+from dashboard.bokeh.helper import get_monitor_process
 
 from ui_channel.alerts import Alerts
 import json

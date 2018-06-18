@@ -6,7 +6,11 @@ import { Route } from 'react-router';
 import Metrics from '../../screens/metrics/metrics';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { navigateToOnlineMetrics, navigateToOnlineQA } from './online-store';
+import {
+  navigateToOnlineMetrics,
+  navigateToOnlineQA,
+  updateCameraState,
+} from './online-store';
 import { navigateToProcessingHistory } from '../offline/offline-store';
 
 import _ from 'lodash';
@@ -39,6 +43,7 @@ class OnlineContainer extends Component {
     spectrograph: PropTypes.number.isRequired,
     connected: PropTypes.func.isRequired,
     disconnected: PropTypes.func.isRequired,
+    resetCameraLog: PropTypes.func.isRequired,
   };
 
   state = {
@@ -105,6 +110,7 @@ class OnlineContainer extends Component {
               arms={arms}
               spectrographs={spectrographs}
               qaTests={this.props.qaTests}
+              resetCameraLog={this.props.resetCameraLog}
             />
           )}
         />
@@ -180,5 +186,6 @@ export default connect(
       dispatch(navigateToOnlineMetrics(step, spectrograph, arm, exp)),
     navigateToProcessingHistory: () => dispatch(navigateToProcessingHistory()),
     navigateToQA: () => dispatch(navigateToOnlineQA()),
+    resetCameraLog: () => dispatch(updateCameraState([])),
   })
 )(OnlineContainer);

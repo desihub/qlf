@@ -34,7 +34,7 @@ class ConfirmDialog extends React.Component {
               Cancel
             </Button>
             <Button onClick={this.handleConfirmation} color="primary" autoFocus>
-              Ok
+              Yes
             </Button>
           </DialogActions>
         </Dialog>
