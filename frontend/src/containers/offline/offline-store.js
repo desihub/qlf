@@ -7,7 +7,7 @@ function defaultState() {
     mjd: '',
     date: '',
     time: '',
-    exposure: '',
+    exposureId: '',
     processId: undefined,
     recentProcesses: undefined,
     recentExposures: undefined,
@@ -80,7 +80,7 @@ function updateQA(qaTests) {
     date: qaTests.exposure.dateobs.split('T')[0],
     time: qaTests.exposure.dateobs.split('T')[1],
     processId: qaTests.pk,
-    exposure: qaTests.exposure.exposure_id.toString(),
+    exposureId: qaTests.exposure.exposure_id.toString(),
   };
   return { type: 'UPDATE_OFFLINE_QA', state };
 }
@@ -202,7 +202,7 @@ export function qlfOfflineReducers(state = defaultState(), action) {
         time: action.state.time,
         processId: action.state.processId,
         qaTests: action.state.qaTests,
-        exposure: action.state.exposure,
+        exposureId: action.state.exposureId,
       });
     default:
       return state;
