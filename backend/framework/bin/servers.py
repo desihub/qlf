@@ -31,6 +31,7 @@ logger = get_logger(
 class Monitoring(object):
 
     monitor = False
+    exposure_generator = None
 
     if emulate:
         exposure_generator = get_exposure_generator()
@@ -46,8 +47,8 @@ class Monitoring(object):
             self.monitor.start()
             logger.debug("Starting pid %i..." % self.monitor.pid)
 
-    if emulate:
-        self.exposure_generator.start()
+        if self.exposure_generator:
+            self.exposure_generator.start()
 
     def stop(self):
         if self.monitor and self.monitor.is_alive():
@@ -60,8 +61,8 @@ class Monitoring(object):
         else:
             logger.debug("Monitor is not initialized.")
 
-    if emulate:
-        self.exposure_generator.stop()
+        if self.exposure_generator:
+            self.exposure_generator.stop()
 
     def reset(self):
         self.stop()
