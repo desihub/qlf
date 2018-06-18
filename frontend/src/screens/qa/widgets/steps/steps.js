@@ -77,7 +77,7 @@ const styles = {
 export default class Steps extends Component {
   static propTypes = {
     renderMetrics: PropTypes.func.isRequired,
-    exposure: PropTypes.string,
+    exposureId: PropTypes.string,
     qaTests: PropTypes.array,
     mjd: PropTypes.string,
     date: PropTypes.string,
@@ -202,7 +202,7 @@ export default class Steps extends Component {
     return (
       <div style={styles.qaControls}>
         <Status
-          exposure={this.props.exposure}
+          exposureId={this.props.exposureId}
           mjd={this.props.mjd}
           date={this.props.date}
           time={this.props.time}

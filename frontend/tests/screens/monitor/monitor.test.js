@@ -28,7 +28,7 @@ describe('Monitor', () => {
       <Provider store={store}>
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
           <Monitor
-            exposure={'3'}
+            exposureId={'3'}
             qaTests={[]}
             cameraTerminal={store.getState().qlfOnline.cameraTerminal}
             ingestionTerminal={[]}
@@ -48,7 +48,7 @@ describe('Monitor', () => {
   it('receives props', async () => {
     const wrapper = shallow(
       <Monitor
-        exposure={'3'}
+        exposureId={'3'}
         qaTests={[]}
         cameraTerminal={store.getState().qlfOnline.cameraTerminal}
         ingestionTerminal={[]}
@@ -78,7 +78,7 @@ describe('Monitor', () => {
       .find('span')
       .at(40)
       .simulate('click');
-    expect(socket.state.ws.send).toHaveBeenCalledWith('camera:z2');
+    expect(socket.state.ws.send).toHaveBeenCalledWith('camera:z3');
   });
 
   it('resizes screen', () => {
@@ -86,7 +86,7 @@ describe('Monitor', () => {
       <Provider store={store}>
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
           <Monitor
-            exposure={'3'}
+            exposureId={'3'}
             qaTests={[]}
             cameraTerminal={[]}
             ingestionTerminal={[]}

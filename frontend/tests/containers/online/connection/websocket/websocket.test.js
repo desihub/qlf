@@ -45,7 +45,7 @@ describe('Websocket', () => {
       camerasStages: undefined,
       daemonRunning: false,
       pipelineRunning: 'Not Running',
-      exposure: '4',
+      exposureId: '4',
       ingestionTerminal: [
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],
@@ -79,7 +79,7 @@ describe('Websocket', () => {
       daemonRunning: false,
       pipelineRunning: 'Not Running',
       camerasStages: undefined,
-      exposure: '4',
+      exposureId: '4',
       ingestionTerminal: [
         '2017-11-23 12:59:04 [INFO]: QLF Daemon status: False',
       ],

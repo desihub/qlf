@@ -6,7 +6,6 @@ function defaultState() {
   return {
     daemonRunning: false,
     pipelineRunning: 'idle',
-    exposure: 'none',
     mainTerminal: [],
     ingestionTerminal: [],
     cameraTerminal: [],
