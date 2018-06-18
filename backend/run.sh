@@ -14,6 +14,9 @@ export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
 export QLF_REDIS=True
 
+export DESI_ROOT=$QLF_ROOT
+export DESI_PRODUCT_ROOT=$HOME/sarahE/desi/software/
+
 for package in desispec desiutil desimodel specter; do
 	echo "Setting $package..."
 	export PATH=$QLF_ROOT/$package/bin:$PATH
