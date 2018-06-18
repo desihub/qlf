@@ -89,6 +89,7 @@ class CommentModal extends React.Component {
     handleClose: PropTypes.func.isRequired,
     processId: PropTypes.string.isRequired,
     readOnly: PropTypes.bool.isRequired,
+    fetchLastProcess: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -305,6 +306,7 @@ class CommentModal extends React.Component {
   deleteCommentConfirm = async () => {
     await QlfApi.deleteProcessComment(this.state.deleteId);
     this.closeDeleteCommentDialog();
+    this.props.fetchLastProcess();
     this.fetchComments();
   };
 
@@ -338,6 +340,7 @@ class CommentModal extends React.Component {
     if (comment.id) {
       this.setState({ comment: '' });
       this.fetchComments();
+      this.props.fetchLastProcess();
     }
   };
 

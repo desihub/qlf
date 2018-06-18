@@ -35,6 +35,7 @@ class TableHistory extends Component {
     classes: PropTypes.object.isRequired,
     changeLimit: PropTypes.func.isRequired,
     limit: PropTypes.number.isRequired,
+    fetchLastProcess: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -285,6 +286,7 @@ class TableHistory extends Component {
         processId={this.state.commentProcessId}
         handleClose={this.handleCommentModalClose}
         readOnly={this.props.type !== 'process'}
+        fetchLastProcess={this.props.fetchLastProcess}
       />
     ) : null;
   };

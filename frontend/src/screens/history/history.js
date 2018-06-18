@@ -40,7 +40,7 @@ export default class History extends Component {
     type: PropTypes.string.isRequired,
     lastProcessedId: PropTypes.string,
     rowsCount: PropTypes.number,
-    fetchLastProcess: PropTypes.func,
+    fetchLastProcess: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -121,6 +121,7 @@ export default class History extends Component {
         lastProcessedId={this.props.lastProcessedId}
         changeLimit={this.changeLimit}
         limit={this.state.limit}
+        fetchLastProcess={this.props.fetchLastProcess}
       />
     );
   };
@@ -143,6 +144,7 @@ export default class History extends Component {
         lastProcessedId={this.props.lastProcessedId}
         changeLimit={this.changeLimit}
         limit={this.state.limit}
+        fetchLastProcess={this.props.fetchLastProcess}
       />
     );
   };
@@ -183,6 +185,7 @@ export default class History extends Component {
           rowsCount={this.props.rowsCount}
           changeLimit={this.changeLimit}
           limit={this.state.limit}
+          fetchLastProcess={this.props.fetchLastProcess}
         />
       );
     }
