@@ -38,7 +38,7 @@ export default class History extends Component {
     recentProcesses: PropTypes.array,
     recentExposures: PropTypes.array,
     type: PropTypes.string.isRequired,
-    lastProcessedId: PropTypes.number,
+    lastProcessedId: PropTypes.string,
     rowsCount: PropTypes.number,
     fetchLastProcess: PropTypes.func,
   };

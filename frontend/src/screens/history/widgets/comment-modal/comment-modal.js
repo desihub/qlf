@@ -87,7 +87,7 @@ class CommentModal extends React.Component {
   static propTypes = {
     classes: PropTypes.object,
     handleClose: PropTypes.func.isRequired,
-    processId: PropTypes.number.isRequired,
+    processId: PropTypes.string.isRequired,
     readOnly: PropTypes.bool.isRequired,
   };
 

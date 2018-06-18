@@ -26,8 +26,8 @@ class TableHistory extends Component {
     type: PropTypes.string.isRequired,
     selectable: PropTypes.bool,
     orderable: PropTypes.bool,
-    processId: PropTypes.number,
-    lastProcessedId: PropTypes.number,
+    processId: PropTypes.string,
+    lastProcessedId: PropTypes.string,
     selectedExposures: PropTypes.array,
     rowsCount: PropTypes.number,
     startDate: PropTypes.string,
@@ -88,7 +88,7 @@ class TableHistory extends Component {
           return (
             <HistoryData
               key={id}
-              processId={processId}
+              processId={String(processId)}
               row={row}
               rowNumber={id}
               selectProcessQA={this.selectProcessQA}
@@ -260,7 +260,7 @@ class TableHistory extends Component {
       <ImageModal
         handleClose={this.handleImageModalClose}
         night={this.state.currentNight}
-        exposure={this.state.currentExposure}
+        exposureId={String(this.state.currentExposure)}
       />
     ) : null;
   };

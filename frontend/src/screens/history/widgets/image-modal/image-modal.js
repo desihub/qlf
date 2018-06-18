@@ -77,23 +77,25 @@ class ImageModal extends React.Component {
   static propTypes = {
     classes: PropTypes.object,
     handleClose: PropTypes.func.isRequired,
-    exposure: PropTypes.string.isRequired,
+    exposureId: PropTypes.string.isRequired,
     night: PropTypes.string.isRequired,
   };
 
   renderImage = () => {
     const { classes } = this.props;
     let url = '';
+
     if (
       this.state.arm !== null &&
       this.state.processing !== null &&
-      this.state.spectrograph !== []
+      this.state.spectrograph.length !== 0
     )
       url = `${apiUrl}dashboard/fits_to_png/?process_id=1&cam=${
         this.state.arm
       }${this.state.spectrograph}&night=${this.props.night}&exposure=${
-        this.props.exposure
+        this.props.exposureId
       }&processing=${this.state.processing}`;
+
     return (
       <iframe
         title="image-modal"
@@ -107,19 +109,23 @@ class ImageModal extends React.Component {
 
   handleChangeSpectrograph = spectrograph => {
     this.setState({ spectrograph: [spectrograph] });
-    if (this.state.arm !== null && this.state.processing !== null)
+    if (
+      this.state.arm !== null &&
+      this.state.processing !== null &&
+      spectrograph !== this.state.spectrograph[0]
+    )
       this.loadStart();
   };
 
   handleChangeArm = evt => {
     this.setState({ arm: evt.target.value });
-    if (this.state.spectrograph !== [] && this.state.processing !== null)
+    if (this.state.spectrograph.length !== 0 && this.state.processing !== null)
       this.loadStart();
   };
 
   handleChangeProcessing = evt => {
     this.setState({ processing: evt.target.value });
-    if (this.state.spectrograph !== [] && this.state.arm !== null)
+    if (this.state.spectrograph.length !== 0 && this.state.arm !== null)
       this.loadStart();
   };
 
@@ -224,7 +230,11 @@ class ImageModal extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <Modal className={classes.modal} open={true} onClose={this.handleClose}>
+      <Modal
+        className={classes.modal}
+        open={true}
+        onClose={this.props.handleClose}
+      >
         <div className={classes.modalBody}>
           <div className={classes.row}>
             <div>{this.renderControls()}</div>
