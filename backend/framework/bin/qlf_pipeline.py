@@ -356,6 +356,10 @@ class QLFProcess(object):
 
             if line.find('ERROR') > -1 or line.find('CRITICAL') > -1:
                 logger.error("ERROR: Camera {}: {}".format(camera, line_str))
+                self.num_cameras = self.num_cameras - 1
+            if line.find('File does not exist') > -1:
+                logger.error("ERROR: Camera {}: {}".format(camera, line))
+                self.num_cameras = self.num_cameras - 1
             else:
                 self.stage_control(line)
         except Exception as err:
