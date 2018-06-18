@@ -7,7 +7,7 @@ from bokeh.layouts import Spacer
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
-from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.models import HoverTool, ColumnDataSource, Range1d, Span
 from bokeh.models import (LinearColorMapper, ColorBar)
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
@@ -21,7 +21,7 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description
+from dashboard.bokeh.helper import get_url_args, write_description, get_palette
 
 import numpy as np
 import logging
@@ -66,19 +66,8 @@ metr = skypeak
 #       we have the bokeh plots
 
 
-def palette(name_of_mpl_palette):
-    """ Transforms a matplotlib palettes into a bokeh 
-    palettes
-    """
-    from matplotlib.colors import rgb2hex
-    import matplotlib.cm as cm
-    # choose any matplotlib colormap here
-    colormap = cm.get_cmap(name_of_mpl_palette)
-    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
-    return bokehpalette
 
-
-my_palette = palette("viridis")
+my_palette = get_palette("viridis")
 
 peak_tooltip = """
     <div>
@@ -102,7 +91,7 @@ peak_tooltip = """
 """
 url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
-c1, c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
+c1, c2 = 0,500 # int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 qlf_fiberid = np.arange(0, 5000)[c1:c2]
 
 
@@ -139,8 +128,8 @@ peak_hover = HoverTool(tooltips=peak_tooltip)
 peakcount = metr['PEAKCOUNT']
 
 source = ColumnDataSource(data={
-    'x1': metr['RA'][c1:c2],
-    'y1': metr['DEC'][c1:c2],
+    'x1': snr['RA'][c1:c2],
+    'y1': snr['DEC'][c1:c2],
     'peakcount': peakcount,
     'QLF_FIBERID': qlf_fiberid,
     'OBJ_TYPE': obj_type,
@@ -151,11 +140,20 @@ mapper = LinearColorMapper(palette=my_palette,
                            low=0.98*np.min(peakcount),
                            high=1.02*np.max(peakcount))
 
-radius = 0.012
-radius_hover = 0.0135
+radius = 0.015
+radius_hover = 0.0165
 
-p = Figure(title='PEAKCOUNT: sum of counts in peak regions ', x_axis_label='RA', y_axis_label='DEC', plot_width=770, plot_height=700           # , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-           , tools=[peak_hover, "pan,box_zoom,reset,crosshair, tap"])
+# axes limit
+xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
+ymin, ymax = [min(snr['DEC'][:]), max(snr['DEC'][:])]
+xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
+left, right = xmin -xfac, xmax+xfac
+bottom, top = ymin-yfac, ymax+yfac
+
+p = Figure(title='PEAKCOUNT: sum of counts in peak regions '
+        , x_axis_label='RA', y_axis_label='DEC'
+        , plot_width=700, plot_height=550            
+        , tools=[peak_hover, "pan,box_zoom,reset,crosshair, tap"])
 
 # Color Map
 p.circle('x1', 'y1', source=source, name="data", radius=radius,
@@ -167,18 +165,18 @@ p.circle('x1', 'y1', source=source, name="data", radius=radius,
 p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
          'field': 'peakcount', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
 
-taptool = p.select(type=TapTool)
-taptool.callback = OpenURL(url=url)
+#taptool = p.select(type=TapTool)
+#taptool.callback = OpenURL(url=url)
 
 # bokeh.pydata.org/en/latest/docs/reference/models/annotations.html
-xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=-13,
-                      title="PEAKCOUNT",
+xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
+                      title="counts",
                       major_label_text_font_style="bold", padding=26,
                       major_label_text_align='right',
                       major_label_text_font_size="10pt",
                       location=(0, 0))
 
-p.add_layout(xcolor_bar, 'left')
+p.add_layout(xcolor_bar, 'right')
 
 info, nlines = write_info('skypeak', tests['skypeak'])
 txt = PreText(text=info, height=nlines*20, width=int(1.5*p.plot_width))
@@ -201,7 +199,7 @@ hist_tooltip = """
 """
 
 Nbins = 40
-hist, edges = np.histogram(peakcount, bins=Nbins)
+hist, edges = np.histogram(peakcount, bins="sqrt")
 
 source_hist = ColumnDataSource(data={
     'hist': hist,
@@ -222,7 +220,7 @@ p_hist.quad(top='histplusone', bottom='bottomplusone', left='left', right='right
             fill_color="dodgerblue", line_color="black", alpha=0.8,
             hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
 
-from bokeh.models import Span
+
 
 logger.info(par['PEAKCOUNT_WARN_RANGE'])
 spans = Span(location=par['PEAKCOUNT_WARN_RANGE'][0], dimension='height', line_color='yellow',
@@ -236,8 +234,8 @@ p_hist.add_layout(spans)
                           line_dash='dashed', line_width=3)
     p_hist.add_layout(spans)
 """
-row1 = column(p, p_hist)
-layout = column(widgetbox(info_col), row1)
+#row1 = column(p, p_hist)
+layout = column(widgetbox(info_col), p, p_hist)#row1)
 
 
 #logger.info("widths", p.plot_width, p_hist.plot_width)

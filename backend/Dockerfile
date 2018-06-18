@@ -34,7 +34,7 @@ ENTRYPOINT [ "/usr/bin/tini", "--" ]
 RUN /bin/bash -c "source /opt/conda/bin/activate root && \
         conda update conda -y && \ 
 		conda config --add channels conda-forge && \
-		conda create --name quicklook python=3.5 --yes --file requirements.txt && \
+		conda create --name quicklook python=3.6 --yes --file requirements.txt && \
 		source /opt/conda/bin/activate quicklook && \
         apt-get install build-essential -y && \
 		pip install -r extras.txt"

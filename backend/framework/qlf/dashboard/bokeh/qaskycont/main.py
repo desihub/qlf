@@ -12,7 +12,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics
+from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_palette
 
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -50,19 +50,11 @@ try:
 except:
     sys.exit('Could not load metrics')
 
-skycont   = metrics['skycont']
+skycont = metrics['skycont']
+snr = metrics['snr']
 
-def palette(name_of_mpl_palette):
-    """ Transforms a matplotlib palettes into a bokeh 
-    palettes
-    """
-    from matplotlib.colors import rgb2hex
-    import matplotlib.cm as cm
-    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
-    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
-    return bokehpalette
 
-my_palette = palette("viridis")
+my_palette = get_palette("viridis")
 
 skc_tooltips = """
     <div>
@@ -82,7 +74,7 @@ skc_tooltips = """
 """
 url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
-c1,c2 = int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
+c1,c2 = 0,500#int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
 qlf_fiberid = np.arange(0,5000)[c1:c2] 
 
 
@@ -95,14 +87,14 @@ skycont = skycont
 sky = skycont['SKYCONT_FIBER']
 skyfibers = skycont['SKYFIBERID']
 
-ra  = [ skycont['RA'][c1:c2][i] for i in skyfibers]
-dec = [ skycont['DEC'][c1:c2][i] for i in skyfibers]
+ra  = [ snr['RA'][c1:c2][i] for i in skyfibers]
+dec = [ snr['DEC'][c1:c2][i] for i in skyfibers]
 
 ra_not, dec_not = [], []
 for i in range(500):
     if i not in skyfibers:
-        ra_not.append(skycont['RA'][c1:c2][i])
-        dec_not.append(skycont['DEC'][c1:c2][i])
+        ra_not.append(snr['RA'][c1:c2][i])
+        dec_not.append(snr['DEC'][c1:c2][i])
 
 source2 = ColumnDataSource(data={
                 'skycont' : sky,
@@ -121,12 +113,12 @@ mapper = LinearColorMapper(palette= my_palette,
                            low = np.min(sky), 
                            high = np.max(sky))
 
-radius = 0.012
-radius_hover = 0.0135
+radius = 0.015
+radius_hover = 0.0165
 
 p2 = Figure(title='SKY_CONT', 
             x_axis_label='RA', y_axis_label='DEC',
-            plot_width=770, plot_height=600,
+            plot_width=700, plot_height=550,
             tools= [hover, "pan,box_zoom,reset,tap"])
 
 p2.circle('ra','dec', source=source2, radius=radius,
@@ -151,14 +143,15 @@ p2.circle('ra','dec', source = source2_not, radius = radius_hover
 taptool = p2.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
 
-color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
-                     major_label_text_font_style='bold', padding = 46,
+color_bar = ColorBar(color_mapper= mapper, label_standoff=13,
+                    title='counts',
+                     major_label_text_font_style='bold', padding = 23,
                      major_label_text_align='right',
                      major_label_text_font_size="10pt",
                      location=(0, 0))
 
 
-p2.add_layout(color_bar, 'left')
+p2.add_layout(color_bar, 'right')
 
 #infos
 info, nlines = write_info('skycont', tests['skycont'])

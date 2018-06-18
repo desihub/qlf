@@ -49,6 +49,8 @@ except:
 skyresid  = metrics['skyresid']
 par = tests['skyresid']
 
+residmed = skyresid['MED_RESID']
+
 # ============================================
 # THIS: Given the set up in the block above, 
 #       we have the bokeh plots
@@ -90,14 +92,14 @@ skyres_source = ColumnDataSource(
                      })
 
 p1 = Figure(title= 'MED_RESID_WAVE', 
-            x_axis_label='Angstrom',
+            x_axis_label='Wavelength (A)', y_axis_label='Counts',
             plot_width = 720, plot_height = 240,
           tools=[skr_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
 p1.line('wl', 'med_resid', source=skyres_source)
 
 p2 = Figure(title= 'WAVG_RESID_WAVE', 
-            x_axis_label='Angstrom',
+            x_axis_label='Wavelength (A)', y_axis_label='Counts',
             plot_width = 720, plot_height = 240,
           tools=[wavg_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
@@ -114,6 +116,47 @@ p2.line('wl', 'wavg_resid', source=skyres_source)
 
 p1.x_range = p2.x_range
 
+
+#--------------
+# hist fiber
+from dashboard.bokeh.qlf_plot import plot_hist
+hist_tooltip=""" 
+    <div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">MEDIAN RESID: </span>
+            <span style="font-size: 13px; color: #515151;">@median_resid</span>
+        </div>
+        <div>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER ID: </span>
+            <span style="font-size: 13px; color: #515151;">@fiberid</span>
+        </div>
+    </div>
+        """
+hist_hover = HoverTool(tooltips=hist_tooltip)
+hist_source = ColumnDataSource(
+                data={'median_resid': skyresid['MED_RESID_FIBER'],
+                      'fiberid' : skyresid['SKYFIBERID'],#[str(i) for i in skyresid['SKYFIBERID'] ],
+                       'x': np.arange(len(skyresid['SKYFIBERID'])),
+                       'left': np.arange(len(skyresid['SKYFIBERID'])) -0.4,
+                       'right':np.arange(len(skyresid['SKYFIBERID']))+0.4,
+                       'bottom':[0]*len(skyresid['SKYFIBERID']),
+                     })
+
+#yrange=[0, max(skyresid['MED_RESID_FIBER']) *1.1]
+fiber_hist = plot_hist(hist_hover,None, ph=300)
+
+fiber_hist.vbar(top='median_resid', x='x', width=0.8,
+            source=hist_source,
+            fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
+            hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
+fiber_hist.xaxis.axis_label="Fiber number"
+fiber_hist.yaxis.axis_label="Median resid."
+
+strx=[str(i) for i in range(len(skyresid['SKYFIBERID']))]
+strf=[str(i) for i in skyresid['SKYFIBERID'] ]
+fiber_hist.xaxis.major_label_overrides = dict(zip(strx,strf))
+
+'''
 #-------------------------------------
 # histogram
 
@@ -150,7 +193,7 @@ source_hist = ColumnDataSource(data={
 
 hover = HoverTool(tooltips=hist_tooltip_x)
 
-ylabel,yrange,bottomval,histval = 'Frequency', (0, 1.1*max(hist)), 'bottom','hist'#histpar(yscale, hist)
+ylabel, yrange, bottomval, histval = 'Frequency', (0, 1.1*max(hist)), 'bottom','hist'
 
 xhistlabel = "Residuals"
 p_hist = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
@@ -181,31 +224,46 @@ for ialert in par['RESID_WARN_RANGE']:
     my_label = Label(x=ialert, y=yrange[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
     p_hist.add_layout(my_label)
 
-residmed = skyresid['MED_RESID']
+
 medianline = Span(location= residmed, dimension='height', line_color='black', line_dash='solid', line_width=2)
 p_hist.add_layout(medianline)
 my_label = Label(x=residmed, y=0.94*yrange[-1], y_units='data', text='Median', text_color='black', angle=0.
                 ,background_fill_color='white', text_align="center",background_fill_alpha=.8)
 p_hist.add_layout(my_label)
-
+'''
 # --------------------------------------
 
-txt = Div(text="""<table style="text-align:center;font-size:16px;"><tr>
-                            <td>{:>40}</td><td>{:<6.5f}</td>
+
+
+text2=""""""
+for i in ['NBAD_PCHI','NREJ','NSKY_FIB','RESID_PER']:      
+    text2=text2+ ("""<tr>
+                    <td>{:>40}:</td> <td style='text-align:left'>{:}</td>
+                    </tr> """.format(i,skyresid[i]))
+
+txt = Div(text="""<table style="text-align:right;font-size:16px;">
+                        <tr>
+                            <td>{:>40}:</td><td style='text-align:left'>{:}</td>
                         </tr>
-                        <tr><td>{:>40}</td><td> {:}</td>
+                        {}
+                        <tr>
+                            <td>{:>40}:</td><td style='text-align:left'> {:}</td>
                         </tr>
-                        <tr><td>{:>40}</td><td> {:}</td>
-                        </tr></table>"""
+                        <tr>
+                            <td>{:>40}:</td><td style='text-align:left'> {:}</td>
+                        </tr>
+                </table>"""
         .format("Median of Residuals:", residmed
-                ,"Residuals Normal Range:",par['RESID_NORMAL_RANGE']
-                , "Residuals Warning Range:",par['RESID_WARN_RANGE'])
+                ,text2
+                ,"Residuals Normal Range",par['RESID_NORMAL_RANGE']
+                , "Residuals Warning Range",par['RESID_WARN_RANGE'])
         , width=p2.plot_width)
 info, nlines = write_info('skyresid', tests['skyresid'])
 
 #txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
 info_col=Div(text=write_description('skyresid'), width=p2.plot_width)
-p2txt = column(widgetbox(info_col), p1, p2, widgetbox(txt), p_hist)
+p2txt = column(widgetbox(info_col), row(column(p1, p2), widgetbox(txt)), fiber_hist  )
+#p2txt = column(widgetbox(info_col), p1, p2, widgetbox(txt), p_hist)
 
 #layout=column(p1,p2)
 curdoc().add_root(p2txt)

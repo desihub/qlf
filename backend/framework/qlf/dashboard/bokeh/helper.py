@@ -147,12 +147,41 @@ def get_scalar_metrics(process_id, cam):
     return requests.get(api['load_scalar_metrics'], params={'process_id': process_id, 'cam': cam}).json()
 
 
-def init_xy_plot(hover):
+def get_scalar_metrics_aux(process_id, cam):
+    """
+    Returns cam scalar metrics from the json
+    files obtained by Singulani.
+    Just a test for desispec 0.21.0
+    """
+    import json
+
+    qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
+    folder = "/home/foliveira/qlf-root/dataql/ql-021/00003900/"
+    folder = "ql-021/00003900/"
+    cam = 'z2'
+    met = {} 
+    par = {}
+    for iqa in qanames:
+        file = "ql-{}-{}-00003900.json".format(iqa, cam)
+
+        try:
+            f = json.load(open(folder+file))
+            met.update({iqa: f['METRICS']})
+            par.update({iqa: f['PARAMS']})
+        except:
+            print('%s not found'%file)
+
+    lm={'results':{'metrics':met, 'tests':par}}
+    return lm
+
+
+def init_xy_plot(hover, yscale):
     """
     Defaults for xy plots
     """
-    plot = Figure(tools="pan,wheel_zoom,box_zoom,reset,tap")
-    plot.add_tools(hover)
+    plot = Figure(tools=[hover,"pan,wheel_zoom,box_zoom,reset,tap"], y_axis_type=yscale
+    , plot_width=400, plot_height=300)
+    #plot.add_tools(hover)
 
     return plot
 
@@ -207,9 +236,9 @@ def write_info(qa_name, params):
                    'NGOODFIB_WARN_RANGE', 'NGOODFIB_NORMAL_RANGE'],
         skypeak=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
                  'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
-        getbias=['BIAS_NORMAL_RANGE',  'BIAS_WARN_RANGE', 'PERCENTILES'],
-        countpix=['NPIX_NORMAL_RANGE', 'NPIX_WARN_RANGE', 'CUTLO', 'CUTHI'],
-        integ=['MAGDIFF_WARN_RANGE', 'MAGDIFF_NORMAL_RANGE'],
+        getbias=['BIAS_NORMAL_RANGE',  'BIAS_WARN_RANGE'],#, 'PERCENTILES'],
+        countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'LITFRAC_AMP_REF', 'CUTPIX'],
+        integ=['DELTAMAG_WARN_RANGE', 'DELTAMAG_NORMAL_RANGE'],
         snr=['FIDSNR_NORMAL_RANGE', 'FIDSNR_WARN_RANGE', 'FIDMAG'])
 
     keys = dict_test_keys[qa_name]
@@ -224,7 +253,7 @@ def write_description(qa_name):
     info_dic={"getbias":
           ["Bias From Overscan", "Mean of values in overscan covered by each amplifier" ],#"Used to calculate mean and median of region of 2D image, including overscan"],
             "getrms":["Get RMS", "RMS of full region covered by each amplifier"],#"Used to calculate RMS of region of 2D image, including overscan."],
-        "countpix": ["Count Pixels", "Number pixels above 'CUTHI' threshold per amplifier" ],#"Count number of pixels above three configured thresholds."],
+        "countpix": ["Count Pixels", "Fraction of pixels lit after preproc" ],#"Count number of pixels above three configured thresholds."],
           #+"Quantities should be independent of exposure length."],
         "xwsigma":["XWSigma","Calculate PSF sigma in spatial and wavelength directions independently using "
           +"configured sky lines"],
@@ -247,6 +276,7 @@ def write_description(qa_name):
             <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0],info_dic[qa_name][1])                  
     return text
 
+
 def eval_histpar(yscale, hist):
     """ Common parameters for histograms"""
     from numpy import log10
@@ -261,6 +291,19 @@ def eval_histpar(yscale, hist):
         bottomval = 'bottom'
         histval = 'hist'
     return [ylabel,yrange,bottomval,histval]
+
+
+def get_palette(name_of_mpl_palette):
+    """ Transforms a matplotlib palettes into a bokeh 
+    palettes
+    """
+    import numpy as np
+    from matplotlib.colors import rgb2hex
+    import matplotlib.cm as cm
+    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
+    bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
+    return bokehpalette
+
 
 if __name__ == '__main__':
     logger.info('Standalone execution...')
