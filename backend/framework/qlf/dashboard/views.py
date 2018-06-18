@@ -146,18 +146,6 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 class CurrentProcessViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint listing current process"""
 
-    # def get_queryset(self):
-    #     try:
-    #         process = Process.objects.latest('pk')
-    #         if process.process_jobs.last().status == 2:
-    #             process_id = process.id
-    #         else:
-    #             process_id = None
-    #     except Process.DoesNotExist as error:
-    #         logger.debug(error)
-    #         process_id = None
-
-    #     return Process.objects.filter(id=process_id)
     queryset = Process.objects.order_by('-pk')
     serializer_class = CurrentProcessJobsSerializer
     filter_fields = ('process_jobs__id',)
@@ -351,17 +339,6 @@ class QAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     filter_fields = ('name',)
     queryset = QA.objects.order_by('name')
     serializer_class = QASerializer
-
-    # def get_queryset(self):
-    #     fields = self.request.query_params.get('fields', list())
-    #
-    #     if fields:
-    #         required = ('pk',)
-    #         fields = fields.split(',')
-    #         fields = list(set(list(required) + fields))
-    #         return QA.objects.values(*fields).order_by('name')
-    #
-    #     return QA.objects.order_by('name')
 
 
 class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
