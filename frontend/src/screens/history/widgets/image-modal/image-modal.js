@@ -61,6 +61,9 @@ const styles = {
   button: {
     float: 'right',
   },
+  spectrographLabel: {
+    paddingBottom: 10,
+  },
 };
 
 class ImageModal extends React.Component {
@@ -160,7 +163,9 @@ class ImageModal extends React.Component {
     return (
       <div className={classes.controlsContainer}>
         <div>
-          <FormLabel component="legend">Spectrograph:</FormLabel>
+          <FormLabel className={classes.spectrographLabel} component="legend">
+            Spectrograph:
+          </FormLabel>
           <Petals
             selected={this.state.spectrograph}
             onClick={this.handleChangeSpectrograph}
