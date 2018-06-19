@@ -44,7 +44,7 @@ def get_config(config_path=None):
 
     return cfg
 
-def change_config_file(config_file):
+def edit_qlf_config(key, value):
     with open(config_file, 'r') as file:
         config = file.readlines()
 
@@ -59,7 +59,6 @@ def change_config_file(config_file):
     current_config = '{}/current_config.yaml'.format(desi_spectro_redux)
     with open(current_config, 'w') as file:
         file.writelines(config)
-    return current_config
 
 def extract_exposure_data(exposure_id, night):
     """ Extracts exposure data from fits file.

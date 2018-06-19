@@ -69,11 +69,12 @@ class Form extends React.Component {
       output: '',
       exposures: '',
       qlconfig: '',
-      spectrographs: { b: [], r: [], z: [] },
+      spectrographs: [],
       loading: false,
       minInterval: '',
       maxInterval: '',
       maxExposures: '',
+      maxNights: '',
       allowedDelay: '',
       baseExposures: '',
       diskAlert: 20,
@@ -90,35 +91,33 @@ class Form extends React.Component {
   };
 
   updateArm = arm => {
-    const newArm = {};
     if (this.state.arms.includes(arm)) {
-      newArm[arm] = [];
       this.setState({
         arms: this.state.arms.filter(a => a !== arm),
-        spectrographs: Object.assign(this.state.spectrographs, newArm),
+        spectrographs: [],
       });
     } else {
-      newArm[arm] = _.range(0, 10);
       this.setState({
         arms: this.state.arms.concat(arm),
-        spectrographs: Object.assign(this.state.spectrographs, newArm),
+        spectrographs: _.range(0, 10),
       });
     }
   };
 
   updateSpectrograph = (arm, spectrograph) => {
-    const newArm = {};
-    if (this.state.spectrographs[arm].includes(spectrograph)) {
-      newArm[arm] = this.state.spectrographs[arm].filter(
-        s => s !== spectrograph
-      );
+    if (!this.state.arms.includes(arm)) {
       this.setState({
-        spectrographs: Object.assign(this.state.spectrographs, newArm),
+        arms: this.state.arms.concat(arm),
+      });
+    }
+
+    if (this.state.spectrographs.includes(spectrograph)) {
+      this.setState({
+        spectrographs: this.state.spectrographs.filter(a => a !== spectrograph),
       });
     } else {
-      newArm[arm] = this.state.spectrographs[arm].concat(spectrograph);
       this.setState({
-        spectrographs: Object.assign(this.state.spectrographs, newArm),
+        spectrographs: this.state.spectrographs.concat(spectrograph),
       });
     }
   };
@@ -158,6 +157,7 @@ class Form extends React.Component {
         min_interval,
         max_interval,
         max_exposures,
+        max_nights,
         qlconfig,
         spectrographs,
         base_exposures_path,
@@ -165,22 +165,17 @@ class Form extends React.Component {
 
       const specs = spectrographs.split(',').map(s => parseInt(s, 10));
 
-      const spectrographsObj = {
-        b: arms.includes('b') ? specs : [],
-        r: arms.includes('r') ? specs : [],
-        z: arms.includes('z') ? specs : [],
-      };
-
       this.setState({
         arms: arms.split(','),
         input: desi_spectro_data,
         output: desi_spectro_redux,
         exposures: exposures,
         qlconfig: qlconfig,
-        spectrographs: spectrographsObj,
+        spectrographs: specs,
         minInterval: min_interval,
         maxInterval: max_interval,
         maxExposures: max_exposures,
+        maxNights: max_nights,
         allowedDelay: allowed_delay,
         baseExposures: base_exposures_path,
       });
@@ -246,6 +241,17 @@ class Form extends React.Component {
           value={this.state.maxExposures}
           onChange={this.handleChange('maxExposures')}
         />
+        <TextField
+          label="Max Nights"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          helperText="Maximum number nights generated per run"
+          fullWidth
+          margin="normal"
+          value={this.state.maxNights}
+          onChange={this.handleChange('maxNights')}
+        />
         <Typography style={styles.title} variant="headline" component="h2">
           Pipeline
         </Typography>
@@ -257,7 +263,11 @@ class Form extends React.Component {
             {['b', 'r', 'z'].map(arm => (
               <div key={arm} style={styles.formDiv}>
                 <Petals
-                  selected={this.state.spectrographs[arm]}
+                  selected={
+                    this.state.arms.includes(arm)
+                      ? this.state.spectrographs
+                      : []
+                  }
                   onClick={spectrograph =>
                     this.updateSpectrograph(arm, spectrograph)
                   }

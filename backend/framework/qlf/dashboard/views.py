@@ -41,6 +41,8 @@ import logging
 
 from util import get_config
 
+from .config_file import edit_qlf_config_file
+
 qlf = get_exposure_monitoring()
 
 logger = logging.getLogger(__name__)
@@ -275,8 +277,26 @@ class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         response = super(CurrentConfigurationViewSet, self).list(
             request, args, kwargs)
-        current_configuration = qlf.get_current_configuration()
-        response.data = {'results': current_configuration}
+        cfg = get_config()
+        configuration = dict(
+            base_exposures_path=cfg.get("namespace", "base_exposures_path"),
+            min_interval=cfg.get("main", "min_interval"),
+            max_interval=cfg.get("main", "max_interval"),
+            allowed_delay=cfg.get("main", "allowed_delay"),
+            max_exposures=cfg.get("main", "max_exposures"),
+            max_nights=cfg.get("main", "max_nights"),
+            logfile=cfg.get("main", "logfile"),
+            loglevel=cfg.get("main", "loglevel"),
+            logpipeline=cfg.get("main", "logpipeline"),
+            qlconfig=cfg.get("main", "qlconfig"),
+            night=cfg.get("data", "night"),
+            exposures=cfg.get("data", "exposures"),
+            arms=cfg.get("data", "arms"),
+            spectrographs=cfg.get("data", "spectrographs"),
+            desi_spectro_data=cfg.get("namespace", "desi_spectro_data"),
+            desi_spectro_redux=cfg.get("namespace", "desi_spectro_redux")
+        )
+        response.data = {'results': configuration}
         return response
 
 
@@ -653,3 +673,19 @@ def disk_thresholds(request):
         "disk_percent_warning": disk_percent_warning,
         "disk_percent_alert": disk_percent_alert
     })
+
+
+def edit_qlf_config(request):
+    """Edit qlf.cfg file"""
+    key = request.GET.get('key')
+    value = request.GET.get('value')
+    if key is not None and value is not None:
+        edit_qlf_config_file(key, value)
+        return JsonResponse({
+            "key": key,
+            "value": value
+        })
+    else:
+        return JsonResponse({
+            'error': 'Missing key or value'
+        })
