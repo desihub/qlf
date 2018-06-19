@@ -3,6 +3,8 @@ from rest_framework import (
     authentication, permissions, viewsets, filters,
     status, views
 )
+from django.views.decorators.csrf import csrf_exempt
+import json
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
@@ -40,6 +42,8 @@ from django.contrib import messages
 import logging
 
 from util import get_config
+
+from .config_file import edit_qlf_config_file, set_default_configuration
 
 qlf = get_exposure_monitoring()
 
@@ -275,20 +279,27 @@ class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         response = super(CurrentConfigurationViewSet, self).list(
             request, args, kwargs)
-        current_configuration = qlf.get_current_configuration()
-        response.data = {'results': current_configuration}
-        return response
-
-
-class DefaultConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Configuration.objects.order_by('creation_date')
-    serializer_class = ConfigurationSerializer
-
-    def list(self, request, *args, **kwargs):
-        response = super(DefaultConfigurationViewSet, self).list(
-            request, args, kwargs)
-        default_configuration = qlf.get_default_configuration()
-        response.data = {'results': default_configuration}
+        cfg = get_config()
+        configuration = dict(
+            base_exposures_path=cfg.get("namespace", "base_exposures_path"),
+            min_interval=cfg.get("main", "min_interval"),
+            max_interval=cfg.get("main", "max_interval"),
+            allowed_delay=cfg.get("main", "allowed_delay"),
+            max_exposures=cfg.get("main", "max_exposures"),
+            max_nights=cfg.get("main", "max_nights"),
+            logfile=cfg.get("main", "logfile"),
+            loglevel=cfg.get("main", "loglevel"),
+            logpipeline=cfg.get("main", "logpipeline"),
+            qlconfig=cfg.get("main", "qlconfig"),
+            night=cfg.get("data", "night"),
+            exposures=cfg.get("data", "exposures"),
+            arms=cfg.get("data", "arms"),
+            spectrographs=cfg.get("data", "spectrographs"),
+            desi_spectro_data=cfg.get("namespace", "desi_spectro_data"),
+            desi_spectro_redux=cfg.get("namespace", "desi_spectro_redux"),
+            calibration_path=cfg.get("namespace", "calibration_path")
+        )
+        response.data = {'results': configuration}
         return response
 
 
@@ -299,7 +310,15 @@ class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         response = super(QlConfigViewSet, self).list(
             request, args, kwargs)
-        qlconfig = qlf.get_qlconfig()
+        try:
+            cfg = get_config()
+            ql_type = request.GET.get('type')
+            ql_path = cfg.get("main", "qlconfig")
+            with open(ql_path.format(ql_type)) as f:
+                qlconfig = f.read()
+        except Exception as err:
+            logger.info(err)
+            qlconfig = 'Error reading qlconfig: {}'.format(err)
         response.data = qlconfig
         return response
 
@@ -652,4 +671,30 @@ def disk_thresholds(request):
     return JsonResponse({
         "disk_percent_warning": disk_percent_warning,
         "disk_percent_alert": disk_percent_alert
+    })
+
+
+@csrf_exempt
+def edit_qlf_config(request):
+    # TODO: Use configparser
+    """Edit qlf.cfg file"""
+    body = json.loads(request.body)
+    keys = body.get('keys')
+    values = body.get('values')
+    if keys is not None and values is not None:
+        edit_qlf_config_file(keys, values)
+        return JsonResponse({
+            "keys": keys,
+            "values": values
+        })
+    else:
+        return JsonResponse({
+            'error': 'Missing key or value'
+        })
+
+
+def default_configuration(request):
+    set_default_configuration()
+    return JsonResponse({
+        'status': 'Done'
     })

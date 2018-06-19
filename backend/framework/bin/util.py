@@ -4,6 +4,7 @@ import os
 import shutil
 import astropy.io.fits
 import datetime
+import yaml
 
 logger = logging.getLogger()
 
@@ -44,21 +45,50 @@ def get_config(config_path=None):
 
     return cfg
 
-def change_config_file(config_file):
-    with open(config_file, 'r') as file:
-        config = file.readlines()
-
-    for i, line in enumerate(config):
-        if 'PSFExpid:' in line:
-            config[i] = 'PSFExpid: 0\n'
-        elif 'FiberflatExpid:' in line:
-            config[i] = 'FiberflatExpid: 1\n'
+def change_config_file(config_file, night):
+    """ Makes a copy of the original configuration file by modifying
+    some values defined in qlf.cfg.
+    
+    Arguments:
+        config_file {str} -- original config file path
+        night {str} -- night
+    
+    Returns:
+        str -- config file path that will be used
+    """
 
     cfg = get_config()
+
+    with open(config_file, 'r') as file:
+        config = yaml.load(file)
+
+    psf_exp_id = cfg.getint("pipeline", "psf_exp_id")
+    fiberflat_exp_id = cfg.getint("pipeline", "fiberflat_exp_id")
+    use_resolution = cfg.getboolean("pipeline", "use_resolution")
+    write_intermediate_files = cfg.getboolean("pipeline", "write_intermediate_files")
+
+    if config.get('PSFExpid', None):
+        config['PSFExpid'] = psf_exp_id
+
+    if config.get('FiberflatExpid', None):
+        config['FiberflatExpid'] = fiberflat_exp_id
+
+    if config.get('UseResolution', None):
+        config['UseResolution'] = use_resolution
+
+    if config.get('WriteIntermediatefiles', None):
+        config['WriteIntermediatefiles'] = write_intermediate_files
+
     desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-    current_config = '{}/current_config.yaml'.format(desi_spectro_redux)
+    config_path = os.path.join(desi_spectro_redux, 'exposures', night)
+
+    ensure_dir(config_path)
+
+    current_config = os.path.join(config_path, os.path.basename(config_file))
+
     with open(current_config, 'w') as file:
-        file.writelines(config)
+        yaml.dump(config, file)
+
     return current_config
 
 def extract_exposure_data(exposure_id, night):
@@ -92,7 +122,7 @@ def extract_exposure_data(exposure_id, night):
     program_file = program_mapping.get(program, 'darksurvey')
 
     config_file = cfg.get('main', 'qlconfig').format(program_file)
-    current_config = change_config_file(config_file)
+    current_config = change_config_file(config_file, night)
     define_calibration_files(night)
 
     return {
@@ -124,8 +154,16 @@ def define_calibration_files(night):
     spectro_redux = cfg.get("namespace", "desi_spectro_redux")
     calib_path = cfg.get("namespace", "calibration_path")
     dest = os.path.join(spectro_redux, "exposures", night)
+
+    psf_exp_id = cfg.get("pipeline", "psf_exp_id")
+    fiberflat_exp_id = cfg.get("pipeline", "fiberflat_exp_id")
+
     ensure_dir(dest)
-    links = [('psf', '00000000'), ('fiberflat', '00000001')]
+
+    links = [
+        ('psf', psf_exp_id.zfill(8)),
+        ('fiberflat', fiberflat_exp_id.zfill(8))
+    ]
 
     for item in links:
         item_path = os.path.join(calib_path, item[0])
@@ -140,9 +178,8 @@ def ensure_dir(path):
     Arguments:
         path {str} -- directory path
     """
-
-    if not os.path.exists(path):
-        os.makedirs(path)
+    
+    os.makedirs(path, exist_ok=True)
     
 def format_night(new_date):
     return new_date.strftime("%Y%m%d")

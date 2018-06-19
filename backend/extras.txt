@@ -4,18 +4,20 @@
 
 Twisted[tls,http2]
 
+django-debug-toolbar==1.8
+djangorestframework==3.6.2
+django==1.11
+django-filter==1.1.0
 django-json-field==0.5.7
-speclite==0.5
+speclite==0.7
 furl==0.5.7
 Pyro4==4.59
-
 django-cors-headers==2.2.0
-
 channels==1.1.8
 asgi_redis==1.4.3
 schedule==0.5.0
-psutil
 psycopg2-binary
 django-postgrespool
 
-fitsio==0.9.11
+# psutil
+# fitsio==0.9.11
