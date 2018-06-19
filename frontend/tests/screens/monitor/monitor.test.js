@@ -28,12 +28,13 @@ describe('Monitor', () => {
       <Provider store={store}>
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
           <Monitor
-            exposure={'3'}
+            exposureId={'3'}
             qaTests={[]}
             cameraTerminal={store.getState().qlfOnline.cameraTerminal}
             ingestionTerminal={[]}
             camerasStages={{}}
-            daemonStatus={'Running'}
+            daemonRunning={true}
+            pipelineRunning={'Running'}
             arms={arms}
             spectrographs={spectrographs}
             socketRef={socket}
@@ -47,12 +48,13 @@ describe('Monitor', () => {
   it('receives props', async () => {
     const wrapper = shallow(
       <Monitor
-        exposure={'3'}
+        exposureId={'3'}
         qaTests={[]}
         cameraTerminal={store.getState().qlfOnline.cameraTerminal}
         ingestionTerminal={[]}
         camerasStages={{}}
-        daemonStatus={'Running'}
+        daemonRunning={true}
+        pipelineRunning={'Running'}
         arms={arms}
         spectrographs={spectrographs}
         socketRef={socket}
@@ -73,10 +75,10 @@ describe('Monitor', () => {
       };
     };
     await wrapper
-      .find('span')
-      .at(40)
+      .find('TableRow')
+      .at(2)
       .simulate('click');
-    expect(socket.state.ws.send).toHaveBeenCalledWith('camera:z2');
+    expect(socket.state.ws.send).toHaveBeenCalledWith('camera:b1');
   });
 
   it('resizes screen', () => {
@@ -84,12 +86,13 @@ describe('Monitor', () => {
       <Provider store={store}>
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
           <Monitor
-            exposure={'3'}
+            exposureId={'3'}
             qaTests={[]}
             cameraTerminal={[]}
             ingestionTerminal={[]}
             camerasStages={{}}
-            daemonStatus={'Running'}
+            daemonRunning={true}
+            pipelineRunning={'Running'}
             arms={arms}
             spectrographs={spectrographs}
             socketRef={socket}

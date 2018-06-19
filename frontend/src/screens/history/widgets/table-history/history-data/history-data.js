@@ -24,8 +24,8 @@ const styles = {
 export default class HistoryData extends React.Component {
   static muiName = 'TableRow';
   static propTypes = {
-    processId: PropTypes.number,
-    lastProcessedId: PropTypes.number,
+    processId: PropTypes.string,
+    lastProcessedId: PropTypes.string,
     row: PropTypes.object,
     type: PropTypes.string,
     children: PropTypes.array,
@@ -107,7 +107,7 @@ export default class HistoryData extends React.Component {
     const isNotProcessingHistory = this.props.type !== 'process';
     const processing = isNotProcessingHistory
       ? null
-      : this.props.lastProcessedId === row.pk;
+      : this.props.lastProcessedId === String(row.pk);
     const lastProcessed = processing ? styles.bold : {};
     let comment;
     if (this.props.type === 'process') {
@@ -216,7 +216,7 @@ export default class HistoryData extends React.Component {
             key={`EXPV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
-            {row.runtime}
+            {!row.runtime && !processing ? 'ABORTED' : row.runtime}
           </TableCell>
         );
       case 'qa':

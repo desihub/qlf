@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 configure({ adapter: new Adapter() });
 
 const status = {
-  exposure: '3',
+  exposureId: '3',
   availableCameras: ['b0', 'b1', 'r0', 'r1', 'z0', 'z1'],
   mjd: '',
   time: '',
@@ -64,7 +64,7 @@ describe('QA', () => {
       <Provider store={store}>
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
           <QA
-            exposure={status.exposure}
+            exposureId={status.exposureId}
             qaTests={qaTests}
             arms={status.arms}
             spectrographs={status.spectrographs}

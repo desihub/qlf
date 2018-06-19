@@ -137,6 +137,19 @@ class QLFModels(object):
 
         return process
 
+    def abort_current_process(self):
+        try:
+            process = Process.objects.latest('pk')
+            if process.process_jobs.last().status == 2:
+                for job in process.process_jobs.all():
+                    job.status = 1
+                    job.save()
+            else:
+                return
+        except Process.DoesNotExist as error:
+            logger.debug(error)
+            process_id = None
+
     def update_job(self, job_id, end, status, output_path):
         """ Updates job with execution results. """
 

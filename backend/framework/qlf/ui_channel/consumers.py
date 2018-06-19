@@ -4,8 +4,10 @@ from ui_channel.upstream import Upstream
 from ui_channel.delete_files import delete_logs, delete_raw, delete_reduced
 from ui_channel.alerts import Alerts
 import datetime
+from ui_channel.qlf_state import QLFState
 
-us = Upstream()
+qlf_state = QLFState()
+us = Upstream(qlf_state)
 alerts = Alerts()
 
 
@@ -34,19 +36,20 @@ def ws_message(message):
     if message.content['text'] == "startPipeline":
         us.start_daemon()
         message.reply_channel.send({
-            "text": us.get_current_state()
+            "text": qlf_state.get_current_state()
         })
         return
     if message.content['text'] == "stopPipeline":
         us.stop_daemon()
         message.reply_channel.send({
-            "text": us.get_current_state()
+            "text": qlf_state.get_current_state()
         })
         return
     if message.content['text'] == "resetPipeline":
-        us.reset_daemon()
+        us.stop_daemon()
+        qlf_state.reset_state()
         message.reply_channel.send({
-            "text": us.get_current_state()
+            "text": qlf_state.get_current_state()
         })
         return
     if message.content['text'] == "deleteAll":

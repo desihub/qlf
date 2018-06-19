@@ -22,27 +22,31 @@ class Connection extends Component {
 
   handleData = data => {
     const result = JSON.parse(data);
+
     if (result.notification) {
       const notification = JSON.parse(result.notification);
       this.props.updateNotifications(notification);
     }
+
     if (result.lines) {
       const state = {
-        daemonStatus: result.daemon_status
-          ? 'Running'
-          : result.daemon_status === false ? 'Not Running' : 'Idle',
+        pipelineRunning:
+          result.pipeline_running === 2
+            ? 'Running'
+            : result.pipeline_running === 1 ? 'Idle' : 'Not Running',
+        daemonRunning: result.daemon_running,
         mainTerminal: result.lines ? result.lines.reverse() : [],
         ingestionTerminal:
           result.ingestion && result.ingestion !== 'Error'
             ? result.ingestion.reverse()
             : [],
-        exposure: result.exposure.toString(),
+        exposureId: result.exposure.toString(),
         camerasStages: result.cameras,
         availableCameras: result.available_cameras,
         mjd: result.mjd === '' ? '' : result.mjd.toFixed(3),
         date: result.date === '' ? '' : result.date.split(' ')[0],
         time: result.date === '' ? '' : result.date.split(' ')[1],
-        processId: result.process_id,
+        processId: result.process_id.toString(),
         qaTests: [],
       };
       if (result.qa_results && Array.isArray(result.qa_results)) {
@@ -52,7 +56,7 @@ class Connection extends Component {
       }
       this.props.updateLastProcessAndMonitor(state);
     } else if (result.cameralog) {
-      this.props.updateCameraState({ cameraTerminal: result.cameralog });
+      this.props.updateCameraState(result.cameralog);
     }
   };
 
