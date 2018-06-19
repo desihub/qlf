@@ -62,6 +62,7 @@ class OfflineContainer extends Component {
     rowsCount: PropTypes.number,
     getHistoryDateRange: PropTypes.func,
     fetchLastProcess: PropTypes.func,
+    daemonRunning: PropTypes.bool.isRequired,
   };
 
   state = {
@@ -207,7 +208,12 @@ class OfflineContainer extends Component {
             />
           )}
         />
-        <Route path="/configuration" render={() => <Configuration />} />
+        <Route
+          path="/configuration"
+          render={() => (
+            <Configuration daemonRunning={this.props.daemonRunning} />
+          )}
+        />
         <Route
           path="/under-construction"
           render={() => <UnderConstruction />}
@@ -236,6 +242,7 @@ export default connect(
     processId: state.qlfOffline.processId,
     lastProcessedId: state.qlfOnline.processId,
     rowsCount: state.qlfOffline.rowsCount,
+    daemonRunning: state.qlfOnline.daemonRunning,
   }),
   dispatch => ({
     getQA: processId => dispatch(getQA(processId)),

@@ -119,15 +119,6 @@ class Monitoring(object):
         default = configuration.get_default_configuration()
         return default
 
-    def get_qlconfig(self):
-        try:
-            config = self.get_default_configuration()
-            with open(config['qlconfig']) as f:
-                return f.read()
-        except Exception as err:
-            logger.info(err)
-            return 'Error reading qlconfig: {}'.format(err)
-
     def get_calibration(self):
         return os.listdir(os.path.join(base_exposures_path, 'psf'))
 

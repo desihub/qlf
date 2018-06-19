@@ -41,6 +41,8 @@ services:
       - WEBSOCKET_UPDATE_INTERVAL=3
       - UPDATE_DEPENDENCIES=true
       - DAEMON_TEST=false
+      - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
+      - QLF_CFG=/app/framework/config/qlf.cfg
     volumes:
       - .:/app
     working_dir: /app/

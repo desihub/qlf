@@ -2,6 +2,7 @@ from util import get_config
 import os
 import shutil
 
+
 def delete_raw():
     cfg = get_config()
     desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')

@@ -26,8 +26,10 @@ jest.mock('../../../../../src/containers/offline/connection/qlf-api', () => {
       min_interval: '3',
       max_interval: '15',
       max_exposures: '10',
+      max_nights: '5',
       allowed_delay: '20',
       base_exposures_path: '/app/spectro/base_exposures',
+      calibration_path: '/app/spectro/calibration',
     },
   };
   return {
@@ -128,21 +130,40 @@ describe('Configuration Form', () => {
     ).toBe('maxExposures');
   });
 
-  it('changes input', async () => {
+  it('changes maxNights', async () => {
     expect(
       wrapper
         .find('TextField')
         .at(4)
         .props().value
-    ).toBe('/app/spectro/data');
+    ).toBe('5');
     await wrapper
       .find('input')
-      .at(7)
-      .simulate('change', { target: { value: 'input' } });
+      .at(4)
+      .simulate('change', { target: { value: 'maxNights' } });
     expect(
       wrapper
         .find('TextField')
         .at(4)
+        .props().value
+    ).toBe('maxNights');
+  });
+
+  it('changes input', async () => {
+    expect(
+      wrapper
+        .find('TextField')
+        .at(5)
+        .props().value
+    ).toBe('/app/spectro/data');
+    await wrapper
+      .find('input')
+      .at(8)
+      .simulate('change', { target: { value: 'input' } });
+    expect(
+      wrapper
+        .find('TextField')
+        .at(5)
         .props().value
     ).toBe('input');
   });
@@ -151,17 +172,17 @@ describe('Configuration Form', () => {
     expect(
       wrapper
         .find('TextField')
-        .at(5)
+        .at(6)
         .props().value
     ).toBe('/app/spectro/redux');
     await wrapper
       .find('input')
-      .at(8)
+      .at(9)
       .simulate('change', { target: { value: 'output' } });
     expect(
       wrapper
         .find('TextField')
-        .at(5)
+        .at(6)
         .props().value
     ).toBe('output');
   });
@@ -170,38 +191,38 @@ describe('Configuration Form', () => {
     expect(
       wrapper
         .find('TextField')
-        .at(6)
+        .at(7)
         .props().value
     ).toBe('/app/spectro/base_exposures');
     await wrapper
       .find('input')
-      .at(9)
+      .at(10)
       .simulate('change', { target: { value: 'baseExposures' } });
     expect(
       wrapper
         .find('TextField')
-        .at(6)
+        .at(7)
         .props().value
     ).toBe('baseExposures');
   });
 
-  it('changes qlconfig', async () => {
+  it('changes calibration', async () => {
     expect(
       wrapper
         .find('TextField')
-        .at(7)
+        .at(8)
         .props().value
-    ).toBe('/app/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml');
+    ).toBe('/app/spectro/calibration');
     await wrapper
       .find('input')
-      .at(10)
-      .simulate('change', { target: { value: 'qlconfig' } });
+      .at(11)
+      .simulate('change', { target: { value: 'calib' } });
     expect(
       wrapper
         .find('TextField')
-        .at(7)
+        .at(8)
         .props().value
-    ).toBe('qlconfig');
+    ).toBe('calib');
   });
 
   it('changes checked arm and select all', async () => {

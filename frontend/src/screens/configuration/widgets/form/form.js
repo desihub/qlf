@@ -1,5 +1,4 @@
 import React from 'react';
-import QLFApi from '../../../../containers/offline/connection/qlf-api';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
@@ -16,6 +15,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { configMap } from './configuration-map';
+import QlfApi from '../../../../containers/offline/connection/qlf-api';
 
 const styles = {
   container: {
@@ -69,15 +70,17 @@ class Form extends React.Component {
       output: '',
       exposures: '',
       qlconfig: '',
-      spectrographs: { b: [], r: [], z: [] },
+      spectrographs: [],
       loading: false,
       minInterval: '',
       maxInterval: '',
       maxExposures: '',
+      maxNights: '',
       allowedDelay: '',
       baseExposures: '',
       diskAlert: 20,
       diskWarning: 80,
+      calibrationPath: '',
     };
   }
 
@@ -87,38 +90,37 @@ class Form extends React.Component {
 
   static propTypes = {
     classes: PropTypes.object,
+    daemonRunning: PropTypes.bool.isRequired,
   };
 
   updateArm = arm => {
-    const newArm = {};
     if (this.state.arms.includes(arm)) {
-      newArm[arm] = [];
       this.setState({
         arms: this.state.arms.filter(a => a !== arm),
-        spectrographs: Object.assign(this.state.spectrographs, newArm),
+        spectrographs: [],
       });
     } else {
-      newArm[arm] = _.range(0, 10);
       this.setState({
         arms: this.state.arms.concat(arm),
-        spectrographs: Object.assign(this.state.spectrographs, newArm),
+        spectrographs: _.range(0, 10),
       });
     }
   };
 
   updateSpectrograph = (arm, spectrograph) => {
-    const newArm = {};
-    if (this.state.spectrographs[arm].includes(spectrograph)) {
-      newArm[arm] = this.state.spectrographs[arm].filter(
-        s => s !== spectrograph
-      );
+    if (!this.state.arms.includes(arm)) {
       this.setState({
-        spectrographs: Object.assign(this.state.spectrographs, newArm),
+        arms: this.state.arms.concat(arm),
+      });
+    }
+
+    if (this.state.spectrographs.includes(spectrograph)) {
+      this.setState({
+        spectrographs: this.state.spectrographs.filter(a => a !== spectrograph),
       });
     } else {
-      newArm[arm] = this.state.spectrographs[arm].concat(spectrograph);
       this.setState({
-        spectrographs: Object.assign(this.state.spectrographs, newArm),
+        spectrographs: this.state.spectrographs.concat(spectrograph),
       });
     }
   };
@@ -131,8 +133,8 @@ class Form extends React.Component {
 
   getCurrentConfiguration = async () => {
     this.setState({ loading: true });
-    const configuration = await QLFApi.getCurrentConfiguration();
-    const thresholds = await QLFApi.getCurrentThresholds();
+    const configuration = await QlfApi.getCurrentConfiguration();
+    const thresholds = await QlfApi.getCurrentThresholds();
     this.updateThresholds(thresholds);
     this.setState({ loading: false });
     this.updateConfiguration(configuration);
@@ -140,8 +142,9 @@ class Form extends React.Component {
 
   getDefaultConfiguration = async () => {
     this.setState({ loading: true });
-    const configuration = await QLFApi.getDefaultConfiguration();
-    const thresholds = await QLFApi.getCurrentThresholds();
+    await QlfApi.getDefaultConfiguration();
+    const configuration = await QlfApi.getCurrentConfiguration();
+    const thresholds = await QlfApi.getCurrentThresholds();
     this.updateThresholds(thresholds);
     this.setState({ loading: false });
     this.updateConfiguration(configuration);
@@ -158,18 +161,14 @@ class Form extends React.Component {
         min_interval,
         max_interval,
         max_exposures,
+        max_nights,
         qlconfig,
         spectrographs,
         base_exposures_path,
+        calibration_path,
       } = configuration.results;
 
       const specs = spectrographs.split(',').map(s => parseInt(s, 10));
-
-      const spectrographsObj = {
-        b: arms.includes('b') ? specs : [],
-        r: arms.includes('r') ? specs : [],
-        z: arms.includes('z') ? specs : [],
-      };
 
       this.setState({
         arms: arms.split(','),
@@ -177,12 +176,14 @@ class Form extends React.Component {
         output: desi_spectro_redux,
         exposures: exposures,
         qlconfig: qlconfig,
-        spectrographs: spectrographsObj,
+        spectrographs: specs,
         minInterval: min_interval,
         maxInterval: max_interval,
         maxExposures: max_exposures,
+        maxNights: max_nights,
         allowedDelay: allowed_delay,
         baseExposures: base_exposures_path,
+        calibrationPath: calibration_path,
       });
     }
   };
@@ -195,6 +196,21 @@ class Form extends React.Component {
       });
   };
 
+  saveConfiguration = async () => {
+    this.setState({ loading: true });
+    const values = [],
+      keys = [];
+    configMap.forEach(config => {
+      const value = Array.isArray(this.state[config.state])
+        ? this.state[config.state].join(',')
+        : this.state[config.state];
+      values.push(value);
+      keys.push(config.api);
+    });
+    await QlfApi.editConfiguration(keys, values);
+    this.setState({ loading: false });
+  };
+
   render() {
     return (
       <div style={styles.container}>
@@ -202,50 +218,20 @@ class Form extends React.Component {
         <Typography style={styles.title} variant="headline" component="h2">
           Exposure Generator
         </Typography>
-        <TextField
-          label="Min Interval"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Minimum interval for exposure generation (minutes)"
-          fullWidth
-          margin="normal"
-          value={this.state.minInterval}
-          onChange={this.handleChange('minInterval')}
-        />
-        <TextField
-          label="Max Interval"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Maximum interval for exposure generation (minutes)"
-          fullWidth
-          margin="normal"
-          value={this.state.maxInterval}
-          onChange={this.handleChange('maxInterval')}
-        />
-        <TextField
-          label="Allowed Delay"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Delay for the next available exposure (seconds)"
-          fullWidth
-          margin="normal"
-          value={this.state.allowedDelay}
-          onChange={this.handleChange('allowedDelay')}
-        />
-        <TextField
-          label="Max Exposures"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Maximum number exposures generated per run"
-          fullWidth
-          margin="normal"
-          value={this.state.maxExposures}
-          onChange={this.handleChange('maxExposures')}
-        />
+        {configMap.filter(c => c.type === 'exposureGen').map(c => (
+          <TextField
+            key={c.label}
+            label={c.label}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            helperText={c.helperText}
+            fullWidth
+            margin="normal"
+            value={this.state[c.state]}
+            onChange={this.handleChange(c.state)}
+          />
+        ))}
         <Typography style={styles.title} variant="headline" component="h2">
           Pipeline
         </Typography>
@@ -257,7 +243,11 @@ class Form extends React.Component {
             {['b', 'r', 'z'].map(arm => (
               <div key={arm} style={styles.formDiv}>
                 <Petals
-                  selected={this.state.spectrographs[arm]}
+                  selected={
+                    this.state.arms.includes(arm)
+                      ? this.state.spectrographs
+                      : []
+                  }
                   onClick={spectrograph =>
                     this.updateSpectrograph(arm, spectrograph)
                   }
@@ -282,92 +272,48 @@ class Form extends React.Component {
         <Typography style={styles.title} variant="headline" component="h2">
           Input/Output
         </Typography>
-        <TextField
-          label="Input Directory"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Input data directory, e.g. full/path/to/spectro/data"
-          fullWidth
-          margin="normal"
-          value={this.state.input}
-          onChange={this.handleChange('input')}
-        />
-        <TextField
-          label="Output Directory"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Processing output, e.g. full/path/to/spectro/redux or some other local (fast) scratch area"
-          fullWidth
-          margin="normal"
-          value={this.state.output}
-          onChange={this.handleChange('output')}
-        />
-        <TextField
-          label="Base Exposures"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Base exposures used by Exposure Generator"
-          fullWidth
-          margin="normal"
-          value={this.state.baseExposures}
-          onChange={this.handleChange('baseExposures')}
-        />
-        <TextField
-          label="Configuration file for the quick look pipeline"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="e.g. full/path/to/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml"
-          fullWidth
-          margin="normal"
-          value={this.state.qlconfig}
-          onChange={this.handleChange('qlconfig')}
-        />
+        {configMap.filter(c => c.type === 'io').map(c => (
+          <TextField
+            key={c.label}
+            label={c.label}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            helperText={c.helperText}
+            fullWidth
+            margin="normal"
+            value={this.state[c.state]}
+            onChange={this.handleChange(c.state)}
+          />
+        ))}
         <FormLabel style={styles.label}>Threshold Values</FormLabel>
         <Paper style={styles.threshold} elevation={2}>
           <FormLabel style={styles.labelThreshold}>Disk Space</FormLabel>
-          <TextField
-            label="Warning"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            inputProps={{
-              min: 0,
-              max: 100,
-              step: 10,
-            }}
-            margin="normal"
-            value={this.state.diskWarning}
-            onChange={this.handleChange('diskWarning')}
-            InputProps={{ // eslint-disable-line
-              endAdornment: <InputAdornment position="end">%</InputAdornment>,
-            }}
-          />
-          <TextField
-            label="Critical"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            inputProps={{
-              min: 0,
-              max: 100,
-              step: 10,
-            }}
-            margin="normal"
-            value={this.state.diskAlert}
-            onChange={this.handleChange('diskAlert')}
-            InputProps={{ // eslint-disable-line
-              endAdornment: <InputAdornment position="end">%</InputAdornment>,
-            }}
-          />
+          {configMap.filter(c => c.type === 'thresholds').map(c => (
+            <TextField
+              key={c.label}
+              label={c.label}
+              type="number"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                min: 0,
+                max: 100,
+                step: 10,
+              }}
+              margin="normal"
+              value={this.state[c.state]}
+              onChange={this.handleChange(c.state)}
+          InputProps={{ // eslint-disable-line
+                endAdornment: <InputAdornment position="end">%</InputAdornment>,
+              }}
+            />
+          ))}
         </Paper>
         <Button
-          disabled={true}
+          onClick={this.saveConfiguration}
+          disabled={this.props.daemonRunning}
           variant="raised"
           color="default"
           style={styles.button}
@@ -376,6 +322,7 @@ class Form extends React.Component {
         </Button>
         <Button
           onClick={this.getDefaultConfiguration}
+          disabled={this.props.daemonRunning}
           variant="raised"
           color="default"
           style={styles.button}
