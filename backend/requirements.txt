@@ -7,28 +7,28 @@
 # Packages required by DESI Quick Look pipeline,
 # use conda default versions
 
-h5py
-scikit-learn
-matplotlib
-astropy
-pyyaml
-requests
-ipython
-numba
-speclite 
-healpy
+# h5py
+# scikit-learn
+# matplotlib
+# astropy
+# pyyaml
+# requests
+# ipython
+# numba
+# speclite 
+# healpy
 
 # Packages required by the DESI Quick Look framework
-
-django==1.11
-django-filter==1.1.0
-djangorestframework==3.6.2
-django-debug-toolbar==1.8
-pytest==3.0.7
-tornado==4.4.2 # make sure bokeh uses this version of tornado
+# django==1.11
+# django-filter==1.1.0
+# djangorestframework==3.6.2
+# django-debug-toolbar==1.8
 bokeh==0.12.16
-pandas==0.23.1
-sphinx==1.5.4
 flake8==3.3.0
-scipy==1.1.0
-numpy==1.14.5
+
+# pytest==3.0.7
+# tornado==4.4.2 # make sure bokeh uses this version of tornado
+# pandas==0.23.1
+# sphinx==1.5.4
+# scipy==1.1.0
+# numpy==1.14.5

@@ -10,3 +10,9 @@
 [submodule "backend/specter"]
 	path = backend/specter
 	url = https://github.com/desihub/specter.git
+[submodule "backend/desisim"]
+	path = backend/desisim
+	url = https://github.com/desihub/desisim.git
+[submodule "backend/desitarget"]
+	path = backend/desitarget
+	url = https://github.com/desihub/desitarget.git

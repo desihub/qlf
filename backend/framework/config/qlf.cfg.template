@@ -22,6 +22,12 @@ logpipeline=/app/logs/pipeline.log
 # e.g. full/path/to/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml
 qlconfig=/app/desispec/py/desispec/data/quicklook/qlconfig_{}.yaml
 
+[pipeline]
+psf_exp_id=3891
+fiberflat_exp_id=3894
+use_resolution=False
+write_intermediate_files=False
+
 [data]
 # Which night to process? we do not support a list of nights yet.
 night=20190101

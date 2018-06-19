@@ -320,8 +320,9 @@ def jsonify(data):
     if isinstance(data, dict):
         for item in data:
             data[item] = jsonify(data[item])
-    if isinstance(data, float) and math.isnan(data):
-        data = -9999
+    if isinstance(data, float):
+        if math.isnan(data) or math.isinf(data):
+            data = -9999
     return data
 
 
