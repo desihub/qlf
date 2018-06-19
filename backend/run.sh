@@ -1,5 +1,4 @@
 #!/bin/bash
-source activate quicklook 
 
 if [ $UPDATE_DEPENDENCIES = "true" ]; then
 	conda install -y --file requirements.txt

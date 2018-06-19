@@ -18,8 +18,8 @@ services:
       - QLF_ROOT=/app/
       - DESI_SPECTRO_DATA=/app/spectro/data
       - DESI_SPECTRO_REDUX=/app/spectro/redux
-      - QL_SPEC_DATA=/app/spectro/data/QL
-      - QL_SPEC_REDUX=/app/spectro/redux/QL
+      - QL_SPEC_DATA=/app/spectro/data
+      - QL_SPEC_REDUX=/app/spectro/redux
       - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
