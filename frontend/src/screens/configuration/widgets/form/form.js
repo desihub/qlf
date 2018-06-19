@@ -91,6 +91,7 @@ class Form extends React.Component {
 
   static propTypes = {
     classes: PropTypes.object,
+    daemonRunning: PropTypes.bool.isRequired,
   };
 
   updateArm = arm => {
@@ -313,7 +314,7 @@ class Form extends React.Component {
         </Paper>
         <Button
           onClick={this.saveConfiguration}
-          // disabled={true}
+          disabled={this.props.daemonRunning}
           variant="raised"
           color="default"
           style={styles.button}
@@ -322,6 +323,7 @@ class Form extends React.Component {
         </Button>
         <Button
           onClick={this.getDefaultConfiguration}
+          disabled={this.props.daemonRunning}
           variant="raised"
           color="default"
           style={styles.button}
