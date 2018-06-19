@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Popover from '@material-ui/core/Popover';
-import Typography from '@material-ui/core/Typography';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import ConfirmDialog from '../../../../components/dialog/dialog';
 
 const styles = {
   controls: {
@@ -16,11 +21,18 @@ const styles = {
   button: { fontSize: 12, marginRight: 12, padding: 2, minHeight: 0 },
   green: { backgroundColor: 'green', color: 'white' },
   red: { backgroundColor: 'red', color: 'white' },
-  clearButton: { fontSize: 12, padding: 2, minHeight: 0 },
-  clearButtons: { display: 'flex', flexDirection: 'column' },
+  clearButtons: { fontSize: 12, padding: 20, minHeight: 0 },
 };
 
 class Controls extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedClearDisk: [],
+      confirmDialog: false,
+    };
+  }
+
   static propTypes = {
     socket: PropTypes.object,
     daemonRunning: PropTypes.bool,
@@ -96,6 +108,19 @@ class Controls extends Component {
     });
   };
 
+  handleChangeCheckbox = name => {
+    const { selectedClearDisk } = this.state;
+    if (!selectedClearDisk.find(c => c === name)) {
+      this.setState({
+        selectedClearDisk: selectedClearDisk.concat(name),
+      });
+    } else {
+      this.setState({
+        selectedClearDisk: selectedClearDisk.filter(tch => tch !== name),
+      });
+    }
+  };
+
   renderClearPopover = () => {
     const { anchorEl } = this.state;
     const { classes } = this.props;
@@ -113,58 +138,90 @@ class Controls extends Component {
           horizontal: 'left',
         }}
       >
-        <div>
-          <Typography variant="caption">Cleaning:</Typography>
-          <div className={classes.clearButtons}>
+        <div className={classes.clearButtons}>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Delete Files</FormLabel>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={this.state.selectedClearDisk.find(
+                      c => c === 'raw'
+                    )}
+                    onChange={() => this.handleChangeCheckbox('raw')}
+                  />
+                }
+                label="Raw"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={this.state.selectedClearDisk.find(
+                      c => c === 'reduced'
+                    )}
+                    onChange={() => this.handleChangeCheckbox('reduced')}
+                  />
+                }
+                label="Reduced"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={this.state.selectedClearDisk.find(
+                      c => c === 'logs'
+                    )}
+                    onChange={() => this.handleChangeCheckbox('log')}
+                  />
+                }
+                label="Logs"
+              />
+            </FormGroup>
             <Button
               className={this.props.classes.clearButton}
-              variant="raised"
-              onMouseDown={() => this.deleteFiles('deleteAll')}
+              onMouseDown={this.confirmDeleteFiles}
+              fullWidth
+              disabled={this.state.selectedClearDisk.length === 0}
             >
-              all
+              submit
             </Button>
-            <Button
-              className={this.props.classes.clearButton}
-              variant="raised"
-              onMouseDown={() => this.deleteFiles('deleteRaw')}
-            >
-              raw
-            </Button>
-            <Button
-              className={this.props.classes.clearButton}
-              variant="raised"
-              onMouseDown={() => this.deleteFiles('deleteReduced')}
-            >
-              reduced
-            </Button>
-            <Button
-              className={this.props.classes.clearButton}
-              variant="raised"
-              onMouseDown={() => this.deleteFiles('deleteLogs')}
-            >
-              logs
-            </Button>
-            <Button
-              className={this.props.classes.clearButton}
-              variant="raised"
-              onMouseDown={() => this.deleteFiles('')}
-            >
-              spectra
-            </Button>
-          </div>
+          </FormControl>
         </div>
       </Popover>
     );
   };
 
-  deleteFiles = type => {
-    this.props.socket.state.ws.send(type);
-    this.setState({ anchorEl: null });
+  confirmDeleteFiles = () => {
+    this.setState({
+      confirmDialog: true,
+      confirmDialogSubtitle: `Are sure you want to delete all ${this.state.selectedClearDisk.join(
+        ', '
+      )} files?`,
+    });
+  };
+
+  confirmDelete = () => {
+    this.state.selectedClearDisk.forEach(type => {
+      this.props.socket.state.ws.send(
+        `delete${type.charAt(0).toUpperCase() + type.slice(1)}`
+      );
+    });
+    this.setState({ anchorEl: null, selectedClearDisk: [] });
+  };
+
+  closeConfirmDialog = () => {
+    this.setState({ confirmDialog: false });
   };
 
   render() {
     return (
       <div style={styles.controls}>
+        <ConfirmDialog
+          title={'Confirmation'}
+          subtitle={this.state.confirmDialogSubtitle}
+          open={this.state.confirmDialog}
+          handleClose={this.closeConfirmDialog}
+          onConfirm={this.confirmDelete}
+        />
         {this.renderClearPopover()}
         {this.renderStartOrStop()}
         {this.renderReset()}
