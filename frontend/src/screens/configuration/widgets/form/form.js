@@ -16,6 +16,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { configMap } from './configuration-map';
+import QlfApi from '../../../../containers/offline/connection/qlf-api';
 
 const styles = {
   container: {
@@ -79,6 +81,7 @@ class Form extends React.Component {
       baseExposures: '',
       diskAlert: 20,
       diskWarning: 80,
+      calibrationPath: '',
     };
   }
 
@@ -139,7 +142,8 @@ class Form extends React.Component {
 
   getDefaultConfiguration = async () => {
     this.setState({ loading: true });
-    const configuration = await QLFApi.getDefaultConfiguration();
+    await QLFApi.getDefaultConfiguration();
+    const configuration = await QLFApi.getCurrentConfiguration();
     const thresholds = await QLFApi.getCurrentThresholds();
     this.updateThresholds(thresholds);
     this.setState({ loading: false });
@@ -161,6 +165,7 @@ class Form extends React.Component {
         qlconfig,
         spectrographs,
         base_exposures_path,
+        calibration_path,
       } = configuration.results;
 
       const specs = spectrographs.split(',').map(s => parseInt(s, 10));
@@ -178,6 +183,7 @@ class Form extends React.Component {
         maxNights: max_nights,
         allowedDelay: allowed_delay,
         baseExposures: base_exposures_path,
+        calibrationPath: calibration_path,
       });
     }
   };
@@ -190,6 +196,21 @@ class Form extends React.Component {
       });
   };
 
+  saveConfiguration = async () => {
+    this.setState({ loading: true });
+    const values = [],
+      keys = [];
+    configMap.forEach(config => {
+      const value = Array.isArray(this.state[config.state])
+        ? this.state[config.state].join(',')
+        : this.state[config.state];
+      values.push(value);
+      keys.push(config.api);
+    });
+    await QlfApi.editConfiguration(keys, values);
+    this.setState({ loading: false });
+  };
+
   render() {
     return (
       <div style={styles.container}>
@@ -197,61 +218,20 @@ class Form extends React.Component {
         <Typography style={styles.title} variant="headline" component="h2">
           Exposure Generator
         </Typography>
-        <TextField
-          label="Min Interval"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Minimum interval for exposure generation (minutes)"
-          fullWidth
-          margin="normal"
-          value={this.state.minInterval}
-          onChange={this.handleChange('minInterval')}
-        />
-        <TextField
-          label="Max Interval"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Maximum interval for exposure generation (minutes)"
-          fullWidth
-          margin="normal"
-          value={this.state.maxInterval}
-          onChange={this.handleChange('maxInterval')}
-        />
-        <TextField
-          label="Allowed Delay"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Delay for the next available exposure (seconds)"
-          fullWidth
-          margin="normal"
-          value={this.state.allowedDelay}
-          onChange={this.handleChange('allowedDelay')}
-        />
-        <TextField
-          label="Max Exposures"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Maximum number exposures generated per run"
-          fullWidth
-          margin="normal"
-          value={this.state.maxExposures}
-          onChange={this.handleChange('maxExposures')}
-        />
-        <TextField
-          label="Max Nights"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Maximum number nights generated per run"
-          fullWidth
-          margin="normal"
-          value={this.state.maxNights}
-          onChange={this.handleChange('maxNights')}
-        />
+        {configMap.filter(c => c.type === 'exposureGen').map(c => (
+          <TextField
+            key={c.label}
+            label={c.label}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            helperText={c.helperText}
+            fullWidth
+            margin="normal"
+            value={this.state[c.state]}
+            onChange={this.handleChange(c.state)}
+          />
+        ))}
         <Typography style={styles.title} variant="headline" component="h2">
           Pipeline
         </Typography>
@@ -292,92 +272,48 @@ class Form extends React.Component {
         <Typography style={styles.title} variant="headline" component="h2">
           Input/Output
         </Typography>
-        <TextField
-          label="Input Directory"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Input data directory, e.g. full/path/to/spectro/data"
-          fullWidth
-          margin="normal"
-          value={this.state.input}
-          onChange={this.handleChange('input')}
-        />
-        <TextField
-          label="Output Directory"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Processing output, e.g. full/path/to/spectro/redux or some other local (fast) scratch area"
-          fullWidth
-          margin="normal"
-          value={this.state.output}
-          onChange={this.handleChange('output')}
-        />
-        <TextField
-          label="Base Exposures"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="Base exposures used by Exposure Generator"
-          fullWidth
-          margin="normal"
-          value={this.state.baseExposures}
-          onChange={this.handleChange('baseExposures')}
-        />
-        <TextField
-          label="Configuration file for the quick look pipeline"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          helperText="e.g. full/path/to/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml"
-          fullWidth
-          margin="normal"
-          value={this.state.qlconfig}
-          onChange={this.handleChange('qlconfig')}
-        />
+        {configMap.filter(c => c.type === 'io').map(c => (
+          <TextField
+            key={c.label}
+            label={c.label}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            helperText={c.helperText}
+            fullWidth
+            margin="normal"
+            value={this.state[c.state]}
+            onChange={this.handleChange(c.state)}
+          />
+        ))}
         <FormLabel style={styles.label}>Threshold Values</FormLabel>
         <Paper style={styles.threshold} elevation={2}>
           <FormLabel style={styles.labelThreshold}>Disk Space</FormLabel>
-          <TextField
-            label="Warning"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            inputProps={{
-              min: 0,
-              max: 100,
-              step: 10,
-            }}
-            margin="normal"
-            value={this.state.diskWarning}
-            onChange={this.handleChange('diskWarning')}
-            InputProps={{ // eslint-disable-line
-              endAdornment: <InputAdornment position="end">%</InputAdornment>,
-            }}
-          />
-          <TextField
-            label="Critical"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            inputProps={{
-              min: 0,
-              max: 100,
-              step: 10,
-            }}
-            margin="normal"
-            value={this.state.diskAlert}
-            onChange={this.handleChange('diskAlert')}
-            InputProps={{ // eslint-disable-line
-              endAdornment: <InputAdornment position="end">%</InputAdornment>,
-            }}
-          />
+          {configMap.filter(c => c.type === 'thresholds').map(c => (
+            <TextField
+              key={c.label}
+              label={c.label}
+              type="number"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                min: 0,
+                max: 100,
+                step: 10,
+              }}
+              margin="normal"
+              value={this.state[c.state]}
+              onChange={this.handleChange(c.state)}
+          InputProps={{ // eslint-disable-line
+                endAdornment: <InputAdornment position="end">%</InputAdornment>,
+              }}
+            />
+          ))}
         </Paper>
         <Button
-          disabled={true}
+          onClick={this.saveConfiguration}
+          // disabled={true}
           variant="raised"
           color="default"
           style={styles.button}

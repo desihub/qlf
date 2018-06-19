@@ -31,8 +31,6 @@ api_router.register(r'current_configuration',
 api_router.register(r'set_configuration',
                     views.SetConfigurationViewSet,
                     'set_configuration')
-api_router.register(r'default_configuration',
-                    views.DefaultConfigurationViewSet, 'default_configuration')
 api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
 api_router.register(r'datatable_exposures',
@@ -51,11 +49,13 @@ urlpatterns = [
     url(r'^start', views.start, name='start'),
     url(r'^stop', views.stop, name='stop'),
     url(r'^reset', views.reset, name='reset'),
+    url(r'^dashboard/api/default_configuration/',
+        views.default_configuration, name='default_configuration'),
     url(r'^send_ticket_email',
         views.send_ticket_email, name='send_ticket_email'),
     url(r'^dashboard/api/disk_thresholds',
         views.disk_thresholds, name='disk_thresholds'),
-    url(r'^dashboard/api/edit_qlf_config',
+    url(r'^dashboard/api/edit_qlf_config/',
         views.edit_qlf_config, name='edit_qlf_config'),
     url(r'^daemon_status', views.daemon_status, name='daemon_status'),
     url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),

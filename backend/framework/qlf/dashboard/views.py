@@ -3,6 +3,8 @@ from rest_framework import (
     authentication, permissions, viewsets, filters,
     status, views
 )
+from django.views.decorators.csrf import csrf_exempt
+import json
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
@@ -41,7 +43,7 @@ import logging
 
 from util import get_config
 
-from .config_file import edit_qlf_config_file
+from .config_file import edit_qlf_config_file, set_default_configuration
 
 qlf = get_exposure_monitoring()
 
@@ -294,21 +296,10 @@ class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
             arms=cfg.get("data", "arms"),
             spectrographs=cfg.get("data", "spectrographs"),
             desi_spectro_data=cfg.get("namespace", "desi_spectro_data"),
-            desi_spectro_redux=cfg.get("namespace", "desi_spectro_redux")
+            desi_spectro_redux=cfg.get("namespace", "desi_spectro_redux"),
+            calibration_path=cfg.get("namespace", "calibration_path")
         )
         response.data = {'results': configuration}
-        return response
-
-
-class DefaultConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Configuration.objects.order_by('creation_date')
-    serializer_class = ConfigurationSerializer
-
-    def list(self, request, *args, **kwargs):
-        response = super(DefaultConfigurationViewSet, self).list(
-            request, args, kwargs)
-        default_configuration = qlf.get_default_configuration()
-        response.data = {'results': default_configuration}
         return response
 
 
@@ -675,17 +666,26 @@ def disk_thresholds(request):
     })
 
 
+@csrf_exempt
 def edit_qlf_config(request):
     """Edit qlf.cfg file"""
-    key = request.GET.get('key')
-    value = request.GET.get('value')
-    if key is not None and value is not None:
-        edit_qlf_config_file(key, value)
+    body = json.loads(request.body)
+    keys = body.get('keys')
+    values = body.get('values')
+    if keys is not None and values is not None:
+        edit_qlf_config_file(keys, values)
         return JsonResponse({
-            "key": key,
-            "value": value
+            "keys": keys,
+            "values": values
         })
     else:
         return JsonResponse({
             'error': 'Missing key or value'
         })
+
+
+def default_configuration(request):
+    set_default_configuration()
+    return JsonResponse({
+        'status': 'Done'
+    })
