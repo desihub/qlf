@@ -63,7 +63,7 @@ def ws_message(message):
     if message.content['text'] == "deleteReduced":
         delete_reduced()
         return
-    if message.content['text'] == "deleteLogs":
+    if message.content['text'] == "deleteLog":
         delete_logs()
         return
     # Get Single Camera

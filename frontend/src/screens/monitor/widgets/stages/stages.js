@@ -16,11 +16,11 @@ const styles = {
   flex: { display: 'flex', flexDirection: 'row', alignItems: 'center' },
   leftCol: { marginRight: '1vw', marginLeft: '1vw', marginTop: '1vh' },
   rightCol: { flex: 1, marginLeft: '1vw', marginRight: '1vw' },
-  singleCol: { marginTop: '2vh' },
   card: {
     borderLeft: 'solid 4px green',
     flex: '1',
     marginRight: '1vw',
+    marginBottom: 10,
   },
   arm: {
     color: '#9E9E9E',
@@ -28,7 +28,8 @@ const styles = {
   },
   header: {
     fontSize: headerSize,
-    height: 1,
+    height: 0,
+    padding: 0,
     whiteSpace: 'normal',
     paddingRight: '0px',
     textAlign: 'center',
@@ -45,7 +46,7 @@ class Stages extends Component {
   };
 
   state = {
-    columnHeight: 1,
+    columnHeight: 0,
     openDialog: true,
   };
 
@@ -142,6 +143,7 @@ class Stages extends Component {
                             style={{
                               fontSize: this.state.columnHeight,
                               height: this.state.columnHeight,
+                              padding: 4,
                               ...this.getColor(row.pre),
                             }}
                           />
@@ -149,6 +151,7 @@ class Stages extends Component {
                             style={{
                               fontSize: this.state.columnHeight,
                               height: this.state.columnHeight,
+                              padding: 4,
                               ...this.getColor(row.spec),
                             }}
                           />
@@ -156,6 +159,7 @@ class Stages extends Component {
                             style={{
                               fontSize: this.state.columnHeight,
                               height: this.state.columnHeight,
+                              padding: 4,
                               ...this.getColor(row.fib),
                             }}
                           />
@@ -163,6 +167,7 @@ class Stages extends Component {
                             style={{
                               fontSize: this.state.columnHeight,
                               height: this.state.columnHeight,
+                              padding: 4,
                               ...this.getColor(row.sky),
                             }}
                           />
