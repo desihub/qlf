@@ -1,5 +1,4 @@
 import React from 'react';
-import QLFApi from '../../../../containers/offline/connection/qlf-api';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
@@ -134,8 +133,8 @@ class Form extends React.Component {
 
   getCurrentConfiguration = async () => {
     this.setState({ loading: true });
-    const configuration = await QLFApi.getCurrentConfiguration();
-    const thresholds = await QLFApi.getCurrentThresholds();
+    const configuration = await QlfApi.getCurrentConfiguration();
+    const thresholds = await QlfApi.getCurrentThresholds();
     this.updateThresholds(thresholds);
     this.setState({ loading: false });
     this.updateConfiguration(configuration);
@@ -143,9 +142,9 @@ class Form extends React.Component {
 
   getDefaultConfiguration = async () => {
     this.setState({ loading: true });
-    await QLFApi.getDefaultConfiguration();
-    const configuration = await QLFApi.getCurrentConfiguration();
-    const thresholds = await QLFApi.getCurrentThresholds();
+    await QlfApi.getDefaultConfiguration();
+    const configuration = await QlfApi.getCurrentConfiguration();
+    const thresholds = await QlfApi.getCurrentThresholds();
     this.updateThresholds(thresholds);
     this.setState({ loading: false });
     this.updateConfiguration(configuration);

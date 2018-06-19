@@ -49,7 +49,7 @@ export default class Configuration extends React.Component {
             <Tab label="FLAT" value={2} />
             <Tab label="ARC" value={3} />
           </Tabs>
-          {tab === 0 ? <Form daemonRunning={this.props.daemonRunning}/> : null}
+          {tab === 0 ? <Form daemonRunning={this.props.daemonRunning} /> : null}
           {tab === 1 ? <Display config={'darksurvey'} /> : null}
           {tab === 2 ? <Display config={'flat'} /> : null}
           {tab === 3 ? <Display config={'arcs'} /> : null}
