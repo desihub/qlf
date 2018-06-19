@@ -74,7 +74,7 @@ export default class QlfApi {
   static async getCurrentConfiguration() {
     try {
       const configuration = await fetch(
-        `${apiUrl}dashboard/api/default_configuration/?format=json`,
+        `${apiUrl}dashboard/api/current_configuration/?format=json`,
         {
           method: 'GET',
           headers: headers,
@@ -119,26 +119,10 @@ export default class QlfApi {
     }
   }
 
-  static async getQlConfig() {
+  static async getQlConfig(config) {
     try {
       const configuration = await fetch(
-        `${apiUrl}dashboard/api/qlconfig/?format=json`,
-        {
-          method: 'GET',
-          headers: headers,
-        }
-      );
-      const responseJson = await configuration.json();
-      return responseJson;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static async getQlCalibration() {
-    try {
-      const configuration = await fetch(
-        `${apiUrl}dashboard/api/ql_calibration/?format=json`,
+        `${apiUrl}dashboard/api/qlconfig/?format=json&type=${config}`,
         {
           method: 'GET',
           headers: headers,
@@ -285,6 +269,20 @@ export default class QlfApi {
       }
     );
     const responseJson = await ticket.json();
+    return responseJson;
+  }
+
+  static async editConfiguration(keys, values) {
+    const body = {
+      keys,
+      values,
+    };
+    const config = await fetch(`${apiUrl}dashboard/api/edit_qlf_config/`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(body),
+    });
+    const responseJson = await config.json();
     return responseJson;
   }
 }
