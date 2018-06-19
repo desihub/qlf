@@ -105,22 +105,27 @@ try:
     skycont = metrics['skycont']
 except:
     skycont = {'SKYFIBERID': []}
+
 # marking type of objects:
-obj_type = []
-for j in qlf_fiberid:
-    i = j - c1
-    if i in snr['ELG_FIBERID']:
-        obj_type.append('ELG')
-    elif i in snr['QSO_FIBERID']:
-        obj_type.append('QSO')
-    elif i in snr['LRG_FIBERID']:
-        obj_type.append('LRG')
-    elif i in snr['STAR_FIBERID']:
-        obj_type.append('STAR')
-    elif i in skycont['SKYFIBERID']:
-        obj_type.append('SKY')
-    else:
-        obj_type.append('UNKNOWN')
+try:
+    obj_type = []
+    for j in qlf_fiberid:
+        i = j - c1
+        if i in snr['ELG_FIBERID']:
+            obj_type.append('ELG')
+        elif i in snr['QSO_FIBERID']:
+            obj_type.append('QSO')
+        elif i in snr['LRG_FIBERID']:
+            obj_type.append('LRG')
+        elif i in snr['STAR_FIBERID']:
+            obj_type.append('STAR')
+        elif i in skycont['SKYFIBERID']:
+            obj_type.append('SKY')
+        else:
+            obj_type.append('UNKNOWN')
+except:
+    logger.info('Object type sorter FAILED')
+    obj_type=['UNKNOWN']*500
 # ---------------------------------
 
 peak_hover = HoverTool(tooltips=peak_tooltip)
