@@ -262,7 +262,7 @@ def write_description(qa_name):
 		'getrms': ["Get RMS"," NOISE image counts per amplifier"],
 		'snr': ["Calculate SNR", "Signal/Noise after SkySub_QL"],
 		'integ': ["Integrate Spectrum", "Total integrals of STD spectra SkySub QL"],
-		'xwsigma': ["XWSigma", "X \& W Sigma over sky peaks"],
+		'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
 		'checkHDUs': ['','']        }
     
     text="""<body><p  style="text-align:left; color:#262626; font-size:20px;">
