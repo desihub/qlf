@@ -310,7 +310,15 @@ class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         response = super(QlConfigViewSet, self).list(
             request, args, kwargs)
-        qlconfig = qlf.get_qlconfig()
+        try:
+            cfg = get_config()
+            ql_type = request.GET.get('type')
+            ql_path = cfg.get("main", "qlconfig")
+            with open(ql_path.format(ql_type)) as f:
+                qlconfig = f.read()
+        except Exception as err:
+            logger.info(err)
+            qlconfig = 'Error reading qlconfig: {}'.format(err)
         response.data = qlconfig
         return response
 

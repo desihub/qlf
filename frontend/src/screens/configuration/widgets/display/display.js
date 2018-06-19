@@ -12,40 +12,27 @@ const styles = {
 
 export default class Display extends React.Component {
   static propTypes = {
-    config: PropTypes.bool.isRequired,
+    config: PropTypes.string.isRequired,
   };
 
   state = {
     qlconfig: '',
-    qlCalibration: '',
     loading: false,
   };
 
   componentWillMount() {
-    if (this.props.config) {
-      this.getQlConfig();
-    } else {
-      this.getQlCalibration();
-    }
+    this.getQlConfig();
   }
 
   getQlConfig = async () => {
     this.setState({ loading: true });
-    const qlconfig = await QLFApi.getQlConfig();
+    let qlconfig = await QLFApi.getQlConfig(this.props.config);
+    if (Array.isArray(qlconfig)) qlconfig = qlconfig.join('\n');
     this.setState({ qlconfig, loading: false });
   };
 
-  getQlCalibration = async () => {
-    this.setState({ loading: true });
-    let qlCalibration = await QLFApi.getQlCalibration();
-    if (Array.isArray(qlCalibration)) qlCalibration = qlCalibration.join('\n');
-    this.setState({ qlCalibration, loading: false });
-  };
-
   render() {
-    const currentConfig = this.props.config
-      ? this.state.qlconfig
-      : this.state.qlCalibration;
+    const currentConfig = this.state.qlconfig;
     return this.state.loading ? (
       <CircularProgress size={50} />
     ) : (

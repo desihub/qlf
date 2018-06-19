@@ -40,10 +40,14 @@ export default class Configuration extends React.Component {
             centered
           >
             <Tab label="QLF" value={0} />
-            <Tab label="QL" value={1} />
+            <Tab label="SCIENCE" value={1} />
+            <Tab label="FLAT" value={2} />
+            <Tab label="ARC" value={3} />
           </Tabs>
           {tab === 0 ? <Form /> : null}
-          {tab === 1 ? <Display config={true} /> : null}
+          {tab === 1 ? <Display config={'darksurvey'} /> : null}
+          {tab === 2 ? <Display config={'flat'} /> : null}
+          {tab === 3 ? <Display config={'arcs'} /> : null}
         </Paper>
       </div>
     );
