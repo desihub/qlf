@@ -676,6 +676,7 @@ def disk_thresholds(request):
 
 @csrf_exempt
 def edit_qlf_config(request):
+    # TODO: Use configparser
     """Edit qlf.cfg file"""
     body = json.loads(request.body)
     keys = body.get('keys')
