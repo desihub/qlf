@@ -72,7 +72,7 @@ describe('QlfApi', () => {
   it('calls getCurrentConfiguration', () => {
     QlfApi.getCurrentConfiguration();
     expect(fetch).toBeCalledWith(
-      'http://localhost:8001/dashboard/api/default_configuration/?format=json',
+      'http://localhost:8001/dashboard/api/current_configuration/?format=json',
       {
         headers: {
           _headers: {
@@ -102,25 +102,9 @@ describe('QlfApi', () => {
   });
 
   it('calls getQlConfig', () => {
-    QlfApi.getQlConfig();
+    QlfApi.getQlConfig('flat');
     expect(fetch).toBeCalledWith(
-      'http://localhost:8001/dashboard/api/qlconfig/?format=json',
-      {
-        headers: {
-          _headers: {
-            accept: ['application/json'],
-            'content-type': ['application/json'],
-          },
-        },
-        method: 'GET',
-      }
-    );
-  });
-
-  it('calls getQlCalibration', () => {
-    QlfApi.getQlCalibration();
-    expect(fetch).toBeCalledWith(
-      'http://localhost:8001/dashboard/api/ql_calibration/?format=json',
+      'http://localhost:8001/dashboard/api/qlconfig/?format=json&type=flat',
       {
         headers: {
           _headers: {
