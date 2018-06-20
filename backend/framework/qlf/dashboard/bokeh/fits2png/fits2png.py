@@ -5,7 +5,6 @@ from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 from util import get_config
-import numpy as np
 from bokeh.models import LogColorMapper
 
 cfg = get_config()
