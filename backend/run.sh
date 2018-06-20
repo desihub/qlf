@@ -28,11 +28,11 @@ export DESIMODEL=$QLF_ROOT/desimodel
 python -Wi framework/qlf/manage.py migrate
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass') if not User.objects.all() else None" | python framework/qlf/manage.py shell
 
-# Start QLF daemon
-if [ $DAEMON_TEST = "false" ]; then
-	echo "Initializing QLF Daemon..."
-	./startDaemon.sh &> $QLF_ROOT/logs/qlf_daemon.log &
-fi
+# # Start QLF daemon
+# if [ $DAEMON_TEST = "false" ]; then
+# 	echo "Initializing QLF Daemon..."
+# 	./startDaemon.sh &> $QLF_ROOT/logs/qlf_daemon.log &
+# fi
 
 
 if [ $BOKEH_TEST = "false" ]; then
@@ -42,4 +42,4 @@ fi
 
 echo "QLF web application is running at http://$QLF_HOSTNAME:$QLF_PORT you may start Quick Look from the pipeline interface."
 
-python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
+python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT # &> $QLF_ROOT/logs/runserver.log
