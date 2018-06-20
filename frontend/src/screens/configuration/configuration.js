@@ -21,6 +21,7 @@ export default class Configuration extends React.Component {
 
   state = {
     tab: 0,
+    qlTab: 0,
   };
 
   componentDidMount() {
@@ -29,6 +30,33 @@ export default class Configuration extends React.Component {
 
   handleTabChange = (evt, tab) => {
     this.setState({ tab });
+  };
+
+  handleQlTabChange = (evt, qlTab) => {
+    this.setState({ qlTab });
+  };
+
+  renderTabs = () => {
+    const { qlTab } = this.state;
+    return (
+      <div>
+        <Tabs
+          value={qlTab}
+          onChange={this.handleQlTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          fullWidth
+          centered
+        >
+          <Tab label="SCIENCE" value={0} />
+          <Tab label="FLAT" value={1} />
+          <Tab label="ARC" value={2} />
+        </Tabs>
+        {qlTab === 0 ? <Display config={'darksurvey'} /> : null}
+        {qlTab === 1 ? <Display config={'flat'} /> : null}
+        {qlTab === 2 ? <Display config={'arcs'} /> : null}
+      </div>
+    );
   };
 
   render() {
@@ -45,14 +73,10 @@ export default class Configuration extends React.Component {
             centered
           >
             <Tab label="QLF" value={0} />
-            <Tab label="SCIENCE" value={1} />
-            <Tab label="FLAT" value={2} />
-            <Tab label="ARC" value={3} />
+            <Tab label="QL" value={1} />
           </Tabs>
           {tab === 0 ? <Form daemonRunning={this.props.daemonRunning} /> : null}
-          {tab === 1 ? <Display config={'darksurvey'} /> : null}
-          {tab === 2 ? <Display config={'flat'} /> : null}
-          {tab === 3 ? <Display config={'arcs'} /> : null}
+          {tab === 1 ? this.renderTabs() : null}
         </Paper>
       </div>
     );

@@ -21,6 +21,9 @@ class QLFState:
         else:
             self.daemon_running = True
 
+    def update_pipeline_log(self):
+        self.pipelinelog = self.get_pipeline_log()
+
     def set_daemon_running(self, status):
         self.daemon_running = status
         if status:
@@ -28,6 +31,7 @@ class QLFState:
             self.pipeline_running = 1
             self.daemon_running = True
         else:
+            self.update_pipeline_log()
             self.pipeline_running = 0
 
     def reset_state(self):
@@ -72,7 +76,7 @@ class QLFState:
             return
 
         if 'detail' not in self.current_process:
-            self.pipelinelog = self.get_pipeline_log()
+            self.update_pipeline_log()
             self.logfile = self.tail_file(open_file('logfile'), 100)
             self.camera_status = get_camera_status()
             self.available_cameras = self.get_avaiable_cameras(

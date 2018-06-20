@@ -145,8 +145,8 @@ mapper = LinearColorMapper(palette=my_palette,
                            low=0.98*np.min(peakcount),
                            high=1.02*np.max(peakcount))
 
-radius = 0.015
-radius_hover = 0.0165
+radius = 0.013#0.015
+radius_hover = 0.015#0.0165
 
 # axes limit
 xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
