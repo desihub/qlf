@@ -194,8 +194,8 @@ wmapper = LinearColorMapper(palette= my_palette,
 # ======
 # XSIGMA
 
-radius = 0.015
-radius_hover = 0.0165
+radius = 0.013#0.015
+radius_hover = 0.015#0.0165
 
 px = Figure( title = 'XSIGMA', x_axis_label='RA', y_axis_label='DEC'
            , plot_width=700, plot_height=550

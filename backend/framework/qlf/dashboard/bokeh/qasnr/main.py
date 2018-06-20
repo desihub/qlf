@@ -342,8 +342,8 @@ source = ColumnDataSource(data={
 dy = (np.max(resid) - np.min(resid))*0.02
 mapper = LinearColorMapper(palette=my_palette,
                            low=np.min(resid)- dy, high= np.max(resid)+dy)
-radius = 0.015
-radius_hover = 0.0165
+radius = 0.013#0.015
+radius_hover = 0.015#0.0165
 
 # axes limit
 xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
