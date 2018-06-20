@@ -252,18 +252,17 @@ def write_info(qa_name, params):
 
 def write_description(qa_name):
     """Descriptions to be displayed in QA plots."""
-    info_dic =        {
-		'countbins': ["Count Spectral Bins", "Fiber level check for flux after BoxcarExtract"],
-		'skycont': ["Sky Continuum", "Mean Sky Continuum after ApplyFiberFlat QL"],
-		'countpix': ["Count Pixels", "Fraction of pixels lit after Preproc"],
-		'skypeak': ["Sky Peaks", "Count for Sky Fiber after ApplyFiberFlat QL"],
-		'getbias': ["Bias From Overscan", "Bias from overscan region after Preproc"],
-		'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
-		'getrms': ["Get RMS"," NOISE image counts per amplifier"],
-		'snr': ["Calculate SNR", "Signal/Noise after SkySub_QL"],
-		'integ': ["Integrate Spectrum", "Total integrals of STD spectra SkySub QL"],
-		'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
-		'checkHDUs': ['','']        }
+    info_dic ={ 'countbins': ["Count Spectral Bins", "Fiber level check for flux after BoxcarExtract"],
+	         	'skycont': ["Sky Continuum", "Mean Sky Continuum after ApplyFiberFlat QL"],
+	         	'countpix': ["Count Pixels", "Fraction of pixels lit after Preproc"],
+	        	'skypeak': ["Sky Peaks", "Count for Sky Fiber after ApplyFiberFlat QL"],
+	        	'getbias': ["Bias From Overscan", "Bias from overscan region after Preproc"],
+	        	'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
+	        	'getrms': ["Get RMS"," NOISE image counts per amplifier"],
+	        	'snr': ["Calculate SNR", "Signal/Noise after SkySub_QL"],
+	        	'integ': ["Integrate Spectrum", "Total integrals of STD spectra SkySub QL"],
+	        	'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
+	        	'checkHDUs': ['','']        }
     
     text="""<body><p  style="text-align:left; color:#262626; font-size:20px;">
             <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0],info_dic[qa_name][1])                  

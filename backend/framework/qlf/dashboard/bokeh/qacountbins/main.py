@@ -73,21 +73,25 @@ try:
 except:
     skycont = {'SKYFIBERID': []}
 # marking type of objects:
-obj_type = []
-for i in qlf_fiberid:
+try:
+    obj_type = []
+    for i in qlf_fiberid:
     
-    if i in snr['ELG_FIBERID']:
-        obj_type.append('ELG')
-    elif i in snr['QSO_FIBERID']:
-        obj_type.append('QSO')
-    elif i in snr['LRG_FIBERID']:
-        obj_type.append('LRG')
-    elif i in snr['STAR_FIBERID']:
-        obj_type.append('STAR')
-    elif i in skycont['SKYFIBERID']:
-        obj_type.append('SKY')
-    else:
-        obj_type.append('UNKNOWN')
+        if i in snr['ELG_FIBERID']:
+            obj_type.append('ELG')
+        elif i in snr['QSO_FIBERID']:
+            obj_type.append('QSO')
+        elif i in snr['LRG_FIBERID']:
+            obj_type.append('LRG')
+        elif i in snr['STAR_FIBERID']:
+            obj_type.append('STAR')
+        elif i in skycont['SKYFIBERID']:
+            obj_type.append('SKY')
+        else:
+            obj_type.append('UNKNOWN')
+except:
+    logger.info('Problems in obj sorter')
+    obj_type=['']*500
 # ---------------------------------
 
 
