@@ -63,6 +63,8 @@ mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
 ztext, cbarformat = set_amp(getrms['NOISE_AMP'])
 p = plot_amp(dz, mapper,name=name)
 
+p.xaxis.axis_label = "NOISE per Amp"
+
 formatter = PrintfTickFormatter(format=cbarformat)
 color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                 major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
@@ -78,6 +80,8 @@ mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
 
 ztext, cbarformat = set_amp(dz)
 p2 = plot_amp(dz, mapper,name=name)
+
+p2.xaxis.axis_label = "NOISE Overscan per Amp"
 
 formatter = PrintfTickFormatter(format=cbarformat)
 color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
