@@ -21,6 +21,7 @@ django.setup()
 from dashboard.models import (
     QA, Camera, Configuration, Exposure, Job, Process
 )
+
 logger = logging.getLogger()
 
 

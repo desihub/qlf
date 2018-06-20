@@ -21,7 +21,9 @@ const styles = {
   button: { fontSize: 12, marginRight: 12, padding: 2, minHeight: 0 },
   green: { backgroundColor: 'green', color: 'white' },
   red: { backgroundColor: 'red', color: 'white' },
-  clearButtons: { fontSize: 12, padding: 20, minHeight: 0 },
+  clearButtons: { fontSize: 12, padding: 12, minHeight: 0 },
+  clearButton: { fontSize: 12, marginTop: 8 },
+  checkbox: { height: 26 },
 };
 
 class Controls extends Component {
@@ -148,6 +150,9 @@ class Controls extends Component {
                     checked={this.state.selectedClearDisk.find(
                       c => c === 'raw'
                     )}
+                    classes={{
+                      root: classes.checkbox,
+                    }}
                     onChange={() => this.handleChangeCheckbox('raw')}
                   />
                 }
@@ -159,6 +164,9 @@ class Controls extends Component {
                     checked={this.state.selectedClearDisk.find(
                       c => c === 'reduced'
                     )}
+                    classes={{
+                      root: classes.checkbox,
+                    }}
                     onChange={() => this.handleChangeCheckbox('reduced')}
                   />
                 }
@@ -170,6 +178,9 @@ class Controls extends Component {
                     checked={this.state.selectedClearDisk.find(
                       c => c === 'logs'
                     )}
+                    classes={{
+                      root: classes.checkbox,
+                    }}
                     onChange={() => this.handleChangeCheckbox('log')}
                   />
                 }
@@ -177,9 +188,10 @@ class Controls extends Component {
               />
             </FormGroup>
             <Button
-              className={this.props.classes.clearButton}
+              className={classes.clearButton}
               onMouseDown={this.confirmDeleteFiles}
               fullWidth
+              variant="raised"
               disabled={this.state.selectedClearDisk.length === 0}
             >
               submit

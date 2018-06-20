@@ -40,14 +40,21 @@ def ws_message(message):
         })
         return
     if message.content['text'] == "stopPipeline":
+        if qlf_state.current_process_id is not str():
+            us.pipeline_message('Process {} aborted.'.format(
+                qlf_state.current_process_id))
         us.stop_daemon()
+        qlf_state.update_pipeline_log()
         message.reply_channel.send({
             "text": qlf_state.get_current_state()
         })
         return
     if message.content['text'] == "resetPipeline":
+        delete_logs()
         us.stop_daemon()
         qlf_state.reset_state()
+        us.pipeline_message('Monitor reset.')
+        qlf_state.update_pipeline_log()
         message.reply_channel.send({
             "text": qlf_state.get_current_state()
         })
@@ -59,12 +66,27 @@ def ws_message(message):
         return
     if message.content['text'] == "deleteRaw":
         delete_raw()
+        us.pipeline_message('Raw files deleted.')
+        qlf_state.update_pipeline_log()
+        message.reply_channel.send({
+            "text": qlf_state.get_current_state()
+        })
         return
     if message.content['text'] == "deleteReduced":
         delete_reduced()
+        us.pipeline_message('Reduced files deleted.')
+        qlf_state.update_pipeline_log()
+        message.reply_channel.send({
+            "text": qlf_state.get_current_state()
+        })
         return
     if message.content['text'] == "deleteLog":
         delete_logs()
+        us.pipeline_message('Log files deleted.')
+        qlf_state.update_pipeline_log()
+        message.reply_channel.send({
+            "text": qlf_state.get_current_state()
+        })
         return
     # Get Single Camera
     if "camera" in message.content['text']:

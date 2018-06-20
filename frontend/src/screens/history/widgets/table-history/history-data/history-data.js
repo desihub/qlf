@@ -239,7 +239,8 @@ export default class HistoryData extends React.Component {
             </TableCell>
           );
         }
-        if (!row.qa_tests || (!row.qa_tests.length && !processing)) return null;
+        if (!row.qa_tests || (!row.qa_tests.length && !processing))
+          return <TableCell key={'err'} />;
         return (
           <TableCell
             key={`PROCV${key}`}
