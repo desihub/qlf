@@ -13,6 +13,8 @@ import json
 
 from clients import get_exposure_monitoring
 
+from log import get_logger
+
 alerts = Alerts()
 
 qlf = get_exposure_monitoring()
@@ -24,6 +26,9 @@ try:
     desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
     desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
     night = cfg.get('data', 'night')
+    loglevel = cfg.get("main", "loglevel")
+    logpipeline = cfg.get('main', 'logpipeline')
+    logger_pipeline = get_logger("pipeline", logpipeline, loglevel)
 except Exception as error:
     logger.error(error)
     logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
@@ -60,6 +65,8 @@ class Upstream:
         self.qlf_state.set_daemon_running(True)
 
     def stop_daemon(self):
+        logger_pipeline.info('Process {} aborted.'.format(
+            self.qlf_state.current_process_id))
         qlf.stop()
         self.qlf_state.set_daemon_running(False)
 

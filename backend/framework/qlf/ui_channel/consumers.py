@@ -46,6 +46,7 @@ def ws_message(message):
         })
         return
     if message.content['text'] == "resetPipeline":
+        delete_logs()
         us.stop_daemon()
         qlf_state.reset_state()
         message.reply_channel.send({

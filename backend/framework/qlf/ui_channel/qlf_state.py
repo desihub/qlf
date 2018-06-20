@@ -28,6 +28,7 @@ class QLFState:
             self.pipeline_running = 1
             self.daemon_running = True
         else:
+            self.pipelinelog = self.get_pipeline_log()
             self.pipeline_running = 0
 
     def reset_state(self):
