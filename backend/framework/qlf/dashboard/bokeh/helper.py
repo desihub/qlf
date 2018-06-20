@@ -259,8 +259,8 @@ def write_description(qa_name):
 	        	'getbias': ["Bias From Overscan", "Bias from overscan region after Preproc"],
 	        	'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
 	        	'getrms': ["Get RMS"," NOISE image counts per amplifier"],
-	        	'snr': ["Calculate SNR", "Signal/Noise after SkySub_QL"],
-	        	'integ': ["Integrate Spectrum", "Total integrals of STD spectra SkySub QL"],
+	        	'snr': ["Calculate SNR", "Signal-to-Noise ratio after Sky Substraction"],
+	        	'integ': ["Integrate Spectrum", "Integral counts calculations for standard stars"], #Total integrals of STD spectra SkySub QL"
 	        	'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
 	        	'checkHDUs': ['','']        }
     
