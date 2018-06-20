@@ -65,13 +65,14 @@ class Upstream:
         self.qlf_state.set_daemon_running(True)
 
     def stop_daemon(self):
-        logger_pipeline.info('Process {} aborted.'.format(
-            self.qlf_state.current_process_id))
         qlf.stop()
         self.qlf_state.set_daemon_running(False)
 
     def reset_daemon(self):
         qlf.reset()
+
+    def pipeline_message(self, message):
+        logger_pipeline.info(message)
 
     def monitor_job(self):
         state = self.qlf_state.get_current_state()
