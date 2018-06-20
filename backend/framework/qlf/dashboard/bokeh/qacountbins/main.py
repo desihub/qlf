@@ -178,8 +178,8 @@ hover = HoverTool(tooltips=count_tooltip)
 #                           low=0.98*np.min(peakcount),
 #                           high=1.02*np.max(peakcount))
 
-radius = 0.015
-radius_hover = 0.0165
+radius = 0.013#0.015
+radius_hover = 0.015#0.0165
 
 # axes limit
 xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
@@ -188,10 +188,10 @@ xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
 left, right = xmin -xfac, xmax+xfac
 bottom, top = ymin-yfac, ymax+yfac
 
-p2 = Figure(title='GOOD FIBERS: sum of counts in peak regions '
+p2 = Figure(title='GOOD FIBERS'#: sum of counts in peak regions '
         , x_axis_label='RA', y_axis_label='DEC'
-        , plot_width=700, plot_height=550            
-        , tools=[hover, "pan,box_zoom,reset,lasso_select,crosshair, tap"])
+        , plot_width=601, plot_height=550            
+        , tools=[hover, "pan,box_zoom,reset,lasso_select,crosshair, tap"], toolbar_location="right")
 
 # Color Map
 p2.circle('x1', 'y1', source=hist_source, name="data", radius=radius,
