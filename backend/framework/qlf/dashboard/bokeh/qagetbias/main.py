@@ -125,7 +125,7 @@ text_props = {
     "text_baseline": "middle"
 }
 
-
+p.xaxis.axis_label="Average bias value per Amp (photon counts)"
 
 p.rect("x", "y", .98, .98, 0, source=source,
        fill_color={'field': 'z', 'transform': mapper}, fill_alpha=0.9)#, color="color")
@@ -203,9 +203,12 @@ p_hist.quad(top=histval, bottom=bottomval, left='left', right='right',
 '''
 #infos
 info, nlines = write_info('getbias', tests['getbias'])
-info_hist ="""
-<p style="font-size:18px;"> BIAS: {} </p>
-""".format(getbias['BIAS'])
+try:
+    info_hist ="""
+    <p style="font-size:18px;"> BIAS: {} </p>
+    """.format(getbias['BIAS'])
+except:
+    info_hist=""""""
 txt = Div(text=info_hist, width= 2*p.plot_width)
 
 

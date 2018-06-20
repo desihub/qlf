@@ -139,6 +139,7 @@ color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                 major_label_text_font_size='10pt', label_standoff=2, location=(0, 0)
                    ,formatter=formatter, title="", title_text_baseline="alphabetic" )
 
+p.xaxis.axis_label = "Fraction over 5 sigma read noise (per Amp)"
 p.add_layout(color_bar, 'right')
 
 
@@ -153,10 +154,11 @@ p.yaxis.minor_tick_line_color = None
 #infos
 info, nlines = write_info('countpix', tests['countpix'])
 txt = PreText(text=info, height=nlines*20, width= 2*p.plot_width)
-txt_descr="Fraction over {} sigma read noise (per amp)".format(tests['countpix']['CUTPIX']) #write_description('countpix')
-txt = """<body><p  style="text-align:left; color:#262626; font-size:20px;">
-            <b>{}</b> <br>{}</body>""".format('countpix', txt_descr)
-info_col=Div(text=txt, width= 2*p.plot_width)
+#txt_descr="Fraction over {} sigma read noise (per amp)".format(tests['countpix']['CUTPIX']) #write_description('countpix')
+#txt = """<body><p  style="text-align:left; color:#262626; font-size:20px;">
+#            <b>{}</b> <br>{}</body>""".format('countpix', txt_descr)
+#info_col=Div(text=txt, width= 2*p.plot_width)
+info_col=Div(text=write_description('countpix'), width=2*p.plot_width)
 ptxt = column(widgetbox(info_col),p)
 
 
