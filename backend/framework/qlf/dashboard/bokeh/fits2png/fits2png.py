@@ -5,6 +5,8 @@ from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 from util import get_config
+from bokeh.models import LogColorMapper
+import numpy as np
 
 cfg = get_config()
 
@@ -47,6 +49,11 @@ class Fits2png:
             img_data = img[0]
         p = figure(
             x_range=(0, img_data.data.shape[0]-1), y_range=(0, img_data.data.shape[1]-1))
+
+        low = np.amin(img_data.data)
+        high = np.amax(img_data.data)
+        color_mapper = LogColorMapper(
+            palette="Greys256", low=low, high=high)
         p.image(image=[img_data.data], x=0, y=0, dw=img_data.data.shape[0] -
-                1, dh=img_data.data.shape[1]-1, palette="Greys256")
+                1, dh=img_data.data.shape[1]-1, color_mapper=color_mapper)
         return file_html(p, CDN, "png")
