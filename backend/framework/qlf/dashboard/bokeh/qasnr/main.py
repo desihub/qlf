@@ -64,18 +64,21 @@ print(lm['results']['metrics'].keys(), lm['results']['tests'].keys())
 #sort the correct vector:
 fiberlen = []
 snrlen = []
-for i, key in enumerate(['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']):
+#for i, key in enumerate(['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']):
+for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
     fiberlen.append( len(snr[key]))
     snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
 try:
-    sort_idx=[ snrlen.index(fiberlen[i]) for i in range(4)]
+    #sort_idx=[ snrlen.index(fiberlen[i]) for i in range(4)]
+    sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
 except:
     sys.exit('Inconsistence in FIBERID and SNR lenght')        
 
 elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
-lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
-qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
-star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
+star_snr = snr['SNR_MAG_TGT'][sort_idx[1]]
+#lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
+#qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
+#star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
 
 
 def fit_func(xdata, coeff):
@@ -124,7 +127,7 @@ elg.data['logy'] = np.log10(np.array(elg_snr[0]))
 elg.data['fiber_id'] = snr['ELG_FIBERID']
 elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
 elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
-
+'''
 lrg.data['x'] = lrg_snr[1] 
 lrg.data['y'] = lrg_snr[0] 
 lrg.data['logy'] = np.log10(np.array(lrg_snr[0]))
@@ -138,7 +141,7 @@ qso.data['logy'] = np.log10(np.array(qso_snr[0]))
 qso.data['fiber_id'] = snr['QSO_FIBERID']
 qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
 qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
-
+'''
 star.data['x'] = star_snr[1] 
 star.data['y'] = star_snr[0] 
 star.data['logy'] = np.log10(np.array(star_snr[0]))
@@ -153,7 +156,7 @@ elg_fit.data['logy'] = np.log10(yfit)
 elg_fit.data['y'] = (yfit)
 for key in ['fiber_id', 'ra', 'dec']:
     elg_fit.data[key] = ['']*len(yfit)
-
+'''
 xfit, yfit = fit_func(lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
 lrg_fit.data['x'] = xfit
 lrg_fit.data['logy'] = np.log10(yfit)
@@ -167,8 +170,9 @@ qso_fit.data['logy'] = np.log10(yfit)
 qso_fit.data['y'] = yfit
 for key in ['fiber_id', 'ra', 'dec']:
     qso_fit.data[key] = ['']*len(yfit)
-
-xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[3]])
+'''
+#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[3]])
+xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
 star_fit.data['x'] = xfit
 star_fit.data['logy'] = np.log10(yfit)
 star_fit.data['y'] = yfit
@@ -219,7 +223,7 @@ elg_plot.title.text = "ELG"
 
 taptool = elg_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
-
+'''
 hover = HoverTool(tooltips=html_tooltip)
 lrg_plot = init_xy_plot(hover=hover, yscale=plt_scale)
 lrg_plot.line(x='x', y=y_plot, source=lrg_fit, color="black", line_width=lw, line_alpha=0.9)
@@ -245,7 +249,7 @@ qso_plot.title.text = "QSO"
 
 taptool = qso_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
-
+'''
 hover = HoverTool(tooltips=html_tooltip)
 star_plot = init_xy_plot(hover=hover, yscale=plt_scale)
 star_plot.line(x='x', y=y_plot, source=star_fit, color="black", line_width=lw, line_alpha=0.9)
@@ -260,9 +264,10 @@ star_plot.title.text = "STAR"
 #taptool.callback = OpenURL(url=url)
 
 
-r1=row(children=[elg_plot, lrg_plot], sizing_mode='fixed') 
-r2=row( children=[qso_plot, star_plot], sizing_mode='fixed')
-plot = column([r1,r2], sizing_mode='fixed')
+#r1=row(children=[elg_plot, lrg_plot], sizing_mode='fixed') 
+#r2=row( children=[qso_plot, star_plot], sizing_mode='fixed')
+#plot = column([r1,r2], sizing_mode='fixed')
+plot = column(row(elg_plot,star_plot), sizing_mode='fixed')
 # infos
 key_name = 'snr'
 info, nlines = write_info(key_name, tests[key_name])
@@ -314,12 +319,12 @@ for i in qlf_fiberid:
     if i in snr['ELG_FIBERID']:
         obj_type.append('ELG')
         fibersnr.append(i) 
-    elif i in snr['QSO_FIBERID']:
-        obj_type.append('QSO')
-        fibersnr.append(i)
-    elif i in snr['LRG_FIBERID']:
-        obj_type.append('LRG')
-        fibersnr.append(i)
+    #elif i in snr['QSO_FIBERID']:
+    #    obj_type.append('QSO')
+    #    fibersnr.append(i)
+    #elif i in snr['LRG_FIBERID']:
+    #    obj_type.append('LRG')
+    #    fibersnr.append(i)
     elif i in snr['STAR_FIBERID']:
         obj_type.append('STAR')
         fibersnr.append(i)
@@ -354,7 +359,7 @@ bottom, top = ymin-yfac, ymax+yfac
 
 p = Figure(title='Residual SNR'+name_warn
         , x_axis_label='RA', y_axis_label='DEC'
-        , plot_width=700, plot_height=550
+        , plot_width=650, plot_height=550
         , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"])
 # Color Map
 p.circle('x1', 'y1', source=source, name="data", radius=radius,
