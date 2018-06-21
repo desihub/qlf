@@ -19,6 +19,8 @@ cams_stages_z = copy.deepcopy(cams_stages_r)
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
 
+qa_petals = list()
+
 try:
     cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
     desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
@@ -53,9 +55,11 @@ def update_camera_status():
                 if cameralog:
                     arq = open(cameralog, 'r')
                     log = arq.readlines()
+                    update_petals(cam, log)
 
             except Exception as e:
                 logger.warn(e)
+
 
             if "Pipeline completed. Final result" in ''.join(log):
                 update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
@@ -88,6 +92,13 @@ def update_camera_status():
                 update_stage(cam[:1], 1, int(cam[1:]), 'none')
                 update_stage(cam[:1], 2, int(cam[1:]), 'none')
                 update_stage(cam[:1], 3, int(cam[1:]), 'none')
+
+
+def update_petals(cam, log):
+    for cam in enumerate(qa_petals):
+        if cam in cam.keys
+    for line in log:
+            
 
 
 def update_stage(band, stage, camera, status):
