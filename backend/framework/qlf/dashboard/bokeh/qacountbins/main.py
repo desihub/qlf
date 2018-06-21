@@ -52,8 +52,7 @@ except:
 
 countbins = metrics['countbins']
 
-print(countbins.keys())
-print(tests['countbins'].keys())
+print(metrics['snr'].keys())
 
 # ============================================
 # THIS: Given the set up in the block above, 
