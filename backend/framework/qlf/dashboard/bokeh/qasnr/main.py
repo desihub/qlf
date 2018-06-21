@@ -385,8 +385,5 @@ p.add_layout(xcolor_bar, 'right')
 layout = column(widgetbox(info_col),p, row(plot, Spacer(width=700, height=500)), sizing_mode='fixed')
 
 
-
-
-
 curdoc().add_root(layout)
 curdoc().title = "MEDIAN SNR"
