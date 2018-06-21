@@ -254,6 +254,7 @@ def write_description(qa_name):
     """Descriptions to be displayed in QA plots."""
     info_dic ={ 'countbins': ["Count Spectral Bins", "Fiber level check for flux after BoxcarExtract"],
 	         	'skycont': ["Sky Continuum", "Mean Sky Continuum after ApplyFiberFlat QL"],
+
 	         	'countpix': ["Count Pixels", "Fraction of pixels lit after Pre Processing"],
 	        	'skypeak': ["Sky Peaks", "Count for Sky Fiber after ApplyFiberFlat QL"],
 	        	'getbias': ["Bias From Overscan", "Bias from overscan region after Pre Processing"],
