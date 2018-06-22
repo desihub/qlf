@@ -63,7 +63,7 @@ class LoadMetrics:
             'countbins': 'NGOODFIB_STATUS',
             'integ': 'DELTAMAG_STATUS',
             'xwsigma': 'XWSIGMA_STATUS',
-            'snr': 'FIDSNR_STAT',
+            'snr': 'FIDSNR_STATUS',
             'skycont': 'SKYCONT_STATUS',
             'skypeak': 'PEAKCOUNT_STATUS',
             'skyresid': 'RESID_STATUS',

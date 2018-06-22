@@ -79,7 +79,8 @@ class QLFState:
             return
 
         if 'detail' not in self.current_process:
-            camera_status.reset_camera_status()
+            if self.camera_status is {"b": list(), "r": list(), "z": list()}:
+                camera_status.reset_camera_status()
             self.update_pipeline_log()
             self.logfile = self.tail_file(open_file('logfile'), 100)
             self.available_cameras = self.get_avaiable_cameras(
