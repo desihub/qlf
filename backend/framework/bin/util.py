@@ -84,7 +84,7 @@ def change_config_file(config_file, night, exposure_id):
         config['WriteIntermediatefiles'] = write_intermediate_files
 
     if config.get('TemplateNight', None):
-        config['TemplateNight'] = night
+        config['TemplateNight'] = int(night)
 
     if config.get('TemplateExpid', None):
         config['TemplateExpid'] = exposure_id
