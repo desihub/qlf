@@ -396,7 +396,7 @@ wrg= tests['snr']['FIDSNR_WARN_RANGE']
 names = ['FIDSNR ELG', 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
 vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
 tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )
-tbinfo=Div(text=tb, width=600, height=200)
+tbinfo=Div(text=tb, width=600, height=300)
 
 pltxy_h = 400
 pltxy_w = 600
