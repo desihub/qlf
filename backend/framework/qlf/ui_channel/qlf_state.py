@@ -1,4 +1,4 @@
-from ui_channel.camera_status import get_camera_status, get_qa_petals
+from ui_channel.camera_status import CameraStatus
 from dashboard.bokeh.helper import get_monitor_process
 from clients import get_exposure_monitoring
 from .views import open_file
@@ -10,6 +10,8 @@ import json
 import logging
 
 logger = logging.getLogger()
+
+camera_status = CameraStatus()
 
 
 class QLFState:
@@ -47,6 +49,7 @@ class QLFState:
         self.current_process_id = str()
         self.current_process = None
         self.available_cameras = list()
+        camera_status.reset_camera_status()
 
     def update_pipeline_status(self):
         """
@@ -86,8 +89,8 @@ class QLFState:
             date = get_date(self.exposure) if self.exposure else None
             self.date_time = date.value if date else ''
             self.mjd = date.mjd if date else ''
-            self.camera_status = get_camera_status()
-            self.qa_results = get_qa_petals()
+            self.camera_status = camera_status.get_camera_status()
+            self.qa_results = camera_status.get_qa_petals()
 
     def get_current_state(self):
         self.update_qlf_state()

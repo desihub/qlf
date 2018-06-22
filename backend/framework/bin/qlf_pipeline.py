@@ -35,6 +35,12 @@ class QLFProcess(object):
         # TODO: improve getting stages
         self.stages = [
             {
+                "display_name": "Check_HDUs",
+                "start": {"regex": "Running Check_HDUs", "count": 0},
+                "end": {"regex": "Starting to run step Preproc",
+                        "count": 0}
+            },
+            {
                 "display_name": "Pre Processing",
                 "start": {"regex": "Starting to run step Preproc", "count": 0},
                 "end": {"regex": "Starting to run step BoxcarExtract",
@@ -142,6 +148,9 @@ class QLFProcess(object):
             proc = Thread(target=self.start_parallel_job, args=args)
             proc.start()
             procs.append(proc)
+
+        for proc in procs:	
+            proc.join()
 
         self.data['cameras'] = return_cameras
 
@@ -265,6 +274,7 @@ class QLFProcess(object):
 
     def generate_qa_tests(self):
         qa_tests = list()
+
         for camera in self.data.get('cameras'):
             try:
                 lm = LoadMetrics(
