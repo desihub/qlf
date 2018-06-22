@@ -76,6 +76,7 @@ try:
     #2#sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
 except:
     #2#sort_idx=[0,1]
+    sort_idx=range(4)
     logger.info('Inconsistence in FIBERID and SNR lenght')        
 
 elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
