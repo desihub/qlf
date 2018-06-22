@@ -1,6 +1,6 @@
 import os
 import sys
-
+import logging
 from bokeh.io import curdoc
 from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.plotting import Figure
@@ -18,7 +18,7 @@ from dashboard.bokeh.helper import get_data, get_exposure_ids, \
 
 
 import numpy as np
-
+logger = logging.getLogger(__name__)
 
 QLF_API_URL = os.environ.get(
     'QLF_API_URL',
@@ -64,25 +64,28 @@ print(lm['results']['metrics'].keys(), lm['results']['tests'].keys())
 #sort the correct vector:
 fiberlen = []
 snrlen = []
-#for i, key in enumerate(['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']):
-for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
+for i, key in enumerate(['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']):
+#2#for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
     fiberlen.append( len(snr[key]))
     snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
 
 print('\n\n\n\nfiberlen', fiberlen)
 print('snrlen', snrlen)
 try:
-    #sort_idx=[ snrlen.index(fiberlen[i]) for i in range(4)]
-    sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
+    sort_idx=[ snrlen.index(fiberlen[i]) for i in range(4)]
+    #2#sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
 except:
+    #2#sort_idx=[0,1]
     logger.info('Inconsistence in FIBERID and SNR lenght')        
 
 elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
-star_snr = snr['SNR_MAG_TGT'][sort_idx[1]]
-#lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
-#qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
-#star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
+#2#star_snr = snr['SNR_MAG_TGT'][sort_idx[1]]
+lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
+qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
+star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
 
+print(sort_idx)
+print('\n\n\n\n', snr['FITCOEFF_TGT'])
 
 def fit_func(xdata, coeff):
     """ astro fit 
@@ -130,7 +133,7 @@ elg.data['logy'] = np.log10(np.array(elg_snr[0]))
 elg.data['fiber_id'] = snr['ELG_FIBERID']
 elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
 elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
-'''
+#2#'''
 lrg.data['x'] = lrg_snr[1] 
 lrg.data['y'] = lrg_snr[0] 
 lrg.data['logy'] = np.log10(np.array(lrg_snr[0]))
@@ -144,7 +147,7 @@ qso.data['logy'] = np.log10(np.array(qso_snr[0]))
 qso.data['fiber_id'] = snr['QSO_FIBERID']
 qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
 qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
-'''
+#2#'''
 star.data['x'] = star_snr[1] 
 star.data['y'] = star_snr[0] 
 star.data['logy'] = np.log10(np.array(star_snr[0]))
@@ -153,13 +156,13 @@ star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
 star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
 
 
-xfit, yfit  = fit_func(elg_snr[1], 		snr['FITCOEFF_TGT'][sort_idx[0]])
+xfit, yfit  = fit_func(elg_snr[1], 	snr['FITCOEFF_TGT'][sort_idx[0]])
 elg_fit.data['x'] = xfit
 elg_fit.data['logy'] = np.log10(yfit)
 elg_fit.data['y'] = (yfit)
 for key in ['fiber_id', 'ra', 'dec']:
     elg_fit.data[key] = ['']*len(yfit)
-'''
+#2#'''
 xfit, yfit = fit_func(lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
 lrg_fit.data['x'] = xfit
 lrg_fit.data['logy'] = np.log10(yfit)
@@ -173,9 +176,9 @@ qso_fit.data['logy'] = np.log10(yfit)
 qso_fit.data['y'] = yfit
 for key in ['fiber_id', 'ra', 'dec']:
     qso_fit.data[key] = ['']*len(yfit)
-'''
-#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[3]])
-xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
+#2#'''
+xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[3]])
+#2#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
 star_fit.data['x'] = xfit
 star_fit.data['logy'] = np.log10(yfit)
 star_fit.data['y'] = yfit
@@ -226,7 +229,7 @@ elg_plot.title.text = "ELG"
 
 taptool = elg_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
-'''
+#2#'''
 hover = HoverTool(tooltips=html_tooltip)
 lrg_plot = init_xy_plot(hover=hover, yscale=plt_scale)
 lrg_plot.line(x='x', y=y_plot, source=lrg_fit, color="black", line_width=lw, line_alpha=0.9)
@@ -252,7 +255,7 @@ qso_plot.title.text = "QSO"
 
 taptool = qso_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
-'''
+#2#'''
 hover = HoverTool(tooltips=html_tooltip)
 star_plot = init_xy_plot(hover=hover, yscale=plt_scale)
 star_plot.line(x='x', y=y_plot, source=star_fit, color="black", line_width=lw, line_alpha=0.9)
@@ -323,12 +326,14 @@ for i in qlf_fiberid:
     if i in snr['ELG_FIBERID']:
         obj_type.append('ELG')
         fibersnr.append(i) 
-    #elif i in snr['QSO_FIBERID']:
-    #    obj_type.append('QSO')
-    #    fibersnr.append(i)
-    #elif i in snr['LRG_FIBERID']:
-    #    obj_type.append('LRG')
-    #    fibersnr.append(i)
+    #2#'''
+    elif i in snr['QSO_FIBERID']:
+        obj_type.append('QSO')
+        fibersnr.append(i)
+    elif i in snr['LRG_FIBERID']:
+        obj_type.append('LRG')
+        fibersnr.append(i)
+    #2#'''
     elif i in snr['STAR_FIBERID']:
         obj_type.append('STAR')
         fibersnr.append(i)
@@ -391,14 +396,19 @@ wrg= tests['snr']['FIDSNR_WARN_RANGE']
 tb = html_table( names=['FIDSNR ELG', 'FIDSNR STAR'], vals=['{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ] ,  nrng=nrg, wrng=wrg  )
 tbinfo=Div(text=tb, width=600, height=200)
 
-
-elg_plot.plot_height = 400
-elg_plot.plot_width = 600
-star_plot.plot_height = 400
-star_plot.plot_width = 600
+pltxy_h = 400
+pltxy_w = 600
+elg_plot.plot_height = pltxy_h
+elg_plot.plot_width = pltxy_w
+lrg_plot.plot_height = pltxy_h
+lrg_plot.plot_width = pltxy_w
+qso_plot.plot_height = pltxy_h
+qso_plot.plot_width = pltxy_w
+star_plot.plot_height = pltxy_h
+star_plot.plot_width = pltxy_w
 #layout = column(widgetbox(info_col), tbinfo, p,  elg_plot, star_plot )# row(plot))# Spacer(width=800-p.plot_width, height=p.plot_height) ,, Spacer(width=700, height=500)), sizing_mode='fixed')
-
-layout=layout( [[info_col], [tbinfo], [p], [elg_plot, star_plot]    ])
+layout=layout( [[info_col], [tbinfo], [p], [elg_plot, lrg_plot  ],  [qso_plot, star_plot]    ])
+#2#layout=layout( [[info_col], [tbinfo], [p], [elg_plot , star_plot]    ])
 
 
 curdoc().add_root(layout)
