@@ -4,6 +4,7 @@ import os
 import astropy.io.fits
 import datetime
 import yaml
+from qlf_models import QLFModels
 
 logger = logging.getLogger()
 
@@ -45,20 +46,26 @@ def get_config(config_path=None):
     return cfg
 
 
-def change_config_file(config_file, night, exposure_id):
+def change_config_file(night, exposure_id, program):
     """ Makes a copy of the original configuration file by modifying
     some values defined in qlf.cfg.
-    
+
     Arguments:
-        config_file {str} -- original config file path
         night {str} -- night
         exposure_id {int} -- exposure ID
-    
+        program {str} -- program
+
     Returns:
         str -- config file path that will be used
     """
 
     cfg = get_config()
+
+    program_file = program_mapping.get(program, 'darksurvey')
+    config_file = cfg.get('main', 'qlconfig').format(program_file)
+
+    models = QLFModels()
+    template = models.get_last_exposure_by_program(program)
 
     with open(config_file, 'r') as file:
         config = yaml.load(file)
@@ -83,11 +90,12 @@ def change_config_file(config_file, night, exposure_id):
     if config.get('WriteIntermediatefiles', None):
         config['WriteIntermediatefiles'] = write_intermediate_files
 
-    if config.get('TemplateNight', None):
-        config['TemplateNight'] = int(night)
+    if template:
+        if config.get('TemplateNight', None):
+            config['TemplateNight'] = int(template.night)
 
-    if config.get('TemplateExpid', None):
-        config['TemplateExpid'] = exposure_id
+        if config.get('TemplateExpid', None):
+            config['TemplateExpid'] = template.exposure_id
 
     desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
     config_path = os.path.join(desi_spectro_redux, 'exposures', night)
@@ -130,10 +138,8 @@ def extract_exposure_data(exposure_id, night):
 
     # TODO: improve after understanding the QL pipeline cycle.
     program = hdr.get('program')
-    program_file = program_mapping.get(program, 'darksurvey')
 
-    config_file = cfg.get('main', 'qlconfig').format(program_file)
-    current_config = change_config_file(config_file, night, exposure_id)
+    current_config = change_config_file(night, exposure_id, program)
     define_calibration_files(night)
 
     return {
