@@ -151,57 +151,6 @@ p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
 p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
 p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
-'''
-#-------------------------------------
-# histogram
-
-
-yscale = "auto"#"auto" or "log"
-
-hist_tooltip = """
-    <div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
-            <span style="font-size: 13px; color: #515151">@hist</span>
-        </div>
-        <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">XSIGMA: </span>
-            <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
-        </div>
-    </div>
-"""
-
-#hist, edges  = np.histogram(getbias['MEANBIAS_ROW'], bins='sqrt')
-hist, edges  = np.histogram(getbias['BIAS_ROW'], bins='sqrt')
-
-source_hist = ColumnDataSource(data={
-    'hist': hist,
-    'histplusone':np.array(hist)+1,
-    'bottom':[0] *len(hist),
-    'bottomplusone':[1]*len(hist),
-    'left':edges[:-1],
-    'right':edges[1:]
-})
-
-hover = HoverTool(tooltips=hist_tooltip)
-
-ylabel,yrange,bottomval,histval = eval_histpar(yscale, hist)
-
-xhistlabel = "MEANBIAS_ROW"
-p_hist = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
-           y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-        , plot_width=700, plot_height=400
-        , x_axis_type="auto",    y_axis_type=yscale
-        , y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
-
-p_hist.quad(top=histval, bottom=bottomval, left='left', right='right',
-       source=source_hist, 
-        fill_color="dodgerblue", line_color="blue", alpha=0.8,
-       hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
-
-
-'''
-#infos
 info, nlines = write_info('getbias', tests['getbias'])
 try:
     info_hist ="""
@@ -211,9 +160,17 @@ except:
     info_hist=""""""
 txt = Div(text=info_hist, width= 2*p.plot_width)
 
+from dashboard.bokeh.qlf_plot import html_table
+
+print(tests['getbias']['BIAS_AMP_REF'])
+nrg= tests['getbias']['BIAS_NORMAL_RANGE']
+wrg= tests['getbias']['BIAS_WARN_RANGE']
+#names=['BIAS'], vals=[ getbias['BIAS_AMP']],
+tb = html_table( nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=400, height=300)
 
 info_col=Div(text=write_description('getbias'), width=2*p.plot_width)
-ptxt = column(widgetbox(info_col), p, txt)#,p_hist)
+ptxt = column(widgetbox(info_col), row(p, tbinfo), txt)#,p_hist)
 
 
 #output_notebook()
