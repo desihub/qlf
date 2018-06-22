@@ -15,10 +15,7 @@ from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
-
-import ast
-
-from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
+from dashboard.bokeh.qlf_plot import html_table
 
 from bokeh.io import output_notebook
 import numpy as np
@@ -58,8 +55,8 @@ except:
 
 
 integ=metrics['integ']
-
-
+std_fiberid = integ['STD_FIBERID']
+#std_mag = np.where()
 
 
 hist_tooltip=""" 
@@ -216,8 +213,14 @@ layout = column(info_col, p2)
 
 info_col=Div(text=write_description('integ'), width=fiber_hist.plot_width)
 
+nrg= tests['integ']['DELTAMAG_WARN_RANGE']
+wrg= tests['integ']['DELTAMAG_NORMAL_RANGE']
 
-layout = column(info_col, fiber_hist)
+#List of mag diff b/w the fibermag and the imaging mag from the fibermap
+tb = html_table(names=['DELTAMAG (Mean)'], vals=[ '{:.3f}'.format(np.mean(integ['DELTAMAG']) )], nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=600, height=300)
+
+layout = column(info_col, row(fiber_hist, tbinfo) )
 # End of Bokeh Block
 curdoc().add_root(layout)
 curdoc().title ="INTEG"

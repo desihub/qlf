@@ -10,7 +10,7 @@ from bokeh.models.widgets import PreText, Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
-
+from dashboard.bokeh.qlf_plot import html_table
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
 from bokeh.io import output_notebook
@@ -91,6 +91,12 @@ p2.add_layout(color_bar, 'right')
 
 
 #infos
+nrg= tests['getrms']['NOISE_NORMAL_RANGE']
+wrg= tests['getrms']['NOISE_WARN_RANGE']
+tb = html_table( nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=400, height=300)
+
+
 info, nlines = write_info('getrms', tests['getrms'])
 info= """<div> 
 <body><p  style="text-align:left; color:#262626; font-size:20px;">
@@ -98,7 +104,7 @@ info= """<div>
 nlines=2
 txt = Div(text=info, width=p.plot_width)
 info_col=Div(text=write_description('getrms'), width=p.plot_width)
-ptxt = column(widgetbox(info_col),p)
+ptxt = column(widgetbox(info_col),row(p, tbinfo))
 
 
 '''

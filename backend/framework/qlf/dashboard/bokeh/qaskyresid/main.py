@@ -7,7 +7,7 @@ from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.helper import write_info, get_scalar_metrics
 
-
+from dashboard.bokeh.qlf_plot import html_table
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
@@ -260,9 +260,26 @@ txt = Div(text="""<table style="text-align:right;font-size:16px;">
         , width=p2.plot_width)
 info, nlines = write_info('skyresid', tests['skyresid'])
 
-#txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
+
 info_col=Div(text=write_description('skyresid'), width=p2.plot_width)
-p2txt = column(widgetbox(info_col), row(column(p1, p2), widgetbox(txt)), fiber_hist  )
+
+resid_vals=[]
+resid_names=[]
+for i in ['NBAD_PCHI','NREJ','NSKY_FIB','RESID_PER']:
+    resid_names.append(i)
+    if i == 'RESID_PER': #95% c.l. boundaries of residuals distribution
+        resid_vals.append('[{:.3f}, {:.3f}]'.format(skyresid[i][0], skyresid[i][1])) 
+    else:
+        resid_vals.append(skyresid[i]) 
+    
+nrg= tests['skyresid']['RESID_NORMAL_RANGE']
+wrg= tests['skyresid']['RESID_WARN_RANGE']
+tb = html_table(names=resid_names, vals=resid_vals, nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=600, height=200)
+
+
+#p2txt = column(widgetbox(info_col), row(column(p1, p2), widgetbox(txt)), fiber_hist  )
+p2txt = column(widgetbox(info_col), row(column(p1, p2), tbinfo), fiber_hist  )
 #p2txt = column(widgetbox(info_col), p1, p2, widgetbox(txt), p_hist)
 
 #layout=column(p1,p2)

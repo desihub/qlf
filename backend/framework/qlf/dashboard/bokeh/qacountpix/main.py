@@ -158,8 +158,16 @@ txt = PreText(text=info, height=nlines*20, width= 2*p.plot_width)
 #txt = """<body><p  style="text-align:left; color:#262626; font-size:20px;">
 #            <b>{}</b> <br>{}</body>""".format('countpix', txt_descr)
 #info_col=Div(text=txt, width= 2*p.plot_width)
+
+from dashboard.bokeh.qlf_plot import html_table
+nrg= tests['countpix']['LITFRAC_NORMAL_RANGE']
+wrg= tests['countpix']['LITFRAC_WARN_RANGE']
+tb = html_table( nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=400, height=300)
+
+
 info_col=Div(text=write_description('countpix'), width=2*p.plot_width)
-ptxt = column(widgetbox(info_col),p)
+ptxt = column(widgetbox(info_col), row(p, tbinfo))
 
 
 # End of Bokeh Block

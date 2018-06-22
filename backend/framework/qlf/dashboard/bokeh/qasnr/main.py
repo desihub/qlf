@@ -1,24 +1,24 @@
 import os
 import sys
-
+import logging
 from bokeh.io import curdoc
 from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.plotting import Figure
 from bokeh.models.widgets import Select, Slider
-from bokeh.layouts import row, column, widgetbox, gridplot
+from bokeh.layouts import row, column, widgetbox, gridplot, layout
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter, Spacer
 from dashboard.bokeh.helper import write_description, write_info, \
     get_scalar_metrics
 from dashboard.bokeh.helper import get_palette
-
+from dashboard.bokeh.qlf_plot import html_table
 from dashboard.bokeh.helper import get_data, get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs
 
 
 import numpy as np
-
+logger = logging.getLogger(__name__)
 
 QLF_API_URL = os.environ.get(
     'QLF_API_URL',
@@ -54,7 +54,7 @@ try:
     name_warn=[]
 except:
     exptime=1000
-    name_warn = '(exptime fixed)'
+    name_warn = ' (exptime fixed)'
     print('EXPTIME NOT FOUND, USING 1000')
 
 print(lm.keys())
@@ -65,18 +65,27 @@ print(lm['results']['metrics'].keys(), lm['results']['tests'].keys())
 fiberlen = []
 snrlen = []
 for i, key in enumerate(['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']):
+#2#for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
     fiberlen.append( len(snr[key]))
     snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
+
+print('\n\n\n\nfiberlen', fiberlen)
+print('snrlen', snrlen)
 try:
     sort_idx=[ snrlen.index(fiberlen[i]) for i in range(4)]
+    #2#sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
 except:
-    sys.exit('Inconsistence in FIBERID and SNR lenght')        
+    #2#sort_idx=[0,1]
+    logger.info('Inconsistence in FIBERID and SNR lenght')        
 
 elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
+#2#star_snr = snr['SNR_MAG_TGT'][sort_idx[1]]
 lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
 qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
 star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
 
+print(sort_idx)
+print('\n\n\n\n', snr['FITCOEFF_TGT'])
 
 def fit_func(xdata, coeff):
     """ astro fit 
@@ -124,7 +133,7 @@ elg.data['logy'] = np.log10(np.array(elg_snr[0]))
 elg.data['fiber_id'] = snr['ELG_FIBERID']
 elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
 elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
-
+#2#'''
 lrg.data['x'] = lrg_snr[1] 
 lrg.data['y'] = lrg_snr[0] 
 lrg.data['logy'] = np.log10(np.array(lrg_snr[0]))
@@ -138,7 +147,7 @@ qso.data['logy'] = np.log10(np.array(qso_snr[0]))
 qso.data['fiber_id'] = snr['QSO_FIBERID']
 qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
 qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
-
+#2#'''
 star.data['x'] = star_snr[1] 
 star.data['y'] = star_snr[0] 
 star.data['logy'] = np.log10(np.array(star_snr[0]))
@@ -147,13 +156,13 @@ star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
 star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
 
 
-xfit, yfit  = fit_func(elg_snr[1], 		snr['FITCOEFF_TGT'][sort_idx[0]])
+xfit, yfit  = fit_func(elg_snr[1], 	snr['FITCOEFF_TGT'][sort_idx[0]])
 elg_fit.data['x'] = xfit
 elg_fit.data['logy'] = np.log10(yfit)
 elg_fit.data['y'] = (yfit)
 for key in ['fiber_id', 'ra', 'dec']:
     elg_fit.data[key] = ['']*len(yfit)
-
+#2#'''
 xfit, yfit = fit_func(lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
 lrg_fit.data['x'] = xfit
 lrg_fit.data['logy'] = np.log10(yfit)
@@ -167,8 +176,9 @@ qso_fit.data['logy'] = np.log10(yfit)
 qso_fit.data['y'] = yfit
 for key in ['fiber_id', 'ra', 'dec']:
     qso_fit.data[key] = ['']*len(yfit)
-
+#2#'''
 xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[3]])
+#2#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
 star_fit.data['x'] = xfit
 star_fit.data['logy'] = np.log10(yfit)
 star_fit.data['y'] = yfit
@@ -219,7 +229,7 @@ elg_plot.title.text = "ELG"
 
 taptool = elg_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
-
+#2#'''
 hover = HoverTool(tooltips=html_tooltip)
 lrg_plot = init_xy_plot(hover=hover, yscale=plt_scale)
 lrg_plot.line(x='x', y=y_plot, source=lrg_fit, color="black", line_width=lw, line_alpha=0.9)
@@ -245,7 +255,7 @@ qso_plot.title.text = "QSO"
 
 taptool = qso_plot.select(type=TapTool)
 taptool.callback = OpenURL(url=url)
-
+#2#'''
 hover = HoverTool(tooltips=html_tooltip)
 star_plot = init_xy_plot(hover=hover, yscale=plt_scale)
 star_plot.line(x='x', y=y_plot, source=star_fit, color="black", line_width=lw, line_alpha=0.9)
@@ -260,9 +270,11 @@ star_plot.title.text = "STAR"
 #taptool.callback = OpenURL(url=url)
 
 
-r1=row(children=[elg_plot, lrg_plot], sizing_mode='fixed') 
-r2=row( children=[qso_plot, star_plot], sizing_mode='fixed')
-plot = column([r1,r2], sizing_mode='fixed')
+#r1=row(children=[elg_plot, lrg_plot], sizing_mode='fixed') 
+#r2=row( children=[qso_plot, star_plot], sizing_mode='fixed')
+#plot = column([r1,r2], sizing_mode='fixed')
+plot = row(elg_plot,star_plot)#column(row(elg_plot,star_plot), sizing_mode='fixed')
+
 # infos
 key_name = 'snr'
 info, nlines = write_info(key_name, tests[key_name])
@@ -314,12 +326,14 @@ for i in qlf_fiberid:
     if i in snr['ELG_FIBERID']:
         obj_type.append('ELG')
         fibersnr.append(i) 
+    #2#'''
     elif i in snr['QSO_FIBERID']:
         obj_type.append('QSO')
         fibersnr.append(i)
     elif i in snr['LRG_FIBERID']:
         obj_type.append('LRG')
         fibersnr.append(i)
+    #2#'''
     elif i in snr['STAR_FIBERID']:
         obj_type.append('STAR')
         fibersnr.append(i)
@@ -354,7 +368,7 @@ bottom, top = ymin-yfac, ymax+yfac
 
 p = Figure(title='Residual SNR'+name_warn
         , x_axis_label='RA', y_axis_label='DEC'
-        , plot_width=700, plot_height=550
+        , plot_width=650, plot_height=550
         , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"])
 # Color Map
 p.circle('x1', 'y1', source=source, name="data", radius=radius,
@@ -377,10 +391,26 @@ p.add_layout(xcolor_bar, 'right')
 
 #plot= gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
 
-layout = column(widgetbox(info_col),p, row(plot, Spacer(width=700, height=500)), sizing_mode='fixed')
+nrg= tests['snr']['FIDSNR_NORMAL_RANGE']
+wrg= tests['snr']['FIDSNR_WARN_RANGE']
+names = ['FIDSNR ELG', 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
+vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
+tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=600, height=300)
 
-
-
+pltxy_h = 400
+pltxy_w = 600
+elg_plot.plot_height = pltxy_h
+elg_plot.plot_width = pltxy_w
+lrg_plot.plot_height = pltxy_h
+lrg_plot.plot_width = pltxy_w
+qso_plot.plot_height = pltxy_h
+qso_plot.plot_width = pltxy_w
+star_plot.plot_height = pltxy_h
+star_plot.plot_width = pltxy_w
+#layout = column(widgetbox(info_col), tbinfo, p,  elg_plot, star_plot )# row(plot))# Spacer(width=800-p.plot_width, height=p.plot_height) ,, Spacer(width=700, height=500)), sizing_mode='fixed')
+layout=layout( [[info_col], [tbinfo], [p], [elg_plot, lrg_plot  ],  [qso_plot, star_plot]    ])
+#2#layout=layout( [[info_col], [tbinfo], [p], [elg_plot , star_plot]    ])
 
 
 curdoc().add_root(layout)

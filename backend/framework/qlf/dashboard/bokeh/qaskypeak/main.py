@@ -14,7 +14,7 @@ from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.helper import write_info, get_scalar_metrics
-
+from dashboard.bokeh.qlf_plot import html_table
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
@@ -125,7 +125,7 @@ try:
             obj_type.append('UNKNOWN')
 except:
     logger.info('Object type sorter FAILED')
-    obj_type=['UNKNOWN']*500
+    obj_type=['']*500
 # ---------------------------------
 
 peak_hover = HoverTool(tooltips=peak_tooltip)
@@ -239,8 +239,15 @@ p_hist.add_layout(spans)
                           line_dash='dashed', line_width=3)
     p_hist.add_layout(spans)
 """
+
+nrg= tests['skypeak']['PEAKCOUNT_NORMAL_RANGE']
+wrg= tests['skypeak']['PEAKCOUNT_WARN_RANGE']
+tb = html_table(names=['PEAKCOUNT NOISE'], vals=[skypeak['PEAKCOUNT_NOISE']], nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=600, height=200)
+
+
 #row1 = column(p, p_hist)
-layout = column(widgetbox(info_col), p, p_hist)#row1)
+layout = column(widgetbox(info_col), tbinfo, p, p_hist)#row1)
 
 
 #logger.info("widths", p.plot_width, p_hist.plot_width)

@@ -12,7 +12,7 @@ from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import plot_hist
-
+from dashboard.bokeh.qlf_plot import html_table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 
@@ -342,7 +342,7 @@ ylabel,yrange,bottomval,histval = histpar(yscale, hist)
 
 p_hist_x = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
            y_axis_label= ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-        , plot_width=700, plot_height=400
+        , plot_width=700, plot_height=300
         , x_axis_type="auto",    y_axis_type=yscale
         , y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
@@ -384,7 +384,7 @@ ylabel,yrange,bottomval,histval = histpar(yscale, hist)
 
 p_hist_w = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
            y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-        , plot_width=700, plot_height=400
+        , plot_width=700, plot_height=300
         , x_axis_type="auto",    y_axis_type=yscale
         ,y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
@@ -442,8 +442,14 @@ from bokeh.models import Spacer
 info_col=Div(text=write_description('xwsigma'), width=2*pw.plot_width)
 pxh = column(px, xhist, p_hist_x, xamp )
 pwh = column(pw, whist, p_hist_w, wamp )
+
+nrg= tests['xwsigma']['XWSIGMA_NORMAL_RANGE']
+wrg= tests['xwsigma']['XWSIGMA_WARN_RANGE']
+tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma['XWSIGMA'], nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=600, height=200)
+
 layoutplot= row([pxh, Spacer(width=0),pwh]) #, sizing_mode='scale_width')
-layout = column(widgetbox(info_col),layoutplot) #, row( [xamp, Spacer(width=80), wamp]))
+layout = column(widgetbox(info_col), tbinfo, layoutplot) #, row( [xamp, Spacer(width=80), wamp]))
  
 curdoc().add_root(layout)
 curdoc().title = "XWSIGMA"
