@@ -5,14 +5,14 @@ from bokeh.io import curdoc
 from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.plotting import Figure
 from bokeh.models.widgets import Select, Slider
-from bokeh.layouts import row, column, widgetbox, gridplot
+from bokeh.layouts import row, column, widgetbox, gridplot, layout
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter, Spacer
 from dashboard.bokeh.helper import write_description, write_info, \
     get_scalar_metrics
 from dashboard.bokeh.helper import get_palette
-
+from dashboard.bokeh.qlf_plot import html_table
 from dashboard.bokeh.helper import get_data, get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs
 
@@ -54,7 +54,7 @@ try:
     name_warn=[]
 except:
     exptime=1000
-    name_warn = '(exptime fixed)'
+    name_warn = ' (exptime fixed)'
     print('EXPTIME NOT FOUND, USING 1000')
 
 print(lm.keys())
@@ -68,11 +68,14 @@ snrlen = []
 for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
     fiberlen.append( len(snr[key]))
     snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
+
+print('\n\n\n\nfiberlen', fiberlen)
+print('snrlen', snrlen)
 try:
     #sort_idx=[ snrlen.index(fiberlen[i]) for i in range(4)]
     sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
 except:
-    sys.exit('Inconsistence in FIBERID and SNR lenght')        
+    logger.info('Inconsistence in FIBERID and SNR lenght')        
 
 elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
 star_snr = snr['SNR_MAG_TGT'][sort_idx[1]]
@@ -267,7 +270,8 @@ star_plot.title.text = "STAR"
 #r1=row(children=[elg_plot, lrg_plot], sizing_mode='fixed') 
 #r2=row( children=[qso_plot, star_plot], sizing_mode='fixed')
 #plot = column([r1,r2], sizing_mode='fixed')
-plot = column(row(elg_plot,star_plot), sizing_mode='fixed')
+plot = row(elg_plot,star_plot)#column(row(elg_plot,star_plot), sizing_mode='fixed')
+
 # infos
 key_name = 'snr'
 info, nlines = write_info(key_name, tests[key_name])
@@ -382,7 +386,19 @@ p.add_layout(xcolor_bar, 'right')
 
 #plot= gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
 
-layout = column(widgetbox(info_col),p, row(plot, Spacer(width=700, height=500)), sizing_mode='fixed')
+nrg= tests['snr']['FIDSNR_NORMAL_RANGE']
+wrg= tests['snr']['FIDSNR_WARN_RANGE']
+tb = html_table( names=['FIDSNR ELG', 'FIDSNR STAR'], vals=['{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ] ,  nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=600, height=200)
+
+
+elg_plot.plot_height = 400
+elg_plot.plot_width = 600
+star_plot.plot_height = 400
+star_plot.plot_width = 600
+#layout = column(widgetbox(info_col), tbinfo, p,  elg_plot, star_plot )# row(plot))# Spacer(width=800-p.plot_width, height=p.plot_height) ,, Spacer(width=700, height=500)), sizing_mode='fixed')
+
+layout=layout( [[info_col], [tbinfo], [p], [elg_plot, star_plot]    ])
 
 
 curdoc().add_root(layout)

@@ -16,7 +16,7 @@ from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
-from dashboard.bokeh.qlf_plot import plot_hist
+from dashboard.bokeh.qlf_plot import plot_hist, html_table
 
 import numpy as np
 import logging
@@ -355,9 +355,19 @@ div=Div(text=html_str,
 
 layout_plot = gridplot( [plow,pmed,phi,div], ncols=2, responsive=False, plot_width=600, plot_height=600)
 '''
+
+nrg = tests['countbins']['NGOODFIB_NORMAL_RANGE']
+wrg = tests['countbins']['NGOODFIB_WARN_RANGE']
+ngood = countbins['NGOODFIB']
+fracgood= ngood/500. -1.
+tb = html_table(names=['NGOODFIB', 'FRACTION BAD'], vals=[ngood, str(fracgood*100)+' %' ], nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=600, height=200)
+
+
+#print(wrg)
 layout_plot=p
 info_col=Div(text=write_description('countbins'), width=1200)
-layout = column(widgetbox(info_col), p2, layout_plot)
+layout = column(widgetbox(info_col), tbinfo, p2, layout_plot)#)
 
 
 # End of Bokeh Block
