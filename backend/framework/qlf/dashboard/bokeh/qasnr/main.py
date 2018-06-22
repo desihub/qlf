@@ -393,7 +393,9 @@ p.add_layout(xcolor_bar, 'right')
 
 nrg= tests['snr']['FIDSNR_NORMAL_RANGE']
 wrg= tests['snr']['FIDSNR_WARN_RANGE']
-tb = html_table( names=['FIDSNR ELG', 'FIDSNR STAR'], vals=['{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ] ,  nrng=nrg, wrng=wrg  )
+names = ['FIDSNR ELG', 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
+vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
+tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )
 tbinfo=Div(text=tb, width=600, height=200)
 
 pltxy_h = 400
