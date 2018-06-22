@@ -13,7 +13,7 @@ from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_palette
-
+from dashboard.bokeh.qlf_plot import html_table
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
@@ -157,8 +157,15 @@ p2.add_layout(color_bar, 'right')
 info, nlines = write_info('skycont', tests['skycont'])
 txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
 info_col=Div(text=write_description('skycont'), width=p2.plot_width)
-p2txt = column(info_col,p2)
-layout = p2txt #gridplot([[p2txt]], responsive=False)
+
+nrg= tests['skycont']['SKYCONT_NORMAL_RANGE']
+wrg= tests['skycont']['SKYCONT_WARN_RANGE']
+tb = html_table( names=['SKYCONT'],vals=['{:.3f}'.format(skycont['SKYCONT']) ], nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=400, height=300)
+
+
+p2txt = column(info_col,row(p2, tbinfo))
+layout = p2txt 
 
 
 # End of Bokeh Block

@@ -6,6 +6,92 @@ from furl import furl
 from bokeh.plotting import Figure
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 
+
+
+def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0,0],  wrng=[0,0], nlines=None, align='center'):
+    ''' Usage:
+    nrg = tests['countbins']['NGOODFIB_WARN_RANGE']
+    wrg = tests['countbins']['NGOODFIB_NORMAL_RANGE']
+    tb = html_table( nrng=nrg, wrng=wrg  )
+    tbinfo=Div(text=tb, width=600, height=300)
+    '''
+    lines =""" """
+    tblines=""" """
+    nlines= len(names)
+    if(nlines != len(vals)):
+        print('error in table')
+
+    if(nlines==0):
+        tblines=""
+    else:
+        for i in range(nlines):
+            if isinstance(vals[i], list):
+                tblines=tblines+"""<tr>
+                <td>{}</td>
+                <td> {}</td>
+                </tr>""".format(names[i], vals[i])#, vals[i][0] )
+
+            elif( names[i]=='NGOODFIB'):
+                tblines=tblines+"""<tr>
+                <td>{}</td>
+                <td> {:d}</td>
+                </tr>""".format(names[i], vals[i])
+            elif(isinstance(names[i],str)):
+                tblines=tblines+"""<tr>
+                <td>{}</td>
+                <td> {}</td>
+                </tr>""".format(names[i], vals[i])
+
+            else:
+                tblines=tblines+"""<tr>
+                <td>{}</td>
+                <td> {:.3f}</td>
+                </tr>""".format(names[i], vals[i])
+
+
+    style = """
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            font-size: 16px;
+            border-collapse: collapse;
+            width: 100%;
+            }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+            }
+        tr:nth-child(even) {
+        background-color: #dddddd;
+                text-align:center;
+        }
+        tr:{text-align:center;}
+        </style>
+        """
+
+    header= """
+    <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+    <table>
+    <tr>
+        <th>Parameter</th>        <th>Value</th>
+    </tr>"""
+
+
+    for i1,i2 in [(nkey, nrng), (wkey, wrng)]:
+        lines = lines+"""
+        <tr>
+            <td>{}</td>
+            <td> [{:.2f},  {:.2f}]</td>
+        </tr>""".format(i1, i2[0], i2[1] )
+    
+    end="""</table> </div> """
+
+    return style+header+ tblines+lines+end
+
+
+
 def plot_hist(hover,yrange, yscale="auto", pw=700, ph=400):
     """
     Defaults for histograms

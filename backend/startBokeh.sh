@@ -1,6 +1,4 @@
 #!/bin/bash
-source activate quicklook 
-
 echo "Initializing Bokeh Server..."
 
 export QLF_PROJECT=$(pwd)/framework/qlf
