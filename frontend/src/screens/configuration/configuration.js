@@ -68,7 +68,7 @@ export default class Configuration extends React.Component {
         {qlScienceTab === 2 ? <Display config={'greysurvey'} /> : null}
       </div>
     );
-  }
+  };
 
   renderCalibration = () => {
     const { qlCalibrationTab, qlTab } = this.state;
@@ -96,7 +96,7 @@ export default class Configuration extends React.Component {
         {qlCalibrationTab === 4 ? <Display config={'arcs'} /> : null}
       </div>
     );
-  }
+  };
 
   renderTabs = () => {
     const { qlTab } = this.state;
