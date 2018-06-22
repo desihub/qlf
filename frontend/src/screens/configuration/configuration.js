@@ -22,6 +22,8 @@ export default class Configuration extends React.Component {
   state = {
     tab: 0,
     qlTab: 0,
+    qlScienceTab: 0,
+    qlCalibrationTab: 0,
   };
 
   componentDidMount() {
@@ -34,6 +36,66 @@ export default class Configuration extends React.Component {
 
   handleQlTabChange = (evt, qlTab) => {
     this.setState({ qlTab });
+  };
+
+  handleQlScienceTabChange = (evt, qlScienceTab) => {
+    this.setState({ qlScienceTab });
+  };
+
+  handleQlCalibrationTabChange = (evt, qlCalibrationTab) => {
+    this.setState({ qlCalibrationTab });
+  };
+
+  renderScience = () => {
+    const { qlScienceTab, qlTab } = this.state;
+    if (qlTab !== 0) return null;
+    return (
+      <div>
+        <Tabs
+          value={qlScienceTab}
+          onChange={this.handleQlScienceTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          fullWidth
+          centered
+        >
+          <Tab label="Dark" value={0} />
+          <Tab label="Bright" value={1} />
+          <Tab label="Grey" value={2} />
+        </Tabs>
+        {qlScienceTab === 0 ? <Display config={'darksurvey'} /> : null}
+        {qlScienceTab === 1 ? <Display config={'brightsurvey'} /> : null}
+        {qlScienceTab === 2 ? <Display config={'greysurvey'} /> : null}
+      </div>
+    );
+  };
+
+  renderCalibration = () => {
+    const { qlCalibrationTab, qlTab } = this.state;
+    if (qlTab !== 1) return null;
+    return (
+      <div>
+        <Tabs
+          value={qlCalibrationTab}
+          onChange={this.handleQlCalibrationTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          fullWidth
+          centered
+        >
+          <Tab label="Flat" value={0} />
+          <Tab label="Flat Preproc" value={1} />
+          <Tab label="Dark Current" value={2} />
+          <Tab label="Bias" value={3} />
+          <Tab label="ARC" value={4} />
+        </Tabs>
+        {qlCalibrationTab === 0 ? <Display config={'flat'} /> : null}
+        {qlCalibrationTab === 1 ? <Display config={'flat_preproc'} /> : null}
+        {qlCalibrationTab === 2 ? <Display config={'darkcurrent'} /> : null}
+        {qlCalibrationTab === 3 ? <Display config={'bias'} /> : null}
+        {qlCalibrationTab === 4 ? <Display config={'arcs'} /> : null}
+      </div>
+    );
   };
 
   renderTabs = () => {
@@ -49,12 +111,10 @@ export default class Configuration extends React.Component {
           centered
         >
           <Tab label="SCIENCE" value={0} />
-          <Tab label="FLAT" value={1} />
-          <Tab label="ARC" value={2} />
+          <Tab label="Calibration" value={1} />
         </Tabs>
-        {qlTab === 0 ? <Display config={'darksurvey'} /> : null}
-        {qlTab === 1 ? <Display config={'flat'} /> : null}
-        {qlTab === 2 ? <Display config={'arcs'} /> : null}
+        {qlTab === 0 ? this.renderScience() : null}
+        {qlTab === 1 ? this.renderCalibration() : null}
       </div>
     );
   };
