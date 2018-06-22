@@ -21,6 +21,13 @@ export default class PieChart extends Component {
   getColor = test => {
     if (test && !test.steps_status) return 'gray';
     if (
+      test &&
+      test.steps_status &&
+      test.steps_status.includes('WARNING') &&
+      !test.steps_status.includes('ALARM')
+    )
+      return 'yellow';
+    if (
       (test && test.steps_status && test.steps_status.includes('ALARM')) ||
       (!this.props.monitor &&
         test.steps_status.includes('None') &&

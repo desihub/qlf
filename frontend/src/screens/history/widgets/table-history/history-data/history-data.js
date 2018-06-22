@@ -74,7 +74,7 @@ export default class HistoryData extends React.Component {
     if (qaTests) {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
-        !JSON.stringify(qaTests).includes('FAILURE');
+        !JSON.stringify(qaTests).includes('ALARM');
       return this.renderQAStatus(testsFailed);
     }
     return this.renderQAStatus(false);
