@@ -1,7 +1,6 @@
 import os
 import configparser
 import copy
-from dashboard.bokeh.helper import get_last_process
 import logging
 
 logger = logging.getLogger(__name__)
@@ -109,8 +108,7 @@ class CameraStatus:
             self.update_qa_state(camera, cam, log)
             self.qa_petals[cam_index] = camera
 
-    def update_camera_status(self):
-        process = get_last_process()
+    def update_camera_status(self, process):
         label_name = list()
 
         for num in range(30):
@@ -125,7 +123,7 @@ class CameraStatus:
                 cameralog = None
                 log = str()
                 try:
-                    for item in process[0].get("process_jobs", list()):
+                    for item in process.get("process_jobs", list()):
                         if cam == item.get("camera"):
                             cameralog = os.path.join(
                                 desi_spectro_redux,
@@ -181,8 +179,8 @@ class CameraStatus:
         if band == 'b':
             self.cams_stages_b[stage]['camera'][camera] = status
 
-    def get_camera_status(self):
-        self.update_camera_status()
+    def get_camera_status(self, process):
+        self.update_camera_status(process)
         return {"r": self.cams_stages_r, "b": self.cams_stages_b, "z": self.cams_stages_z}
 
     def get_qa_petals(self):
