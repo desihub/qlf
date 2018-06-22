@@ -1,6 +1,4 @@
 #!/bin/bash
-source activate quicklook 
-
 echo "Initializing QLF Daemon..."
 
 export QLF_PROJECT=$(pwd)/framework/qlf
