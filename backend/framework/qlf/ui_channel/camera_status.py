@@ -1,4 +1,3 @@
-
 import os
 import configparser
 import copy
@@ -29,16 +28,59 @@ except Exception as error:
     logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
 
 
-def update_qa_state(cam, line):
+def update_qa_state(camera, cam, log):
+    for line in log:
+        if 'BIAS_STATUS' in line:
+            camera[cam]['preproc']['steps_status'][1] = line.split(
+                'BIAS_STATUS:'
+            )[1][1:-1]
+        elif 'XWSIGMA_STATUS' in line:
+            camera[cam]['preproc']['steps_status'][3] = line.split(
+                'XWSIGMA_STATUS:'
+            )[1][1:-1]
+        elif 'LITFRAC_STATUS' in line:
+            camera[cam]['preproc']['steps_status'][0] = line.split(
+                'LITFRAC_STATUS:'
+            )[1][1:-1]
+        elif 'NOISE_STATUS' in line:
+            camera[cam]['preproc']['steps_status'][2] = line.split(
+                'NOISE_STATUS:'
+            )[1][1:-1]
+        elif 'NGOODFIB_STATUS' in line:
+            camera[cam]['extract']['steps_status'][0] = line.split(
+                'NGOODFIB_STATUS:'
+            )[1][1:-1]
+        elif 'SKYCONT_STATUS' in line:
+            camera[cam]['fiberfl']['steps_status'][0] = line.split(
+                'SKYCONT_STATUS:'
+            )[1][1:-1]
+        elif 'PEAKCOUNT_STATUS' in line:
+            camera[cam]['fiberfl']['steps_status'][1] = line.split(
+                'PEAKCOUNT_STATUS:'
+            )[1][1:-1]
+        elif 'FIDSNR_STATUS' in line:
+            camera[cam]['skysubs']['steps_status'][2] = line.split(
+                'FIDSNR_STATUS:'
+            )[1][1:-1]
+        elif 'DELTAMAG_STATUS' in line:
+            camera[cam]['skysubs']['steps_status'][0] = line.split(
+                'DELTAMAG_STATUS:'
+            )[1][1:-1]
+        elif 'RESID_STATUS' in line:
+            camera[cam]['skysubs']['steps_status'][1] = line.split(
+                'RESID_STATUS:'
+            )[1][1:-1]
+
+
+def update_petals(cam, log):
     cam_index = None
-    print('qa_petals')
-    print(qa_petals)
-    print(line)
+
     for index, qa_petal in enumerate(qa_petals):
-        if cam in qa_petal.keys:
+        if cam in qa_petal.keys():
             cam_index = index
-    print(cam_index)
+
     camera = None
+
     if cam_index is None:
         camera = {
             cam: {
@@ -46,52 +88,22 @@ def update_qa_state(cam, line):
                     "steps_status": ["None"]
                 },
                 "fiberfl": {
-                    "steps_status": ["None","None"]
+                    "steps_status": ["None", "None"]
                 },
                 "preproc": {
-                    "steps_status": ["None","None","None","None"]
+                    "steps_status": ["None", "None", "None", "None"]
                 },
                 "skysubs": {
-                    "steps_status": ["None","None","None"]
+                    "steps_status": ["None", "None", "None"]
                 }
             }
         }
-    else:
-        camera = qa_petals[cam_index]
-    print(camera)
-    if 'BIAS_STATUS' in line:
-        camera[cam]['preproc']['steps_status'][1] = line.split('BIAS_STATUS:')[1][1:-1]
-    elif 'XWSIGMA_STATUS' in line:
-        camera[cam]['preproc']['steps_status'][3] = line.split('XWSIGMA_STATUS:')[1][1:-1]
-    elif 'LITFRAC_STATUS' in line:
-        camera[cam]['preproc']['steps_status'][0] = line.split('LITFRAC_STATUS:')[1][1:-1]
-    elif 'NOISE_STATUS' in line:
-        camera[cam]['preproc']['steps_status'][2] = line.split('NOISE_STATUS:')[1][1:-1]
-    elif 'NGOODFIB_STATUS' in line:
-        camera[cam]['extract']['steps_status'][0] = line.split('NGOODFIB_STATUS:')[1][1:-1]
-    elif 'SKYCONT_STATUS' in line:
-        camera[cam]['fiberfl']['steps_status'][1] = line.split('SKYCONT_STATUS:')[1][1:-1]
-    elif 'PEAKCOUNT_STATUS' in line:
-        camera[cam]['fiberfl']['steps_status'][1] = line.split('PEAKCOUNT_STATUS:')[1][1:-1]
-    elif 'FIDSNR_STATUS' in line:
-        camera[cam]['skysubs']['steps_status'][2] = line.split('FIDSNR_STATUS:')[1][1:-1]
-    elif 'Sky_Residual' in line:
-        camera[cam]['skysubs']['steps_status'][1] = line.split('Sky_Residual:')[1][1:-1]
-    elif 'DELTAMAG_STATUS' in line:
-        camera[cam]['skysubs']['steps_status'][0] = line.split('DELTAMAG_STATUS:')[1][1:-1]
-
-    if cam_index is None:
+        update_qa_state(camera, cam, log)
         qa_petals.append(camera)
     else:
+        camera = qa_petals[cam_index]
+        update_qa_state(camera, cam, log)
         qa_petals[cam_index] = camera
-
-
-def update_petals(cam, log):
-    for line in log:
-        if 'HDU_STATUS' in line:
-            next
-        elif '_STATUS' in line:
-            update_qa_state(cam, line)
 
 
 def update_camera_status():
@@ -124,7 +136,6 @@ def update_camera_status():
                         update_petals(cam, log)
 
             except Exception as e:
-                print(e)
                 logger.warn(e)
 
             if "Pipeline completed. Final result" in ''.join(log):
@@ -175,5 +186,4 @@ def get_camera_status():
 
 
 def get_qa_petals():
-    print(qa_petals)
     return qa_petals

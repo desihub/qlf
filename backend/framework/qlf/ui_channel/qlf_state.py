@@ -74,7 +74,7 @@ class QLFState:
             self.current_process = get_monitor_process(self.current_process_id)
         else:
             return
-        print('aqui')
+
         if 'detail' not in self.current_process:
             self.update_pipeline_log()
             self.logfile = self.tail_file(open_file('logfile'), 100)
@@ -82,7 +82,6 @@ class QLFState:
                 self.current_process
             )
             self.exposure = self.current_process["exposure"]
-            # self.qa_results = self.current_process.get("qa_tests")
             self.current_process_id = self.current_process.get("id")
             date = get_date(self.exposure) if self.exposure else None
             self.date_time = date.value if date else ''

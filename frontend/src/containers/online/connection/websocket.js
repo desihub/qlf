@@ -22,8 +22,6 @@ class Connection extends Component {
 
   handleData = data => {
     const result = JSON.parse(data);
-    console.log(result.cameras)
-    console.log(result.qa_results)
     if (result.notification) {
       const notification = JSON.parse(result.notification);
       this.props.updateNotifications(notification);

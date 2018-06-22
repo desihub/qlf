@@ -58,7 +58,7 @@ class LoadMetrics:
 
         self.alert_keys = {
             'getrms': 'NOISE_STATUS',
-            'countpix': 'NPIX_STATUS',
+            'countpix': 'LITFRAC_STATUS',
             'getbias': 'BIAS_STATUS',
             'countbins': 'NGOODFIB_STATUS',
             'integ': 'DELTAMAG_STATUS',
@@ -66,7 +66,7 @@ class LoadMetrics:
             'snr': 'FIDSNR_STAT',
             'skycont': 'SKYCONT_STATUS',
             'skypeak': 'PEAKCOUNT_STATUS',
-            'skyresid': 'RESIDRMS_STAT',
+            'skyresid': 'RESID_STATUS',
         }
 
         self.status = {
