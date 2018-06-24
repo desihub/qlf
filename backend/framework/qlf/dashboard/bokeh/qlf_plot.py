@@ -36,10 +36,15 @@ def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrn
                 <td>{}</td>
                 <td> {:d}</td>
                 </tr>""".format(names[i], vals[i])
-            elif(isinstance(names[i],str)):
+            elif(isinstance(vals[i],str)):
                 tblines=tblines+"""<tr>
                 <td>{}</td>
                 <td> {}</td>
+                </tr>""".format(names[i], vals[i])
+            elif(isinstance(vals[i],float)):
+                tblines=tblines+"""<tr>
+                <td>{}</td>
+                <td> {:.3f}</td>
                 </tr>""".format(names[i], vals[i])
 
             else:
