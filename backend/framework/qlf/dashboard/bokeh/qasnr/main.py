@@ -128,28 +128,28 @@ qso_fit = ColumnDataSource(data=data_fit.copy())
 star_fit = ColumnDataSource(data=data_fit.copy())
 
 elg.data['x'] = elg_snr[1] 
-elg.data['y'] = elg_snr[0] 
+elg.data['y'] = np.array( elg_snr[0])**2 
 elg.data['logy'] = np.log10(np.array(elg_snr[0]))
 elg.data['fiber_id'] = snr['ELG_FIBERID']
 elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
 elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
 #2#'''
 lrg.data['x'] = lrg_snr[1] 
-lrg.data['y'] = lrg_snr[0] 
+lrg.data['y'] = np.array(lrg_snr[0] )**2
 lrg.data['logy'] = np.log10(np.array(lrg_snr[0]))
 lrg.data['fiber_id'] = snr['LRG_FIBERID']
 lrg.data['ra'] = [snr['RA'][i] for i in snr['LRG_FIBERID'] ]
 lrg.data['dec'] = [snr['DEC'][i] for i in snr['LRG_FIBERID'] ]
 
 qso.data['x'] = qso_snr[1] 
-qso.data['y'] = qso_snr[0] 
+qso.data['y'] = np.array(qso_snr[0] )**2
 qso.data['logy'] = np.log10(np.array(qso_snr[0]))
 qso.data['fiber_id'] = snr['QSO_FIBERID']
 qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
 qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
 #2#'''
 star.data['x'] = star_snr[1] 
-star.data['y'] = star_snr[0] 
+star.data['y'] = np.array(star_snr[0] )**2
 star.data['logy'] = np.log10(np.array(star_snr[0]))
 star.data['fiber_id'] = snr['STAR_FIBERID']
 star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
@@ -159,21 +159,21 @@ star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
 xfit, yfit  = fit_func(elg_snr[1], 	snr['FITCOEFF_TGT'][sort_idx[0]])
 elg_fit.data['x'] = xfit
 elg_fit.data['logy'] = np.log10(yfit)
-elg_fit.data['y'] = (yfit)
+elg_fit.data['y'] = np.array(yfit)**2
 for key in ['fiber_id', 'ra', 'dec']:
     elg_fit.data[key] = ['']*len(yfit)
 #2#'''
 xfit, yfit = fit_func(lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
 lrg_fit.data['x'] = xfit
 lrg_fit.data['logy'] = np.log10(yfit)
-lrg_fit.data['y'] = yfit
+lrg_fit.data['y'] = np.array(yfit)**2
 for key in ['fiber_id', 'ra', 'dec']:
     lrg_fit.data[key] = ['']*len(yfit)
 
 xfit, yfit = fit_func(qso_snr[1], snr['FITCOEFF_TGT'][sort_idx[2]])
 qso_fit.data['x'] = xfit
 qso_fit.data['logy'] = np.log10(yfit)
-qso_fit.data['y'] = yfit
+qso_fit.data['y'] = np.array(yfit)**2
 for key in ['fiber_id', 'ra', 'dec']:
     qso_fit.data[key] = ['']*len(yfit)
 #2#'''
@@ -181,7 +181,7 @@ xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[3]])
 #2#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
 star_fit.data['x'] = xfit
 star_fit.data['logy'] = np.log10(yfit)
-star_fit.data['y'] = yfit
+star_fit.data['y'] = np.array(yfit)**2
 for key in ['fiber_id', 'ra', 'dec']:
     star_fit.data[key] = ['']*len(yfit)
 
@@ -189,7 +189,7 @@ for key in ['fiber_id', 'ra', 'dec']:
 html_tooltip = """
     <div>
         <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">SNR: </span>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">SNR^2: </span>
             <span style="font-size: 13px; color: #515151;">@y</span>
         </div>
         <div>
@@ -224,7 +224,7 @@ elg_plot.circle(x='x', y=y_plot, source=elg, color="blue", size=8, line_color='b
             ,hover_color="blue", hover_alpha=1, hover_line_color='red')
 
 elg_plot.xaxis.axis_label = "DECAM_R"
-elg_plot.yaxis.axis_label = "MEDIAN SNR"
+elg_plot.yaxis.axis_label = "MEDIAN SNR^2"
 elg_plot.title.text = "ELG"
 
 taptool = elg_plot.select(type=TapTool)
@@ -237,7 +237,7 @@ lrg_plot.circle(x='x', y=y_plot, source=lrg, color="red", size=8, line_color='bl
             , hover_color="red",hover_alpha=1, hover_line_color='red')
 
 lrg_plot.xaxis.axis_label = "DECAM_R"
-lrg_plot.yaxis.axis_label = "MEDIAN SNR"
+lrg_plot.yaxis.axis_label = "MEDIAN SNR^2"
 lrg_plot.title.text = "LRG"
 
 taptool = lrg_plot.select(type=TapTool)
@@ -250,7 +250,7 @@ qso_plot.circle(x='x', y=y_plot, source=qso, color="green", size=8, line_color='
             ,hover_color="green", hover_alpha=1, hover_line_color='red')
 
 qso_plot.xaxis.axis_label = "DECAM_R"
-qso_plot.yaxis.axis_label = "MEDIAN SNR"
+qso_plot.yaxis.axis_label = "MEDIAN SNR^2"
 qso_plot.title.text = "QSO"
 
 taptool = qso_plot.select(type=TapTool)
@@ -263,7 +263,7 @@ star_plot.circle(x='x', y=y_plot, source=star, color="orange", size=8, line_colo
             ,hover_color="orange", hover_alpha=1, hover_line_color='red')
 
 star_plot.xaxis.axis_label = "DECAM_R"
-star_plot.yaxis.axis_label = "MEDIAN SNR"
+star_plot.yaxis.axis_label = "MEDIAN SNR^2"
 star_plot.title.text = "STAR"
 
 #taptool = star_plot.select(type=TapTool)
@@ -388,6 +388,8 @@ xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
                       location=(0, 0))
 
 p.add_layout(xcolor_bar, 'right')
+taptool = p.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
 
 #plot= gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
 
