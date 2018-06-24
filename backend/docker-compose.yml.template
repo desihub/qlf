@@ -32,7 +32,7 @@ services:
       - QLF_PORT=8001
       - EXPOSURE_GENERATOR_NS=exposure.generator
       - EXPOSURE_MONITORING_NS=exposure.monitoring
-      - PYRO_HOST=localhost
+      - PYRO_HOST=pipeline
       - PYRO_PORT=56006
       - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001
       - DB_NAME=db
@@ -41,8 +41,6 @@ services:
       - WEBSOCKET_UPDATE_INTERVAL=3
       - UPDATE_DEPENDENCIES=true
       - DAEMON_TEST=false
-      - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
-      - QLF_CFG=/app/framework/config/qlf.cfg
     volumes:
       - .:/app
     working_dir: /app/
@@ -54,6 +52,49 @@ services:
     depends_on:
       - redis
       - db
+      - pipeline
+  pipeline:
+    # build: .
+    image: linea/backend_qlf:v0.3.0
+    environment:
+      - QLF_API_URL=http://localhost:8001/dashboard/api
+      - QLF_BASE_URL=http://localhost:8001
+      - BOKEH_SERVER=localhost
+      - QLF_HOSTNAME=localhost
+      - QLF_ROOT=/app/
+      - DESI_SPECTRO_DATA=/app/spectro/data
+      - DESI_SPECTRO_REDUX=/app/spectro/redux
+      - QL_SPEC_DATA=/app/spectro/data
+      - QL_SPEC_REDUX=/app/spectro/redux
+      - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
+      - POSTGRES_PASSWORD=qlfuser
+      - POSTGRES_USER=userqlf
+      - POSTGRES_DB=dbqlf
+      - EMAIL_USE_TLS = False
+      - EMAIL_HOST=localhost
+      - EMAIL_PORT=25
+      - EMAIL_HELPDESK=LIneA Science Server <helpdesk@linea.gov.br>
+      - BOKEH_PORT=5007
+      - QLF_PORT=8001
+      - EXPOSURE_GENERATOR_NS=exposure.generator
+      - EXPOSURE_MONITORING_NS=exposure.monitoring
+      - PYRO_HOST=localhost
+      - PYRO_PORT=56006
+      - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001
+      - DB_NAME=db
+      - REDIS_NAME=redis
+      - BOKEH_TEST=false
+      - WEBSOCKET_UPDATE_INTERVAL=3
+      - UPDATE_DEPENDENCIES=true
+      - DAEMON_TEST=false
+    volumes:
+      - .:/app
+    working_dir: /app/
+    command: ./startDaemon.sh
+    ports:
+      - "56006:56006"
+    depends_on:
+      - db  
   redis:
     image: redis
     ports:
