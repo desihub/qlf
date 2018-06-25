@@ -46,7 +46,11 @@ try:
 except:
     sys.exit('Could not load metrics')
 
-snr = metrics['snr']
+
+if not metrics.get('snr', None):
+    sys.exit('Could not load SNR')
+else:
+    snr=metrics['snr']
 
 try:
     exptime = tests['checkHDUs']['EXPTIME']
