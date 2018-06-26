@@ -160,8 +160,8 @@ info_col=Div(text=write_description('skycont'), width=p2.plot_width)
 
 nrg= tests['skycont']['SKYCONT_NORMAL_RANGE']
 wrg= tests['skycont']['SKYCONT_WARN_RANGE']
-tb = html_table( names=['SKYCONT'],vals=['{:.3f}'.format(skycont['SKYCONT']) ], nrng=nrg, wrng=wrg  )
-tbinfo=Div(text=tb, width=400, height=300)
+tb = html_table( names=['Sky continuum averaged over sky fibers'],vals=['{:.3f}'.format(skycont['SKYCONT']) ], nrng=nrg, wrng=wrg  )
+tbinfo=Div(text=tb, width=500, height=300)
 
 
 p2txt = column(info_col,row(p2, tbinfo))

@@ -43,11 +43,14 @@ cam = selected_arm+str(selected_spectrograph)
 try:
     lm = get_scalar_metrics(selected_process_id, cam)
     metrics, tests = lm['results']['metrics'], lm['results']['tests']
-    print(metrics.keys())
 except:
     sys.exit('Could not load metrics')
 
-snr = metrics['snr']
+
+if not metrics.get('snr', None):
+    sys.exit('Could not load SNR')
+else:
+    snr=metrics['snr']
 
 try:
     exptime = tests['checkHDUs']['EXPTIME']
@@ -57,35 +60,62 @@ except:
     name_warn = ' (exptime fixed)'
     print('EXPTIME NOT FOUND, USING 1000')
 
-print(lm.keys())
-print(lm['results'].keys())
-print(lm['results']['metrics'].keys(), lm['results']['tests'].keys())
+qlf_obj = ['ELG','LRG','QSO', 'STAR']
+keys_snr=list(snr.keys())
+objst={}
+avobj = [] #available object   
+for obj in qlf_obj:
+    if obj+'_FIBERID' in keys_snr:
+        objst.update({obj:True})
+        avobj.append(obj)
+    else:
+        objst.update({obj:False})
+
+
 
 #sort the correct vector:
 fiberlen = []
 snrlen = []
-for i, key in enumerate(['ELG_FIBERID', 'LRG_FIBERID','QSO_FIBERID', 'STAR_FIBERID']):
+for i, key in enumerate(avobj):
 #2#for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
-    fiberlen.append( len(snr[key]))
-    snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
+    if objst[key]:
+        fiberlen.append( len(snr[key+'_FIBERID']))
+        snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
 
-print('\n\n\n\nfiberlen', fiberlen)
-print('snrlen', snrlen)
+
+
 try:
-    sort_idx=[ snrlen.index(fiberlen[i]) for i in range(4)]
+    sort_idx=[ snrlen.index(fiberlen[i]) for i in range(len(avobj))]
     #2#sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
 except:
     #2#sort_idx=[0,1]
-    logger.info('Inconsistence in FIBERID and SNR lenght')        
+    logger.info('Inconsistence in FIBERID and SNR lenght')   
 
+
+
+idx=0
+if (objst['ELG']):
+    elg_snr  = snr['SNR_MAG_TGT'][sort_idx[idx]] 
+    idx+=1
+if (objst['LRG']):                
+    lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[idx]] 
+    idx+=1
+if (objst['QSO']):                
+    qso_snr  = snr['SNR_MAG_TGT'][sort_idx[idx]] 
+    idx+=1
+if (objst['STAR']):  
+    star_snr  = snr['SNR_MAG_TGT'][sort_idx[idx]] 
+
+
+'''
 elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
 #2#star_snr = snr['SNR_MAG_TGT'][sort_idx[1]]
 lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
 qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
 star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
+'''
 
-print(sort_idx)
-print('\n\n\n\n', snr['FITCOEFF_TGT'])
+
 
 def fit_func(xdata, coeff):
     """ astro fit 
@@ -103,7 +133,6 @@ def fit_func(xdata, coeff):
 data_model = {
     'x': [],
     'y': [],
-    'logy': [],
     'fiber_id': [],
     'ra': [],
     'dec': []
@@ -117,7 +146,6 @@ star = ColumnDataSource(data=data_model.copy())
 data_fit = {
     'x': [],
     'y': [],
-    'logy': [],
     'fiber_id': [],
     'ra': [],
     'dec': []
@@ -127,69 +155,77 @@ lrg_fit = ColumnDataSource(data=data_fit.copy())
 qso_fit = ColumnDataSource(data=data_fit.copy())
 star_fit = ColumnDataSource(data=data_fit.copy())
 
-elg.data['x'] = elg_snr[1] 
-elg.data['y'] = elg_snr[0] 
-elg.data['logy'] = np.log10(np.array(elg_snr[0]))
-elg.data['fiber_id'] = snr['ELG_FIBERID']
-elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
-elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
-#2#'''
-lrg.data['x'] = lrg_snr[1] 
-lrg.data['y'] = lrg_snr[0] 
-lrg.data['logy'] = np.log10(np.array(lrg_snr[0]))
-lrg.data['fiber_id'] = snr['LRG_FIBERID']
-lrg.data['ra'] = [snr['RA'][i] for i in snr['LRG_FIBERID'] ]
-lrg.data['dec'] = [snr['DEC'][i] for i in snr['LRG_FIBERID'] ]
+idx=0
+if objst['ELG']:
+    elg.data['x'] = elg_snr[1] 
+    elg.data['y'] = np.array( elg_snr[0])**2 
+    elg.data['fiber_id'] = snr['ELG_FIBERID']
+    elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
+    elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
 
-qso.data['x'] = qso_snr[1] 
-qso.data['y'] = qso_snr[0] 
-qso.data['logy'] = np.log10(np.array(qso_snr[0]))
-qso.data['fiber_id'] = snr['QSO_FIBERID']
-qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
-qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
+    xfit, yfit  = fit_func(elg_snr[1], 	snr['FITCOEFF_TGT'][sort_idx[idx]])
+    idx+=1
+    elg_fit.data['x'] = xfit
+    elg_fit.data['y'] = np.array(yfit)**2
+    for key in ['fiber_id', 'ra', 'dec']:
+        elg_fit.data[key] = ['']*len(yfit)
+
 #2#'''
-star.data['x'] = star_snr[1] 
-star.data['y'] = star_snr[0] 
-star.data['logy'] = np.log10(np.array(star_snr[0]))
-star.data['fiber_id'] = snr['STAR_FIBERID']
-star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
-star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
+if objst['LRG']:
+    lrg.data['x'] = lrg_snr[1] 
+    lrg.data['y'] = np.array(lrg_snr[0] )**2
+    lrg.data['fiber_id'] = snr['LRG_FIBERID']
+    lrg.data['ra'] = [snr['RA'][i] for i in snr['LRG_FIBERID'] ]
+    lrg.data['dec'] = [snr['DEC'][i] for i in snr['LRG_FIBERID'] ]
+
+    xfit, yfit = fit_func(lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
+    idx+=1
+    lrg_fit.data['x'] = xfit
+    lrg_fit.data['y'] = np.array(yfit)**2
+    for key in ['fiber_id', 'ra', 'dec']:
+        lrg_fit.data[key] = ['']*len(yfit)
 
 
-xfit, yfit  = fit_func(elg_snr[1], 	snr['FITCOEFF_TGT'][sort_idx[0]])
-elg_fit.data['x'] = xfit
-elg_fit.data['logy'] = np.log10(yfit)
-elg_fit.data['y'] = (yfit)
-for key in ['fiber_id', 'ra', 'dec']:
-    elg_fit.data[key] = ['']*len(yfit)
-#2#'''
-xfit, yfit = fit_func(lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
-lrg_fit.data['x'] = xfit
-lrg_fit.data['logy'] = np.log10(yfit)
-lrg_fit.data['y'] = yfit
-for key in ['fiber_id', 'ra', 'dec']:
-    lrg_fit.data[key] = ['']*len(yfit)
+if objst['QSO']:
+    qso.data['x'] = qso_snr[1] 
+    qso.data['y'] = np.array(qso_snr[0] )**2    
+    qso.data['fiber_id'] = snr['QSO_FIBERID']
+    qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
+    qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
+    
+    xfit, yfit = fit_func(qso_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
+    idx+=1
+    qso_fit.data['x'] = xfit
+    qso_fit.data['y'] = np.array(yfit)**2
+    for key in ['fiber_id', 'ra', 'dec']:
+        qso_fit.data[key] = ['']*len(yfit)
 
-xfit, yfit = fit_func(qso_snr[1], snr['FITCOEFF_TGT'][sort_idx[2]])
-qso_fit.data['x'] = xfit
-qso_fit.data['logy'] = np.log10(yfit)
-qso_fit.data['y'] = yfit
-for key in ['fiber_id', 'ra', 'dec']:
-    qso_fit.data[key] = ['']*len(yfit)
+
+if objst['STAR']:
+    star.data['x'] = star_snr[1] 
+    star.data['y'] = np.array(star_snr[0] )**2
+    star.data['fiber_id'] = snr['STAR_FIBERID']
+    star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
+    star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
+
+    xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
+    #2#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
+    star_fit.data['x'] = xfit
+    star_fit.data['y'] = np.array(yfit)**2
+    for key in ['fiber_id', 'ra', 'dec']:
+        star_fit.data[key] = ['']*len(yfit)
+
+
+
 #2#'''
-xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[3]])
-#2#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
-star_fit.data['x'] = xfit
-star_fit.data['logy'] = np.log10(yfit)
-star_fit.data['y'] = yfit
-for key in ['fiber_id', 'ra', 'dec']:
-    star_fit.data[key] = ['']*len(yfit)
+
+#2#'''
 
 # here we make the plots
 html_tooltip = """
     <div>
         <div>
-            <span style="font-size: 12px; font-weight: bold; color: #303030;">SNR: </span>
+            <span style="font-size: 12px; font-weight: bold; color: #303030;">SNR^2: </span>
             <span style="font-size: 13px; color: #515151;">@y</span>
         </div>
         <div>
@@ -223,8 +259,8 @@ elg_plot.line(x='x', y=y_plot,source=elg_fit, color="black", line_width=lw, line
 elg_plot.circle(x='x', y=y_plot, source=elg, color="blue", size=8, line_color='black', alpha=0.7
             ,hover_color="blue", hover_alpha=1, hover_line_color='red')
 
-elg_plot.xaxis.axis_label = "DECAM_R"
-elg_plot.yaxis.axis_label = "MEDIAN SNR"
+elg_plot.xaxis.axis_label = "DECAM_{}".format(str(selected_arm).upper())
+elg_plot.yaxis.axis_label = "MEDIAN SNR^2"
 elg_plot.title.text = "ELG"
 
 taptool = elg_plot.select(type=TapTool)
@@ -236,8 +272,8 @@ lrg_plot.line(x='x', y=y_plot, source=lrg_fit, color="black", line_width=lw, lin
 lrg_plot.circle(x='x', y=y_plot, source=lrg, color="red", size=8, line_color='black', alpha=0.7
             , hover_color="red",hover_alpha=1, hover_line_color='red')
 
-lrg_plot.xaxis.axis_label = "DECAM_R"
-lrg_plot.yaxis.axis_label = "MEDIAN SNR"
+lrg_plot.xaxis.axis_label = "DECAM_{}".format(str(selected_arm).upper())
+lrg_plot.yaxis.axis_label = "MEDIAN SNR^2"
 lrg_plot.title.text = "LRG"
 
 taptool = lrg_plot.select(type=TapTool)
@@ -249,8 +285,8 @@ qso_plot.line(x='x', y=y_plot, source=qso_fit, color="black", line_width=lw, lin
 qso_plot.circle(x='x', y=y_plot, source=qso, color="green", size=8, line_color='black', alpha=0.7
             ,hover_color="green", hover_alpha=1, hover_line_color='red')
 
-qso_plot.xaxis.axis_label = "DECAM_R"
-qso_plot.yaxis.axis_label = "MEDIAN SNR"
+qso_plot.xaxis.axis_label = "DECAM_{}".format(str(selected_arm).upper())
+qso_plot.yaxis.axis_label = "MEDIAN SNR^2"
 qso_plot.title.text = "QSO"
 
 taptool = qso_plot.select(type=TapTool)
@@ -262,8 +298,8 @@ star_plot.line(x='x', y=y_plot, source=star_fit, color="black", line_width=lw, l
 star_plot.circle(x='x', y=y_plot, source=star, color="orange", size=8, line_color='black', alpha=0.7
             ,hover_color="orange", hover_alpha=1, hover_line_color='red')
 
-star_plot.xaxis.axis_label = "DECAM_R"
-star_plot.yaxis.axis_label = "MEDIAN SNR"
+star_plot.xaxis.axis_label = "DECAM_{}".format(str(selected_arm).upper())
+star_plot.yaxis.axis_label = "MEDIAN SNR^2"
 star_plot.title.text = "STAR"
 
 #taptool = star_plot.select(type=TapTool)
@@ -313,35 +349,50 @@ snr_tooltip = """
     </div>
 """
 snr_hover = HoverTool(tooltips=snr_tooltip)
-snr = metrics['snr']
+
 skycont=metrics['skycont']
 median = snr['MEDIAN_SNR']
 resid = snr['SNR_RESID']
 qlf_fiberid = range(0,500)
 my_palette = get_palette('bwr')
 
-obj_type = []
-fibersnr = []
-for i in qlf_fiberid:
-    if i in snr['ELG_FIBERID']:
-        obj_type.append('ELG')
-        fibersnr.append(i) 
-    #2#'''
-    elif i in snr['QSO_FIBERID']:
-        obj_type.append('QSO')
-        fibersnr.append(i)
-    elif i in snr['LRG_FIBERID']:
-        obj_type.append('LRG')
-        fibersnr.append(i)
-    #2#'''
-    elif i in snr['STAR_FIBERID']:
-        obj_type.append('STAR')
-        fibersnr.append(i)
-    elif i in skycont['SKYFIBERID']:
-        obj_type.append('SKY')
-    else:
-        obj_type.append('UNKNOWN')
 
+
+fibersnr=[]
+obj_type=['']*500
+for i in avobj:
+    fibersnr.append(snr[i+'_FIBERID'])
+    for j in snr[i+'_FIBERID']:
+        obj_type[j] =  i
+for j in skycont['SKYFIBERID']:
+    obj_type[j] =  'SKY'
+
+fibersnr=fibersnr[0]
+fibersnr.sort()
+
+
+try:
+    for i in qlf_fiberid:
+        if i in snr['ELG_FIBERID']:
+            obj_type.append('ELG')
+            fibersnr.append(i) 
+        #2#'''
+        elif i in snr['QSO_FIBERID']:
+            obj_type.append('QSO')
+            fibersnr.append(i)
+        elif i in snr['LRG_FIBERID']:
+            obj_type.append('LRG')
+            fibersnr.append(i)
+        #2#'''
+        elif i in snr['STAR_FIBERID']:
+            obj_type.append('STAR')
+            fibersnr.append(i)
+        elif i in skycont['SKYFIBERID']:
+            obj_type.append('SKY')
+        else:
+            obj_type.append('UNKNOWN')
+except:
+    pass#obj_type = ['']*500
 
 source = ColumnDataSource(data={
     'x1': [snr['RA'][i] for i in fibersnr ],
@@ -360,6 +411,7 @@ radius = 0.013#0.015
 radius_hover = 0.015#0.0165
 
 # axes limit
+
 xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
 ymin, ymax = [min(snr['DEC'][:]), max(snr['DEC'][:])]
 xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
@@ -369,7 +421,8 @@ bottom, top = ymin-yfac, ymax+yfac
 p = Figure(title='Residual SNR'+name_warn
         , x_axis_label='RA', y_axis_label='DEC'
         , plot_width=650, plot_height=550
-        , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"])
+        , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"]
+        ,x_range=(left,right), y_range=(bottom, top) )
 # Color Map
 p.circle('x1', 'y1', source=source, name="data", radius=radius,
          fill_color={'field': 'resid_snr', 'transform': mapper},
@@ -388,12 +441,14 @@ xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
                       location=(0, 0))
 
 p.add_layout(xcolor_bar, 'right')
+taptool = p.select(type=TapTool)
+taptool.callback = OpenURL(url=url)
 
 #plot= gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
 
 nrg= tests['snr']['FIDSNR_NORMAL_RANGE']
 wrg= tests['snr']['FIDSNR_WARN_RANGE']
-names = ['FIDSNR ELG', 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
+names = ['FIDSNR %s'%i for i in avobj] #, 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
 vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
 tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )
 tbinfo=Div(text=tb, width=600, height=300)

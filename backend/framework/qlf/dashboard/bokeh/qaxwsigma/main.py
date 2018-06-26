@@ -5,6 +5,7 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
+from bokeh.models import Span, Label
 
 from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
@@ -41,13 +42,18 @@ cam = selected_arm+str(selected_spectrograph)
 try:
     lm = get_scalar_metrics(selected_process_id, cam)
     metrics, tests  = lm['results']['metrics'], lm['results']['tests']
+    print(metrics.keys())
 except:
     sys.exit('Could not load metrics')
 
-xwsigma   = metrics['xwsigma']
-snr       = metrics['snr'] #RA and DEC info
-skycont   = metrics['skycont']
+xwsigma = metrics['xwsigma']
+par     = tests['xwsigma']
+snr     = metrics['snr'] #RA and DEC info
+skycont = metrics['skycont']
 
+warn_rg = par['XWSIGMA_WARN_RANGE']
+delta_rg = warn_rg[1]-warn_rg[0]
+hist_rg = (warn_rg[0] -0.1*delta_rg, warn_rg[1]+0.1*delta_rg)
 
 my_palette = get_palette("viridis") #"seismic")#"RdYlBu_r")#"viridis")
 
@@ -307,6 +313,7 @@ def histpar(yscale, hist):
         histval = 'hist'
     return [ylabel,yrange,bottomval,histval]
 
+yrangex=yrange
 
 xhistlabel= "XSIGMA"
 yscale = "auto"
@@ -344,7 +351,7 @@ p_hist_x = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
            y_axis_label= ylabel, x_axis_label=xhistlabel, background_fill_color="white"
         , plot_width=700, plot_height=300
         , x_axis_type="auto",    y_axis_type=yscale
-        , y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
+        , y_range=yrange, x_range= hist_rg )#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
 p_hist_x.quad(top=histval, bottom=bottomval, left='left', right='right',
        source=source_hist, 
@@ -381,17 +388,63 @@ source_hist = ColumnDataSource(data={
 hover = HoverTool(tooltips=hist_tooltip_w)
 
 ylabel,yrange,bottomval,histval = histpar(yscale, hist)
+yrangew=yrange
 
 p_hist_w = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
            y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
         , plot_width=700, plot_height=300
         , x_axis_type="auto",    y_axis_type=yscale
-        ,y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
+        ,y_range=yrange, x_range=hist_rg)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
 p_hist_w.quad(top= histval, bottom=bottomval, left='left', right='right',
        source=source_hist, 
         fill_color="dodgerblue", line_color="black", alpha=0.8,
        hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
+
+#--------------------------------------------------------------
+# vlines ranges:
+bname = 'XWSIGMA'
+print(par[bname+'_NORMAL_RANGE'])
+
+for ialert in par[bname+'_NORMAL_RANGE']:
+    spans = Span(location= ialert , dimension='height', line_color='green',
+                          line_dash='dashed', line_width=2)
+    p_hist_x.add_layout(spans)
+    my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data', text='Normal Range', text_color='green', angle=np.pi/2.)
+    p_hist_x.add_layout(my_label)
+
+for ialert in par[bname+'_WARN_RANGE']:
+    spans = Span(location= ialert , dimension='height', line_color='tomato',
+                          line_dash='dotdash', line_width=2)
+    p_hist_x.add_layout(spans)
+    my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
+    p_hist_x.add_layout(my_label)
+
+
+
+
+
+#medianline = Span(location= residmed, dimension='height', line_color='black', line_dash='solid', line_width=2)
+#p_hist.add_layout(medianline)
+#my_label = Label(x=residmed, y=0.94*yrange[-1], y_units='data', text='Median', text_color='black', angle=0.
+#                ,background_fill_color='white', text_align="center",background_fill_alpha=.8)
+#p_hist.add_layout(my_label)
+
+
+for ialert in par[bname+'_NORMAL_RANGE']:
+    spans = Span(location= ialert , dimension='height', line_color='green',
+                          line_dash='dashed', line_width=2)
+    p_hist_w.add_layout(spans)
+    my_label = Label(x=ialert, y=yrangew[-1]/2.2, y_units='data', text='Normal Range', text_color='green', angle=np.pi/2.)
+    p_hist_w.add_layout(my_label)
+
+for ialert in par[bname+'_WARN_RANGE']:
+    spans = Span(location= ialert , dimension='height', line_color='tomato',
+                          line_dash='dotdash', line_width=2)
+    p_hist_w.add_layout(spans)
+    my_label = Label(x=ialert, y=yrangew[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
+    p_hist_w.add_layout(my_label)
+
 
 
 #--------------------------------------------------------------------------
