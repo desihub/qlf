@@ -40,7 +40,7 @@ def ws_message(message):
         })
         return
     if message.content['text'] == "stopPipeline":
-        if qlf_state.current_process_id is not str():
+        if qlf_state.pipeline_running is not 1:
             us.pipeline_message('Process {} aborted.'.format(
                 qlf_state.current_process_id))
         us.stop_daemon()
