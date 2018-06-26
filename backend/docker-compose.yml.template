@@ -10,6 +10,7 @@ services:
       - "5433:5432"
   qlf:
     build: .
+    user: ${CURRENT_UID}
     environment:
       - QLF_API_URL=http://localhost:8001/dashboard/api
       - QLF_BASE_URL=http://localhost:8001
