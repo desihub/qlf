@@ -1,5 +1,11 @@
 export const tableColumns = [
   {
+    processKey: 'runtime',
+    exposureKey: null,
+    name: 'Status',
+    type: 'status',
+  },
+  {
     processKey: 'exposure__program',
     exposureKey: 'program',
     name: 'Program',
