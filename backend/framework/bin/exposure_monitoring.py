@@ -1,6 +1,7 @@
 import datetime
 import time
 from multiprocessing import Event, Process, Value
+from concurrent import futures
 from threading import Thread
 
 from clients import get_exposure_generator, get_qlf_interface
@@ -29,6 +30,7 @@ class ExposureMonitoring(Process):
         super().__init__()
 
         self.process = None
+        self.pool = None
         self.exit = Event()
         self.running = Event()
         self.ics_last_exposure = {}
@@ -91,12 +93,24 @@ class ExposureMonitoring(Process):
                 exposure.get('flavor')
             ))
 
-            self.process = Thread(target=process_run,
-                                  args=(exposure, self.process_id,))
-            self.process.start()
+            self.pool = futures.ThreadPoolExecutor(max_workers=1)
+            self.process = self.pool.submit(process_run, exposure, self.process_id)
+
+            # self.process = Thread(target=process_run,
+            #                       args=(exposure, self.process_id,))
+            # self.process.start()
+
             self.running.set()
 
         logger.debug("Bye!")
+
+    def shutdown(self):
+        """ Turn off monitoring """
+
+        self.running.clear()
+        
+        if self.pool:
+            self.pool.shutdown()
 
 
 def process_run(exposure, process_id):

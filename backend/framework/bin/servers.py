@@ -56,6 +56,8 @@ class Monitoring(object):
             self.monitor.exit.set()
             logger.debug("Stop pid %i" % self.monitor.pid)
 
+            self.monitor.shutdown()
+
             pid = self.monitor.pid
 
             kill_proc_tree(pid, include_parent=False)
