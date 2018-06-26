@@ -84,6 +84,9 @@ def change_config_file(night, exposure_id, program):
     if config.get('FiberflatExpid', None):
         config['FiberflatExpid'] = fiberflat_exp_id
 
+    if config.get('WriteStaticPlots', None):
+        config['WriteStaticPlots'] = False
+
     if config.get('UseResolution', None):
         config['UseResolution'] = use_resolution
 
