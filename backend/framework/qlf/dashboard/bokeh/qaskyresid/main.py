@@ -265,13 +265,16 @@ info_col=Div(text=write_description('skyresid'), width=p2.plot_width)
 
 resid_vals=[]
 resid_names=[]
-for i in ['NBAD_PCHI','NREJ','NSKY_FIB','RESID_PER']:
+for i in ['MED_RESID','NREJ','NSKY_FIB']:#,'RESID_PER']:
     resid_names.append(i)
     if i == 'RESID_PER': #95% c.l. boundaries of residuals distribution
         resid_vals.append('[{:.3f}, {:.3f}]'.format(skyresid[i][0], skyresid[i][1])) 
+    elif isinstance(skyresid[i], float):
+        resid_vals.append('{:.3f}'.format(skyresid[i])  )
     else:
         resid_vals.append(skyresid[i]) 
-    
+   
+resid_names=['Median of Residuals (sky fibers)', 'Number of reject fibers', 'Number of good sky fibers'] 
 nrg= tests['skyresid']['RESID_NORMAL_RANGE']
 wrg= tests['skyresid']['RESID_WARN_RANGE']
 tb = html_table(names=resid_names, vals=resid_vals, nrng=nrg, wrng=wrg  )
