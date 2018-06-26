@@ -62,7 +62,7 @@ export function updateLastProcessAndMonitor(state) {
       state.processId !== '' &&
       !getState()
         .qlfOffline.recentProcesses.map(p => p.pk)
-        .includes(parseInt(state.processId))
+        .includes(parseInt(state.processId, 10))
     ) {
       await dispatch(getHistoryDateRange());
       dispatch(fetchLastProcess());
