@@ -22,7 +22,9 @@ class QLFInterface(object):
 
         spectro_data = cfg.get("namespace", "desi_spectro_data")
 
-        night = sorted(os.listdir(spectro_data), reverse=True)[:1]
+        night = re.findall(
+            r"(\d{8})",
+            ''.join(sorted(os.listdir(spectro_data), reverse=True)))[:1]
         night = ''.join(night)
 
         if not night:
@@ -31,14 +33,25 @@ class QLFInterface(object):
         
         night_path = os.path.join(spectro_data, night)
 
+        exposure = re.findall(
+            r"(\d{8})",
+            ''.join(sorted(os.listdir(night_path), reverse=True)))[:1]
+        exposure = ''.join(exposure)
+
+        if not exposure:
+            log.error("Empty exposures directory: {}".format(night_path))
+            return dict()
+
+        exposure_path = os.path.join(night_path, exposure)
+
         exp_dir = re.findall(
             r"desi-(\d+).fits.fz",
-            ''.join(sorted(os.listdir(night_path), reverse=True))
+            ''.join(sorted(os.listdir(exposure_path), reverse=True))
         )[:1]
         exp_dir = ''.join(exp_dir)
 
         if not exp_dir:
-            log.error("Not found exposures: {}".format(night_path))
+            log.error("Not found exposures: {}".format(exposure_path))
             return dict()
 
         return extract_exposure_data(int(exp_dir), night)
