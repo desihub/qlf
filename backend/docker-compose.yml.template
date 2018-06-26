@@ -26,7 +26,7 @@ services:
       - POSTGRES_USER=userqlf
       - POSTGRES_DB=dbqlf
       - POSTGRES_PORT=
-      - POSTGRES_OPTIONS=-c search_path=qlf
+      - POSTGRES_OPTIONS=
       - DB_NAME=db
       - EMAIL_USE_TLS = False
       - EMAIL_HOST=localhost
