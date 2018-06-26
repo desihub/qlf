@@ -51,7 +51,8 @@ export function updateLastProcessAndMonitor(state) {
   return function(dispatch, getState) {
     if (
       !getState().qlfOffline.recentProcesses ||
-      getState().qlfOnline.processId !== state.processId
+      getState().qlfOnline.processId !== state.processId ||
+      getState().qlfOnline.pipelineRunning !== state.pipelineRunning
     ) {
       dispatch(fetchLastProcess());
     }
