@@ -279,7 +279,8 @@ class QLFModels(object):
         """ Gets last processed exposures by program """
 
         try:
-            exposure = Exposure.objects.filter(program=program).latest('pk')
+            exposure = Exposure.objects.filter(process_exposure__isnull=False)
+            exposure = exposure.filter(program=program).latest('pk')
         except Exposure.DoesNotExist:
             exposure = None
 
