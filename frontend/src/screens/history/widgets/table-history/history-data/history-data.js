@@ -19,6 +19,12 @@ const styles = {
   notificationsIcon: {
     cursor: 'pointer',
   },
+  statusAbort: {
+    color: 'red',
+  },
+  statusNormal: {
+    color: 'green',
+  },
 };
 
 export default class HistoryData extends React.Component {
@@ -99,6 +105,14 @@ export default class HistoryData extends React.Component {
       >
         {this.qaSuccess()}
       </span>
+    );
+  };
+
+  renderStatus = aborted => {
+    return !aborted ? (
+      <span style={styles.statusNormal}>Normal</span>
+    ) : (
+      <span style={styles.statusAbort}>Aborted</span>
     );
   };
 
@@ -216,7 +230,16 @@ export default class HistoryData extends React.Component {
             key={`EXPV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
-            {!row.runtime && !processing ? 'ABORTED' : row.runtime}
+            {!row.runtime && !processing ? '' : row.runtime}
+          </TableCell>
+        );
+      case 'status':
+        return (
+          <TableCell
+            key={`EXPV${key}`}
+            style={{ ...styles.tableCell, ...lastProcessed }}
+          >
+            {this.renderStatus(!row.runtime && !processing)}
           </TableCell>
         );
       case 'qa':

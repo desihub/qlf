@@ -105,8 +105,10 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER', 'userqlf'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'qlfuser'),
         'HOST': os.environ.get('DB_NAME', 'db'),
-        # 'HOST': os.environ.get('DB_NAME', 'localhost'),
-        'PORT': '',
+        'OPTIONS': {
+            'options': os.environ.get('POSTGRES_OPTIONS', '')
+        },
+        'PORT': os.environ.get('POSTGRES_PORT', ''),
     }
 }
 #

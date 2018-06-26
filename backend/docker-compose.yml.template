@@ -25,6 +25,9 @@ services:
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
       - POSTGRES_DB=dbqlf
+      - POSTGRES_PORT=
+      - POSTGRES_OPTIONS=
+      - DB_NAME=db
       - EMAIL_USE_TLS = False
       - EMAIL_HOST=localhost
       - EMAIL_PORT=25
@@ -36,7 +39,6 @@ services:
       - PYRO_HOST=localhost
       - PYRO_PORT=56006
       - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001
-      - DB_NAME=db
       - REDIS_NAME=redis
       - BOKEH_TEST=false
       - WEBSOCKET_UPDATE_INTERVAL=3

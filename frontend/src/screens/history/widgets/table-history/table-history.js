@@ -356,12 +356,12 @@ class TableHistory extends Component {
 const styles = {
   root: {
     width: '100%',
-    overflowX: 'auto',
   },
   table: {
     textAlign: 'center',
     width: '100%',
     tableLayout: 'auto',
+    overflowX: 'auto',
   },
   modalBody: {
     position: 'absolute',
