@@ -26,6 +26,7 @@ function defaultState() {
     step: 0,
     notifications: [],
     online: undefined,
+    websocketRef: undefined,
   };
 }
 
@@ -161,6 +162,10 @@ export function qlfOnlineReducers(state = defaultState(), action) {
       if (action.state.cameraTerminal === 'Error') return state;
       return Object.assign({}, state, {
         cameraTerminal: action.state.cameraTerminal,
+      });
+    case 'SAVE_WEBSOCKET_REF':
+      return Object.assign({}, state, {
+        websocketRef: action.state.websocketRef,
       });
     default:
       return state;

@@ -68,19 +68,6 @@ describe('Monitor', () => {
     expect(wrapper.state().cameraTerminal[0]).toBe('New line');
   });
 
-  it('opens dialog', async () => {
-    window.getSelection = () => {
-      return {
-        removeAllRanges: () => {},
-      };
-    };
-    await wrapper
-      .find('TableRow')
-      .at(2)
-      .simulate('click');
-    expect(socket.state.ws.send).toHaveBeenCalledWith('camera:b1');
-  });
-
   it('resizes screen', () => {
     const monitor = (
       <Provider store={store}>
