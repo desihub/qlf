@@ -46,7 +46,7 @@ describe('Monitor', () => {
   });
 
   it('receives props', async () => {
-    const wrapper = shallow(
+    wrapper = shallow(
       <Monitor
         exposureId={'3'}
         qaTests={[]}
