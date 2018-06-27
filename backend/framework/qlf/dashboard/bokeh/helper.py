@@ -182,7 +182,7 @@ def init_xy_plot(hover, yscale):
     Defaults for xy plots
     """
     plot = Figure(tools=[hover,"pan,wheel_zoom,box_zoom,reset,tap"], y_axis_type=yscale
-    , plot_width=400, plot_height=300)
+    , plot_width=601, plot_height=400)
     #plot.add_tools(hover)
 
     return plot
@@ -252,15 +252,15 @@ def write_info(qa_name, params):
 
 def write_description(qa_name):
     """Descriptions to be displayed in QA plots."""
-    info_dic ={ 'countbins': ["Count Spectral Bins", "Fiber level check for flux after BoxcarExtract"],
-	         	'skycont': ["Sky Continuum", "Mean Sky Continuum after ApplyFiberFlat QL"],
-	         	'countpix': ["Count Pixels", "Fraction of pixels lit after Preproc"],
-	        	'skypeak': ["Sky Peaks", "Count for Sky Fiber after ApplyFiberFlat QL"],
-	        	'getbias': ["Bias From Overscan", "Bias from overscan region after Preproc"],
+    info_dic ={ 'countbins': ["Count Spectral Bins", "Number of bins above a threshold per spectrum."],
+	         	'skycont': ["Sky Continuum", "Mean sky continuum after fiber flattening"],
+	         	'countpix': ["Count Pixels", "Fraction of pixels lit after pre processing"],
+	        	'skypeak': ["Sky Peaks", "Sky level in regions of peak sky emission lines"],#"Count for Sky Fiber after ApplyFiberFlat QL"],
+	        	'getbias': ["Bias From Overscan", "Bias from overscan region after pre processing"],
 	        	'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
 	        	'getrms': ["Get RMS"," NOISE image counts per amplifier"],
-	        	'snr': ["Calculate SNR", "Signal/Noise after SkySub_QL"],
-	        	'integ': ["Integrate Spectrum", "Total integrals of STD spectra SkySub QL"],
+	        	'snr': ["Calculate SNR", "Signal-to-Noise ratio after sky substraction"],
+	        	'integ': ["Integrate Spectrum", "Integral counts for standard stars"], #Total integrals of STD spectra SkySub QL"
 	        	'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
 	        	'checkHDUs': ['','']        }
     

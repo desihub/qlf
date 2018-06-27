@@ -275,6 +275,17 @@ class QLFModels(object):
 
         return exposure
 
+    def get_last_exposure_by_program(self, program):
+        """ Gets last processed exposures by program """
+
+        try:
+            exposure = Exposure.objects.filter(process_exposure__isnull=False)
+            exposure = exposure.filter(program=program).latest('pk')
+        except Exposure.DoesNotExist:
+            exposure = None
+
+        return exposure
+
     def get_job(self, job_id):
         """ gets last processed exposures """
 

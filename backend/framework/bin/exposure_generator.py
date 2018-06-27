@@ -117,7 +117,7 @@ class ExposureGenerator(Process):
         return extract_exposure_data(exposure_id, night)
 
     def __gen_desi_file(self, exposure_id, night, date_obs):
-        dest = os.path.join(spectro_data, night)
+        dest = os.path.join(spectro_data, night, str(exposure_id).zfill(8))
         ensure_dir(dest)
         src_file = os.path.join(
             base_exposures_path,
@@ -129,7 +129,7 @@ class ExposureGenerator(Process):
             dest_file, exposure_id, night, date_obs)
 
     def __gen_fibermap_file(self, exposure_id, night, date_obs):
-        dest = os.path.join(spectro_data, night)
+        dest = os.path.join(spectro_data, night, str(exposure_id).zfill(8))
         ensure_dir(dest)
         src_file = os.path.join(
             base_exposures_path,
@@ -158,26 +158,6 @@ class ExposureGenerator(Process):
 
         hdulist.flush()
         hdulist.close()
-
-    # def __gen_fiberflat_folder(self, night):
-    #     """ """
-
-    #     dest = os.path.join(spectro_redux, "exposures", night)
-    #     ensure_dir(dest)
-    #     dest = os.path.join(dest, "00000001")
-
-    #     if not os.path.islink(dest):
-    #         os.symlink(fiberflat_path, dest)
-
-    # def __gen_psfboot_folder(self, night):
-    #     """ """
-
-    #     dest = os.path.join(spectro_redux, "exposures", night)
-    #     ensure_dir(dest)
-    #     dest = os.path.join(dest, "00000000")
-
-    #     if not os.path.islink(dest):
-    #         os.symlink(psf_path, dest)
 
     @staticmethod
     def __datetime_to_str(date_obj):

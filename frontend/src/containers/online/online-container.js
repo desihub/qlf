@@ -10,6 +10,7 @@ import {
   navigateToOnlineMetrics,
   navigateToOnlineQA,
   updateCameraState,
+  updateWebsocket,
 } from './online-store';
 import { navigateToProcessingHistory } from '../offline/offline-store';
 
@@ -44,6 +45,7 @@ class OnlineContainer extends Component {
     connected: PropTypes.func.isRequired,
     disconnected: PropTypes.func.isRequired,
     resetCameraLog: PropTypes.func.isRequired,
+    updateWebsocket: PropTypes.func.isRequired,
   };
 
   state = {
@@ -66,9 +68,9 @@ class OnlineContainer extends Component {
       nextProps.pathname &&
       nextProps.pathname.includes('realtime') &&
       !this.props.pathname.includes('realtime')
-    )
+    ) {
       this.setState({ isOnline: true });
-    else if (
+    } else if (
       this.props.pathname &&
       nextProps.pathname &&
       !nextProps.pathname.includes('realtime') &&
@@ -77,11 +79,21 @@ class OnlineContainer extends Component {
       this.setState({ isOnline: false });
   }
 
+  isConnected = () => {
+    this.props.updateWebsocket({ online: true });
+    this.props.connected();
+  };
+
+  isDisconnected = () => {
+    this.props.updateWebsocket({ online: false });
+    this.props.disconnected();
+  };
+
   startWebsocket = () => {
     return (
       <Websocket
-        connected={this.props.connected}
-        disconnected={this.props.disconnected}
+        connected={this.isConnected}
+        disconnected={this.isDisconnected}
         getWebsocketRef={this.getWebsocketRef}
       />
     );
@@ -187,5 +199,6 @@ export default connect(
     navigateToProcessingHistory: () => dispatch(navigateToProcessingHistory()),
     navigateToQA: () => dispatch(navigateToOnlineQA()),
     resetCameraLog: () => dispatch(updateCameraState([])),
+    updateWebsocket: state => dispatch(updateWebsocket(state)),
   })
 )(OnlineContainer);

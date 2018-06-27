@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import { push } from 'react-router-redux';
-import { fetchLastProcess } from '../offline/offline-store';
+import {
+  fetchLastProcess,
+  getHistoryDateRange,
+} from '../offline/offline-store';
 
 function defaultState() {
   return {
@@ -22,11 +25,16 @@ function defaultState() {
     spectrograph: 0,
     step: 0,
     notifications: [],
+    online: undefined,
   };
 }
 
 function addNotification(state) {
   return { type: 'ADD_NOTIFICATION', state };
+}
+
+export function updateWebsocket(state) {
+  return { type: 'UPDATE_WEBSOCKET_STATUS', state };
 }
 
 function updateMonitorState(state) {
@@ -48,10 +56,19 @@ function selectMetric(step, spectrograph, arm) {
 }
 
 export function updateLastProcessAndMonitor(state) {
-  return function(dispatch, getState) {
+  return async function(dispatch, getState) {
     if (
-      !getState().qlfOffline.recentProcesses ||
-      getState().qlfOnline.processId !== state.processId
+      getState().qlfOffline.recentProcesses &&
+      state.processId !== '' &&
+      !getState()
+        .qlfOffline.recentProcesses.map(p => p.pk)
+        .includes(parseInt(state.processId))
+    ) {
+      await dispatch(getHistoryDateRange());
+      dispatch(fetchLastProcess());
+    } else if (
+      getState().qlfOnline.processId !== state.processId ||
+      !getState().qlfOnline.online
     ) {
       dispatch(fetchLastProcess());
     }
@@ -106,6 +123,10 @@ function getUnique(availableCameras, index) {
 
 export function qlfOnlineReducers(state = defaultState(), action) {
   switch (action.type) {
+    case 'UPDATE_WEBSOCKET_STATUS':
+      return Object.assign({}, state, {
+        online: action.state.online,
+      });
     case 'UPDATE_METRIC_SELECT_ONLINE':
       return Object.assign({}, state, {
         step: action.state.step,

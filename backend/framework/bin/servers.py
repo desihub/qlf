@@ -51,8 +51,8 @@ class Monitoring(object):
             self.exposure_generator.start()
 
     def stop(self):
-        QLFModels().abort_current_process()
         if self.monitor and self.monitor.is_alive():
+            QLFModels().abort_current_process()
             self.monitor.exit.set()
             logger.debug("Stop pid %i" % self.monitor.pid)
 
