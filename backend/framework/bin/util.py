@@ -128,7 +128,7 @@ def extract_exposure_data(exposure_id, night):
     exposure_zfill = str(exposure_id).zfill(8)
     expo_name = "desi-{}.fits.fz".format(exposure_zfill)
 
-    file_path = os.path.join(desi_spectro_data, night, expo_name)
+    file_path = os.path.join(desi_spectro_data, night, exposure_zfill, expo_name)
 
     try:
         hdr = astropy.io.fits.getheader(file_path)
