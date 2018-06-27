@@ -221,7 +221,7 @@ export default class History extends Component {
           <ToolbarSeparator />
           {this.renderSelectDate()}
         </ToolbarGroup>
-        {/* {this.renderReprocessButton()} */}
+        {this.renderReprocessButton()}
       </Toolbar>
     );
   };

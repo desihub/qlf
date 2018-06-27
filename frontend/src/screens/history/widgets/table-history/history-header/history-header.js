@@ -276,7 +276,7 @@ export default class HistoryHeader extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {/* {this.renderCheckbox()} */}
+          {this.renderCheckbox()}
           {this.props.tableColumns
             .filter(column => column.exposureKey !== null)
             .map((column, id) => {
