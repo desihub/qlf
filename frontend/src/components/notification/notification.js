@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { clearNotifications } from '../../containers/online/online-store';
+import Sound from 'react-sound';
 
 const styles = {
   container: {
@@ -95,6 +96,7 @@ class Notification extends React.Component {
     if (!count) return;
     return (
       <div>
+        <Sound url="../../assets/bell.mp3" playStatus={Sound.status.PLAYING} />
         <List style={styles.listStyle}>
           {this.props.notifications.map((notif, id) => {
             const stylePrimary =
