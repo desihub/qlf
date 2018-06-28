@@ -1,4 +1,5 @@
 #!/bin/bash
+source ics.sh
 
 if [ $UPDATE_DEPENDENCIES = "true" ]; then
 	conda install -y --file requirements.txt

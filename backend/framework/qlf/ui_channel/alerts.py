@@ -3,6 +3,9 @@ import math
 import datetime
 import json
 from util import get_config
+from QLFInterface import ICSInterface
+
+ics = ICSInterface.ICSInterface()
 
 cfg = get_config()
 
@@ -21,6 +24,10 @@ class Alerts:
             notification_type = "Warning"
         if percent_free < int(disk_percent_alert):
             notification_type = "Alert"
+
+        ics.alarm("Available Disk Space {}%".format(
+                percent_free
+            ), level="EVENT")
         notification = json.dumps({
             "text": "Available Disk Space {}%".format(
                 percent_free
