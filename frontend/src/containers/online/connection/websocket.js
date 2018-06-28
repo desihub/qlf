@@ -75,7 +75,6 @@ class Connection extends Component {
           onOpen={this.props.connected}
           onClose={this.props.disconnected}
           debug={true}
-          reconnectIntervalInMilliSeconds={2000}
         />
       </div>
     );

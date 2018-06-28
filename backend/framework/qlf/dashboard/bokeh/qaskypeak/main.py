@@ -242,7 +242,7 @@ p_hist.add_layout(spans)
 
 nrg= tests['skypeak']['PEAKCOUNT_NORMAL_RANGE']
 wrg= tests['skypeak']['PEAKCOUNT_WARN_RANGE']
-tb = html_table(names=['PEAKCOUNT NOISE'], vals=[skypeak['PEAKCOUNT_NOISE']], nrng=nrg, wrng=wrg  )
+tb = html_table(names=['Peakcount noise'], vals=['{:.3f}'.format(skypeak['PEAKCOUNT_NOISE']) ], nrng=nrg, wrng=wrg  )
 tbinfo=Div(text=tb, width=600, height=200)
 
 
