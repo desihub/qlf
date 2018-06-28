@@ -42,7 +42,8 @@ cam = selected_arm+str(selected_spectrograph)
 try:
     lm = get_scalar_metrics(selected_process_id, cam)
     metrics, tests  = lm['results']['metrics'], lm['results']['tests']
-    print(metrics.keys())
+
+    #print(metrics.keys())
 except:
     sys.exit('Could not load metrics')
 
@@ -404,7 +405,8 @@ p_hist_w.quad(top= histval, bottom=bottomval, left='left', right='right',
 #--------------------------------------------------------------
 # vlines ranges:
 bname = 'XWSIGMA'
-print(par[bname+'_NORMAL_RANGE'])
+
+#print(par[bname+'_NORMAL_RANGE'])
 
 for ialert in par[bname+'_NORMAL_RANGE']:
     spans = Span(location= ialert , dimension='height', line_color='green',
