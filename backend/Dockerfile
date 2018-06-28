@@ -42,7 +42,7 @@ RUN /bin/bash -c "conda update conda -y && \
     pip install -r extras.txt"
 
 # END INSTALL: dependencies
-
+RUN useradd -d /home/quicklook -m quicklook
 EXPOSE 8000
- 
+USER quicklook
 CMD [ "/bin/bash" ]
