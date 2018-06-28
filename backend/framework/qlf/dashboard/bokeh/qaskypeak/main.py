@@ -73,7 +73,7 @@ peak_tooltip = """
     <div>
         <div>
             <span style="font-size: 12px; font-weight: bold; color: #303030;">PEAKCOUNT: </span>
-            <span style="font-size: 13px; color: #515151">@peakcount</span>
+            <span style="font-size: 13px; color: #515151">@peakcount_fib</span>
         </div>
         <div>
             <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
@@ -130,20 +130,20 @@ except:
 
 peak_hover = HoverTool(tooltips=peak_tooltip)
 
-peakcount = metr['PEAKCOUNT']
+peakcount_fib = metr['PEAKCOUNT_FIB']
 
 source = ColumnDataSource(data={
     'x1': snr['RA'][c1:c2],
     'y1': snr['DEC'][c1:c2],
-    'peakcount': peakcount,
+    'peakcount_fib': peakcount_fib,
     'QLF_FIBERID': qlf_fiberid,
     'OBJ_TYPE': obj_type,
 
 })
 
 mapper = LinearColorMapper(palette=my_palette,
-                           low=0.98*np.min(peakcount),
-                           high=1.02*np.max(peakcount))
+                           low=0.98*np.min(peakcount_fib),
+                           high=1.02*np.max(peakcount_fib))
 
 radius = 0.013#0.015
 radius_hover = 0.015#0.0165
@@ -162,13 +162,13 @@ p = Figure(title='PEAKCOUNT: sum of counts in peak regions '
 
 # Color Map
 p.circle('x1', 'y1', source=source, name="data", radius=radius,
-         fill_color={'field': 'peakcount', 'transform': mapper},
+         fill_color={'field': 'peakcount_fib', 'transform': mapper},
          line_color='black', line_width=0.1,
          hover_line_color='red')
 
 # marking the Hover point
 p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-         'field': 'peakcount', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+         'field': 'peakcount_fib', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
 
 #taptool = p.select(type=TapTool)
 #taptool.callback = OpenURL(url=url)
@@ -204,7 +204,7 @@ hist_tooltip = """
 """
 
 Nbins = 40
-hist, edges = np.histogram(peakcount, bins="sqrt")
+hist, edges = np.histogram(peakcount_fib, bins="sqrt")
 
 source_hist = ColumnDataSource(data={
     'hist': hist,
