@@ -97,6 +97,21 @@ class QLFState:
             self.qa_results = camera_status.get_qa_petals()
 
     def get_current_state(self):
+        return json.dumps({
+            "pipeline_running": self.pipeline_running,
+            "daemon_running": self.daemon_running,
+            "exposure": self.exposure,
+            "cameras": self.camera_status,
+            "available_cameras": self.available_cameras,
+            "qa_results": self.qa_results,
+            "lines": self.logfile,
+            "ingestion": self.pipelinelog,
+            "mjd": self.mjd,
+            "date": self.date_time,
+            "process_id": self.current_process_id
+        })
+
+    def get_monitor_state(self):
         self.update_qlf_state()
 
         new_state = json.dumps({

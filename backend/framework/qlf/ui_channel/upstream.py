@@ -85,7 +85,7 @@ class Upstream:
         logger_pipeline.info(message)
 
     def monitor_job(self):
-        state = self.qlf_state.get_current_state()
+        state = self.qlf_state.get_monitor_state()
 
         log.info(state)
 
