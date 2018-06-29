@@ -230,15 +230,13 @@ class QLFProcess(object):
         for camera in self.data.get('cameras'):
             output_path = os.path.join(
                 desi_spectro_redux,
-                self.data.get('output_dir'),
-                'ql-*-%s-%s.json' % (
-                    camera.get('name'),
-                    self.data.get('zfill')
-                )
+                self.data.get('output_dir')
             )
 
             args = (
                 camera.get('job_id'),
+                self.data.get('exposure_id'),
+                camera.get('name'),
                 camera.get('end'),
                 camera.get('status'),
                 output_path

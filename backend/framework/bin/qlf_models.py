@@ -149,21 +149,42 @@ class QLFModels(object):
                 return
         except Process.DoesNotExist as error:
             logger.debug(error)
-            process_id = None
 
-    def update_job(self, job_id, end, status, output_path):
+    def update_job(self, job_id, exposure_id, camera, end, status, output_path):
         """ Updates job with execution results. """
 
         # Close the DB connections
         django.db.connection.close()
 
+        merged_path = os.path.join(
+            output_path, 'ql-mergedQA-%s-%s.json' % (
+                camera,
+                str(exposure_id).zfill(8)
+            )
+        )
+
+        ql_merged = {}
+
+        if os.path.isfile(merged_path):
+            with open(merged_path, 'r') as merged_file:
+                ql_merged = jsonify(json.load(merged_file))
+                merged_file.close()
+
         try:
             Job.objects.filter(id=job_id).update(
                 end=end,
+                output=ql_merged,
                 status=status
             )
 
             qas = list()
+
+            output_path = os.path.join(
+                output_path, 'ql-*-%s-%s.json' % (
+                    camera,
+                    str(exposure_id).zfill(8)
+                )
+            )
 
             for product in glob.glob(output_path):
                 qa = self.create_qa_bulk(product, job_id)
@@ -183,7 +204,10 @@ class QLFModels(object):
     def create_qa_bulk(self, product, job_id):
         """ Creates QAs in bulk """
 
-        qa = json.load(open(product, 'r'))
+        with open(product, 'r') as product_file:
+            qa = json.load(product_file)
+            product_file.close()
+
         name = os.path.basename(product)
 
         for item in ('PANAME', 'METRICS', 'PARAMS'):
@@ -233,6 +257,16 @@ class QLFModels(object):
         try:
             qa = Process.objects.get(pk=process_id).process_jobs.get(
                 camera_id=cam).job_qas.get(name=qa_name)
+        except QA.DoesNotExist:
+            qa = None
+
+        return qa
+
+    def get_output(self, process_id, cam):
+        """ Gets QA """
+        try:
+            obj = Job.objects.filter(process_id=process_id).get(camera=cam)
+            qa = obj.output
         except QA.DoesNotExist:
             qa = None
 
