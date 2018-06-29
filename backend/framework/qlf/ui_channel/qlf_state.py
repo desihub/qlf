@@ -128,6 +128,8 @@ class QLFState:
             "process_id": self.current_process_id
         })
 
+        # return new_state
+
         if self.old_state != new_state:
             self.old_state = new_state
             return new_state

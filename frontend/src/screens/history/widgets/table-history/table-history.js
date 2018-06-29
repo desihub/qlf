@@ -36,6 +36,7 @@ class TableHistory extends Component {
     changeLimit: PropTypes.func.isRequired,
     limit: PropTypes.number.isRequired,
     fetchLastProcess: PropTypes.func.isRequired,
+    pipelineRunning: PropTypes.string,
   };
 
   constructor(props) {
@@ -101,6 +102,7 @@ class TableHistory extends Component {
               tableColumns={this.availableColumns()}
               handleImageModalOpen={this.handleImageModalOpen}
               handleCommentModalOpen={this.handleCommentModalOpen}
+              pipelineRunning={this.props.pipelineRunning}
             />
           );
         })}

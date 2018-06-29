@@ -67,14 +67,8 @@ export function updateLastProcessAndMonitor(state) {
         .includes(parseInt(state.processId, 10))
     ) {
       await dispatch(getHistoryDateRange());
-      dispatch(fetchLastProcess());
-    } else if (
-      getState().qlfOnline.processId !== state.processId ||
-      !getState().qlfOnline.online ||
-      getState().qlfOnline.pipelineRunning === 'Idle'
-    ) {
-      dispatch(fetchLastProcess());
     }
+    dispatch(fetchLastProcess());
     dispatch(updateMonitorState(state));
   };
 }

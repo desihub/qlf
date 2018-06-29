@@ -45,6 +45,7 @@ export default class HistoryData extends React.Component {
     tableColumns: PropTypes.array.isRequired,
     handleImageModalOpen: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
+    pipelineRunning: PropTypes.string,
   };
 
   formatDate = dateString => {
@@ -121,7 +122,9 @@ export default class HistoryData extends React.Component {
     const isNotProcessingHistory = this.props.type !== 'process';
     const processing = isNotProcessingHistory
       ? null
-      : this.props.lastProcessedId === String(row.pk);
+      : this.props.lastProcessedId === String(row.pk) &&
+        this.props.pipelineRunning &&
+        this.props.pipelineRunning === 'Running';
     const lastProcessed = processing ? styles.bold : {};
     let comment;
     if (this.props.type === 'process') {

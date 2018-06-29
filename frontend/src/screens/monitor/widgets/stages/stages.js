@@ -9,6 +9,7 @@ import { Card } from 'material-ui/Card';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
+// import LinearProgress from '@material-ui/core/LinearProgress';
 
 const headerSize = '11px';
 
@@ -139,6 +140,7 @@ class Stages extends Component {
                             this.props.openDialog(index, this.props.arm)
                           }
                         >
+                          {/* <LinearProgress value={5} /> */}
                           <TableCell
                             style={{
                               fontSize: this.state.columnHeight,
