@@ -46,6 +46,10 @@ services:
       - DAEMON_TEST=false
       - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
       - QLF_CFG=/app/framework/config/qlf.cfg
+      - ICS_NAME=ICSDaemon
+      - ICS_HOST=localhost
+      - ICS_PORT=50006
+      - START_ICS=False
     volumes:
       - .:/app
     working_dir: /app/

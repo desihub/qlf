@@ -3,6 +3,7 @@ import math
 import datetime
 import json
 from util import get_config
+from clients import get_ics_daemon
 
 cfg = get_config()
 
@@ -22,6 +23,10 @@ class Alerts:
         if percent_free < int(disk_percent_alert):
             notification_type = "Alert"
 
+        self.notify_ics("Available Disk Space {}%".format(
+                percent_free
+        )) if os.environ.get('START_ICS', None) is not None else None
+
         notification = json.dumps({
             "text": "Available Disk Space {}%".format(
                 percent_free
@@ -31,3 +36,7 @@ class Alerts:
         })
         if notification_type is not None:
             return notification
+
+    def notify_ics(self, message):
+        ics = get_ics_daemon()
+        ics.alert(message)

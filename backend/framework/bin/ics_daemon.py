@@ -1,7 +1,6 @@
 import Pyro4
+import os
 from QLFInterface import ICSInterface
-from clients import (ICS_DAEMON_NS, PYRO_HOST,
-                     PYRO_PORT, get_ics_daemon)
 
 ics = ICSInterface.ICSInterface()
 
@@ -12,14 +11,11 @@ class ICSControl(object):
     def alarm(self, message):
         ics.alarm(message, level="EVENT")
 
-    def test(self):
-        return 'testing'
-
 
 def main():
-    ics_daemon = ICS_DAEMON_NS
-    host = PYRO_HOST
-    port = int(PYRO_PORT)
+    ics_daemon = os.environ.get('ICS_NAMESPACE', 'ICSDaemon')
+    host = os.environ.get('ICS_HOST', 'localhost')
+    port = int(os.environ.get('ICS_PORT', 50006))
 
     Pyro4.Daemon.serveSimple(
         {

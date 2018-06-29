@@ -27,6 +27,20 @@ done
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
 export DESIMODEL=$QLF_ROOT/desimodel
 
+if [ $START_ICS = "true" ]; then
+	# ICS Pyro configuration
+	export PYRO_HOST=localhost
+	export PYRO_REQUIRE_EXPOSE=False
+	export PYRO_SERIALIZER=pickle
+	export PYRO_THREADPOOL_SIZE=64
+	export PYRO_PORT=56006
+	export PYRO_SERIALIZERS_ACCEPTED=pickle
+
+	# Staring ics interface
+	sh $QLF_ROOT/ics.sh
+	python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &> $QLF_ROOT/logs/ics_interface.log &
+fi
+
 python -Wi framework/qlf/manage.py migrate
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass') if not User.objects.all() else None" | python framework/qlf/manage.py shell
 
