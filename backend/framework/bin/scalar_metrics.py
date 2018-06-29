@@ -34,7 +34,7 @@ class LoadMetrics:
     qa_name = ['countpix', 'getbias', 'getrms', 'xwsigma',
                'countbins', 'integ', 'skycont', 'skypeak', 'skyresid', 'snr']
 
-    def __init__(self, process_id, cam, exp, night):
+    def __init__(self, process_id, cam, exp=None, night=None):
         self.cam = cam
         self.exp = exp
         self.night = night
