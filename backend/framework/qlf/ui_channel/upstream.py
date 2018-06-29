@@ -86,11 +86,13 @@ class Upstream:
 
     def monitor_job(self):
         state = self.qlf_state.get_current_state()
-        log.info('test')
 
-        Group("monitor").send({
-            "text": state
-        })
+        log.info(state)
+
+        if state is not None:
+            Group("monitor").send({
+                "text": state
+            })
 
     def disk_space_job(self):
         state = self.qlf_state.get_current_state()

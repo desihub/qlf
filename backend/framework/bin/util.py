@@ -62,6 +62,8 @@ def change_config_file(night, exposure_id, program):
     cfg = get_config()
 
     program_file = program_mapping.get(program, 'darksurvey')
+    if program_file == 'greysurvey':
+        program_file = 'graysurvey'
     config_file = cfg.get('main', 'qlconfig').format(program_file)
 
     models = QLFModels()

@@ -29,6 +29,9 @@ def ws_add(message):
             "notification": alerts.available_space()
         })
     })
+    Group("monitor").send({
+        "text": qlf_state.get_current_state()
+    })
 
 
 # Connected to websocket.receive

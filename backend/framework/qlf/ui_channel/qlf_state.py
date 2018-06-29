@@ -38,6 +38,7 @@ class QLFState:
 
     def reset_state(self):
         self.camera_status = {"b": list(), "r": list(), "z": list()}
+        self.old_state = dict()
         self.logfile = list()
         self.pipelinelog = list()
         self.mjd = str()
@@ -98,7 +99,7 @@ class QLFState:
     def get_current_state(self):
         self.update_qlf_state()
 
-        return json.dumps({
+        new_state = json.dumps({
             "pipeline_running": self.pipeline_running,
             "daemon_running": self.daemon_running,
             "exposure": self.exposure,
@@ -111,6 +112,12 @@ class QLFState:
             "date": self.date_time,
             "process_id": self.current_process_id
         })
+
+        if self.old_state != new_state:
+            self.old_state = new_state
+            return new_state
+        else:
+            return None
 
     def get_avaiable_cameras(self, process):
         cams = list()
