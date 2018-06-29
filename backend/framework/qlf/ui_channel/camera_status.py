@@ -148,23 +148,37 @@ class CameraStatus:
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
                     self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 3, int(cam[1:]), 'processing_stage')
+                    if "Traceback (most recent call last):" in ''.join(log):
+                        self.update_stage(cam[:1], 3, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 3, int(cam[1:]), 'processing_stage')
                     next
 
                 elif "Starting to run step ApplyFiberFlat_QL" in ''.join(log):
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 2, int(cam[1:]), 'processing_stage')
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
+                    if "Traceback (most recent call last):" in ''.join(log):
+                        self.update_stage(cam[:1], 2, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 2, int(cam[1:]), 'processing_stage')
                     next
 
                 elif "Starting to run step BoxcarExtract" in ''.join(log):
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
+                    if "Traceback (most recent call last):" in ''.join(log):
+                        self.update_stage(cam[:1], 1, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
                     next
 
                 elif "Starting to run step Preproc" in ''.join(log):
-                    self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
+                    if "Traceback (most recent call last):" in ''.join(log):
+                        self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
                     next
+                elif "Traceback (most recent call last):" in ''.join(log):
+                    self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
                 else:
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'none')
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'none')
