@@ -66,7 +66,10 @@ class Stages extends Component {
       case 'success_stage':
         return { backgroundColor: 'green' };
       case 'processing_stage':
-        return { backgroundColor: 'yellow' };
+        return {
+          backgroundColor: 'yellow',
+          transition: 'width 100ms ease-in-out',
+        };
       case 'error_stage':
         return { backgroundColor: 'red' };
       default:

@@ -11,11 +11,10 @@ import logging
 
 logger = logging.getLogger()
 
-camera_status = CameraStatus()
-
 
 class QLFState:
     def __init__(self):
+        self.camera_status_generator = CameraStatus()
         self.reset_state()
         self.update_pipeline_status()
         if self.pipeline_running is 0:
@@ -50,7 +49,8 @@ class QLFState:
         self.current_process_id = str()
         self.current_process = None
         self.available_cameras = list()
-        camera_status.reset_camera_status()
+        self.diff_alerts = dict()
+        self.camera_status_generator.reset_camera_status()
 
     def update_pipeline_status(self):
         """
@@ -90,11 +90,10 @@ class QLFState:
             date = get_date(self.exposure) if self.exposure else None
             self.date_time = date.value if date else ''
             self.mjd = date.mjd if date else ''
-            camera_status.reset_camera_status()
-            self.camera_status = camera_status.get_camera_status(
+            self.camera_status = self.camera_status_generator.get_camera_status(
                 self.current_process
             )
-            self.qa_results = camera_status.get_qa_petals()
+            self.qa_results = self.camera_status_generator.get_qa_petals()
 
     def get_current_state(self):
         return json.dumps({

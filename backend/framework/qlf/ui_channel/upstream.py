@@ -87,7 +87,7 @@ class Upstream:
     def monitor_job(self):
         state = self.qlf_state.get_monitor_state()
 
-        log.info(state)
+        log.info(self.qlf_state.camera_status_generator.alerts)
 
         if state is not None:
             Group("monitor").send({

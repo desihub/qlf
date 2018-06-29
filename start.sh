@@ -10,7 +10,7 @@ if [ $1 = "backend" ]; then
 	CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up
 else 
   if [ $1 = "frontend" ]; then
-    CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up
+    CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up --force-recreate
   fi
 fi
 
@@ -24,7 +24,7 @@ if [ $1 = "prod" ]; then
   fi
   cd ..
   CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml run --entrypoint="yarn build" frontend
-  CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up -d
+  CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up -d --force-recreate
 	CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up -d
 fi
 
