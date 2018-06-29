@@ -97,7 +97,7 @@ export function updateNotifications(notification) {
     const notifications = getState().qlfOnline.notifications.splice(0);
     notifications.unshift(notification);
     const sound = new Audio(bell);
-    sound.play();
+    if (process.env.REACT_APP_SOUND) sound.play();
     dispatch(addNotification({ notifications }));
   };
 }
