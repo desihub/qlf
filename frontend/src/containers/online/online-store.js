@@ -4,6 +4,7 @@ import {
   fetchLastProcess,
   getHistoryDateRange,
 } from '../offline/offline-store';
+import bell from '../../assets/bell.mp3';
 
 function defaultState() {
   return {
@@ -95,6 +96,8 @@ export function updateNotifications(notification) {
   return function(dispatch, getState) {
     const notifications = getState().qlfOnline.notifications.splice(0);
     notifications.unshift(notification);
+    const sound = new Audio(bell);
+    sound.play();
     dispatch(addNotification({ notifications }));
   };
 }
