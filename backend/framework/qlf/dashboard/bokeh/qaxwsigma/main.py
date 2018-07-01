@@ -13,7 +13,7 @@ from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import plot_hist
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import html_table, info_table, range_table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 
@@ -494,6 +494,7 @@ wamp.add_layout(color_bar, 'right')
 # -------------------------------------------------------------------------
 from bokeh.models import Spacer
 
+# tables:
 info_col=Div(text=write_description('xwsigma'), width=2*pw.plot_width)
 pxh = column(px, xhist, p_hist_x, xamp )
 pwh = column(pw, whist, p_hist_w, wamp )
@@ -501,10 +502,19 @@ pwh = column(pw, whist, p_hist_w, wamp )
 nrg= tests['xwsigma']['XWSIGMA_NORMAL_RANGE']
 wrg= tests['xwsigma']['XWSIGMA_WARN_RANGE']
 tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma['XWSIGMA'], nrng=nrg, wrng=wrg  )
-tbinfo=Div(text=tb, width=600, height=200)
+tbinfo=Div(text=tb, width=1200, height=200)
 
-layoutplot= row([pxh, Spacer(width=0),pwh]) #, sizing_mode='scale_width')
-layout = column(widgetbox(info_col), tbinfo, layoutplot) #, row( [xamp, Spacer(width=80), wamp]))
+metricname='Xsigma'
+comments= 'textextextextextext '*4
+keyname='XSIGMA'
+delta = '{:.3f}'.format( xwsigma['XWSIGMA'][0]  )
+info = info_table(metricname, comments, keyname, delta)
+tb_met=Div(text=info, width=600, height=200)
+
+tb_rng=Div(text=range_table(), width=600, height=200)
+layoutplot= row([pxh, Spacer(width=200),pwh]) 
+#layout = column(widgetbox(info_col),tb1, tb2, tbinfo, layoutplot) 
+layout = column(widgetbox(info_col),tb_met, tb_rng, layoutplot) 
  
 curdoc().add_root(layout)
 curdoc().title = "XWSIGMA"

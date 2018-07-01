@@ -53,7 +53,16 @@ try:
 except:
     sys.exit('Could not load metrics')
 
+#sys.path.append('../../')
+#print(sys.path)
+from scalar_metrics import LoadMetrics 
 
+scalar = LoadMetrics(2, 'z2') # process_id, camera, exposure_id, night
+output = scalar.load_output()
+print('output:',output.keys())
+print(output['TASKS'].keys())
+print(output['TASKS']['CHECK_FIBERS']['METRICS'].keys())
+print('\n\n\n',sys.path[0])
 integ=metrics['integ']
 std_fiberid = integ['STD_FIBERID']
 #std_mag = np.where()

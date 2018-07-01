@@ -9,6 +9,7 @@ for package in desispec desiutil; do
 	echo "Setting $package..."
 	export PATH=$QLF_ROOT/$package/bin:$PATH
 	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
+	export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
 done
 
 cd /app/framework/qlf

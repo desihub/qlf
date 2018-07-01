@@ -8,6 +8,105 @@ from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 
 
 
+def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx'):
+    """ Create tables in format
+    delta = current val - refval
+    """
+    style = """    <style>        table {
+            font-family: arial, sans-serif;
+            font-size: 16px;
+            border-collapse: collapse;
+            width: 100%;
+            }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+            }
+        tr:nth-child(even) {
+        background-color: #dcdcdc;
+                text-align:center;
+        }
+        tr:{text-align:center;}        </style>        """
+
+    header= """
+        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+        <table>
+        <tr>
+        <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>  <th>Delta</th>
+        </tr>"""
+    tblines=""
+    end="""</table> </div> """
+    title="""<h2>  {} </h2>""".format(metricname)
+    
+    nlines=1
+    for i in range(nlines):
+        tblines=tblines+"""<tr>
+                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>""".format(comments,keyname,curexp,refexp,delta)
+        
+
+    return style + title + header + tblines + end
+
+
+def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0,0],  wrng=[0,0], nlines=None, align='center'):
+    ''' Usage:
+    nrg = tests['countbins']['NGOODFIB_WARN_RANGE']
+    wrg = tests['countbins']['NGOODFIB_NORMAL_RANGE']
+    tb = html_table( nrng=nrg, wrng=wrg  )
+    tbinfo=Div(text=tb, width=600, height=300)
+    '''
+    lines =""" """
+    tblines=""" """
+    nlines= len(names)
+    if(nlines != len(vals)):
+        print('error in table')
+        return """error in table"""
+
+    style = """
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            font-size: 16px;
+            border-collapse: collapse;
+            width: 100%;
+            }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+            }
+        tr:nth-child(even) {
+        background-color: #dddddd;
+                text-align:center;
+        }
+        tr:{text-align:center;}
+        </style>
+        """
+
+    header= """
+    <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+    <table>
+    <tr>
+        <th>Alert</th>     <th>Minimum Value</th>        <th>Maximum Value</th>
+    </tr>"""
+
+
+    for i1,i2 in [[nkey, nrng], [wkey, wrng]]:
+        lines = lines+"""
+        <tr>
+            <td>{}</td>
+            <td> {:.2f}</td>  <td>{:.2f}</td>
+        </tr>""".format( i1, i2[0], i2[1] )
+    
+    end="""</table> </div> """
+
+    return style+header+ tblines+lines+end
+
+
+
 def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0,0],  wrng=[0,0], nlines=None, align='center'):
     ''' Usage:
     nrg = tests['countbins']['NGOODFIB_WARN_RANGE']
