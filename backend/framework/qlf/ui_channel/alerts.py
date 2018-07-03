@@ -23,9 +23,10 @@ class Alerts:
         if percent_free < int(disk_percent_alert):
             notification_type = "Alert"
 
-        self.notify_ics("Available Disk Space {}%".format(
-                percent_free
-        )) if os.environ.get('START_ICS', None) is not None else None
+        if os.environ.get('START_ICS', 'False') is 'True':
+            self.notify_ics("Available Disk Space {}%".format(
+                    percent_free
+            ))
 
         notification = json.dumps({
             "text": "Available Disk Space {}%".format(
