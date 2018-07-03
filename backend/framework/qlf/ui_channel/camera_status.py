@@ -34,8 +34,10 @@ class CameraStatus:
         self.qa_petals = list()
 
     def update_qa_state(self, camera, cam, log):
+        contains_status = False
         for line in log:
             if 'BIAS_STATUS' in line:
+                contains_status = True
                 status = line.split(
                     'BIAS_STATUS:'
                 )[1][1:-1]
@@ -87,6 +89,9 @@ class CameraStatus:
                     'RESID_STATUS:'
                 )[1][1:-1]
                 camera[cam]['skysubs']['steps_status'][1] = status
+
+        if not contains_status:
+            self.reset_camera_status()
 
     def update_petals(self, cam, log):
         cam_index = None
