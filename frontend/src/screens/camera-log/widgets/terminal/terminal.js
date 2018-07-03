@@ -10,6 +10,7 @@ const styles = {
     borderRadius: '3px',
     background: 'rgba(0, 0, 0, 1)',
     overflowY: 'scroll',
+    overflowX: 'scroll',
     flexDirection: 'column',
   },
   terminalOutput: {
@@ -37,7 +38,7 @@ export default class Terminal extends Component {
 
   render() {
     const terminalHeight = {
-      height: this.props.height ? this.props.height : '300px',
+      minHeight: this.props.height ? this.props.height : '300px',
     };
 
     return (

@@ -4,9 +4,6 @@ import Terminal from './widgets/terminal/terminal';
 import Paper from '@material-ui/core/Paper';
 
 const styles = {
-  terminal: {
-    height: '80%',
-  },
   close: {
     float: 'right',
     cursor: 'pointer',
@@ -39,7 +36,7 @@ export default class CameraLog extends React.Component {
       <div>
         <Paper elevation={4} style={styles.main}>
           {this.renderTitle()}
-          <Terminal height={'400px'} lines={this.props.lines} />
+          <Terminal lines={this.props.lines} />
         </Paper>
       </div>
     );

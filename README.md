@@ -36,6 +36,20 @@ Start QLF frontend and backend.
 
     ./start.sh
 
+_frontend takes about 5 minutes to start on dev mode_
+
+#### Making sure all containers are up
+
+Running `docker ps` you should see 4 containers:
+
+```
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                             NAMES
+2e442179ea93        backend_qlf         "/usr/bin/tini -- ./…"   4 minutes ago       Up 4 minutes        0.0.0.0:5007->5007/tcp, 0.0.0.0:8001->8001/tcp, 0.0.0.0:56006->56006/tcp, 8000/tcp   backend_qlf_1
+c4681154ec2f        postgres            "docker-entrypoint.s…"   4 minutes ago       Up 4 minutes        0.0.0.0:5433->5432/tcp                             backend_db_1
+a8d6de192554        redis               "docker-entrypoint.s…"   4 minutes ago       Up 4 minutes        0.0.0.0:6380->6379/tcp                             backend_redis_1
+075e01f0dbb2        frontend_frontend   "sh entrypoint.sh"       4 minutes ago       Up 4 minutes        0.0.0.0:3000->3000/tcp                             frontend_frontend_1
+```
+
 ### User Interface
 
 You can access QLF interface by going to 
