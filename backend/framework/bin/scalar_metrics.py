@@ -34,7 +34,7 @@ class LoadMetrics:
     qa_name = ['countpix', 'getbias', 'getrms', 'xwsigma',
                'countbins', 'integ', 'skycont', 'skypeak', 'skyresid', 'snr']
 
-    def __init__(self, process_id, cam, exp, night):
+    def __init__(self, process_id, cam, exp=None, night=None):
         self.cam = cam
         self.exp = exp
         self.night = night
@@ -113,6 +113,12 @@ class LoadMetrics:
             self.error.update({qa: True})
 
         return data
+
+    def load_output(self):
+        """ Returns a json with the camera output per job """
+
+        cam, process_id = self.cam, self.process_id
+        return self.models.get_output(process_id, cam)
 
     def Load_metrics_n_tests(self):
         """ Gathers all the json info in 'METRICS' and 'PARAMS'
