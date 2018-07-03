@@ -19,7 +19,7 @@ _Make sure `docker --version`, `docker-compose --version`, and `docker ps` runs 
 
     git clone https://github.com/desihub/qlf.git
     
-_Everything you need is contained in this repository. Even `desispec` and `desiutil` as sub-repositories._
+_Everything you need is contained in this repository. Even `desimodel`, `desisim`, `desitarget`, `desispec` and `desiutil` as sub-repositories._
 
 ### Install default qlf configuration
 
@@ -45,6 +45,10 @@ You can access QLF interface by going to
 ### Stoping QLF
 
     ./stop.sh
+
+### Restarting QLF backend to update desispec changes
+
+    ./restartBackend.sh
 
 ## FAQ
 

@@ -1,8 +1,5 @@
 #!/bin/bash
-
-# ./ics.sh
-
-if [ $UPDATE_DEPENDENCIES = "true" ]; then
+if [ $UPDATE_DEPENDENCIES = "True" ]; then
 	conda install -y --file requirements.txt
 	pip install -r extras.txt
 fi
@@ -13,7 +10,6 @@ export LC_ALL=en_US.UTF-8
 
 export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
-export QLF_REDIS=True
 
 export DESI_ROOT=$QLF_ROOT
 export DESI_PRODUCT_ROOT=$QLF_ROOT
@@ -27,15 +23,7 @@ done
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
 export DESIMODEL=$QLF_ROOT/desimodel
 
-if [ $START_ICS = "true" ]; then
-	# ICS Pyro configuration
-	export PYRO_HOST=localhost
-	export PYRO_REQUIRE_EXPOSE=False
-	export PYRO_SERIALIZER=pickle
-	export PYRO_THREADPOOL_SIZE=64
-	export PYRO_PORT=56006
-	export PYRO_SERIALIZERS_ACCEPTED=pickle
-
+if [ $START_ICS = "True" ]; then
 	# Staring ics interface
 	sh $QLF_ROOT/ics.sh
 	python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &> $QLF_ROOT/logs/ics_interface.log &
@@ -45,13 +33,13 @@ python -Wi framework/qlf/manage.py migrate
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass') if not User.objects.all() else None" | python framework/qlf/manage.py shell
 
 # Start QLF daemon
-if [ $DAEMON_TEST = "false" ]; then
+if [ $DAEMON_TEST = "False" ]; then
 	echo "Initializing QLF Daemon..."
 	./startDaemon.sh &> $QLF_ROOT/logs/qlf_daemon.log &
 fi
 
 
-if [ $BOKEH_TEST = "false" ]; then
+if [ $BOKEH_TEST = "False" ]; then
 	echo "Initializing Bokeh Server..."
 	./startBokeh.sh &> $QLF_ROOT/logs/bokeh.log &
 fi

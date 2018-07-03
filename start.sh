@@ -1,13 +1,16 @@
 
 #!/bin/sh
 if [ -z "$1" ]; then
-  CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up -d
-  CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up
+  CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up -d --force-recreate
+  CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up -d --force-recreate
+  echo "Staring backend... $(awk -F'=' '/QLF_API_URL=/ {print $2}' backend/docker-compose.yml)"
+  echo "Starting frontend... http://localhost:"$(awk -F'=' '/QLF_UI_PORT=/ {print $2}' frontend/docker-compose.yml)
+  echo "It may take a few minutes to start..."
   exit 1
 fi
 
 if [ $1 = "backend" ]; then
-	CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up
+	CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up --force-recreate
 else 
   if [ $1 = "frontend" ]; then
     CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up --force-recreate
@@ -25,7 +28,7 @@ if [ $1 = "prod" ]; then
   cd ..
   CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml run --entrypoint="yarn build" frontend
   CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up -d --force-recreate
-	CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up -d
+	CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up -d --force-recreate
 fi
 
 if [ $1 = "bokeh" ]; then
