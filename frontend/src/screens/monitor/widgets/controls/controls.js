@@ -237,7 +237,7 @@ class Controls extends Component {
         {this.renderClearPopover()}
         {this.renderStartOrStop()}
         {this.renderReset()}
-        {this.renderClear()}
+        {/* {this.renderClear()} */}
       </div>
     );
   }
