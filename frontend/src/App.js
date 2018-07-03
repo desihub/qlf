@@ -49,13 +49,6 @@ const theme = {
 };
 
 const styles = {
-  grid: {
-    display: 'grid',
-    gridTemplateRows: '38px auto 28px',
-    gridTemplateColumns: 'auto',
-    height: '100vh',
-    width: '100vw',
-  },
   headerTop: {
     fontSize: '35px',
     padding: '0px 6vw 35px 6vw',
@@ -67,8 +60,8 @@ const styles = {
     lineHeight: '28px',
   },
   headerBottom: {
-    // position: 'absolute',
-    // bottom: '0px',
+    position: 'absolute',
+    bottom: '0px',
   },
   logo: {
     height: '90px',
@@ -107,8 +100,8 @@ const styles = {
     cursor: 'pointer',
   },
   container: {
-    // maxHeight: '87.5vh',
-    // overflowY: 'scroll',
+    maxHeight: '87.5vh',
+    overflowY: 'scroll',
   },
   footerRight: {
     display: 'flex',
@@ -283,7 +276,7 @@ class App extends React.Component {
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
-            <div style={styles.grid}>
+            <div>
               {this.renderTopBar()}
               <div style={containerStyle}>
                 {['/', '/about', '/help', '/tutorials', '/contact'].map(
