@@ -44,6 +44,6 @@ if [ $BOKEH_TEST = "False" ]; then
 	./startBokeh.sh &> $QLF_ROOT/logs/bokeh.log &
 fi
 
-echo "QLF web application is running at http://$QLF_HOSTNAME:$QLF_PORT you may start Quick Look from the pipeline interface."
+echo "QLF Backend is running at http://$QLF_HOSTNAME:$QLF_PORT"
 
 python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
