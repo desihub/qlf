@@ -19,6 +19,7 @@ except Exception as error:
 class CameraStatus:
     def __init__(self):
         self.reset_camera_status()
+        self.alerts = list()
 
     def reset_camera_status(self):
         self.cams_stages_r = list()
@@ -33,47 +34,64 @@ class CameraStatus:
         self.qa_petals = list()
 
     def update_qa_state(self, camera, cam, log):
+        contains_status = False
         for line in log:
             if 'BIAS_STATUS' in line:
-                camera[cam]['preproc']['steps_status'][1] = line.split(
+                contains_status = True
+                status = line.split(
                     'BIAS_STATUS:'
                 )[1][1:-1]
+                if status is not 'normal':
+                    self.alerts.append('Bias {} {}'.format(camera, status))
+                camera[cam]['preproc']['steps_status'][1] = status
             elif 'XWSIGMA_STATUS' in line:
-                camera[cam]['preproc']['steps_status'][3] = line.split(
+                status = line.split(
                     'XWSIGMA_STATUS:'
                 )[1][1:-1]
+                camera[cam]['preproc']['steps_status'][3] = status
             elif 'LITFRAC_STATUS' in line:
-                camera[cam]['preproc']['steps_status'][0] = line.split(
+                status = line.split(
                     'LITFRAC_STATUS:'
                 )[1][1:-1]
+                camera[cam]['preproc']['steps_status'][0] = status
             elif 'NOISE_STATUS' in line:
-                camera[cam]['preproc']['steps_status'][2] = line.split(
+                status = line.split(
                     'NOISE_STATUS:'
                 )[1][1:-1]
+                camera[cam]['preproc']['steps_status'][2] = status
             elif 'NGOODFIB_STATUS' in line:
-                camera[cam]['extract']['steps_status'][0] = line.split(
+                status = line.split(
                     'NGOODFIB_STATUS:'
                 )[1][1:-1]
+                camera[cam]['extract']['steps_status'][0] = status
             elif 'SKYCONT_STATUS' in line:
-                camera[cam]['fiberfl']['steps_status'][0] = line.split(
+                status = line.split(
                     'SKYCONT_STATUS:'
                 )[1][1:-1]
+                camera[cam]['fiberfl']['steps_status'][0] = status
             elif 'PEAKCOUNT_STATUS' in line:
-                camera[cam]['fiberfl']['steps_status'][1] = line.split(
+                status = line.split(
                     'PEAKCOUNT_STATUS:'
                 )[1][1:-1]
+                camera[cam]['fiberfl']['steps_status'][1] = status
             elif 'FIDSNR_STATUS' in line:
-                camera[cam]['skysubs']['steps_status'][2] = line.split(
+                status = line.split(
                     'FIDSNR_STATUS:'
                 )[1][1:-1]
+                camera[cam]['skysubs']['steps_status'][2] = status
             elif 'DELTAMAG_STATUS' in line:
-                camera[cam]['skysubs']['steps_status'][0] = line.split(
+                status = line.split(
                     'DELTAMAG_STATUS:'
                 )[1][1:-1]
+                camera[cam]['skysubs']['steps_status'][0] = status
             elif 'RESID_STATUS' in line:
-                camera[cam]['skysubs']['steps_status'][1] = line.split(
+                status = line.split(
                     'RESID_STATUS:'
                 )[1][1:-1]
+                camera[cam]['skysubs']['steps_status'][1] = status
+
+        if not contains_status:
+            self.reset_camera_status()
 
     def update_petals(self, cam, log):
         cam_index = None
@@ -148,23 +166,37 @@ class CameraStatus:
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
                     self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 3, int(cam[1:]), 'processing_stage')
+                    if "Traceback (most recent call last):" in ''.join(log):
+                        self.update_stage(cam[:1], 3, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 3, int(cam[1:]), 'processing_stage')
                     next
 
                 elif "Starting to run step ApplyFiberFlat_QL" in ''.join(log):
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 2, int(cam[1:]), 'processing_stage')
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
+                    if "Traceback (most recent call last):" in ''.join(log):
+                        self.update_stage(cam[:1], 2, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 2, int(cam[1:]), 'processing_stage')
                     next
 
                 elif "Starting to run step BoxcarExtract" in ''.join(log):
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
+                    if "Traceback (most recent call last):" in ''.join(log):
+                        self.update_stage(cam[:1], 1, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
                     next
 
                 elif "Starting to run step Preproc" in ''.join(log):
-                    self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
+                    if "Traceback (most recent call last):" in ''.join(log):
+                        self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
                     next
+                elif "Traceback (most recent call last):" in ''.join(log):
+                    self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
                 else:
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'none')
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'none')

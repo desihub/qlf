@@ -4,6 +4,7 @@ import {
   fetchLastProcess,
   getHistoryDateRange,
 } from '../offline/offline-store';
+import bell from '../../assets/bell.mp3';
 
 function defaultState() {
   return {
@@ -26,6 +27,7 @@ function defaultState() {
     step: 0,
     notifications: [],
     online: undefined,
+    websocketRef: undefined,
   };
 }
 
@@ -62,16 +64,11 @@ export function updateLastProcessAndMonitor(state) {
       state.processId !== '' &&
       !getState()
         .qlfOffline.recentProcesses.map(p => p.pk)
-        .includes(parseInt(state.processId))
+        .includes(parseInt(state.processId, 10))
     ) {
       await dispatch(getHistoryDateRange());
-      dispatch(fetchLastProcess());
-    } else if (
-      getState().qlfOnline.processId !== state.processId ||
-      !getState().qlfOnline.online
-    ) {
-      dispatch(fetchLastProcess());
     }
+    dispatch(fetchLastProcess());
     dispatch(updateMonitorState(state));
   };
 }
@@ -93,6 +90,8 @@ export function updateNotifications(notification) {
   return function(dispatch, getState) {
     const notifications = getState().qlfOnline.notifications.splice(0);
     notifications.unshift(notification);
+    const sound = new Audio(bell);
+    if (process.env.REACT_APP_SOUND) sound.play();
     dispatch(addNotification({ notifications }));
   };
 }
@@ -160,6 +159,10 @@ export function qlfOnlineReducers(state = defaultState(), action) {
       if (action.state.cameraTerminal === 'Error') return state;
       return Object.assign({}, state, {
         cameraTerminal: action.state.cameraTerminal,
+      });
+    case 'SAVE_WEBSOCKET_REF':
+      return Object.assign({}, state, {
+        websocketRef: action.state.websocketRef,
       });
     default:
       return state;

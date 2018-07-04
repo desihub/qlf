@@ -3,7 +3,6 @@ import Controls from './widgets/controls/controls';
 import Stages from './widgets/stages/stages';
 import Terminal from './widgets/terminal/terminal';
 import Status from '../../components/status/status';
-import Dialog from './widgets/dialog/dialog';
 import PropTypes from 'prop-types';
 import QA from '../qa/qa';
 import ConfirmDialog from '../../components/dialog/dialog';
@@ -63,6 +62,7 @@ export default class Monitor extends Component {
     time: PropTypes.string.isRequired,
     mjd: PropTypes.string.isRequired,
     resetCameraLog: PropTypes.func.isRequired,
+    navigateToCamera: PropTypes.func.isRequired,
   };
 
   state = {
@@ -128,13 +128,7 @@ export default class Monitor extends Component {
   }
 
   openDialog = (cameraIndex, arm) => {
-    this.props.socketRef.state.ws.send(`camera:${arm}${cameraIndex}`);
-    this.setState({ cameraIndex, openDialog: true });
-  };
-
-  closeDialog = () => {
-    this.props.resetCameraLog();
-    this.setState({ openDialog: false });
+    this.props.navigateToCamera(arm, cameraIndex);
   };
 
   resetPipeline = () => {
@@ -165,12 +159,6 @@ export default class Monitor extends Component {
           open={this.state.confirmDialog}
           handleClose={this.closeConfirmDialog}
           onConfirm={this.confirmReset}
-        />
-        <Dialog
-          lines={this.state.cameraTerminal}
-          openDialog={this.state.openDialog}
-          cameraIndex={this.state.cameraIndex}
-          closeDialog={this.closeDialog}
         />
         <div style={styles.topMenu}>
           <div style={styles.menu}>

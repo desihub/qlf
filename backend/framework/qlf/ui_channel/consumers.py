@@ -29,13 +29,16 @@ def ws_add(message):
             "notification": alerts.available_space()
         })
     })
+    Group("monitor").send({
+        "text": qlf_state.get_current_state()
+    })
 
 
 # Connected to websocket.receive
 def ws_message(message):
     if message.content['text'] == "startPipeline":
         us.start_daemon()
-        message.reply_channel.send({
+        Group("monitor").send({
             "text": qlf_state.get_current_state()
         })
         return
@@ -45,7 +48,7 @@ def ws_message(message):
                 qlf_state.current_process_id))
         us.stop_daemon()
         qlf_state.update_pipeline_log()
-        message.reply_channel.send({
+        Group("monitor").send({
             "text": qlf_state.get_current_state()
         })
         return

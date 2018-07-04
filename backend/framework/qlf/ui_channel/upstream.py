@@ -6,6 +6,16 @@ import os
 import logging
 from util import get_config
 from dashboard.bokeh.helper import get_monitor_process
+from log import get_logger
+from util import get_config
+
+cfg = get_config()
+qlf_root = cfg.get("environment", "qlf_root")
+
+log = get_logger(
+    "qlf.upstream",
+    os.path.join(qlf_root, "logs", "qlf_upstream.log")
+)
 
 from ui_channel.alerts import Alerts
 import json
@@ -75,11 +85,14 @@ class Upstream:
         logger_pipeline.info(message)
 
     def monitor_job(self):
-        state = self.qlf_state.get_current_state()
+        state = self.qlf_state.get_monitor_state()
 
-        Group("monitor").send({
-            "text": state
-        })
+        log.info(self.qlf_state.camera_status_generator.alerts)
+
+        if state is not None:
+            Group("monitor").send({
+                "text": state
+            })
 
     def disk_space_job(self):
         state = self.qlf_state.get_current_state()

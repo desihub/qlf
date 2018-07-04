@@ -35,6 +35,9 @@ const styles = {
   normal: {
     color: 'green',
   },
+  warning: {
+    color: '#EFD469',
+  },
 };
 
 const stepsQa = {
@@ -69,7 +72,7 @@ export default class MetricSelect extends Component {
     ) {
       buttonsStatus = tests[this.props.camera][step].steps_status.map(
         status => {
-          return status === 'NORMAL';
+          return status;
         }
       );
     } else {
@@ -82,12 +85,15 @@ export default class MetricSelect extends Component {
           ? styles.selected
           : null;
       if (buttonsStatus) {
-        const labelColor = buttonsStatus[index]
-          ? styles.normal
-          : styles.failure;
+        const labelColor =
+          buttonsStatus[index] === 'NORMAL'
+            ? styles.normal
+            : buttonsStatus[index] === 'WARNING'
+              ? styles.warning
+              : styles.failure;
         const label = qa
           .toUpperCase()
-          .concat(buttonsStatus[index] ? ' ✓' : ' ✖︎');
+          .concat(buttonsStatus[index] !== 'ALARM' ? ' ✓' : ' ✖︎');
         return (
           <FlatButton
             key={index}

@@ -13,6 +13,7 @@ import {
   updateWebsocket,
 } from './online-store';
 import { navigateToProcessingHistory } from '../offline/offline-store';
+import CameraLog from '../../screens/camera-log/camera-log';
 
 import _ from 'lodash';
 
@@ -46,37 +47,50 @@ class OnlineContainer extends Component {
     disconnected: PropTypes.func.isRequired,
     resetCameraLog: PropTypes.func.isRequired,
     updateWebsocket: PropTypes.func.isRequired,
+    online: PropTypes.bool,
   };
 
   state = {
     socket: {},
     isOnline: false,
+    updateCameraLog: true,
+    cameraLogArm: '',
+    cameraLogSpectrograph: '',
   };
 
   getWebsocketRef = socket => {
     this.setState({ socket });
   };
 
-  componentWillMount() {
-    if (this.props.pathname && this.props.pathname.includes('realtime'))
-      this.setState({ isOnline: true });
-  }
+  componentWillReceiveProps() {
+    if (window.location.pathname === '/camera-log') {
+      if (
+        window.location.search.includes('arm=') &&
+        window.location.search.includes('cam=')
+      ) {
+        const spectrograph = window.location.search
+          .substring(1)
+          .split('&')[0]
+          .split('=')[1];
+        const arm = window.location.search
+          .substring(1)
+          .split('&')[1]
+          .split('=')[1];
+        this.setState({
+          cameraLogArm: arm,
+          cameraLogSpectrograph: spectrograph,
+        });
+      }
+    }
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      this.props.pathname &&
-      nextProps.pathname &&
-      nextProps.pathname.includes('realtime') &&
-      !this.props.pathname.includes('realtime')
-    ) {
-      this.setState({ isOnline: true });
-    } else if (
-      this.props.pathname &&
-      nextProps.pathname &&
-      !nextProps.pathname.includes('realtime') &&
-      this.props.pathname.includes('realtime')
-    )
-      this.setState({ isOnline: false });
+    if (this.props.online && this.state.updateCameraLog) {
+      this.setState({
+        updateCameraLog: false,
+      });
+      this.state.socket.state.ws.send(
+        `camera:${this.state.cameraLogArm}${this.state.cameraLogSpectrograph}`
+      );
+    }
   }
 
   isConnected = () => {
@@ -99,10 +113,31 @@ class OnlineContainer extends Component {
     );
   };
 
+  navigateToCamera = (arm, cameraIndex) => {
+    window.open(
+      `camera-log?cam=${cameraIndex}&arm=${arm}`,
+      'camera-log',
+      'width=850, height=550'
+    );
+  };
+
   render() {
     return (
       <div>
         {this.startWebsocket()}
+        <Route
+          path="/camera-log"
+          render={() => (
+            <CameraLog
+              cameraTerminal={this.props.cameraTerminal}
+              websocketRef={this.state.socket}
+              arm={this.state.cameraLogArm}
+              cameraIndex={this.state.cameraLogSpectrograph}
+              lines={this.props.cameraTerminal}
+              online={this.props.online}
+            />
+          )}
+        />
         <Route
           path="/monitor-realtime"
           render={() => (
@@ -123,6 +158,7 @@ class OnlineContainer extends Component {
               spectrographs={spectrographs}
               qaTests={this.props.qaTests}
               resetCameraLog={this.props.resetCameraLog}
+              navigateToCamera={this.navigateToCamera}
             />
           )}
         />
@@ -192,6 +228,7 @@ export default connect(
     arm: state.qlfOnline.arm,
     step: state.qlfOnline.step,
     spectrograph: state.qlfOnline.spectrograph,
+    online: state.qlfOnline.online,
   }),
   dispatch => ({
     navigateToMetrics: (step, spectrograph, arm, exp) =>

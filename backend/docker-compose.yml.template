@@ -12,48 +12,65 @@ services:
     build: .
     user: ${CURRENT_UID}
     environment:
+      # QL
+      - DESI_SPECTRO_DATA=/app/spectro/data # input directory for qlf
+      - DESI_SPECTRO_REDUX=/app/spectro/redux # output directory for qlf
+      - QL_SPEC_DATA=/app/spectro/data # input directory for ql
+      - QL_SPEC_REDUX=/app/spectro/redux # output directory for ql
+      - DESI_CCD_CALIBRATION_DATA=/app/spectro/calibration/ # monthly calibration files
+      - QL_CONFIG_DIR=/app/desispec/py/desispec/data/quicklook/ # mergedQA templates
+      - QL_CALIB_DIR=/app/spectro/calibration # psf files
+      - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
+      # Django:
       - QLF_API_URL=http://localhost:8001/dashboard/api
       - QLF_BASE_URL=http://localhost:8001
-      - BOKEH_SERVER=localhost
       - QLF_HOSTNAME=localhost
-      - QLF_ROOT=/app/
-      - DESI_SPECTRO_DATA=/app/spectro/data
-      - DESI_SPECTRO_REDUX=/app/spectro/redux
-      - QL_SPEC_DATA=/app/spectro/data
-      - QL_SPEC_REDUX=/app/spectro/redux
-      - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
+      - QLF_PORT=8001
+      - EMAIL_USE_TLS = False
+      - EMAIL_HOST=localhost
+      - EMAIL_PORT=25
+      - EMAIL_HELPDESK=LIneA Science Server <helpdesk@linea.gov.br>
+      - REDIS_NAME=redis
+      - QLF_REDIS=True
+      - WEBSOCKET_UPDATE_INTERVAL=3 # websocket update time (seconds)
+      - UPDATE_DEPENDENCIES=true # run conda and pip install when starting container
+      - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
+      - QLF_CFG=/app/framework/config/qlf.cfg
+      # Database
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
       - POSTGRES_DB=dbqlf
       - POSTGRES_PORT=
       - POSTGRES_OPTIONS=
       - DB_NAME=db
-      - EMAIL_USE_TLS = False
-      - EMAIL_HOST=localhost
-      - EMAIL_PORT=25
-      - EMAIL_HELPDESK=LIneA Science Server <helpdesk@linea.gov.br>
-      - BOKEH_PORT=5007
-      - QLF_PORT=8001
+      # Daemon
+      - DAEMON_TEST=False
       - EXPOSURE_GENERATOR_NS=exposure.generator
       - EXPOSURE_MONITORING_NS=exposure.monitoring
-      - PYRO_HOST=localhost
-      - PYRO_PORT=56006
+      - ICS_NAME=ICSDaemon
+      - ICS_HOST=localhost
+      - ICS_PORT=50006
+      # Bokeh
+      - BOKEH_TEST=False
+      - BOKEH_SERVER=localhost
+      - BOKEH_PORT=5007
       - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001
-      - REDIS_NAME=redis
-      - BOKEH_TEST=false
-      - WEBSOCKET_UPDATE_INTERVAL=3
-      - UPDATE_DEPENDENCIES=true
-      - DAEMON_TEST=false
-      - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
-      - QLF_CFG=/app/framework/config/qlf.cfg
+      # ICS
+      - START_ICS=False
+      - PYRO_HOST=localhost
+      - PYRO_REQUIRE_EXPOSE=False
+      - PYRO_SERIALIZER=pickle
+      - PYRO_THREADPOOL_SIZE=64
+      - PYRO_PORT=56006
+      - PYRO_SERIALIZERS_ACCEPTED=pickle
     volumes:
-      - .:/app
+      - .:/app # maps host diretory to internal container directory
     working_dir: /app/
-    command: ./run.sh
+    command: ./run.sh # script that runs on docker-compose up
     ports:
-      - "8001:8001"
-      - "5007:5007"
-      - "56006:56006"
+      - "8001:8001" # Django
+      - "5007:5007" # Bokeh (Plots)
+      - "56006:56006" # Daemon (Runs QL)
     depends_on:
       - redis
       - db

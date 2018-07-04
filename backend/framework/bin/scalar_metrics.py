@@ -52,7 +52,7 @@ class LoadMetrics:
         self.steps_dic = {
             'preproc': ['countpix', 'getbias', 'getrms', 'xwsigma'],
             'extract': ['countbins'],
-            'fiberfl': ['integ', 'skycont', 'skypeak'],
+            'fiberfl': ['skycont', 'skypeak'],
             'skysubs': ['skyresid', 'integ', 'snr'],
         }
 

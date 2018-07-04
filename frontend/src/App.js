@@ -146,6 +146,8 @@ class App extends React.Component {
         return '- Observing History';
       case '/afternoon-planning':
         return '- Afternoon Planning';
+      case '/camera-log':
+        return '- Camera Log';
       default:
         return '';
     }

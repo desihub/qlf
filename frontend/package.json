@@ -31,7 +31,7 @@
     "react-tooltip": "^3.4.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "serve": "^7.1.1",
+    "serve": "9.1.0",
     "util.promisify": "^1.0.0",
     "victory": "^0.24.2"
   },
@@ -56,7 +56,10 @@
     "testURL": "http://qlf-ui.com/",
     "setupFiles": [
       "./setup-jest.js"
-    ]
+    ],
+    "moduleNameMapper": {
+      ".+\\.(mp3)$": "jest-transform-stub"
+    }
   },
   "devDependencies": {
     "babel-jest": "^21.2.0",
@@ -75,6 +78,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "jest": "^21.2.1",
     "jest-fetch-mock": "^1.5.0",
+    "jest-transform-stub": "^1.0.0",
     "mock-socket": "^7.1.0",
     "prettier": "1.8.2",
     "react-test-renderer": "^16.1.1",

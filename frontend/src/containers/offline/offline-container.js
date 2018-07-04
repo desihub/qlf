@@ -63,6 +63,7 @@ class OfflineContainer extends Component {
     getHistoryDateRange: PropTypes.func,
     fetchLastProcess: PropTypes.func,
     daemonRunning: PropTypes.bool.isRequired,
+    pipelineRunning: PropTypes.string.isRequired,
   };
 
   state = {
@@ -145,6 +146,7 @@ class OfflineContainer extends Component {
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
+              pipelineRunning={this.props.pipelineRunning}
             />
           )}
         />
@@ -243,6 +245,7 @@ export default connect(
     lastProcessedId: state.qlfOnline.processId,
     rowsCount: state.qlfOffline.rowsCount,
     daemonRunning: state.qlfOnline.daemonRunning,
+    pipelineRunning: state.qlfOnline.pipelineRunning,
   }),
   dispatch => ({
     getQA: processId => dispatch(getQA(processId)),

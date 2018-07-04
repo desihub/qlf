@@ -41,6 +41,7 @@ export default class History extends Component {
     lastProcessedId: PropTypes.string,
     rowsCount: PropTypes.number,
     fetchLastProcess: PropTypes.func.isRequired,
+    pipelineRunning: PropTypes.string.isRequired,
   };
 
   constructor(props) {
@@ -122,6 +123,7 @@ export default class History extends Component {
         changeLimit={this.changeLimit}
         limit={this.state.limit}
         fetchLastProcess={this.props.fetchLastProcess}
+        pipelineRunning={this.props.pipelineRunning}
       />
     );
   };
@@ -221,7 +223,7 @@ export default class History extends Component {
           <ToolbarSeparator />
           {this.renderSelectDate()}
         </ToolbarGroup>
-        {/* {this.renderReprocessButton()} */}
+        {this.renderReprocessButton()}
       </Toolbar>
     );
   };
