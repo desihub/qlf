@@ -47,6 +47,7 @@ export default class History extends Component {
     rowsCount: PropTypes.number,
     fetchLastProcess: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string.isRequired,
+    openCCDViewer: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -129,6 +130,7 @@ export default class History extends Component {
         limit={this.state.limit}
         fetchLastProcess={this.props.fetchLastProcess}
         pipelineRunning={this.props.pipelineRunning}
+        openCCDViewer={this.props.openCCDViewer}
       />
     );
   };
@@ -152,6 +154,7 @@ export default class History extends Component {
         changeLimit={this.changeLimit}
         limit={this.state.limit}
         fetchLastProcess={this.props.fetchLastProcess}
+        openCCDViewer={this.props.openCCDViewer}
       />
     );
   };
@@ -193,6 +196,7 @@ export default class History extends Component {
           changeLimit={this.changeLimit}
           limit={this.state.limit}
           fetchLastProcess={this.props.fetchLastProcess}
+          openCCDViewer={this.props.openCCDViewer}
         />
       );
     }
