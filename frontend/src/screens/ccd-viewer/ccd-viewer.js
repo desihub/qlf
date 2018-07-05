@@ -1,8 +1,8 @@
 import React from 'react';
-import Modal from '@material-ui/core/Modal';
+import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import Petals from '../../../../components/petals/petals';
+import Petals from '../../components/petals/petals';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -14,7 +14,6 @@ const apiUrl = process.env.REACT_APP_API;
 
 const styles = {
   modalBody: {
-    position: 'absolute',
     backgroundColor: 'white',
     boxShadow: 1,
     padding: '16px',
@@ -64,6 +63,10 @@ const styles = {
   spectrographLabel: {
     paddingBottom: 10,
   },
+  main: {
+    margin: '16px',
+    padding: '16px',
+  },
 };
 
 class ImageModal extends React.Component {
@@ -79,10 +82,27 @@ class ImageModal extends React.Component {
 
   static propTypes = {
     classes: PropTypes.object,
-    handleClose: PropTypes.func.isRequired,
-    exposureId: PropTypes.string.isRequired,
-    night: PropTypes.string.isRequired,
   };
+
+  componentDidMount() {
+    if (window.location.pathname === '/ccd-viewer') {
+      if (
+        window.location.search.includes('exposure=') &&
+        window.location.search.includes('night=')
+      ) {
+        const str = window.location.search;
+        const exposureId = str.substring(
+          str.lastIndexOf('exposure='),
+          str.lastIndexOf('&')
+        );
+        const night = str.substring(str.lastIndexOf('night='));
+        this.setState({
+          exposureId,
+          night,
+        });
+      }
+    }
+  }
 
   renderImage = () => {
     const { classes } = this.props;
@@ -95,8 +115,8 @@ class ImageModal extends React.Component {
     )
       url = `${apiUrl}dashboard/fits_to_png/?process_id=1&cam=${
         this.state.arm
-      }${this.state.spectrograph}&night=${this.props.night}&exposure=${
-        this.props.exposureId
+      }${this.state.spectrograph}&${this.state.night}&${
+        this.state.exposureId
       }&processing=${this.state.processing}`;
 
     return (
@@ -210,17 +230,6 @@ class ImageModal extends React.Component {
     );
   };
 
-  renderClose = () => (
-    <Button
-      onClick={this.props.handleClose}
-      variant="raised"
-      size="small"
-      className={this.props.classes.button}
-    >
-      Close
-    </Button>
-  );
-
   renderClear = () => (
     <Button
       onClick={this.clearSelection}
@@ -235,11 +244,7 @@ class ImageModal extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <Modal
-        className={classes.modal}
-        open={true}
-        onClose={this.props.handleClose}
-      >
+      <Paper elevation={4} style={styles.main}>
         <div className={classes.modalBody}>
           <div className={classes.row}>
             <div>{this.renderControls()}</div>
@@ -247,11 +252,10 @@ class ImageModal extends React.Component {
               <FormLabel component="legend">Preview:</FormLabel>
               {this.renderLoading()}
               {this.renderImage()}
-              {this.renderClose()}
             </div>
           </div>
         </div>
-      </Modal>
+      </Paper>
     );
   }
 }

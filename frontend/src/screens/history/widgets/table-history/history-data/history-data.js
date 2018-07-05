@@ -43,7 +43,7 @@ export default class HistoryData extends React.Component {
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
     tableColumns: PropTypes.array.isRequired,
-    handleImageModalOpen: PropTypes.func.isRequired,
+    openCCDViewer: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
   };
@@ -206,7 +206,7 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             <Icon
-              onClick={() => this.props.handleImageModalOpen(night, exposureId)}
+              onClick={() => this.props.openCCDViewer(night, exposureId)}
               style={styles.notificationsIcon}
             >
               image

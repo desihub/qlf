@@ -37,6 +37,7 @@ class TableHistory extends Component {
     limit: PropTypes.number.isRequired,
     fetchLastProcess: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
+    openCCDViewer: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -48,11 +49,8 @@ class TableHistory extends Component {
       filters: '',
       tableColumnsHidden: [],
       openColumnsModal: false,
-      openImageModal: false,
       openCommentModal: false,
       commentProcessId: 1,
-      currentExposure: undefined,
-      currentNight: undefined,
     };
   }
 
@@ -100,7 +98,7 @@ class TableHistory extends Component {
               selectExposure={this.props.selectExposure}
               selectable={this.props.selectable}
               tableColumns={this.availableColumns()}
-              handleImageModalOpen={this.handleImageModalOpen}
+              openCCDViewer={this.openCCDViewer}
               handleCommentModalOpen={this.handleCommentModalOpen}
               pipelineRunning={this.props.pipelineRunning}
             />
@@ -280,28 +278,8 @@ class TableHistory extends Component {
     });
   };
 
-  renderImageModal = () => {
-    return this.state.openImageModal ? (
-      <ImageModal
-        handleClose={this.handleImageModalClose}
-        night={this.state.currentNight}
-        exposureId={String(this.state.currentExposure)}
-      />
-    ) : null;
-  };
-
-  handleImageModalOpen = (night, exposure) => {
-    this.setState({
-      openImageModal: true,
-      currentExposure: exposure,
-      currentNight: night,
-    });
-  };
-
-  handleImageModalClose = () => {
-    this.setState({
-      openImageModal: false,
-    });
+  openCCDViewer = (night, exposureId) => {
+    this.props.openCCDViewer(night, exposureId)
   };
 
   renderCommentModal = () => {
@@ -332,7 +310,6 @@ class TableHistory extends Component {
     return (
       <div className={this.props.classes.root}>
         {this.renderCommentModal()}
-        {this.renderImageModal()}
         {this.renderColumnsModal()}
         <Table style={styles.table}>
           <HistoryHeader
