@@ -82,15 +82,6 @@ class OnlineContainer extends Component {
         });
       }
     }
-
-    if (this.props.online && this.state.updateCameraLog) {
-      this.setState({
-        updateCameraLog: false,
-      });
-      this.state.socket.state.ws.send(
-        `camera:${this.state.cameraLogArm}${this.state.cameraLogSpectrograph}`
-      );
-    }
   }
 
   isConnected = () => {

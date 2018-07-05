@@ -13,12 +13,10 @@ const styles = {
     marginLeft: '1vw',
   },
   grid: {
-    flex: 1,
     display: 'grid',
-    marginBottom: '1vh',
-    flexDirection: 'row',
     gridTemplateColumns: '50% 50%',
     gridTemplateRows: 'auto 32vh',
+    height: 'calc(100vh - 160px)',
   },
   gridItem: {
     paddingTop: '1vh',
