@@ -117,7 +117,7 @@ class OfflineContainer extends Component {
     window.open(
       `ccd-viewer?exposure=${exposureId}&night=${night}`,
       'ccd-viewer',
-      'width=850, height=850'
+      'width=1050, height=850'
     );
   };
 

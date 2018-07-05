@@ -130,31 +130,33 @@ class OnlineContainer extends Component {
             />
           )}
         />
-        <Route
-          path="/monitor-realtime"
-          render={() => (
-            <Monitor
-              socketRef={this.state.socket}
-              exposureId={this.props.exposureId}
-              mjd={this.props.mjd}
-              date={this.props.date}
-              time={this.props.time}
-              flavor={this.props.flavor}
-              daemonRunning={this.props.daemonRunning}
-              pipelineRunning={this.props.pipelineRunning}
-              mainTerminal={this.props.mainTerminal}
-              ingestionTerminal={this.props.ingestionTerminal}
-              cameraTerminal={this.props.cameraTerminal}
-              camerasStages={this.props.camerasStages}
-              processId={this.props.processId}
-              arms={arms}
-              spectrographs={spectrographs}
-              qaTests={this.props.qaTests}
-              resetCameraLog={this.props.resetCameraLog}
-              navigateToCamera={this.navigateToCamera}
-            />
-          )}
-        />
+        {process.env.REACT_APP_DEACTIVATE_MONITOR === 'true' ? null : (
+          <Route
+            path="/monitor-realtime"
+            render={() => (
+              <Monitor
+                socketRef={this.state.socket}
+                exposureId={this.props.exposureId}
+                mjd={this.props.mjd}
+                date={this.props.date}
+                time={this.props.time}
+                flavor={this.props.flavor}
+                daemonRunning={this.props.daemonRunning}
+                pipelineRunning={this.props.pipelineRunning}
+                mainTerminal={this.props.mainTerminal}
+                ingestionTerminal={this.props.ingestionTerminal}
+                cameraTerminal={this.props.cameraTerminal}
+                camerasStages={this.props.camerasStages}
+                processId={this.props.processId}
+                arms={arms}
+                spectrographs={spectrographs}
+                qaTests={this.props.qaTests}
+                resetCameraLog={this.props.resetCameraLog}
+                navigateToCamera={this.navigateToCamera}
+              />
+            )}
+          />
+        )}
         <Route
           path="/qa-realtime"
           render={() => (

@@ -43,13 +43,14 @@ export default class Home extends React.Component {
   };
 
   render() {
+    const navigateToMonitor =
+      process.env.REACT_APP_DEACTIVATE_MONITOR === 'true'
+        ? null
+        : () => this.navigateTo('/monitor-realtime');
     return (
       <div>
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
-          <a
-            style={styles.linkStyle}
-            onClick={() => this.navigateTo('/monitor-realtime')}
-          >
+          <a style={styles.linkStyle} onClick={navigateToMonitor}>
             <Card
               icon="Web"
               title="Pipeline Monitor"
