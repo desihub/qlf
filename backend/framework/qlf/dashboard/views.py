@@ -674,6 +674,35 @@ def disk_thresholds(request):
     })
 
 
+def calibration_files(request):
+    cfg = get_config()
+    calibration_path = cfg.get('namespace', 'calibration_path')
+    fiberflat = sorted(os.listdir('{}/fiberflat'.format(calibration_path)))
+    psf = sorted(os.listdir('{}/psf'.format(calibration_path)))
+    calibration_files_date = []
+    for calibration_file in fiberflat:
+        calibration_files_date.append({
+            "name": calibration_file,
+            "date": datetime.fromtimestamp(
+                os.path.getctime('{}/fiberflat/{}'.format(
+                    calibration_path, calibration_file
+                    ))
+                )
+        })
+    for calibration_file in psf:
+        calibration_files_date.append({
+            "name": calibration_file,
+            "date": datetime.fromtimestamp(
+                os.path.getctime('{}/psf/{}'.format(
+                    calibration_path, calibration_file
+                    ))
+                )
+        })
+    return JsonResponse({
+        "files": calibration_files_date
+    })
+
+
 @csrf_exempt
 def edit_qlf_config(request):
     # TODO: Use configparser

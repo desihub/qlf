@@ -49,6 +49,8 @@ urlpatterns = [
     url(r'^start', views.start, name='start'),
     url(r'^stop', views.stop, name='stop'),
     url(r'^reset', views.reset, name='reset'),
+    url(r'^dashboard/api/calibration_files', views.calibration_files, name='calibration_files'),
+    url(r'^send_message', WebsocketView.send_message, name='send_message'),
     url(r'^dashboard/api/default_configuration/',
         views.default_configuration, name='default_configuration'),
     url(r'^send_ticket_email',
