@@ -14,7 +14,6 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
-import ImageModal from '../image-modal/image-modal';
 import CommentModal from '../comment-modal/comment-modal';
 
 class TableHistory extends Component {
@@ -43,8 +42,8 @@ class TableHistory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      asc: undefined,
-      ordering: '-pk',
+      asc: false,
+      ordering: this.props.type === 'process' ? 'exposure__dateobs' : 'dateobs',
       offset: 0,
       filters: '',
       tableColumnsHidden: [],
@@ -61,10 +60,12 @@ class TableHistory extends Component {
       (this.props.startDate !== nextProps.startDate ||
         this.props.endDate !== nextProps.endDate)
     ) {
+      const { asc, ordering } = this.state;
+      const order = asc ? ordering : `-${ordering}`;
       this.props.getHistory(
         nextProps.startDate,
         nextProps.endDate,
-        this.state.ordering,
+        order,
         this.state.offset,
         this.props.limit,
         this.state.filters
@@ -279,7 +280,7 @@ class TableHistory extends Component {
   };
 
   openCCDViewer = (night, exposureId) => {
-    this.props.openCCDViewer(night, exposureId)
+    this.props.openCCDViewer(night, exposureId);
   };
 
   renderCommentModal = () => {
