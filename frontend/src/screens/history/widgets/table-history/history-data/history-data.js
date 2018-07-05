@@ -22,6 +22,9 @@ const styles = {
   statusAbort: {
     color: 'red',
   },
+  statusPending: {
+    color: '#EFD469',
+  },
   statusNormal: {
     color: 'green',
   },
@@ -115,6 +118,8 @@ export default class HistoryData extends React.Component {
         return <span style={styles.statusAbort}>Aborted</span>;
       case 'failed':
         return <span style={styles.statusAbort}>Failed</span>;
+      case 'pending':
+        return <span style={styles.statusPending}>Pending</span>;
       default:
         return <span style={styles.statusNormal}>Normal</span>;
     }
@@ -143,10 +148,9 @@ export default class HistoryData extends React.Component {
     const exposureId = isNotProcessingHistory
       ? row['exposure_id']
       : row.exposure['exposure_id'];
-    const status =
-      !row.runtime && !processing
-        ? 'aborted'
-        : this.qaSuccess() ? 'normal' : 'failed';
+    const status = !row.runtime
+      ? processing ? 'pending' : 'aborted'
+      : this.qaSuccess() ? 'normal' : 'failed';
     switch (type) {
       case 'parent':
         return (
