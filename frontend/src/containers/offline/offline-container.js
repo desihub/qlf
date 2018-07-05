@@ -186,6 +186,7 @@ class OfflineContainer extends Component {
               petalSizeFactor={16}
               processId={this.props.processId}
               monitor={false}
+              flavor={this.props.flavor}
             />
           )}
         />
