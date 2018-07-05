@@ -148,6 +148,8 @@ class App extends React.Component {
         return '- Afternoon Planning';
       case '/camera-log':
         return '- Camera Log';
+      case '/ccd-viewer':
+        return '- CCD Viewer';
       default:
         return '';
     }

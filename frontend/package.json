@@ -59,7 +59,11 @@
     ],
     "moduleNameMapper": {
       ".+\\.(mp3)$": "jest-transform-stub"
-    }
+    },
+    "modulePathIgnorePatterns": [
+      "npm-cache",
+      ".npm"
+    ]
   },
   "devDependencies": {
     "babel-jest": "^21.2.0",

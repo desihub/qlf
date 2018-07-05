@@ -43,7 +43,7 @@ export default class HistoryData extends React.Component {
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
     tableColumns: PropTypes.array.isRequired,
-    handleImageModalOpen: PropTypes.func.isRequired,
+    openCCDViewer: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
   };
@@ -82,9 +82,9 @@ export default class HistoryData extends React.Component {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
         !JSON.stringify(qaTests).includes('ALARM');
-      return this.renderQAStatus(testsFailed);
+      return testsFailed;
     }
-    return this.renderQAStatus(false);
+    return false;
   };
 
   renderQAStatus = status => {
@@ -104,17 +104,20 @@ export default class HistoryData extends React.Component {
         style={styles.link}
         onClick={() => this.props.selectProcessQA(this.props.processId)}
       >
-        {this.qaSuccess()}
+        {this.renderQAStatus(this.qaSuccess())}
       </span>
     );
   };
 
-  renderStatus = aborted => {
-    return !aborted ? (
-      <span style={styles.statusNormal}>Normal</span>
-    ) : (
-      <span style={styles.statusAbort}>Aborted</span>
-    );
+  renderStatus = state => {
+    switch (state) {
+      case 'aborted':
+        return <span style={styles.statusAbort}>Aborted</span>;
+      case 'failed':
+        return <span style={styles.statusAbort}>Failed</span>;
+      default:
+        return <span style={styles.statusNormal}>Normal</span>;
+    }
   };
 
   renderColumns = (type, key, id) => {
@@ -140,6 +143,10 @@ export default class HistoryData extends React.Component {
     const exposureId = isNotProcessingHistory
       ? row['exposure_id']
       : row.exposure['exposure_id'];
+    const status =
+      !row.runtime && !processing
+        ? 'aborted'
+        : this.qaSuccess() ? 'normal' : 'failed';
     switch (type) {
       case 'parent':
         return (
@@ -206,7 +213,7 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             <Icon
-              onClick={() => this.props.handleImageModalOpen(night, exposureId)}
+              onClick={() => this.props.openCCDViewer(night, exposureId)}
               style={styles.notificationsIcon}
             >
               image
@@ -242,7 +249,7 @@ export default class HistoryData extends React.Component {
             key={`EXPV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
-            {this.renderStatus(!row.runtime && !processing)}
+            {this.renderStatus(status)}
           </TableCell>
         );
       case 'qa':
@@ -259,7 +266,7 @@ export default class HistoryData extends React.Component {
                   style={styles.link}
                   onClick={() => selectProcessQA(processId)}
                 >
-                  {this.qaSuccess()}
+                  {this.renderQAStatus(this.qaSuccess())}
                 </span>
               ) : null}
             </TableCell>
