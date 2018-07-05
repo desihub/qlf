@@ -29,6 +29,7 @@ class OnlineContainer extends Component {
     mjd: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
+    flavor: PropTypes.string.isRequired,
     navigateToMetrics: PropTypes.func.isRequired,
     daemonRunning: PropTypes.bool.isRequired,
     pipelineRunning: PropTypes.string.isRequired,
@@ -138,6 +139,7 @@ class OnlineContainer extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
+              flavor={this.props.flavor}
               daemonRunning={this.props.daemonRunning}
               pipelineRunning={this.props.pipelineRunning}
               mainTerminal={this.props.mainTerminal}
@@ -208,6 +210,7 @@ export default connect(
     mjd: state.qlfOnline.mjd,
     date: state.qlfOnline.date,
     time: state.qlfOnline.time,
+    flavor: state.qlfOnline.flavor,
     daemonRunning: state.qlfOnline.daemonRunning,
     pipelineRunning: state.qlfOnline.pipelineRunning,
     mainTerminal: state.qlfOnline.mainTerminal,

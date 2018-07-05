@@ -41,6 +41,7 @@ class QLFState:
         self.logfile = list()
         self.pipelinelog = list()
         self.mjd = str()
+        self.flavor = str()
         self.date_time = str()
         self.pipeline_running = 0
         self.daemon_running = False
@@ -86,6 +87,7 @@ class QLFState:
                 self.current_process
             )
             self.exposure = self.current_process["exposure"]
+            self.flavor = self.current_process.get("flavor")
             self.current_process_id = self.current_process.get("id")
             date = get_date(self.exposure) if self.exposure else None
             self.date_time = date.value if date else ''
@@ -100,6 +102,7 @@ class QLFState:
             "pipeline_running": self.pipeline_running,
             "daemon_running": self.daemon_running,
             "exposure": self.exposure,
+            "flavor": self.flavor,
             "cameras": self.camera_status,
             "available_cameras": self.available_cameras,
             "qa_results": self.qa_results,
@@ -124,6 +127,7 @@ class QLFState:
             "ingestion": self.pipelinelog,
             "mjd": self.mjd,
             "date": self.date_time,
+            "flavor": self.flavor,
             "process_id": self.current_process_id
         })
 

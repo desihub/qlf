@@ -22,6 +22,7 @@ function defaultState() {
     time: '',
     processId: '',
     exposureId: '',
+    flavor: '',
     arm: 0,
     spectrograph: 0,
     step: 0,
@@ -146,6 +147,7 @@ export function qlfOnlineReducers(state = defaultState(), action) {
         mjd: action.state.mjd,
         date: action.state.date,
         time: action.state.time,
+        flavor: action.state.flavor,
       });
     case 'UPDATE_QA':
       return Object.assign({}, state, {

@@ -46,6 +46,7 @@ class OfflineContainer extends Component {
     mjd: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
+    flavor: PropTypes.string.isRequired,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
@@ -199,6 +200,7 @@ class OfflineContainer extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
+              flavor={this.props.flavor}
               navigateToProcessingHistory={
                 this.props.navigateToProcessingHistory
               }
@@ -234,6 +236,7 @@ export default connect(
     mjd: state.qlfOffline.mjd,
     date: state.qlfOffline.date,
     time: state.qlfOffline.time,
+    flavor: state.qlfOffline.flavor,
     arm: state.qlfOffline.arm,
     step: state.qlfOffline.step,
     spectrograph: state.qlfOffline.spectrograph,

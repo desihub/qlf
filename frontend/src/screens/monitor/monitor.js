@@ -58,6 +58,7 @@ export default class Monitor extends Component {
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
     time: PropTypes.string.isRequired,
+    flavor: PropTypes.string.isRequired,
     mjd: PropTypes.string.isRequired,
     resetCameraLog: PropTypes.func.isRequired,
     navigateToCamera: PropTypes.func.isRequired,
@@ -106,6 +107,7 @@ export default class Monitor extends Component {
       qaTests,
       spectrographs,
       time,
+      flavor,
     } = nextProps;
 
     this.setState({
@@ -122,6 +124,7 @@ export default class Monitor extends Component {
       qaTests,
       spectrographs,
       time,
+      flavor,
     });
   }
 
@@ -166,6 +169,7 @@ export default class Monitor extends Component {
               layout={styles.layout}
               mjd={this.state.mjd}
               date={this.state.date}
+              flavor={this.state.flavor}
               processId={String(this.state.processId)}
             />
             <Controls
