@@ -14,7 +14,7 @@ const styles = {
   },
   currentScreen: {
     height: 'calc(100vh - 169px)',
-  }
+  },
 };
 
 class Landing extends Component {
