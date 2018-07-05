@@ -57,7 +57,7 @@ class JobSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Job
         fields = (
-            'pk', 'name', 'start', 'end',
+            'pk', 'name', 'start', 'end', 'output',
             'status', 'version', 'logname', 'process',
             'camera', 'links'
         )

@@ -48,6 +48,7 @@ function updateRecentExposures(recentExposures) {
 
 export function fetchLastProcess() {
   return async function(dispatch, getState) {
+    if (!getState().router.location.pathname.includes('history')) return;
     const { startDate, endDate } = getState().qlfOffline;
     const recentProcesses = await QlfApi.getProcessingHistory(
       startDate,

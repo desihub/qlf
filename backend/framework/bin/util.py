@@ -62,52 +62,11 @@ def change_config_file(night, exposure_id, program):
     cfg = get_config()
 
     program_file = program_mapping.get(program, 'darksurvey')
+    if program_file == 'greysurvey':
+        program_file = 'graysurvey'
     config_file = cfg.get('main', 'qlconfig').format(program_file)
 
-    models = QLFModels()
-    template = models.get_last_exposure_by_program(program)
-
-    with open(config_file, 'r') as file:
-        config = yaml.load(file)
-
-    psf_exp_id = cfg.getint("pipeline", "psf_exp_id")
-    fiberflat_exp_id = cfg.getint("pipeline", "fiberflat_exp_id")
-    use_resolution = cfg.getboolean("pipeline", "use_resolution")
-    write_intermediate_files = cfg.getboolean(
-        "pipeline",
-        "write_intermediate_files"
-    )
-
-    if config.get('PSFExpid', None):
-        config['PSFExpid'] = psf_exp_id
-
-    if config.get('FiberflatExpid', None):
-        config['FiberflatExpid'] = fiberflat_exp_id
-
-    if config.get('UseResolution', None):
-        config['UseResolution'] = use_resolution
-
-    if config.get('WriteIntermediatefiles', None):
-        config['WriteIntermediatefiles'] = write_intermediate_files
-
-    if template:
-        if config.get('TemplateNight', None):
-            config['TemplateNight'] = int(template.night)
-
-        if config.get('TemplateExpid', None):
-            config['TemplateExpid'] = template.exposure_id
-
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-    config_path = os.path.join(desi_spectro_redux, 'exposures', night)
-
-    ensure_dir(config_path)
-
-    current_config = os.path.join(config_path, os.path.basename(config_file))
-
-    with open(current_config, 'w') as file:
-        yaml.dump(config, file)
-
-    return current_config
+    return config_file
 
 
 def extract_exposure_data(exposure_id, night):

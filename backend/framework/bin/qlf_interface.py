@@ -44,9 +44,15 @@ class QLFInterface(object):
 
         exposure_path = os.path.join(night_path, exposure)
 
+        try:
+            file_list = ''.join(sorted(os.listdir(exposure_path), reverse=True))
+        except:
+            log.error("File not found {}".format(exposure_path))
+            return None
+
         exp_dir = re.findall(
             r"desi-(\d+).fits.fz",
-            ''.join(sorted(os.listdir(exposure_path), reverse=True))
+            file_list
         )[:1]
         exp_dir = ''.join(exp_dir)
 

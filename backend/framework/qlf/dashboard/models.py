@@ -172,6 +172,10 @@ class Job(models.Model):
         max_length=45, null=True,
         help_text='Name of the log file.'
     )
+    output = JSONField(
+        help_text='JSON structure with the QA result',
+        null=True
+    )
 
     def __str__(self):
         return str(self.name)

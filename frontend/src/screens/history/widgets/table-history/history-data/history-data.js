@@ -3,7 +3,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@material-ui/core/Checkbox';
 import Icon from '@material-ui/core/Icon';
 
 const styles = {
@@ -45,6 +45,7 @@ export default class HistoryData extends React.Component {
     tableColumns: PropTypes.array.isRequired,
     handleImageModalOpen: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
+    pipelineRunning: PropTypes.string,
   };
 
   formatDate = dateString => {
@@ -121,7 +122,9 @@ export default class HistoryData extends React.Component {
     const isNotProcessingHistory = this.props.type !== 'process';
     const processing = isNotProcessingHistory
       ? null
-      : this.props.lastProcessedId === String(row.pk);
+      : this.props.lastProcessedId === String(row.pk) &&
+        this.props.pipelineRunning &&
+        this.props.pipelineRunning === 'Running';
     const lastProcessed = processing ? styles.bold : {};
     let comment;
     if (this.props.type === 'process') {
@@ -295,14 +298,14 @@ export default class HistoryData extends React.Component {
     );
   };
 
-  // renderCheckbox = checked => {
-  //   if (!this.props.selectable) return;
-  //   return (
-  //     <TableCell style={{ ...styles.tableCell }}>
-  //       <Checkbox checked={checked} />
-  //     </TableCell>
-  //   );
-  // };
+  renderCheckbox = checked => {
+    if (!this.props.selectable) return;
+    return (
+      <TableCell style={{ ...styles.tableCell }}>
+        <Checkbox checked={checked} />
+      </TableCell>
+    );
+  };
 
   selectExposure = rowNumber => {
     if (this.props.selectExposure) this.props.selectExposure([rowNumber]);
@@ -312,14 +315,14 @@ export default class HistoryData extends React.Component {
     const {
       processId,
       lastProcessedId,
-      // selectedExposures,
+      selectedExposures,
       rowNumber,
       striped,
     } = this.props;
     const lastProcessed =
       lastProcessedId && lastProcessedId === processId ? styles.bold : null;
-    // const selectedExposure =
-    //   selectedExposures && selectedExposures.includes(rowNumber);
+    const selectedExposure =
+      selectedExposures && selectedExposures.includes(rowNumber);
 
     return (
       <TableRow
@@ -327,7 +330,7 @@ export default class HistoryData extends React.Component {
         style={lastProcessed}
         striped={striped}
       >
-        {/* {this.renderCheckbox(selectedExposure)} */}
+        {this.renderCheckbox(selectedExposure)}
         {this.props.tableColumns
           .filter(column => column.exposureKey !== null)
           .map((column, key) => {

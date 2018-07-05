@@ -9,6 +9,7 @@ import { Card } from 'material-ui/Card';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const headerSize = '11px';
 
@@ -33,6 +34,9 @@ const styles = {
     whiteSpace: 'normal',
     paddingRight: '0px',
     textAlign: 'center',
+  },
+  loading: {
+    height: 8,
   },
 };
 
@@ -63,13 +67,15 @@ class Stages extends Component {
   getColor = row => {
     switch (row) {
       case 'success_stage':
-        return { backgroundColor: 'green' };
+        return { backgroundColor: 'green', padding: 4 };
       case 'processing_stage':
-        return { backgroundColor: 'yellow' };
+        return {
+          padding: 0,
+        };
       case 'error_stage':
-        return { backgroundColor: 'red' };
+        return { backgroundColor: 'red', padding: 4 };
       default:
-        return {};
+        return { padding: 4 };
     }
   };
 
@@ -146,7 +152,11 @@ class Stages extends Component {
                               padding: 4,
                               ...this.getColor(row.pre),
                             }}
-                          />
+                          >
+                            {row.pre === 'processing_stage' ? (
+                              <LinearProgress style={styles.loading} />
+                            ) : null}
+                          </TableCell>
                           <TableCell
                             style={{
                               fontSize: this.state.columnHeight,
@@ -154,7 +164,11 @@ class Stages extends Component {
                               padding: 4,
                               ...this.getColor(row.spec),
                             }}
-                          />
+                          >
+                            {row.spec === 'processing_stage' ? (
+                              <LinearProgress style={styles.loading} />
+                            ) : null}
+                          </TableCell>
                           <TableCell
                             style={{
                               fontSize: this.state.columnHeight,
@@ -162,7 +176,11 @@ class Stages extends Component {
                               padding: 4,
                               ...this.getColor(row.fib),
                             }}
-                          />
+                          >
+                            {row.fib === 'processing_stage' ? (
+                              <LinearProgress style={styles.loading} />
+                            ) : null}
+                          </TableCell>
                           <TableCell
                             style={{
                               fontSize: this.state.columnHeight,
@@ -170,7 +188,11 @@ class Stages extends Component {
                               padding: 4,
                               ...this.getColor(row.sky),
                             }}
-                          />
+                          >
+                            {row.sky === 'processing_stage' ? (
+                              <LinearProgress style={styles.loading} />
+                            ) : null}
+                          </TableCell>
                         </TableRow>
                       </Tooltip>
                     ))}

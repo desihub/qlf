@@ -22,6 +22,7 @@ class Connection extends Component {
 
   handleData = data => {
     const result = JSON.parse(data);
+
     if (result.notification) {
       const notification = JSON.parse(result.notification);
       this.props.updateNotifications(notification);
