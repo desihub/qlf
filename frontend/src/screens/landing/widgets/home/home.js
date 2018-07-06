@@ -22,7 +22,7 @@ export default class Home extends React.Component {
 
   navigateTo = route => {
     this.props.updateUrl(route);
-    window.open(route, route, 'width=950, height=650');
+    window.open(route, route, 'width=1050, height=750');
   };
 
   componentDidMount() {
@@ -43,13 +43,14 @@ export default class Home extends React.Component {
   };
 
   render() {
+    const navigateToMonitor =
+      process.env.REACT_APP_DEACTIVATE_MONITOR === 'true'
+        ? null
+        : () => this.navigateTo('/monitor-realtime');
     return (
       <div>
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
-          <a
-            style={styles.linkStyle}
-            onClick={() => this.navigateTo('/monitor-realtime')}
-          >
+          <a style={styles.linkStyle} onClick={navigateToMonitor}>
             <Card
               icon="Web"
               title="Pipeline Monitor"

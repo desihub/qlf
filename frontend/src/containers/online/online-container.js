@@ -29,6 +29,7 @@ class OnlineContainer extends Component {
     mjd: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
+    flavor: PropTypes.string.isRequired,
     navigateToMetrics: PropTypes.func.isRequired,
     daemonRunning: PropTypes.bool.isRequired,
     pipelineRunning: PropTypes.string.isRequired,
@@ -82,15 +83,6 @@ class OnlineContainer extends Component {
         });
       }
     }
-
-    if (this.props.online && this.state.updateCameraLog) {
-      this.setState({
-        updateCameraLog: false,
-      });
-      this.state.socket.state.ws.send(
-        `camera:${this.state.cameraLogArm}${this.state.cameraLogSpectrograph}`
-      );
-    }
   }
 
   isConnected = () => {
@@ -138,30 +130,33 @@ class OnlineContainer extends Component {
             />
           )}
         />
-        <Route
-          path="/monitor-realtime"
-          render={() => (
-            <Monitor
-              socketRef={this.state.socket}
-              exposureId={this.props.exposureId}
-              mjd={this.props.mjd}
-              date={this.props.date}
-              time={this.props.time}
-              daemonRunning={this.props.daemonRunning}
-              pipelineRunning={this.props.pipelineRunning}
-              mainTerminal={this.props.mainTerminal}
-              ingestionTerminal={this.props.ingestionTerminal}
-              cameraTerminal={this.props.cameraTerminal}
-              camerasStages={this.props.camerasStages}
-              processId={this.props.processId}
-              arms={arms}
-              spectrographs={spectrographs}
-              qaTests={this.props.qaTests}
-              resetCameraLog={this.props.resetCameraLog}
-              navigateToCamera={this.navigateToCamera}
-            />
-          )}
-        />
+        {process.env.REACT_APP_DEACTIVATE_MONITOR === 'true' ? null : (
+          <Route
+            path="/monitor-realtime"
+            render={() => (
+              <Monitor
+                socketRef={this.state.socket}
+                exposureId={this.props.exposureId}
+                mjd={this.props.mjd}
+                date={this.props.date}
+                time={this.props.time}
+                flavor={this.props.flavor}
+                daemonRunning={this.props.daemonRunning}
+                pipelineRunning={this.props.pipelineRunning}
+                mainTerminal={this.props.mainTerminal}
+                ingestionTerminal={this.props.ingestionTerminal}
+                cameraTerminal={this.props.cameraTerminal}
+                camerasStages={this.props.camerasStages}
+                processId={this.props.processId}
+                arms={arms}
+                spectrographs={spectrographs}
+                qaTests={this.props.qaTests}
+                resetCameraLog={this.props.resetCameraLog}
+                navigateToCamera={this.navigateToCamera}
+              />
+            )}
+          />
+        )}
         <Route
           path="/qa-realtime"
           render={() => (
@@ -217,6 +212,7 @@ export default connect(
     mjd: state.qlfOnline.mjd,
     date: state.qlfOnline.date,
     time: state.qlfOnline.time,
+    flavor: state.qlfOnline.flavor,
     daemonRunning: state.qlfOnline.daemonRunning,
     pipelineRunning: state.qlfOnline.pipelineRunning,
     mainTerminal: state.qlfOnline.mainTerminal,

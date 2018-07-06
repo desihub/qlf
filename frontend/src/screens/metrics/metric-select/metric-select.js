@@ -102,7 +102,7 @@ export default class MetricSelect extends Component {
             fullWidth
             style={labelColor}
             label={label}
-            primary={buttonsStatus[index]}
+            // primary={buttonsStatus[index]}
             secondary={!buttonsStatus[index]}
           />
         );

@@ -26,6 +26,7 @@ export default class QA extends Component {
     petalSizeFactor: PropTypes.number.isRequired,
     processId: PropTypes.number,
     monitor: PropTypes.bool,
+    flavor: PropTypes.string,
   };
 
   componentDidMount() {
@@ -56,6 +57,7 @@ export default class QA extends Component {
         petalSizeFactor={this.props.petalSizeFactor}
         processId={this.props.processId}
         monitor={this.props.monitor}
+        flavor={this.props.flavor}
       />
     );
   };

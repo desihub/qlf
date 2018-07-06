@@ -23,6 +23,27 @@ export default class CameraLog extends React.Component {
     online: PropTypes.bool,
   };
 
+  componentDidMount() {
+    this.refreshLog = setInterval(this.getLines, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.refreshLog);
+  }
+
+  getLines = () => {
+    if (
+      this.props.online &&
+      this.props.arm &&
+      this.props.cameraIndex &&
+      this.props.websocketRef
+    ) {
+      this.props.websocketRef.state.ws.send(
+        `camera:${this.props.arm}${this.props.cameraIndex}`
+      );
+    }
+  };
+
   renderTitle = () => {
     return (
       <div>
@@ -33,12 +54,10 @@ export default class CameraLog extends React.Component {
 
   render() {
     return (
-      <div>
-        <Paper elevation={4} style={styles.main}>
-          {this.renderTitle()}
-          <Terminal lines={this.props.lines} />
-        </Paper>
-      </div>
+      <Paper elevation={4} style={styles.main}>
+        {this.renderTitle()}
+        <Terminal lines={this.props.lines} />
+      </Paper>
     );
   }
 }

@@ -12,6 +12,9 @@ const styles = {
   mainMenu: {
     height: '32px',
   },
+  currentScreen: {
+    height: 'calc(100vh - 169px)',
+  },
 };
 
 class Landing extends Component {
@@ -50,7 +53,7 @@ class Landing extends Component {
           title={this.renderMainMenu()}
           zDepth={0}
         />
-        {this.renderCurrentScreen()}
+        <div style={styles.currentScreen}>{this.renderCurrentScreen()}</div>
       </div>
     );
   }

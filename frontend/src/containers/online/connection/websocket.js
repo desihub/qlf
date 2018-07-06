@@ -41,6 +41,7 @@ class Connection extends Component {
             ? result.ingestion.reverse()
             : [],
         exposureId: result.exposure.toString(),
+        flavor: result.flavor,
         camerasStages: result.cameras,
         availableCameras: result.available_cameras,
         mjd: result.mjd === '' ? '' : result.mjd.toFixed(3),

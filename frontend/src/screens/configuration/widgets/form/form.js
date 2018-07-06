@@ -220,6 +220,7 @@ class Form extends React.Component {
         </Typography>
         {configMap.filter(c => c.type === 'exposureGen').map(c => (
           <TextField
+            disabled={true}
             key={c.label}
             label={c.label}
             InputLabelProps={{
@@ -256,6 +257,7 @@ class Form extends React.Component {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      disabled={true}
                       checked={this.state.arms.includes(arm)}
                       onChange={() => this.updateArm(arm)}
                       value={arm}
@@ -274,6 +276,7 @@ class Form extends React.Component {
         </Typography>
         {configMap.filter(c => c.type === 'io').map(c => (
           <TextField
+            disabled={true}
             key={c.label}
             label={c.label}
             InputLabelProps={{
@@ -291,6 +294,7 @@ class Form extends React.Component {
           <FormLabel style={styles.labelThreshold}>Disk Space</FormLabel>
           {configMap.filter(c => c.type === 'thresholds').map(c => (
             <TextField
+              disabled={true}
               key={c.label}
               label={c.label}
               type="number"
@@ -313,7 +317,7 @@ class Form extends React.Component {
         </Paper>
         <Button
           onClick={this.saveConfiguration}
-          disabled={this.props.daemonRunning}
+          disabled={true}
           variant="raised"
           color="default"
           style={styles.button}
@@ -322,7 +326,7 @@ class Form extends React.Component {
         </Button>
         <Button
           onClick={this.getDefaultConfiguration}
-          disabled={this.props.daemonRunning}
+          disabled={true}
           variant="raised"
           color="default"
           style={styles.button}

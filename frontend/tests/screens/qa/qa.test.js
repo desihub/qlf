@@ -16,6 +16,7 @@ const status = {
   availableCameras: ['b0', 'b1', 'r0', 'r1', 'z0', 'z1'],
   mjd: '',
   time: '',
+  flavor: '',
   date: '',
   arms: ['b', 'r'],
   spectrographs: [0, 1, 2],
@@ -71,6 +72,7 @@ describe('QA', () => {
             mjd={status.mjd}
             date={status.mjd}
             time={status.time}
+            flavor={status.flavor}
             navigateToMetrics={jest.fn()}
             isOnline={jest.fn()}
             isOffline={jest.fn()}
@@ -91,7 +93,7 @@ describe('QA', () => {
     expect(
       wrapper
         .find('Cards')
-        .at(1)
+        .at(2)
         .props().title
     ).toBe('Exposure Id: 3');
     expect(

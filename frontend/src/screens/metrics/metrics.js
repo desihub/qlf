@@ -69,6 +69,7 @@ export default class Metrics extends Component {
     mjd: PropTypes.string,
     date: PropTypes.string,
     time: PropTypes.string,
+    flavor: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
     arm: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
@@ -206,6 +207,7 @@ export default class Metrics extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
+              flavor={this.props.flavor}
               processId={String(this.props.processId)}
             />
             <div style={styles.grid}>

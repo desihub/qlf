@@ -51,9 +51,14 @@ export default class Cards extends React.Component {
   };
 
   renderIcon = () => {
+    const isMonitor = this.props.title === 'Pipeline Monitor';
+    const deactivate =
+      isMonitor && process.env.REACT_APP_DEACTIVATE_MONITOR === 'true'
+        ? { color: 'gray', fontWeight: 100 }
+        : {};
     switch (this.props.icon) {
       case 'Web':
-        return <Web style={styles.icon} />;
+        return <Web style={{ ...styles.icon, ...deactivate }} />;
       case 'RemoveRedEye':
         return <RemoveRedEye style={styles.icon} />;
       case 'History':
@@ -76,17 +81,27 @@ export default class Cards extends React.Component {
   };
 
   render() {
+    const isMonitor =
+      this.props.title === 'Pipeline Monitor' &&
+      process.env.REACT_APP_DEACTIVATE_MONITOR === 'true';
+    const deactivate = isMonitor ? { color: 'gray' } : {};
+    const deactivateCard =
+      isMonitor && process.env.REACT_APP_DEACTIVATE_MONITOR === 'true'
+        ? { borderLeft: 'solid 4px gray' }
+        : {};
     return (
-      <Card style={styles.card}>
+      <Card style={{ ...styles.card, ...deactivateCard }}>
         <CardTitle
-          titleStyle={styles.title}
+          titleStyle={{ ...styles.title, ...deactivate }}
           style={styles.titleContainer}
           title={this.props.title}
         />
         <CardMedia style={styles.cardMedia}>
           <div>{this.renderIcon()}</div>
         </CardMedia>
-        <CardText style={styles.subtitle}>{this.props.subtitle}</CardText>
+        <CardText style={{ ...styles.subtitle, ...deactivate }}>
+          {this.props.subtitle}
+        </CardText>
       </Card>
     );
   }

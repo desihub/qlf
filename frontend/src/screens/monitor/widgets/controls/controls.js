@@ -144,7 +144,7 @@ class Controls extends Component {
           <FormControl component="fieldset">
             <FormLabel component="legend">Delete Files</FormLabel>
             <FormGroup>
-              <FormControlLabel
+              {/* <FormControlLabel
                 control={
                   <Checkbox
                     checked={this.state.selectedClearDisk.find(
@@ -157,7 +157,7 @@ class Controls extends Component {
                   />
                 }
                 label="Raw"
-              />
+              /> */}
               <FormControlLabel
                 control={
                   <Checkbox
@@ -237,7 +237,7 @@ class Controls extends Component {
         {this.renderClearPopover()}
         {this.renderStartOrStop()}
         {this.renderReset()}
-        {/* {this.renderClear()} */}
+        {this.renderClear()}
       </div>
     );
   }

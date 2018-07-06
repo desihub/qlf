@@ -12,6 +12,8 @@ const styles = {
     overflowY: 'scroll',
     overflowX: 'scroll',
     flexDirection: 'column',
+    height: 'calc(100vh - 150px)',
+    width: 'calc(100vw - 75px)',
   },
   terminalOutput: {
     padding: '10px',
@@ -37,12 +39,8 @@ export default class Terminal extends Component {
   };
 
   render() {
-    const terminalHeight = {
-      minHeight: this.props.height ? this.props.height : '300px',
-    };
-
     return (
-      <div style={{ ...styles.terminal, ...terminalHeight }}>
+      <div style={styles.terminal}>
         <div style={styles.terminalOutput}>{this.renderLines()}</div>
       </div>
     );
