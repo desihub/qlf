@@ -191,13 +191,13 @@ export default class Monitor extends Component {
               status={this.state.camerasStages.r}
               arm={'r'}
               openDialog={this.openDialog}
-              renderHeader={true}
+              renderHeader={false}
             />
             <Stages
               status={this.state.camerasStages.z}
               arm={'z'}
               openDialog={this.openDialog}
-              renderHeader={true}
+              renderHeader={false}
             />
           </div>
           <div style={styles.gridItem}>
