@@ -92,7 +92,11 @@ export function updateNotifications(notification) {
     const notifications = getState().qlfOnline.notifications.splice(0);
     notifications.unshift(notification);
     const sound = new Audio(bell);
-    if (process.env.REACT_APP_SOUND) sound.play();
+    if (
+      process.env.REACT_APP_SOUND &&
+      window.location.pathname === '/monitor-realtime'
+    )
+      sound.play();
     dispatch(addNotification({ notifications }));
   };
 }
