@@ -111,21 +111,15 @@ class Upstream:
                 })
             })
 
-    def run_threaded(self, job_func):
-        job_thread = threading.Thread(target=job_func)
-        job_thread.start()
-
     def start_uptream(self):
         if not self.startedUpStreamJob:
             schedule.every(int(
                 os.environ.get('WEBSOCKET_UPDATE_INTERVAL', 3)
-            )).seconds.do(self.run_threaded, self.monitor_job)
+            )).seconds.do(self.monitor_job)
             schedule.every(30).minutes.do(
-                self.run_threaded,
                 self.disk_space_job
             )
             schedule.every(8).seconds.do(
-                self.run_threaded,
                 self.update_camera_log
             )
             job_thread = threading.Thread(target=self.run_pending)
