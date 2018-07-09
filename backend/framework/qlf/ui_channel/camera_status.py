@@ -42,8 +42,8 @@ class CameraStatus:
                 status = line.split(
                     'BIAS_STATUS:'
                 )[1][1:-1]
-                if status is not 'normal':
-                    self.alerts.append('Bias {} {}'.format(camera, status))
+                # if status is not 'normal':
+                    # self.alerts.append('Bias {} {}'.format(camera, status))
                 camera[cam]['preproc']['steps_status'][1] = status
             elif 'XWSIGMA_STATUS' in line:
                 status = line.split(

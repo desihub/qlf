@@ -95,8 +95,6 @@ class Upstream:
             })
 
     def disk_space_job(self):
-        state = self.qlf_state.get_current_state()
-
         Group("monitor").send({
             "text": json.dumps({
                 "notification": alerts.available_space()
@@ -129,4 +127,4 @@ class Upstream:
     def run_pending(self):
         while 1:
             schedule.run_pending()
-            time.sleep(int(os.environ.get('WEBSOCKET_UPDATE_INTERVAL', 3)))
+            time.sleep(1)
