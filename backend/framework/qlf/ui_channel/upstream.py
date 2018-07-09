@@ -14,7 +14,7 @@ qlf_root = cfg.get("environment", "qlf_root")
 
 log = get_logger(
     "qlf.upstream",
-    os.path.join(qlf_root, "logs", "qlf_upstream.log")
+    os.path.join(qlf_root, "logs", "upstream.log")
 )
 
 from ui_channel.alerts import Alerts

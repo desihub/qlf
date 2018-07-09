@@ -57,7 +57,7 @@ export default class CameraLog extends React.Component {
     return (
       <Paper elevation={4} style={styles.main}>
         {this.renderTitle()}
-        <Terminal lines={this.props.lines} />
+        <Terminal lines={this.props.lines.reverse()} />
       </Paper>
     );
   }

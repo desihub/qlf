@@ -2,8 +2,16 @@ import os
 import configparser
 import copy
 import logging
+from log import get_logger
+from util import get_config
 
-logger = logging.getLogger(__name__)
+cfg = get_config()
+qlf_root = cfg.get("environment", "qlf_root")
+
+logger = get_logger(
+    "qlf.camera_status",
+    os.path.join(qlf_root, "logs", "camera_status.log")
+)
 
 qlf_root = os.getenv('QLF_ROOT')
 cfg = configparser.ConfigParser()
@@ -100,6 +108,7 @@ class CameraStatus:
         for index, qa_petal in enumerate(self.qa_petals):
             if cam in qa_petal.keys():
                 cam_index = index
+                break
 
         camera = None
 
@@ -123,9 +132,12 @@ class CameraStatus:
             self.update_qa_state(camera, cam, log)
             self.qa_petals.append(camera)
         else:
-            camera = self.qa_petals[cam_index]
-            self.update_qa_state(camera, cam, log)
-            self.qa_petals[cam_index] = camera
+            try:
+                camera = self.qa_petals[cam_index]
+                self.update_qa_state(camera, cam, log)
+                self.qa_petals[cam_index] = camera
+            except Exception as e:
+                logger.info(e)
 
     def update_camera_status(self):
         for cam in self.qlf_state.camera_logs.keys():
