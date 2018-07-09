@@ -9,7 +9,7 @@ import { Card } from 'material-ui/Card';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
-// import LinearProgress from '@material-ui/core/LinearProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const headerSize = '11px';
 
@@ -69,10 +69,10 @@ class Stages extends Component {
       case 'success_stage':
         return { backgroundColor: 'green', padding: 4 };
       case 'processing_stage':
-        return { backgroundColor: 'blue', padding: 4 };
-      // return {
-      //   padding: 0,
-      // };
+        // return { backgroundColor: 'blue', padding: 4 };
+        return {
+          padding: 0,
+        };
       case 'error_stage':
         return { backgroundColor: 'red', padding: 4 };
       default:
@@ -81,22 +81,29 @@ class Stages extends Component {
   };
 
   renderTableHeader = () => {
-    if (!this.props.renderHeader) return;
     return (
       <TableHead>
         <TableRow style={{ height: this.state.columnHeight }}>
-          <Tooltip title={'Pre Processing'} placement="bottom">
-            <TableCell style={styles.header}>Step 1</TableCell>
-          </Tooltip>
-          <Tooltip title={'Spectral Extraction'} placement="bottom">
-            <TableCell style={styles.header}>Step 2</TableCell>
-          </Tooltip>
-          <Tooltip title={'Fiber Flattening'} placement="bottom">
-            <TableCell style={styles.header}>Step 3</TableCell>
-          </Tooltip>
-          <Tooltip title={'Sky Subtraction'} placement="bottom">
-            <TableCell style={styles.header}>Step 4</TableCell>
-          </Tooltip>
+          {this.props.renderHeader ? (
+            <Tooltip title={'Pre Processing'} placement="bottom">
+              <TableCell style={styles.header}>Step 1</TableCell>
+            </Tooltip>
+          ) : null}
+          {this.props.renderHeader ? (
+            <Tooltip title={'Spectral Extraction'} placement="bottom">
+              <TableCell style={styles.header}>Step 2</TableCell>
+            </Tooltip>
+          ) : null}
+          {this.props.renderHeader ? (
+            <Tooltip title={'Fiber Flattening'} placement="bottom">
+              <TableCell style={styles.header}>Step 3</TableCell>
+            </Tooltip>
+          ) : null}
+          {this.props.renderHeader ? (
+            <Tooltip title={'Sky Subtraction'} placement="bottom">
+              <TableCell style={styles.header}>Step 4</TableCell>
+            </Tooltip>
+          ) : null}
         </TableRow>
       </TableHead>
     );
@@ -154,9 +161,9 @@ class Stages extends Component {
                               ...this.getColor(row.pre),
                             }}
                           >
-                            {/* {row.pre === 'processing_stage' ? (
+                            {row.pre === 'processing_stage' ? (
                               <LinearProgress style={styles.loading} />
-                            ) : null} */}
+                            ) : null}
                           </TableCell>
                           <TableCell
                             style={{
@@ -166,9 +173,9 @@ class Stages extends Component {
                               ...this.getColor(row.spec),
                             }}
                           >
-                            {/* {row.spec === 'processing_stage' ? (
+                            {row.spec === 'processing_stage' ? (
                               <LinearProgress style={styles.loading} />
-                            ) : null} */}
+                            ) : null}
                           </TableCell>
                           <TableCell
                             style={{
@@ -178,9 +185,9 @@ class Stages extends Component {
                               ...this.getColor(row.fib),
                             }}
                           >
-                            {/* {row.fib === 'processing_stage' ? (
+                            {row.fib === 'processing_stage' ? (
                               <LinearProgress style={styles.loading} />
-                            ) : null} */}
+                            ) : null}
                           </TableCell>
                           <TableCell
                             style={{
@@ -190,9 +197,9 @@ class Stages extends Component {
                               ...this.getColor(row.sky),
                             }}
                           >
-                            {/* {row.sky === 'processing_stage' ? (
+                            {row.sky === 'processing_stage' ? (
                               <LinearProgress style={styles.loading} />
-                            ) : null} */}
+                            ) : null}
                           </TableCell>
                         </TableRow>
                       </Tooltip>

@@ -17,9 +17,10 @@ except Exception as error:
 
 
 class CameraStatus:
-    def __init__(self):
+    def __init__(self, qlf_state):
         self.reset_camera_status()
         self.alerts = list()
+        self.qlf_state = qlf_state
 
     def reset_camera_status(self):
         self.cams_stages_r = list()
@@ -126,82 +127,56 @@ class CameraStatus:
             self.update_qa_state(camera, cam, log)
             self.qa_petals[cam_index] = camera
 
-    def update_camera_status(self, process):
-        label_name = list()
+    def update_camera_status(self):
+        for cam in self.qlf_state.camera_logs.keys():
+            log = self.qlf_state.camera_logs[cam]
+            self.update_petals(cam, log)
 
-        for num in range(30):
-            if 'z9' not in label_name:
-                label_name.append('z' + str(num))
-            elif 'r9' not in label_name:
-                label_name.append('r' + str(num - 10))
-            elif 'b9' not in label_name:
-                label_name.append('b' + str(num - 20))
+            if "Pipeline completed. Final result" in ''.join(log):
+                self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
+                self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
+                self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
+                self.update_stage(cam[:1], 3, int(cam[1:]), 'success_stage')
+            elif "Starting to run step SkySub_QL" in ''.join(log):
+                self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
+                self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
+                self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
+                if "Traceback (most recent call last):" in ''.join(log):
+                    self.update_stage(cam[:1], 3, int(cam[1:]), 'error_stage')
+                else:
+                    self.update_stage(cam[:1], 3, int(cam[1:]), 'processing_stage')
+                next
 
-            for cam in label_name:
-                cameralog = None
-                log = str()
-                try:
-                    for item in process.get("process_jobs", list()):
-                        if cam == item.get("camera"):
-                            cameralog = os.path.join(
-                                desi_spectro_redux,
-                                item.get('logname')
-                            )
-                            break
-                    if cameralog:
-                        arq = open(cameralog, 'r')
-                        log = arq.readlines()
-                        if log:
-                            self.update_petals(cam, log)
+            elif "Starting to run step ApplyFiberFlat_QL" in ''.join(log):
+                self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
+                self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
+                if "Traceback (most recent call last):" in ''.join(log):
+                    self.update_stage(cam[:1], 2, int(cam[1:]), 'error_stage')
+                else:
+                    self.update_stage(cam[:1], 2, int(cam[1:]), 'processing_stage')
+                next
 
-                except Exception as e:
-                    logger.warn(e)
+            elif "Starting to run step BoxcarExtract" in ''.join(log):
+                self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
+                if "Traceback (most recent call last):" in ''.join(log):
+                    self.update_stage(cam[:1], 1, int(cam[1:]), 'error_stage')
+                else:
+                    self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
+                next
 
-                if "Pipeline completed. Final result" in ''.join(log):
-                    self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 3, int(cam[1:]), 'success_stage')
-                elif "Starting to run step SkySub_QL" in ''.join(log):
-                    self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
-                    if "Traceback (most recent call last):" in ''.join(log):
-                        self.update_stage(cam[:1], 3, int(cam[1:]), 'error_stage')
-                    else:
-                        self.update_stage(cam[:1], 3, int(cam[1:]), 'processing_stage')
-                    next
-
-                elif "Starting to run step ApplyFiberFlat_QL" in ''.join(log):
-                    self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                    self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
-                    if "Traceback (most recent call last):" in ''.join(log):
-                        self.update_stage(cam[:1], 2, int(cam[1:]), 'error_stage')
-                    else:
-                        self.update_stage(cam[:1], 2, int(cam[1:]), 'processing_stage')
-                    next
-
-                elif "Starting to run step BoxcarExtract" in ''.join(log):
-                    self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                    if "Traceback (most recent call last):" in ''.join(log):
-                        self.update_stage(cam[:1], 1, int(cam[1:]), 'error_stage')
-                    else:
-                        self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
-                    next
-
-                elif "Starting to run step Preproc" in ''.join(log):
-                    if "Traceback (most recent call last):" in ''.join(log):
-                        self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
-                    else:
-                        self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
-                    next
-                elif "Traceback (most recent call last):" in ''.join(log):
+            elif "Starting to run step Preproc" in ''.join(log):
+                if "Traceback (most recent call last):" in ''.join(log):
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
                 else:
-                    self.update_stage(cam[:1], 0, int(cam[1:]), 'none')
-                    self.update_stage(cam[:1], 1, int(cam[1:]), 'none')
-                    self.update_stage(cam[:1], 2, int(cam[1:]), 'none')
-                    self.update_stage(cam[:1], 3, int(cam[1:]), 'none')
+                    self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
+                next
+            elif "Traceback (most recent call last):" in ''.join(log):
+                self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
+            else:
+                self.update_stage(cam[:1], 0, int(cam[1:]), 'none')
+                self.update_stage(cam[:1], 1, int(cam[1:]), 'none')
+                self.update_stage(cam[:1], 2, int(cam[1:]), 'none')
+                self.update_stage(cam[:1], 3, int(cam[1:]), 'none')
 
     def update_stage(self, band, stage, camera, status):
         if band == 'r':
@@ -211,8 +186,8 @@ class CameraStatus:
         if band == 'b':
             self.cams_stages_b[stage]['camera'][camera] = status
 
-    def get_camera_status(self, process):
-        self.update_camera_status(process)
+    def get_camera_status(self):
+        self.update_camera_status()
         return {"r": self.cams_stages_r, "b": self.cams_stages_b, "z": self.cams_stages_z}
 
     def get_qa_petals(self):

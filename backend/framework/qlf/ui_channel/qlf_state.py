@@ -8,13 +8,21 @@ import io
 import os
 import json
 import logging
+from util import get_config
+
+try:
+    cfg = get_config()
+    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+except Exception as error:
+    logger.error(error)
+    logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
 
 logger = logging.getLogger()
 
 
 class QLFState:
     def __init__(self):
-        self.camera_status_generator = CameraStatus()
+        self.camera_status_generator = CameraStatus(self)
         self.reset_state()
         self.update_pipeline_status()
         if self.pipeline_running is 0:
@@ -51,6 +59,7 @@ class QLFState:
         self.current_process = None
         self.available_cameras = list()
         self.diff_alerts = dict()
+        self.camera_logs = dict()
         self.camera_status_generator.reset_camera_status()
 
     def update_pipeline_status(self):
@@ -82,6 +91,7 @@ class QLFState:
 
         if 'detail' not in self.current_process:
             self.update_pipeline_log()
+            self.update_camera_logs()
             self.logfile = self.tail_file(open_file('logfile'), 100)
             self.available_cameras = self.get_avaiable_cameras(
                 self.current_process
@@ -92,9 +102,7 @@ class QLFState:
             date = get_date(self.exposure) if self.exposure else None
             self.date_time = date.value if date else ''
             self.mjd = date.mjd if date else ''
-            self.camera_status = self.camera_status_generator.get_camera_status(
-                self.current_process
-            )
+            self.camera_status = self.camera_status_generator.get_camera_status()
             self.qa_results = self.camera_status_generator.get_qa_petals()
 
     def get_current_state(self):
@@ -130,8 +138,6 @@ class QLFState:
             "flavor": self.flavor,
             "process_id": self.current_process_id
         })
-
-        # return new_state
 
         if self.old_state != new_state:
             self.old_state = new_state
@@ -180,3 +186,21 @@ class QLFState:
         except Exception as err:
             logger.error(err)
             return "Error"
+
+    def get_camera_log(self, path):
+        try:
+            arq = open(path, 'r')
+            log = arq.readlines()
+            return log
+        except Exception as err:
+            logger.error(err)
+            return "Error"
+
+    def update_camera_logs(self):
+        for job in self.current_process.get("process_jobs"):
+            camera = job.get("camera")
+            camera_log_path = os.path.join(
+                desi_spectro_redux,
+                job.get('logname')
+            )
+            self.camera_logs[camera] = self.get_camera_log(camera_log_path)

@@ -102,6 +102,14 @@ class Upstream:
                 "notification": alerts.available_space()
             })
         })
+    
+    def update_camera_log(self):
+        for cam in self.qlf_state.camera_logs.keys():
+            Group(cam).send({
+                "text": json.dumps({
+                    "cameralog": self.qlf_state.camera_logs[cam]
+                })
+            })
 
     def run_threaded(self, job_func):
         job_thread = threading.Thread(target=job_func)
@@ -115,6 +123,10 @@ class Upstream:
             schedule.every(30).minutes.do(
                 self.run_threaded,
                 self.disk_space_job
+            )
+            schedule.every(8).seconds.do(
+                self.run_threaded,
+                self.update_camera_log
             )
             job_thread = threading.Thread(target=self.run_pending)
             job_thread.start()
