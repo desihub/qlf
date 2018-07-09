@@ -84,26 +84,26 @@ class Stages extends Component {
     return (
       <TableHead>
         <TableRow style={{ height: this.state.columnHeight }}>
-          {this.props.renderHeader ? (
-            <Tooltip title={'Pre Processing'} placement="bottom">
-              <TableCell style={styles.header}>Step 1</TableCell>
-            </Tooltip>
-          ) : null}
-          {this.props.renderHeader ? (
-            <Tooltip title={'Spectral Extraction'} placement="bottom">
-              <TableCell style={styles.header}>Step 2</TableCell>
-            </Tooltip>
-          ) : null}
-          {this.props.renderHeader ? (
-            <Tooltip title={'Fiber Flattening'} placement="bottom">
-              <TableCell style={styles.header}>Step 3</TableCell>
-            </Tooltip>
-          ) : null}
-          {this.props.renderHeader ? (
-            <Tooltip title={'Sky Subtraction'} placement="bottom">
-              <TableCell style={styles.header}>Step 4</TableCell>
-            </Tooltip>
-          ) : null}
+          <Tooltip title={'Pre Processing'} placement="bottom">
+            <TableCell style={styles.header}>
+              {this.props.renderHeader ? 'Step 1' : ''}
+            </TableCell>
+          </Tooltip>
+          <Tooltip title={'Spectral Extraction'} placement="bottom">
+            <TableCell style={styles.header}>
+              {this.props.renderHeader ? 'Step 2' : ''}
+            </TableCell>
+          </Tooltip>
+          <Tooltip title={'Fiber Flattening'} placement="bottom">
+            <TableCell style={styles.header}>
+              {this.props.renderHeader ? 'Step 3' : ''}
+            </TableCell>
+          </Tooltip>
+          <Tooltip title={'Sky Subtraction'} placement="bottom">
+            <TableCell style={styles.header}>
+              {this.props.renderHeader ? 'Step 4' : ''}
+            </TableCell>
+          </Tooltip>
         </TableRow>
       </TableHead>
     );
