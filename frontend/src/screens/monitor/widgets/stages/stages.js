@@ -86,22 +86,22 @@ class Stages extends Component {
         <TableRow style={{ height: this.state.columnHeight }}>
           <Tooltip title={'Pre Processing'} placement="bottom">
             <TableCell style={styles.header}>
-              {this.props.renderHeader ? 'Step 1' : ''}
+              Step 1
             </TableCell>
           </Tooltip>
           <Tooltip title={'Spectral Extraction'} placement="bottom">
             <TableCell style={styles.header}>
-              {this.props.renderHeader ? 'Step 2' : ''}
+              Step 2
             </TableCell>
           </Tooltip>
           <Tooltip title={'Fiber Flattening'} placement="bottom">
             <TableCell style={styles.header}>
-              {this.props.renderHeader ? 'Step 3' : ''}
+              Step 3
             </TableCell>
           </Tooltip>
           <Tooltip title={'Sky Subtraction'} placement="bottom">
             <TableCell style={styles.header}>
-              {this.props.renderHeader ? 'Step 4' : ''}
+              Step 4
             </TableCell>
           </Tooltip>
         </TableRow>
