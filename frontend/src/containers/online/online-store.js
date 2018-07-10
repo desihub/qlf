@@ -22,6 +22,7 @@ function defaultState() {
     time: '',
     processId: '',
     exposureId: '',
+    flavor: '',
     arm: 0,
     spectrograph: 0,
     step: 0,
@@ -91,7 +92,11 @@ export function updateNotifications(notification) {
     const notifications = getState().qlfOnline.notifications.splice(0);
     notifications.unshift(notification);
     const sound = new Audio(bell);
-    if (process.env.REACT_APP_SOUND) sound.play();
+    if (
+      process.env.REACT_APP_SOUND &&
+      window.location.pathname === '/monitor-realtime'
+    )
+      sound.play();
     dispatch(addNotification({ notifications }));
   };
 }
@@ -146,6 +151,7 @@ export function qlfOnlineReducers(state = defaultState(), action) {
         mjd: action.state.mjd,
         date: action.state.date,
         time: action.state.time,
+        flavor: action.state.flavor,
       });
     case 'UPDATE_QA':
       return Object.assign({}, state, {

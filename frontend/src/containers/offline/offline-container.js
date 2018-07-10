@@ -19,6 +19,7 @@ import QA from '../../screens/qa/qa';
 import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
 import UnderConstruction from '../../screens/under-construction/under-construction';
+import CCDViewer from '../../screens/ccd-viewer/ccd-viewer';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -46,6 +47,7 @@ class OfflineContainer extends Component {
     mjd: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
+    flavor: PropTypes.string.isRequired,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
     navigateToProcessingHistory: PropTypes.func.isRequired,
@@ -111,10 +113,19 @@ class OfflineContainer extends Component {
     );
   };
 
+  navigateToCCD = (night, exposureId) => {
+    window.open(
+      `ccd-viewer?exposure=${exposureId}&night=${night}`,
+      'ccd-viewer',
+      'width=1050, height=850'
+    );
+  };
+
   render() {
     return (
       <div>
         {this.renderLoading()}
+        <Route path="/ccd-viewer" render={() => <CCDViewer />} />
         <Route
           path="/afternoon-planning"
           render={() => (
@@ -129,6 +140,7 @@ class OfflineContainer extends Component {
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
+              openCCDViewer={this.navigateToCCD}
             />
           )}
         />
@@ -147,6 +159,7 @@ class OfflineContainer extends Component {
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
               pipelineRunning={this.props.pipelineRunning}
+              openCCDViewer={this.navigateToCCD}
             />
           )}
         />
@@ -164,6 +177,7 @@ class OfflineContainer extends Component {
               lastProcessedId={this.props.lastProcessedId}
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
+              openCCDViewer={this.navigateToCCD}
             />
           )}
         />
@@ -185,6 +199,7 @@ class OfflineContainer extends Component {
               petalSizeFactor={16}
               processId={this.props.processId}
               monitor={false}
+              flavor={this.props.flavor}
             />
           )}
         />
@@ -199,6 +214,7 @@ class OfflineContainer extends Component {
               mjd={this.props.mjd}
               date={this.props.date}
               time={this.props.time}
+              flavor={this.props.flavor}
               navigateToProcessingHistory={
                 this.props.navigateToProcessingHistory
               }
@@ -234,6 +250,7 @@ export default connect(
     mjd: state.qlfOffline.mjd,
     date: state.qlfOffline.date,
     time: state.qlfOffline.time,
+    flavor: state.qlfOffline.flavor,
     arm: state.qlfOffline.arm,
     step: state.qlfOffline.step,
     spectrograph: state.qlfOffline.spectrograph,

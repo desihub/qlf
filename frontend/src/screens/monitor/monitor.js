@@ -13,12 +13,10 @@ const styles = {
     marginLeft: '1vw',
   },
   grid: {
-    flex: 1,
     display: 'grid',
-    marginBottom: '1vh',
-    flexDirection: 'row',
     gridTemplateColumns: '50% 50%',
     gridTemplateRows: 'auto 32vh',
+    height: 'calc(100vh - 160px)',
   },
   gridItem: {
     paddingTop: '1vh',
@@ -60,6 +58,7 @@ export default class Monitor extends Component {
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
     time: PropTypes.string.isRequired,
+    flavor: PropTypes.string.isRequired,
     mjd: PropTypes.string.isRequired,
     resetCameraLog: PropTypes.func.isRequired,
     navigateToCamera: PropTypes.func.isRequired,
@@ -108,6 +107,7 @@ export default class Monitor extends Component {
       qaTests,
       spectrographs,
       time,
+      flavor,
     } = nextProps;
 
     this.setState({
@@ -124,6 +124,7 @@ export default class Monitor extends Component {
       qaTests,
       spectrographs,
       time,
+      flavor,
     });
   }
 
@@ -168,6 +169,7 @@ export default class Monitor extends Component {
               layout={styles.layout}
               mjd={this.state.mjd}
               date={this.state.date}
+              flavor={this.state.flavor}
               processId={String(this.state.processId)}
             />
             <Controls
