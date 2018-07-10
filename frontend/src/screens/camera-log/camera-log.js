@@ -24,7 +24,8 @@ export default class CameraLog extends React.Component {
   };
 
   componentDidMount() {
-    this.refreshLog = setInterval(this.getLines, 5000);
+    // this.refreshLog = setInterval(this.getLines, 5000);
+    this.refreshLog = setTimeout(this.getLines, 2000);
   }
 
   componentWillUnmount() {
@@ -56,7 +57,7 @@ export default class CameraLog extends React.Component {
     return (
       <Paper elevation={4} style={styles.main}>
         {this.renderTitle()}
-        <Terminal lines={this.props.lines} />
+        <Terminal lines={this.props.lines.reverse()} />
       </Paper>
     );
   }

@@ -41,8 +41,6 @@ api_router.register(r'exposures_date_range',
 api_router.register(r'load_scalar_metrics',
                     views.LoadScalarMetricsViewSet, 'load_scalar_metrics')
 api_router.register(r'add_exposure', views.AddExposureViewSet, 'add_exposure')
-api_router.register(r'current_process',
-                    views.CurrentProcessViewSet, 'current_process')
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),

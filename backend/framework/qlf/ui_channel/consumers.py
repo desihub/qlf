@@ -93,13 +93,17 @@ def ws_message(message):
         return
     # Get Single Camera
     if "camera" in message.content['text']:
-        message.reply_channel.send({
-            "text": json.dumps({
-                "cameralog": us.get_camera_log(
-                    str(message.content['text'].split(":")[1])
-                )
+        camera = str(message.content['text'].split(":")[1])
+        if camera in us.qlf_state.camera_logs.keys():
+            message.reply_channel.send({
+                "text": json.dumps({
+                    "cameralog": us.qlf_state.camera_logs[
+                        camera
+                    ]
+                })
             })
-        })
+            Group(camera).add(message.reply_channel)
+
     # User Channel
     if "uuid" in message.content['text']:
         Group(str(message.content['text'].split("uuid=")[1])).add(
@@ -122,3 +126,5 @@ def ws_message(message):
 # Connected to websocket.disconnect
 def ws_disconnect(message):
     Group("monitor").discard(message.reply_channel)
+    for cam in us.qlf_state.camera_logs.keys():
+        Group(cam).discard(message.reply_channel)

@@ -261,21 +261,6 @@ class ExposureFlavorSerializer(DynamicFieldsModelSerializer):
         fields = ('flavor',)
 
 
-class CurrentProcessJobsSerializer(serializers.ModelSerializer):
-
-    process_jobs = JobSerializer(many=True, read_only=True)
-    flavor = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Process
-        fields = ('id', 'exposure', 'process_jobs', 'qa_tests', 'flavor')
-
-    def get_flavor(self, obj):
-        if not obj or not obj.exposure:
-            return None
-        return obj.exposure.flavor
-
-
 class ProcessCommentSerializer(DynamicFieldsModelSerializer):
 
     class Meta:

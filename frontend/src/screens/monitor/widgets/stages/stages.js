@@ -69,6 +69,7 @@ class Stages extends Component {
       case 'success_stage':
         return { backgroundColor: 'green', padding: 4 };
       case 'processing_stage':
+        // return { backgroundColor: 'blue', padding: 4 };
         return {
           padding: 0,
         };
@@ -80,7 +81,6 @@ class Stages extends Component {
   };
 
   renderTableHeader = () => {
-    if (!this.props.renderHeader) return;
     return (
       <TableHead>
         <TableRow style={{ height: this.state.columnHeight }}>
