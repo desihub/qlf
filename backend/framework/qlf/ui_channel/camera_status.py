@@ -52,70 +52,90 @@ class CameraStatus:
                     'BIAS_STATUS:'
                 )[1][1:-1]
 
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['preproc']['steps_status'][1] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['preproc']['steps_status'][1] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'BIAS', status)
                 camera[cam]['preproc']['steps_status'][1] = status
             elif 'XWSIGMA_STATUS' in line:
                 status = line.split(
                     'XWSIGMA_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['preproc']['steps_status'][3] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['preproc']['steps_status'][3] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'XWSIGMA', status)
                 camera[cam]['preproc']['steps_status'][3] = status
             elif 'LITFRAC_STATUS' in line:
                 status = line.split(
                     'LITFRAC_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['preproc']['steps_status'][0] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['preproc']['steps_status'][0] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'COUNTPIX', status)
                 camera[cam]['preproc']['steps_status'][0] = status
             elif 'NOISE_STATUS' in line:
                 status = line.split(
                     'NOISE_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['preproc']['steps_status'][2] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['preproc']['steps_status'][2] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'GETRMS', status)
                 camera[cam]['preproc']['steps_status'][2] = status
             elif 'NGOODFIB_STATUS' in line:
                 status = line.split(
                     'NGOODFIB_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['extract']['steps_status'][0] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['extract']['steps_status'][0] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'COUNTBINS', status)
                 camera[cam]['extract']['steps_status'][0] = status
             elif 'SKYCONT_STATUS' in line:
                 status = line.split(
                     'SKYCONT_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][0] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][0] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'SKYCONT', status)
                 camera[cam]['fiberfl']['steps_status'][0] = status
             elif 'PEAKCOUNT_STATUS' in line:
                 status = line.split(
                     'PEAKCOUNT_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][1] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][1] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'SKYPEAK', status)
                 camera[cam]['fiberfl']['steps_status'][1] = status
             elif 'FIDSNR_STATUS' in line:
                 status = line.split(
                     'FIDSNR_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['skysubs']['steps_status'][2] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['skysubs']['steps_status'][2] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'SNR', status)
                 camera[cam]['skysubs']['steps_status'][2] = status
             elif 'DELTAMAG_STATUS' in line:
                 status = line.split(
                     'DELTAMAG_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['skysubs']['steps_status'][0] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['skysubs']['steps_status'][0] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'INTEG', status)
                 camera[cam]['skysubs']['steps_status'][0] = status
             elif 'RESID_STATUS' in line:
                 status = line.split(
                     'RESID_STATUS:'
                 )[1][1:-1]
-                if len(self.qa_petals) > 0 and self.qa_petals[cam_index][cam]['skysubs']['steps_status'][1] is 'None':
+                if len(self.qa_petals) > 0 and \
+                    self.qa_petals[cam_index][cam]['skysubs']['steps_status'][1] is 'None' and \
+                    status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'SKYRESID', status)
                 camera[cam]['skysubs']['steps_status'][1] = status
 
