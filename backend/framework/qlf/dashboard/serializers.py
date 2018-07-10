@@ -261,9 +261,19 @@ class ExposureFlavorSerializer(DynamicFieldsModelSerializer):
         fields = ('flavor',)
 
 
+class CurrentJobSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Job
+        fields = (
+            'pk', 'name', 'start', 'end',
+            'status', 'version', 'logname', 'process',
+            'camera',
+        )
+
+
 class CurrentProcessJobsSerializer(serializers.ModelSerializer):
 
-    process_jobs = JobSerializer(many=True, read_only=True)
+    process_jobs = CurrentJobSerializer(many=True, read_only=True)
     flavor = serializers.SerializerMethodField()
 
     class Meta:

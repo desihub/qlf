@@ -150,7 +150,7 @@ class LastProcessViewSet(viewsets.ModelViewSet):
 class CurrentProcessViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint listing current process"""
 
-    queryset = Process.objects.order_by('-pk')
+    queryset = Process.objects.order_by('-pk')[:1]
     serializer_class = CurrentProcessJobsSerializer
     filter_fields = ('process_jobs__id',)
 
