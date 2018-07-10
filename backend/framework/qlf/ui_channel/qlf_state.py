@@ -1,5 +1,5 @@
 from ui_channel.camera_status import CameraStatus
-from dashboard.bokeh.helper import get_monitor_process
+from dashboard.models import Process, Job
 from clients import get_exposure_monitoring
 from .views import open_file
 from util import get_config
@@ -53,7 +53,7 @@ class QLFState:
         self.date_time = str()
         self.pipeline_running = 0
         self.daemon_running = False
-        self.exposure = str()
+        self.exposure_id = str()
         self.qa_results = list()
         self.current_process_id = str()
         self.current_process = None
@@ -81,25 +81,23 @@ class QLFState:
 
     def update_current_process(self):
         if self.pipeline_running is 2:
-            process = get_monitor_process(None)
-            if len(process) > 0:
-                self.current_process = process[0]
+            self.current_process = Process.objects.last()
         elif self.current_process_id is not str():
-            self.current_process = get_monitor_process(self.current_process_id)
+            self.current_process = Process.objects.last()
         else:
             return
 
-        if 'detail' not in self.current_process:
+        if self.current_process:
             self.update_pipeline_log()
             self.update_camera_logs()
             self.logfile = self.tail_file(open_file('logfile'), 100)
             self.available_cameras = self.get_avaiable_cameras(
                 self.current_process
             )
-            self.exposure = self.current_process["exposure"]
-            self.flavor = self.current_process.get("flavor")
-            self.current_process_id = self.current_process.get("id")
-            date = get_date(self.exposure) if self.exposure else None
+            self.exposure_id = self.current_process.exposure_id
+            self.flavor = self.current_process.exposure.flavor
+            self.current_process_id = self.current_process.id
+            date = get_date(self.exposure_id)
             self.date_time = date.value if date else ''
             self.mjd = date.mjd if date else ''
             self.camera_status = self.camera_status_generator.get_camera_status()
@@ -109,7 +107,7 @@ class QLFState:
         return json.dumps({
             "pipeline_running": self.pipeline_running,
             "daemon_running": self.daemon_running,
-            "exposure": self.exposure,
+            "exposure": self.exposure_id,
             "flavor": self.flavor,
             "cameras": self.camera_status,
             "available_cameras": self.available_cameras,
@@ -127,7 +125,7 @@ class QLFState:
         new_state = json.dumps({
             "pipeline_running": self.pipeline_running,
             "daemon_running": self.daemon_running,
-            "exposure": self.exposure,
+            "exposure": self.exposure_id,
             "cameras": self.camera_status,
             "available_cameras": self.available_cameras,
             "qa_results": self.qa_results,
@@ -147,8 +145,8 @@ class QLFState:
 
     def get_avaiable_cameras(self, process):
         cams = list()
-        for job in process['process_jobs']:
-            cams.append(job['camera'])
+        for job in Job.objects.filter(process=self.current_process.id):
+            cams.append(job.camera.camera)
         return cams
 
     def tail_file(self, filename, number_lines):
@@ -197,10 +195,10 @@ class QLFState:
             return "Error"
 
     def update_camera_logs(self):
-        for job in self.current_process.get("process_jobs"):
-            camera = job.get("camera")
+        for job in Job.objects.filter(process=self.current_process.id):
+            camera = job.camera
             camera_log_path = os.path.join(
                 desi_spectro_redux,
-                job.get('logname')
+                job.logname
             )
-            self.camera_logs[camera] = self.get_camera_log(camera_log_path)
+            self.camera_logs[camera.camera] = self.get_camera_log(camera_log_path)

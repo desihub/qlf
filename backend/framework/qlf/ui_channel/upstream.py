@@ -5,9 +5,13 @@ from channels import Group
 import os
 import logging
 from util import get_config
-from dashboard.bokeh.helper import get_monitor_process
 from log import get_logger
 from util import get_config
+from ui_channel.alerts import Alerts
+import json
+from clients import get_exposure_monitoring
+
+from log import get_logger
 
 cfg = get_config()
 qlf_root = cfg.get("environment", "qlf_root")
@@ -16,14 +20,6 @@ log = get_logger(
     "qlf.upstream",
     os.path.join(qlf_root, "logs", "upstream.log")
 )
-
-from ui_channel.alerts import Alerts
-import json
-
-
-from clients import get_exposure_monitoring
-
-from log import get_logger
 
 alerts = Alerts()
 
@@ -48,27 +44,6 @@ class Upstream:
     def __init__(self, qlf_state):
         self.startedUpStreamJob = False
         self.qlf_state = qlf_state
-
-    def get_camera_log(self, cam):
-        process = get_monitor_process(None)
-        cameralog = None
-
-        try:
-            for item in process[0].get("process_jobs"):
-                if cam == item.get("camera"):
-                    cameralog = os.path.join(
-                        desi_spectro_redux,
-                        item.get('logname')
-                    )
-                    break
-            if cameralog:
-                arq = open(cameralog, 'r')
-                log = arq.readlines()
-                return log
-
-        except Exception as err:
-            logger.error(err)
-            return "Error"
 
     def start_daemon(self):
         qlf.start()
