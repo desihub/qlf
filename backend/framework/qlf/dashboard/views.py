@@ -152,7 +152,6 @@ class CurrentProcessViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Process.objects.order_by('-pk')[:1]
     serializer_class = CurrentProcessJobsSerializer
-    filter_fields = ('process_jobs__id',)
 
 
 class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
