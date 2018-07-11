@@ -48,7 +48,7 @@ except:
 cam = selected_arm+str(selected_spectrograph)
 try:
     lm = get_scalar_metrics(selected_process_id, cam)
-    metrics, tests = lm['results']['metrics'], lm['results']['tests']
+    metrics, tests = lm['metrics'], lm['tests']
 except:
     sys.exit('Could not load metrics')
 
