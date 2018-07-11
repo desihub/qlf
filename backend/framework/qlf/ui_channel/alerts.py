@@ -13,10 +13,11 @@ disk_percent_alert = cfg.get('main', 'disk_percent_alert')
 
 
 class Alerts:
-    def qa_alert(self, camera, qa, status):
+    def qa_alert(self, camera, qa, status, exposure_id):
         notification_type = status
         notification = json.dumps({
-            "text": "{} {} {}".format(
+            "text": "ExpID {}: {} {} {}".format(
+                exposure_id,
                 camera,
                 qa,
                 status,
