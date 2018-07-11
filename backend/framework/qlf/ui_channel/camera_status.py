@@ -62,6 +62,7 @@ class CameraStatus:
                     'XWSIGMA_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['preproc']['steps_status'][3] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'XWSIGMA', status, self.qlf_state.exposure_id)
@@ -71,6 +72,7 @@ class CameraStatus:
                     'LITFRAC_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['preproc']['steps_status'][0] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'COUNTPIX', status, self.qlf_state.exposure_id)
@@ -80,6 +82,7 @@ class CameraStatus:
                     'NOISE_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['preproc']['steps_status'][2] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'GETRMS', status, self.qlf_state.exposure_id)
@@ -89,6 +92,7 @@ class CameraStatus:
                     'NGOODFIB_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['extract']['steps_status'][0] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'COUNTBINS', status, self.qlf_state.exposure_id)
@@ -98,6 +102,7 @@ class CameraStatus:
                     'SKYCONT_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][0] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'SKYCONT', status, self.qlf_state.exposure_id)
@@ -107,6 +112,7 @@ class CameraStatus:
                     'PEAKCOUNT_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][1] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'SKYPEAK', status, self.qlf_state.exposure_id)
@@ -116,6 +122,7 @@ class CameraStatus:
                     'FIDSNR_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['skysubs']['steps_status'][2] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'SNR', status, self.qlf_state.exposure_id)
@@ -125,6 +132,7 @@ class CameraStatus:
                     'DELTAMAG_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['skysubs']['steps_status'][0] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'INTEG', status, self.qlf_state.exposure_id)
@@ -134,6 +142,7 @@ class CameraStatus:
                     'RESID_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['skysubs']['steps_status'][1] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'SKYRESID', status, self.qlf_state.exposure_id)
