@@ -16,7 +16,7 @@ class Alerts:
     def qa_alert(self, camera, qa, status, exposure_id):
         notification_type = status
         notification = json.dumps({
-            "text": "ExpID {}: {} {} {}".format(
+            "text": "Exposure {}: {} {} {}".format(
                 exposure_id,
                 camera,
                 qa,
