@@ -33,7 +33,7 @@ services:
       - REDIS_NAME=redis
       - QLF_REDIS=True
       - WEBSOCKET_UPDATE_INTERVAL=3 # websocket update time (seconds)
-      - UPDATE_DEPENDENCIES=true # run conda and pip install when starting container
+      - UPDATE_DEPENDENCIES=True # run conda and pip install when starting container
       - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
       - QLF_CFG=/app/framework/config/qlf.cfg
       # Database

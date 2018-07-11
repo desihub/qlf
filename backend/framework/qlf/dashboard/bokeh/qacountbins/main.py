@@ -3,16 +3,12 @@ import sys
 from bokeh.plotting import Figure
 from bokeh.layouts import row, column, widgetbox, gridplot
 
-from bokeh.io import curdoc
-from bokeh.io import output_notebook, show, output_file
-
 from bokeh.models import HoverTool, ColumnDataSource, Range1d, Label, FixedTicker
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
-from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
@@ -117,8 +113,9 @@ class Countbins:
 
 
         p = Figure(tools = [hist_hover,"pan,wheel_zoom,  box_zoom, lasso_select, reset, crosshair, tap"],
-                    plot_width=700, plot_height=300, y_range = Range1d(-.1,1.1),
-                    x_axis_label='Fiber', y_axis_label=' Fiber Status' )
+                    plot_width=550, plot_height=300, y_range = Range1d(-.1,1.1),
+                    x_axis_label='Fiber', y_axis_label=' Fiber Status'
+                    )
         from bokeh.models.glyphs import Segment
 
         seg=Segment(x0='segx0', x1='segx1', y0='segy0',y1='segy1', line_width=2, line_color='#1e90ff')
@@ -180,8 +177,10 @@ class Countbins:
 
         p2 = Figure(title='GOOD FIBERS'#: sum of counts in peak regions '
                 , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=601, plot_height=550            
-                , tools=[hover, "pan,box_zoom,reset,lasso_select,crosshair, tap"], toolbar_location="right")
+                , plot_width=550, plot_height=550
+                , tools=[hover, "pan,box_zoom,reset,lasso_select,crosshair, tap"]
+                , toolbar_location="right"
+                )
 
         # Color Map
         p2.circle('x1', 'y1', source=hist_source, name="data", radius=radius,
@@ -191,174 +190,23 @@ class Countbins:
 
         # marking the Hover point
         p2.circle('x1', 'y1', source=hist_source, name="data", radius=radius_hover, 
-                hover_fill_color={'field': 'color'}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
-
-
-
-
-
-
-        '''
-        hist_tooltip = """
-            <div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
-                    <span style="font-size: 13px; color: #515151">@hist</span>
-                </div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">sigma: </span>
-                    <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
-                </div>
-            </div>
-        """
-        name_hi = 'NBINSHI'
-        name_med = 'NBINSMED'
-        name_low = 'NBINSLO'
-
-
-        hover = HoverTool(tooltips=hist_tooltip)
-        hover2 = HoverTool(tooltips=hist_tooltip)
-        hover3 = HoverTool(tooltips=hist_tooltip)
-        bins_hi, bins_med, bins_low = 'sqrt', 'sqrt', 'sqrt' #‘fd’ (Freedman Diaconis Estimator), ‘doane’, sturges
-
-        # ===
-        hist_hi, edges_hi = np.histogram(countbins[name_hi], bins = bins_hi)
-        source_hi = ColumnDataSource(data={
-            'hist':hist_hi,
-            'bottom':[0] *len(hist_hi),
-            'left':edges_hi[:-1],
-            'right':edges_hi[1:]
-        })
-
-        # ===
-        hist_med, edges_med = np.histogram(countbins[name_med], bins = bins_med)
-        source_med = ColumnDataSource(data={
-            'hist':hist_med,
-            'bottom':[0] *len(hist_med),
-            'left':edges_med[:-1],
-            'right':edges_med[1:]
-        })
-
-        # ===
-        hist_low, edges_low = np.histogram(countbins[name_low], bins = bins_low)
-        source_low = ColumnDataSource(data={
-            'hist':hist_low,
-            'bottom':[0] *len(hist_low),
-            'left':edges_low[:-1],
-            'right':edges_low[1:]
-        })
-
-
-
-        phi = Figure(title='NBINSHI',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
-                y_axis_label='Frequency', x_axis_label='COUNTBINS', background_fill_color="white")
-
-        phi.quad(top='hist', bottom='bottom', left='left', right='right',
-            source=source_hi, 
-                fill_color="dodgerblue", line_color="black", alpha=0.8,
-            hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
-
-        pmed = Figure(title='NBINSMED',tools=[hover2,"pan,wheel_zoom,box_zoom,reset"],
-                y_axis_label='Frequency', x_axis_label='COUNTBINS', background_fill_color="white")
-
-        pmed.quad(top='hist', bottom='bottom', left='left', right='right',
-            source=source_med, 
-                fill_color="lightgreen", line_color="black", alpha=0.8,
-            hover_fill_color='green', hover_line_color='black', hover_alpha=0.8)
-
-
-        plow = Figure(title='NBINSLOW',tools=[hover3,"pan,wheel_zoom,box_zoom,reset"],
-                y_axis_label='Frequency', x_axis_label='COUNTBINS', background_fill_color="white")
-
-
-        plow.quad(top='hist', bottom='bottom', left='left', right='right',
-            source=source_low, fill_color="tomato", line_color="black", alpha=0.8,
-            hover_fill_color='red', hover_line_color='black', hover_alpha=0.8)
-        # ------------------
-        # Text Infos
-        html_str="""
-        <style>
-            table {
-                font-family: arial, sans-serif;
-                font-size: 12px;
-                border-collapse: collapse;
-                width: 100%;
-            }
-
-            td, th {
-                border: 1px solid #dddddd;
-                text-align: center;
-                padding: 8px;
-            }
-            tr:nth-child(even) {
-                background-color: #dddddd;
-                        text-align:center;
-            }
-            tr:{text-align:center;}
-        </style>
-
-        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
-        <table>
-        <tr>
-            <th>Parameter</th>
-            <th>Value</th>
-        </tr>
-        <tr>
-            <td>CUT-OFF LOW</td>
-            <td> > param0</td>
-        </tr>
-        <tr>
-            <td>CUT-OFF MEDIUM</td>
-            <td> > param1</td>
-        </tr>
-        <tr>
-            <td>CUT-OFF HIGH</td>
-            <td> > param2</td>
-        </tr>
-            <tr>
-                <th colspan="2"; style="text-align:center">GOOD FIBERS RANGES:</th>
-            </tr>
-            <tr>
-                <td> NORMAL RANGE</td>
-                <td> param3</td>
-            </tr>
-            <tr>
-                <td> WARNING RANGE </td>
-                <td> param4</td>
-            </tr>
-
-        </table>
-        </div>
-
-        """
-        txt_keys=['CUTLO','CUTMED','CUTHI','NGOODFIB_NORMAL_RANGE', 'NGOODFIB_WARN_RANGE']
-        for i in range(5):
-            html_str=html_str.replace('%s%s'%("param",str(i)), str(tests['countbins'][txt_keys[i]]) )
-
-        div=Div(text=html_str, 
-                width=400, height=200)
-        # ---------
-
-
-
-        # plow.legend.location = "top_left"
-        # layout = gridplot( [phi,pmed,plow,None], ncols=2, plot_width=600, plot_height=600)
-
-        layout_plot = gridplot( [plow,pmed,phi,div], ncols=2, responsive=False, plot_width=600, plot_height=600)
-        '''
+                  hover_fill_color={'field': 'color'}, fill_color=None,
+                  line_color=None, line_width=3, hover_line_color='red')
 
         nrg = tests['countbins']['NGOODFIB_NORMAL_RANGE']
         wrg = tests['countbins']['NGOODFIB_WARN_RANGE']
         ngood = countbins['NGOODFIB']
         fracgood= ngood/500. -1.
-        tb = html_table(names=['NGOODFIB', 'FRACTION BAD'], vals=[ngood, str(fracgood*100)+' %' ], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=600, height=200)
+        tb = html_table(names=['NGOODFIB', 'FRACTION BAD'], vals=[ngood, str(fracgood*100)+' %' ],
+                        nrng=nrg, wrng=wrg  )
 
-
-        #print(wrg)
-        layout_plot=p
-        info_col=Div(text=write_description('countbins'), width=1200)
-        layout = column(widgetbox(info_col), tbinfo, p2, layout_plot)#)
+        info_col = Div(text=write_description('countbins'),
+                       width=550)
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+                        p,
+                        p2,
+                        Div(text=tb, width=550),
+                        css_classes=["display-grid"])
 
 
         # End of Bokeh Block

@@ -1,14 +1,40 @@
 {% block content %}
 <style>
-html {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+.bk-widget-box {
+  padding: 0px !important;
+}
+
+.main {
+  grid-area: main;
+  grid-column: 1 / -1;
+}
+
+.header {
+  grid-area: header;
+}
+
+.display-grid {
+  display: grid !important;
+  grid-gap: 1rem;
+  width: 100vw !important;
+  grid-template-columns: 550px 550px;
+  height: auto !important;
+  justify-content: center;
+  grid-template-areas:
+  "header header"
+  "main main"
+  "main main";
+}
+
+@media (max-width: 1100px) {
+  .display-grid {
+    display: block !important;
+  }
 }
 </style>
 
 <div class="container">
-        {{ image|safe }}
+  {{ image|safe }}
 </div>
 
 {% endblock content %}

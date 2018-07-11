@@ -152,11 +152,12 @@ class Countpix:
         from dashboard.bokeh.qlf_plot import html_table
         nrg= tests['countpix']['LITFRAC_NORMAL_RANGE']
         wrg= tests['countpix']['LITFRAC_WARN_RANGE']
-        tb = html_table( nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=400, height=300)
+        tb = html_table(nrng=nrg, wrng=wrg)
+        tbinfo = Div(text=tb, width=400, css_classes=["main"])
 
-
-        info_col=Div(text=write_description('countpix'), width=2*p.plot_width)
-        ptxt = column(widgetbox(info_col), row(p, tbinfo))
+        info_col = Div(text=write_description('countpix'),
+                       width=450, css_classes=["main"])
+        ptxt = column(widgetbox(info_col, css_classes=[
+                      "header"]), tbinfo, p, css_classes=["display-grid"])
 
         return file_html(ptxt, CDN, "Countpix")

@@ -66,7 +66,6 @@ def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrn
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dddddd;
@@ -77,7 +76,7 @@ def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrn
         """
 
     header= """
-    <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+    <div>
     <table>
     <tr>
         <th>Parameter</th>        <th>Value</th>
