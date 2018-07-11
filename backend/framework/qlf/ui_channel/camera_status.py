@@ -53,6 +53,7 @@ class CameraStatus:
                 )[1][1:-1]
 
                 if len(self.qa_petals) > 0 and \
+                    cam_index is not None and \
                     self.qa_petals[cam_index][cam]['preproc']['steps_status'][1] is 'None' and \
                     status != 'NORMAL':
                     self.alerts.qa_alert(cam, 'BIAS', status, self.qlf_state.exposure_id)
