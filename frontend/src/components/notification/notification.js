@@ -98,7 +98,7 @@ class Notification extends React.Component {
         <List style={styles.listStyle}>
           {this.props.notifications.map((notif, id) => {
             const stylePrimary =
-              notif.type === 'Error' ? classes.alert : classes.warning;
+              notif.type === 'ALARM' ? classes.alert : classes.warning;
             const date = moment(new Date(notif.date)).fromNow();
             return (
               <div key={id}>
