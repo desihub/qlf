@@ -1,6 +1,5 @@
 [main]
-# Always True if you are running QLF in development mode
-emulate_dos=True
+emulate_dos=False
 min_interval=3
 max_interval=15
 allowed_delay=20

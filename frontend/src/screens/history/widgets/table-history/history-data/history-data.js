@@ -3,7 +3,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@material-ui/core/Checkbox';
 import Icon from '@material-ui/core/Icon';
 
 const styles = {
@@ -21,6 +21,9 @@ const styles = {
   },
   statusAbort: {
     color: 'red',
+  },
+  statusPending: {
+    color: '#EFD469',
   },
   statusNormal: {
     color: 'green',
@@ -43,8 +46,9 @@ export default class HistoryData extends React.Component {
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
     tableColumns: PropTypes.array.isRequired,
-    handleImageModalOpen: PropTypes.func.isRequired,
+    openCCDViewer: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
+    pipelineRunning: PropTypes.string,
   };
 
   formatDate = dateString => {
@@ -81,9 +85,9 @@ export default class HistoryData extends React.Component {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
         !JSON.stringify(qaTests).includes('ALARM');
-      return this.renderQAStatus(testsFailed);
+      return testsFailed;
     }
-    return this.renderQAStatus(false);
+    return false;
   };
 
   renderQAStatus = status => {
@@ -103,17 +107,22 @@ export default class HistoryData extends React.Component {
         style={styles.link}
         onClick={() => this.props.selectProcessQA(this.props.processId)}
       >
-        {this.qaSuccess()}
+        {this.renderQAStatus(this.qaSuccess())}
       </span>
     );
   };
 
-  renderStatus = aborted => {
-    return !aborted ? (
-      <span style={styles.statusNormal}>Normal</span>
-    ) : (
-      <span style={styles.statusAbort}>Aborted</span>
-    );
+  renderStatus = state => {
+    switch (state) {
+      case 'aborted':
+        return <span style={styles.statusAbort}>Aborted</span>;
+      case 'failed':
+        return <span style={styles.statusAbort}>Failed</span>;
+      case 'pending':
+        return <span style={styles.statusPending}>Pending</span>;
+      default:
+        return <span style={styles.statusNormal}>Normal</span>;
+    }
   };
 
   renderColumns = (type, key, id) => {
@@ -121,7 +130,9 @@ export default class HistoryData extends React.Component {
     const isNotProcessingHistory = this.props.type !== 'process';
     const processing = isNotProcessingHistory
       ? null
-      : this.props.lastProcessedId === String(row.pk);
+      : this.props.lastProcessedId === String(row.pk) &&
+        this.props.pipelineRunning &&
+        this.props.pipelineRunning === 'Running';
     const lastProcessed = processing ? styles.bold : {};
     let comment;
     if (this.props.type === 'process') {
@@ -137,6 +148,9 @@ export default class HistoryData extends React.Component {
     const exposureId = isNotProcessingHistory
       ? row['exposure_id']
       : row.exposure['exposure_id'];
+    const status = !row.runtime
+      ? processing ? 'pending' : 'aborted'
+      : this.qaSuccess() ? 'normal' : 'failed';
     switch (type) {
       case 'parent':
         return (
@@ -203,7 +217,7 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             <Icon
-              onClick={() => this.props.handleImageModalOpen(night, exposureId)}
+              onClick={() => this.props.openCCDViewer(night, exposureId)}
               style={styles.notificationsIcon}
             >
               image
@@ -239,7 +253,7 @@ export default class HistoryData extends React.Component {
             key={`EXPV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
-            {this.renderStatus(!row.runtime && !processing)}
+            {this.renderStatus(status)}
           </TableCell>
         );
       case 'qa':
@@ -256,7 +270,7 @@ export default class HistoryData extends React.Component {
                   style={styles.link}
                   onClick={() => selectProcessQA(processId)}
                 >
-                  {this.qaSuccess()}
+                  {this.renderQAStatus(this.qaSuccess())}
                 </span>
               ) : null}
             </TableCell>
@@ -295,14 +309,14 @@ export default class HistoryData extends React.Component {
     );
   };
 
-  // renderCheckbox = checked => {
-  //   if (!this.props.selectable) return;
-  //   return (
-  //     <TableCell style={{ ...styles.tableCell }}>
-  //       <Checkbox checked={checked} />
-  //     </TableCell>
-  //   );
-  // };
+  renderCheckbox = checked => {
+    if (!this.props.selectable) return;
+    return (
+      <TableCell style={{ ...styles.tableCell }}>
+        <Checkbox checked={checked} />
+      </TableCell>
+    );
+  };
 
   selectExposure = rowNumber => {
     if (this.props.selectExposure) this.props.selectExposure([rowNumber]);
@@ -312,14 +326,14 @@ export default class HistoryData extends React.Component {
     const {
       processId,
       lastProcessedId,
-      // selectedExposures,
+      selectedExposures,
       rowNumber,
       striped,
     } = this.props;
     const lastProcessed =
       lastProcessedId && lastProcessedId === processId ? styles.bold : null;
-    // const selectedExposure =
-    //   selectedExposures && selectedExposures.includes(rowNumber);
+    const selectedExposure =
+      selectedExposures && selectedExposures.includes(rowNumber);
 
     return (
       <TableRow
@@ -327,7 +341,7 @@ export default class HistoryData extends React.Component {
         style={lastProcessed}
         striped={striped}
       >
-        {/* {this.renderCheckbox(selectedExposure)} */}
+        {this.renderCheckbox(selectedExposure)}
         {this.props.tableColumns
           .filter(column => column.exposureKey !== null)
           .map((column, key) => {

@@ -25,8 +25,9 @@ class Fits2png:
         exp_zfill = str(self.exposure).zfill(8)
 
         if self.processing == 'raw':
-            f = '{}/{}/desi-{}.fits.fz'.format(desi_spectro_data,
-                                               self.night, exp_zfill)
+            f = '{}/{}/{}/desi-{}.fits.fz'.format(desi_spectro_data,
+                                                  self.night, exp_zfill,
+                                                  exp_zfill)
         elif self.processing == 'reduced':
             f = '{}/exposures/{}/{}/sframe-{}-{}.fits'.format(
                 desi_spectro_redux, self.night, exp_zfill, self.cam, exp_zfill)

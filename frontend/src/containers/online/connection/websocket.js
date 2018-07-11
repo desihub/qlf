@@ -22,6 +22,7 @@ class Connection extends Component {
 
   handleData = data => {
     const result = JSON.parse(data);
+
     if (result.notification) {
       const notification = JSON.parse(result.notification);
       this.props.updateNotifications(notification);
@@ -40,6 +41,7 @@ class Connection extends Component {
             ? result.ingestion.reverse()
             : [],
         exposureId: result.exposure.toString(),
+        flavor: result.flavor,
         camerasStages: result.cameras,
         availableCameras: result.available_cameras,
         mjd: result.mjd === '' ? '' : result.mjd.toFixed(3),
