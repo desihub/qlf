@@ -62,8 +62,6 @@ class Upstream:
     def monitor_job(self):
         state = self.qlf_state.get_monitor_state()
 
-        log.info(self.qlf_state.camera_status_generator.alerts)
-
         if state is not None:
             Group("monitor").send({
                 "text": state
@@ -75,7 +73,7 @@ class Upstream:
                 "notification": alerts.available_space()
             })
         })
-    
+
     def update_camera_log(self):
         for cam in self.qlf_state.camera_logs.keys():
             Group(cam).send({
