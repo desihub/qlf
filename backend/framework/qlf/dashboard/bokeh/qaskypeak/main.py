@@ -235,12 +235,15 @@ class Skypeak:
         nrg= tests['skypeak']['PEAKCOUNT_NORMAL_RANGE']
         wrg= tests['skypeak']['PEAKCOUNT_WARN_RANGE']
         tb = html_table(names=['Peakcount noise'], vals=['{:.3f}'.format(skypeak['PEAKCOUNT_NOISE']) ], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=600, height=200)
+        tbinfo=Div(text=tb, width=400)
 
 
         #row1 = column(p, p_hist)
-        layout = column(widgetbox(info_col), tbinfo, p, p_hist)#row1)
-
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+                      p,
+                      p_hist,
+                      css_classes=["display-grid-skypeak"])
 
         #logger.info("widths", p.plot_width, p_hist.plot_width)
         # End of Bokeh Block

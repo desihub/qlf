@@ -83,127 +83,6 @@ class Integ:
         fiber_hist.xaxis.axis_label="Fibers"
         fiber_hist.yaxis.axis_label="Integral (counts)"
 
-
-
-        '''
-        integ = metrics['integ']
-
-        my_palette = get_palette("Reds")
-
-        formatter = PrintfTickFormatter(format='%1.1e')
-
-        skc_tooltips = """
-            <div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">INTEG: </span>
-                    <span style="font-size: 13px; color: #515151;">@integ</span>
-                </div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@ra</span>
-                </div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@dec</span>
-                </div>
-            </div>
-        """
-        url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
-
-        c1,c2 = 0,500#int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
-        qlf_fiberid = np.arange(0,5000)[c1:c2] 
-
-        hover = HoverTool(tooltips=skc_tooltips)
-
-
-        qainteg = integ['INTEG']
-        fibers = integ['STD_FIBERID']
-
-        ra = [ integ['RA'][c1:c2][i] for i in fibers]
-        dec = [ integ['DEC'][c1:c2][i] for i in fibers]
-
-        ra_not, dec_not=[],[]
-        for i in range(500):
-            if i not in fibers:
-                ra_not.append( integ['RA'][c1:c2][i])
-                dec_not.append(integ['DEC'][c1:c2][i])
-
-        source2 = ColumnDataSource(data={
-                        'integ' : qainteg,
-                        'fiberid' : fibers,
-                        'ra'  : ra,
-                        'dec' : dec
-        })
-
-        source2_not = ColumnDataSource(data={
-                    'ra':ra_not,
-                    'dec':dec_not,
-                    'integ': ['']*len(dec_not)
-                    })
-                
-        mapper = LinearColorMapper(palette= my_palette,
-                                low = np.min(qainteg), 
-                                high = np.max(qainteg))
-
-        p2 = Figure(title='INTEG', 
-                    x_axis_label='RA', y_axis_label='DEC',
-                    plot_width=770, plot_height=700,
-                    tools= [hover, "pan,wheel_zoom,box_zoom,reset,tap"])
-
-        radius = 0.012
-        radius_hover = 0.0135
-
-
-
-        # Gray Fibers:
-        p2.circle('ra', 'dec', source= source2_not, radius= radius, 
-                    fill_color = 'lightgray', line_color='black', line_width=0.3)
-
-        # Gray Fibers: marking the Hover point
-        p2.circle('ra','dec', source = source2_not, radius = radius
-                , fill_color=None, line_color=None
-                , line_width=3, hover_line_color='red', hover_fill_color='lightgrey')
-
-        color_bar = ColorBar(color_mapper= mapper, label_standoff=-13,
-                            major_label_text_font_style='bold', padding = 46,
-                            major_label_text_align='right',
-                            major_label_text_font_size="10pt",
-                            location=(0, 0))
-
-        # Colored fibers
-        p2.circle('ra','dec', source=source2, radius=radius,
-                fill_color={'field': 'integ', 'transform': mapper}, 
-                line_color='black', line_width=0.1)
-
-        taptool = p2.select(type=TapTool)
-        taptool.callback = OpenURL(url=url)
-
-        # marking the Hover point
-        p2.circle('ra','dec', source = source2, radius = radius_hover
-                , fill_color=None, line_color=None
-                , hover_fill_color={'field': 'integ', 'transform': mapper}
-                , line_width=3, hover_line_color='red')
-
-
-        color_bar.formatter = formatter
-        p2.add_layout(color_bar, 'left')
-
-        #infos
-        info, nlines = write_info('integ', tests['integ'])
-        txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
-        p2txt = column(widgetbox(txt),p2)
-
-
-        #layout = gridplot([[p2txt]], responsive=False)
-        info_col=Div(text=write_description('integ'), width=p2.plot_width)
-        layout = column(info_col, p2)
-        '''
-        #infos
-        #info, nlines = write_info('integ', tests['integ'])
-        #txt = PreText(text=info, height=nlines*20, width=fiber_hist.plot_width)
-        #p2txt = column(widgetbox(txt),p2)
-
-
         info_col=Div(text=write_description('integ'), width=fiber_hist.plot_width)
 
         nrg= tests['integ']['DELTAMAG_WARN_RANGE']
@@ -211,8 +90,11 @@ class Integ:
 
         #List of mag diff b/w the fibermag and the imaging mag from the fibermap
         tb = html_table(names=['DELTAMAG (Mean)'], vals=[ '{:.3f}'.format(np.mean(integ['DELTAMAG']) )], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=600, height=300)
+        tbinfo=Div(text=tb, width=600)
 
-        layout = column(info_col, row(fiber_hist, tbinfo) )
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+                        widgetbox(tbinfo, css_classes=["table-ranges"]),
+                        fiber_hist,
+                        css_classes=["display-grid"])
         # End of Bokeh Block
         return file_html(layout, CDN, "INTEG")

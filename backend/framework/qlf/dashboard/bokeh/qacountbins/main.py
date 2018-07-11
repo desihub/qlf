@@ -199,15 +199,16 @@ class Countbins:
         fracgood= ngood/500. -1.
         tb = html_table(names=['NGOODFIB', 'FRACTION BAD'], vals=[ngood, str(fracgood*100)+' %' ],
                         nrng=nrg, wrng=wrg  )
+        tbinfo = Div(text=tb, width=400)
 
         info_col = Div(text=write_description('countbins'),
                        width=550)
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                        p,
-                        p2,
-                        Div(text=tb, width=550),
-                        css_classes=["display-grid"])
 
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+                      p,
+                      p2,
+                      css_classes=["display-grid-countbins"])
 
         # End of Bokeh Block
         return file_html(layout, CDN, "COUNTBINS")

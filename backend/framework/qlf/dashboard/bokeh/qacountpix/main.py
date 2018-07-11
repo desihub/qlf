@@ -97,7 +97,7 @@ class Countpix:
         p = Figure(title=name, tools=[hover],
                 x_range= list([-0.5,1.5]),           # length = 18
                 y_range= list([-0.5,1.5]), #numeros romanos
-                plot_width=450, plot_height=400
+                plot_width=450, plot_height=400, css_classes=["plot-bokeh"]
                 )
 
 
@@ -153,11 +153,13 @@ class Countpix:
         nrg= tests['countpix']['LITFRAC_NORMAL_RANGE']
         wrg= tests['countpix']['LITFRAC_WARN_RANGE']
         tb = html_table(nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400, css_classes=["main"])
+        tbinfo = Div(text=tb, width=400)
 
         info_col = Div(text=write_description('countpix'),
-                       width=450, css_classes=["main"])
-        ptxt = column(widgetbox(info_col, css_classes=[
-                      "header"]), tbinfo, p, css_classes=["display-grid"])
+                       width=450)
+        ptxt = column(widgetbox(info_col, css_classes=["header"]),
+                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+                        p,
+                        css_classes=["display-grid"])
 
         return file_html(ptxt, CDN, "Countpix")

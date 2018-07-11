@@ -154,12 +154,12 @@ class Skycont:
         nrg= tests['skycont']['SKYCONT_NORMAL_RANGE']
         wrg= tests['skycont']['SKYCONT_WARN_RANGE']
         tb = html_table( names=['Sky continuum averaged over sky fibers'],vals=['{:.3f}'.format(skycont['SKYCONT']) ], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=500, height=300)
+        tbinfo=Div(text=tb, width=500)
 
-
-        p2txt = column(info_col,row(p2, tbinfo))
-        layout = p2txt 
-
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+                      p2,
+                      css_classes=["display-grid"])
 
         # End of Bokeh Block
         return file_html(layout, CDN, "SKYCONT")

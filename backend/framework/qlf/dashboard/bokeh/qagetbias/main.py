@@ -160,10 +160,13 @@ class Bias:
         wrg= tests['getbias']['BIAS_WARN_RANGE']
         #names=['BIAS'], vals=[ getbias['BIAS_AMP']],
         tb = html_table( nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=400, height=300)
+        tbinfo=Div(text=tb, width=400)
 
         info_col=Div(text=write_description('getbias'), width=2*p.plot_width)
-        ptxt = column(widgetbox(info_col), row(p, tbinfo), txt)#,p_hist)
+        ptxt = column(widgetbox(info_col, css_classes=["header"]),
+                        widgetbox(tbinfo, css_classes=["table-ranges"]),
+                        p,
+                        css_classes=["display-grid"])  # ,p_hist)
 
 
         # End of Bokeh Block

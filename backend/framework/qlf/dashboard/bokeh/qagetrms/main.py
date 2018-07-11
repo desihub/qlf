@@ -87,7 +87,7 @@ class RMS:
         nrg= tests['getrms']['NOISE_NORMAL_RANGE']
         wrg= tests['getrms']['NOISE_WARN_RANGE']
         tb = html_table( nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=400, height=300)
+        tbinfo=Div(text=tb, width=400)
 
 
         info, nlines = write_info('getrms', tests['getrms'])
@@ -97,71 +97,8 @@ class RMS:
         nlines=2
         txt = Div(text=info, width=p.plot_width)
         info_col=Div(text=write_description('getrms'), width=p.plot_width)
-        ptxt = column(widgetbox(info_col),row(p, tbinfo))
-
-
-        '''
-        #-------------------------------------
-        # histogram
-
-
-        hist_tooltip = """
-            <div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
-                    <span style="font-size: 13px; color: #515151">@hist</span>
-                </div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">XSIGMA: </span>
-                    <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
-                </div>
-            </div>
-        """
-
-        #hist, edges  = np.histogram(getrms['RMS_ROW'],'doane') # auto, fd or doane
-        hist, edges  = np.histogram(getrms['NOISE_ROW'][0],'doane') # auto, fd or doane
-
-        source_hist = ColumnDataSource(data={
-            'hist': hist,
-            'histplusone':np.array(hist)+1,
-            'bottom':[0] *len(hist),
-            'bottomplusone':[1]*len(hist),
-            'left':edges[:-1],
-            'right':edges[1:]
-        })
-
-        hover = HoverTool(tooltips=hist_tooltip)
-
-        from dashboard.bokeh.helper import eval_histpar
-        yscale = "log"#"auto" or "log"
-        ylabel, yrange, bottomval, histval = eval_histpar(yscale, hist)#'Frequency', (0, 1.1*max(hist)), 'bottom','hist'#histpar(yscale, hist)
-
-        xhistlabel = "RMS"
-        p_hist = Figure(title="RMS ROW:  rms of each row in CCD",tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
-                y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-                , plot_width= 650, plot_height=400
-                , x_axis_type="auto",    y_axis_type=yscale
-                , y_range=yrange)
-
-        p_hist.quad(top=histval, bottom=bottomval, left='left', right='right',
-            source=source_hist, 
-                fill_color="dodgerblue", line_color="blue", alpha=0.8,
-            hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
-
-
-
-        #infos
-        info, nlines = write_info('getrms', tests['getrms'])
-        info= """<div> 
-        <body><p  style="text-align:left; color:#262626; font-size:20px;">
-                    <b>Get RMS</b> <br>Used to calculate RMS of region of 2D image, including overscan.</body></div>"""
-        nlines=2
-        txt = Div(text=info, width=p.plot_width)
-        info_col=Div(text=write_description('getrms'), width=p.plot_width)
-        ptxt = column(widgetbox(info_col),p)
-        layout = column(ptxt, p_hist)
-        '''
-        layout=column(ptxt, p2)
+        layout = column(widgetbox(info_col, css_classes=["header"]), widgetbox(
+            tbinfo, css_classes=["table-ranges"]), p, p2, css_classes=["display-grid"])
 
         # End of Bokeh Block
         return file_html(layout, CDN, "GETRMS")

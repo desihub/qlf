@@ -96,7 +96,7 @@ def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrn
 
 
 
-def plot_hist(hover,yrange, yscale="auto", pw=700, ph=400):
+def plot_hist(hover,yrange, yscale="auto", pw=600, ph=400):
     """
     Defaults for histograms
     """

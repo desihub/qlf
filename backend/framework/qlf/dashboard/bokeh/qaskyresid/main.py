@@ -86,14 +86,14 @@ class Skyresid:
 
         p1 = Figure(title= 'MED_RESID_WAVE', 
                     x_axis_label='Wavelength (A)', y_axis_label='Counts',
-                    plot_width = 720, plot_height = 240,
+                    plot_width = 620, plot_height = 240,
                 tools=[skr_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
         p1.line('wl', 'med_resid', source=skyres_source)
 
         p2 = Figure(title= 'WAVG_RESID_WAVE', 
                     x_axis_label='Wavelength (A)', y_axis_label='Counts',
-                    plot_width = 720, plot_height = 240,
+                    plot_width = 620, plot_height = 240,
                 tools=[wavg_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
         p2.line('wl', 'wavg_resid', source=skyres_source)
@@ -149,85 +149,6 @@ class Skyresid:
         strf=[str(i) for i in skyresid['SKYFIBERID'] ]
         fiber_hist.xaxis.major_label_overrides = dict(zip(strx,strf))
 
-        '''
-        #-------------------------------------
-        # histogram
-
-        xhistlabel= ""
-        yscale = "auto"#"auto" or "log"
-
-        #plotar tambem a mediana do residuo med_resid
-        #resid normal and warn ranges
-
-
-        hist_tooltip_x = """
-            <div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
-                    <span style="font-size: 13px; color: #515151">@hist</span>
-                </div>
-                <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">XSIGMA: </span>
-                    <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
-                </div>
-            </div>
-        """
-
-        hist, edges  = skyresid['DEVS_1D'], skyresid['DEVS_EDGES']
-
-        source_hist = ColumnDataSource(data={
-            'hist': hist,
-            'histplusone':np.array(hist)+1,
-            'bottom':[0] *len(hist),
-            'bottomplusone':[1]*len(hist),
-            'left':edges[:-1],
-            'right':edges[1:]
-        })
-
-        hover = HoverTool(tooltips=hist_tooltip_x)
-
-        ylabel, yrange, bottomval, histval = 'Frequency', (0, 1.1*max(hist)), 'bottom','hist'
-
-        xhistlabel = "Residuals"
-        p_hist = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
-                y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-                , plot_width=700, plot_height=400
-                , x_axis_type="auto",    y_axis_type=yscale
-                , y_range=yrange)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
-
-        p_hist.quad(top=histval, bottom=bottomval, left='left', right='right',
-            source=source_hist, 
-                fill_color="dodgerblue", line_color="blue", alpha=0.8,
-            hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
-
-        # Visual alert ranges
-        logger.info(par['RESID_NORMAL_RANGE'])
-
-        for ialert in par['RESID_NORMAL_RANGE']:
-            spans = Span(location= ialert , dimension='height', line_color='green',
-                                line_dash='dashed', line_width=2)
-            p_hist.add_layout(spans)
-            my_label = Label(x=ialert, y=yrange[-1]/2.2, y_units='data', text='Normal Range', text_color='green', angle=np.pi/2.)
-            p_hist.add_layout(my_label)
-
-        for ialert in par['RESID_WARN_RANGE']:
-            spans = Span(location= ialert , dimension='height', line_color='tomato',
-                                line_dash='dotdash', line_width=2)
-            p_hist.add_layout(spans)
-            my_label = Label(x=ialert, y=yrange[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
-            p_hist.add_layout(my_label)
-
-
-        medianline = Span(location= residmed, dimension='height', line_color='black', line_dash='solid', line_width=2)
-        p_hist.add_layout(medianline)
-        my_label = Label(x=residmed, y=0.94*yrange[-1], y_units='data', text='Median', text_color='black', angle=0.
-                        ,background_fill_color='white', text_align="center",background_fill_alpha=.8)
-        p_hist.add_layout(my_label)
-        '''
-        # --------------------------------------
-
-
-
         text2=""""""
         for i in ['NBAD_PCHI','NREJ','NSKY_FIB','RESID_PER']:      
             text2=text2+ ("""<tr>
@@ -271,12 +192,14 @@ class Skyresid:
         nrg= tests['skyresid']['RESID_NORMAL_RANGE']
         wrg= tests['skyresid']['RESID_WARN_RANGE']
         tb = html_table(names=resid_names, vals=resid_vals, nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=600, height=200)
+        tbinfo=Div(text=tb, width=600)
 
 
-        #p2txt = column(widgetbox(info_col), row(column(p1, p2), widgetbox(txt)), fiber_hist  )
-        p2txt = column(widgetbox(info_col), row(column(p1, p2), tbinfo), fiber_hist  )
-        #p2txt = column(widgetbox(info_col), p1, p2, widgetbox(txt), p_hist)
-
-        #layout=column(p1,p2)
-        return file_html(p2txt, CDN, "SKYRESID")
+        # p2txt = column(widgetbox(info_col), row(column(p1, p2), tbinfo), fiber_hist  )
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+                      p1,
+                      fiber_hist,
+                      p2,
+                      css_classes=["display-grid-skyresid"])
+        return file_html(layout, CDN, "SKYRESID")
