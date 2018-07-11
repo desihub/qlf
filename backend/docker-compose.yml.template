@@ -50,11 +50,6 @@ services:
       - ICS_NAME=ICSDaemon
       - ICS_HOST=localhost
       - ICS_PORT=50006
-      # Bokeh
-      - BOKEH_TEST=False
-      - BOKEH_SERVER=localhost
-      - BOKEH_PORT=5007
-      - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001
       # ICS
       - START_ICS=False
       - PYRO_HOST=localhost

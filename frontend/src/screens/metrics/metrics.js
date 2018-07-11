@@ -12,8 +12,7 @@ const styles = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    paddingTop: '2vh',
-    paddingBottom: '2vh',
+    maxHeight: '180,5px',
   },
   controlsContainerLeft: {
     flex: 1,
@@ -166,7 +165,7 @@ export default class Metrics extends Component {
     if (!this.state.qa) return;
     const url =
       process.env.REACT_APP_BOKEH +
-      `${this.state.qa}/?process_id=${this.props.processId}&arm=${
+      `load_qa/?qa=${this.state.qa}&process_id=${this.props.processId}&arm=${
         this.props.arms[this.state.arm]
       }&spectrograph=${this.state.spectrograph}`;
 
