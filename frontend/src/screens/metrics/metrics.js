@@ -4,7 +4,6 @@ import Control from './control/control';
 import MetricSelect from './metric-select/metric-select';
 import Iframe from 'react-iframe';
 import { FadeLoader } from 'halogenium';
-import RaisedButton from 'material-ui/RaisedButton';
 import Status from '../../components/status/status';
 
 const styles = {
@@ -12,7 +11,7 @@ const styles = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    maxHeight: '180,5px',
+    maxHeight: '115,5px',
   },
   controlsContainerLeft: {
     flex: 1,
@@ -43,9 +42,8 @@ const styles = {
   grid: {
     flex: 1,
     display: 'grid',
-    marginBottom: '1vh',
     flexDirection: 'row',
-    gridTemplateColumns: 'auto auto auto auto',
+    gridTemplateColumns: 'auto auto auto',
     marginRight: '1vw',
   },
 };
@@ -175,7 +173,7 @@ export default class Metrics extends Component {
           url={url}
           ref={this.storeIframeRef}
           width="100%"
-          height="calc(100vh - 272px)"
+          height="calc(100vh - 181px)"
           display="initial"
           position="relative"
           allowFullScreen
@@ -199,6 +197,7 @@ export default class Metrics extends Component {
             qaTests={this.props.qaTests}
             selectQA={this.selectQA}
             step={steps[this.state.step]}
+            back={this.props.navigateToQA}
           />
           <div style={{ ...styles.controlsContainerRight }}>
             <Status
@@ -207,7 +206,6 @@ export default class Metrics extends Component {
               date={this.props.date}
               time={this.props.time}
               flavor={this.props.flavor}
-              processId={String(this.props.processId)}
             />
             <div style={styles.grid}>
               <Control
@@ -224,12 +222,6 @@ export default class Metrics extends Component {
                 change={this.changeArm}
                 title={'Arm'}
                 value={this.props.arms[this.state.arm]}
-              />
-              <RaisedButton
-                label={'Back'}
-                secondary={true}
-                style={styles.backButton}
-                onClick={this.props.navigateToQA}
               />
             </div>
           </div>

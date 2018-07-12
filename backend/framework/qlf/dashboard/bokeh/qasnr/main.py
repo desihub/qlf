@@ -13,7 +13,7 @@ from dashboard.bokeh.helper import write_description, write_info, \
     get_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import html_table
-from dashboard.bokeh.helper import get_data, get_exposure_ids, \
+from dashboard.bokeh.helper import get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs
 from bokeh.resources import CDN
 from bokeh.embed import file_html

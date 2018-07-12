@@ -1,6 +1,5 @@
 import os
 import logging
-import pandas as pd
 import requests
 from furl import furl
 from bokeh.plotting import Figure
@@ -11,39 +10,6 @@ QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
 
 logger = logging.getLogger(__name__)
-
-
-def get_data(name, params):
-    """
-    Returns a panda dataframe so that we can access the QA data arrays
-    e.g. data.MEDIAN_SNR
-
-    args:
-        name (str): QA file name
-        params (list): Metrics to be rescued in QA
-    """
-
-    api = requests.get(QLF_API_URL).json()
-
-    qa = requests.get(api['qa'], params={'name': name}).json()
-    qa = qa['results']
-
-    metrics = {}
-
-    if not qa:
-        logger.warn('{} not found in database'.format(name))
-        return pd.DataFrame.from_dict(metrics, orient='index').transpose()
-
-    full_metrics = qa[0]['metrics']
-
-    for metric in params:
-        if metric not in full_metrics:
-            logger.warn(
-                'The {} metric is not present in {}'.format(metric, name))
-
-        metrics[metric] = full_metrics.get(metric, [])
-
-    return pd.DataFrame.from_dict(metrics, orient='index').transpose()
 
 
 def get_arms_and_spectrographs():

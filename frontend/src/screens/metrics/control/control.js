@@ -1,16 +1,21 @@
 import React, { Component } from 'react';
-import { Card, CardTitle } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
+import Card from '@material-ui/core/Card';
 import PropTypes from 'prop-types';
+import Typography from '@material-ui/core/Typography';
 
 const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
-    flex: 1,
-    margin: '1vw',
+    marginLeft: '1vw',
+    alignSelf: 'center',
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateAreas: "'title control control control'",
+    alignItems: 'center',
   },
   select: {
-    flex: 1,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -18,21 +23,18 @@ const styles = {
     paddingBottom: '10px',
   },
   button: {
-    flex: 1,
     minWidth: '10px',
   },
   value: {
-    flex: 1,
     fontSize: '14px',
     textAlign: 'center',
-  },
-  titleContainer: {
     padding: '5px',
-    paddingLeft: '10px',
   },
   title: {
+    paddingLeft: '10px',
     fontSize: '14px',
     color: 'rgba(0, 0, 0, 0.54)',
+    gridArea: 'title',
   },
 };
 
@@ -46,14 +48,13 @@ export default class Control extends Component {
   render() {
     return (
       <Card style={styles.card}>
-        <CardTitle
-          titleStyle={styles.title}
-          style={styles.titleContainer}
-          title={this.props.title}
-        />
-        <div style={styles.select}>
+        <div style={styles.grid}>
+          <Typography variant="body2" style={styles.title}>
+            {this.props.title}
+          </Typography>
           <FlatButton
             style={styles.button}
+            className="control"
             label="<"
             primary={true}
             onClick={() => this.props.change('prev')}
