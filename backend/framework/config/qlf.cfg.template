@@ -6,6 +6,12 @@ allowed_delay=20
 max_exposures=5
 max_nights=5
 
+# Set max_workers with the values:
+# max_workers = 0 (for unlimited processing)
+# max_workers = 1 (for serial processing)
+# max_workers = n (n is processes number in parallel)
+max_workers=0
+
 disk_percent_warning=40
 disk_percent_alert=20
 

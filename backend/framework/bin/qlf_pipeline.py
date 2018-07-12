@@ -1,12 +1,14 @@
 import glob
 import io
 import os
+import gc
 import shutil
 import subprocess
 import time
 from datetime import datetime
 from multiprocessing import Lock, Manager, Process
 from threading import Thread
+from concurrent import futures
 
 from log import get_logger
 from qlf_configuration import QLFConfiguration
@@ -19,6 +21,10 @@ cfg = get_config()
 desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
 loglevel = cfg.get("main", "loglevel")
 logpipeline = cfg.get('main', 'logpipeline')
+max_workers = cfg.getint('main', 'max_workers')
+
+if not max_workers > 0:
+    max_workers = None
 
 logger = get_logger("pipeline", logpipeline, loglevel)
 
@@ -119,6 +125,8 @@ class QLFProcess(object):
         return_cameras = Manager().list()
         resumelog_lock = Lock()
 
+        pool = futures.ThreadPoolExecutor(max_workers=max_workers)
+
         for camera in self.data.get('cameras'):
             camera['start'] = datetime.now().replace(microsecond=0)
 
@@ -138,19 +146,19 @@ class QLFProcess(object):
 
             camera['job_id'] = job.id
 
-            args = (
+            procs.append(pool.submit(
+                self.start_parallel_job,
                 self.data,
                 camera,
                 return_cameras,
                 resumelog_lock,
-            )
+            ))
 
-            proc = Thread(target=self.start_parallel_job, args=args)
-            proc.start()
-            procs.append(proc)
+        for proc in futures.as_completed(procs):
+            proc.result()
 
-        for proc in procs:	
-            proc.join()
+        procs.clear()
+        gc.collect()
 
         self.data['cameras'] = return_cameras
 
@@ -168,8 +176,6 @@ class QLFProcess(object):
         ]
 
         print(" ".join(str(x) for x in cmd))
-
-        # TODO: Add --mergeQA in cmd
 
         logname = io.open(os.path.join(
                 desi_spectro_redux,
@@ -398,8 +404,8 @@ def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
 
 
 if __name__ == "__main__":
-    print('Manually starting the QL pipeline.')
     import sys
+    logger.info('Manually starting the QL pipeline.')
 
     try:
         exposure_id = int(sys.argv[1])
