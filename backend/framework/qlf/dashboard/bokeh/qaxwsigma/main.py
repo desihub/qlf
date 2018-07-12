@@ -240,7 +240,7 @@ class Xwsigma:
         d_yplt = (max(xsigma) - min(xsigma))*0.1
         yrange = [0, max(xsigma) +d_yplt]
 
-        xhist = plot_hist(xsigma_hover, yrange, ph=280)
+        xhist = plot_hist(xsigma_hover, yrange, ph=280, pw=500)
         xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data',source=source,
                     fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
                     hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -289,7 +289,7 @@ class Xwsigma:
         d_yplt = (max(wsigma) - min(wsigma))*0.1
         yrange = [0, max(wsigma) +d_yplt]
 
-        whist = plot_hist(wsigma_hover, yrange, ph=280)
+        whist = plot_hist(wsigma_hover, yrange, ph=280, pw=500)
         whist.quad(top='wsigma', bottom='bottom', left='left', right='right', name='data',source=source,
                     fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
                     hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -350,7 +350,7 @@ class Xwsigma:
 
         p_hist_x = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
                 y_axis_label= ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-                , plot_width=600, plot_height=300
+                , plot_width=500, plot_height=300
                 , x_axis_type="auto",    y_axis_type=yscale
                 , y_range=yrange, x_range= hist_rg
                 )#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
@@ -394,7 +394,7 @@ class Xwsigma:
 
         p_hist_w = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
                 y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-                , plot_width=600, plot_height=300
+                , plot_width=500, plot_height=300
                 , x_axis_type="auto",    y_axis_type=yscale
                 ,y_range=yrange, x_range=hist_rg)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
@@ -487,7 +487,7 @@ class Xwsigma:
         # -------------------------------------------------------------------------
         from bokeh.models import Spacer
 
-        info_col=Div(text=write_description('xwsigma'), width=2*pw.plot_width)
+        info_col=Div(text=write_description('xwsigma'))
         pxh = column(px, xhist, p_hist_x, xamp )
         pwh = column(pw, whist, p_hist_w, wamp )
 
@@ -496,11 +496,9 @@ class Xwsigma:
         tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma['XWSIGMA'], nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb)
 
-        layoutplot= row([pxh, Spacer(width=0),pwh]) #, sizing_mode='scale_width')
-        # layout = column(widgetbox(info_col), tbinfo, layoutplot) #, row( [xamp, Spacer(width=80), wamp]))
         layout = column(widgetbox(info_col, css_classes=["header-xwsigma"]),
                 widgetbox(tbinfo, css_classes=["table-ranges-xwsigma"]),
-                column(px, xhist, p_hist_x, xamp, css_classes=["xsigma"]),
-                column(pw, whist, p_hist_w, wamp, css_classes=["wsigma"]),
-                css_classes=["display-grid"])
+                column(px, xhist, p_hist_x, xamp, css_classes=["xwsigma"]),
+                column(pw, whist, p_hist_w, wamp, css_classes=["xwsigma"]),
+                css_classes=["display-grid-xwsigma"])
         return file_html(layout, CDN, "XWSIGMA")
