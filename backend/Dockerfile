@@ -6,7 +6,7 @@ ENV QLF_ROOT /app
 
 # BEGIN INSTALL: anaconda3
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
-    libglib2.0-0 libxext6 libsm6 libxrender1 git build-essential
+    libglib2.0-0 libxext6 libsm6 libxrender1 git build-essential htop
 
 RUN apt-get install -y locales && locale-gen en_US.UTF-8  
 ENV LANG en_US.UTF-8  

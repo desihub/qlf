@@ -1,5 +1,6 @@
 import datetime
 import time
+import gc
 from multiprocessing import Event, Process, Value
 from concurrent import futures
 from threading import Thread
@@ -17,7 +18,6 @@ emulate = cfg.getboolean('main', 'emulate_dos')
 logfile = cfg.get("main", "logfile")
 loglevel = cfg.get("main", "loglevel")
 allowed_delay = cfg.getfloat("main", "allowed_delay")
-generation_limit = 10
 
 logger = get_logger("monitoring", logfile, loglevel)
 
@@ -29,20 +29,22 @@ class ExposureMonitoring(Process):
     def __init__(self):
         super().__init__()
 
+        self.pool = futures.ThreadPoolExecutor(max_workers=1)
         self.process = None
-        self.pool = None
+
         self.exit = Event()
         self.running = Event()
+
         self.ics_last_exposure = {}
-        self.process_id = Value('i', 0)
         self.ics = get_exposure_generator() if emulate else get_qlf_interface()
+        self.process_id = Value('i', 0)
 
     def run(self):
         """ """
         while not self.exit.is_set():
             time.sleep(1.5)
 
-            if not self.process or not self.process.is_alive():
+            if not self.process or not self.process.running():
                 self.running.clear()
 
             exposure = self.ics.last_exposure()
@@ -66,7 +68,7 @@ class ExposureMonitoring(Process):
             # records exposure in database
             QLFModels().insert_exposure(**exposure)
 
-            if self.process and self.process.is_alive():
+            if self.process and self.process.running():
                 logger.debug('Process {} is running.'.format(
                     str(self.process_id.value)
                 ))
@@ -93,12 +95,9 @@ class ExposureMonitoring(Process):
                 exposure.get('flavor')
             ))
 
-            self.pool = futures.ThreadPoolExecutor(max_workers=1)
+            del self.process
+            gc.collect()
             self.process = self.pool.submit(process_run, exposure, self.process_id)
-
-            # self.process = Thread(target=process_run,
-            #                       args=(exposure, self.process_id,))
-            # self.process.start()
 
             self.running.set()
 
@@ -107,10 +106,13 @@ class ExposureMonitoring(Process):
     def shutdown(self):
         """ Turn off monitoring """
 
+        self.exit.set()
         self.running.clear()
-        
-        if self.pool:
-            self.pool.shutdown()
+        self.pool.shutdown()
+
+        del self.process
+        gc.collect()
+        self.process = None
 
 
 def process_run(exposure, process_id):
@@ -135,7 +137,7 @@ def process_run(exposure, process_id):
 
 
 if __name__ == "__main__":
-    print('Start Monitoring...')
+    logger.info('Start Monitoring...')
     monitor = ExposureMonitoring()
     monitor.start()
     monitor.join()
