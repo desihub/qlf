@@ -203,9 +203,10 @@ class Xwsigma:
         radius_hover = 0.015#0.0165
 
         px = Figure( title = 'XSIGMA', x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=700, plot_height=550
+                , plot_width=500, plot_height=350
                 , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-                , tools= [xsigma_hover, "pan,box_zoom,reset,crosshair, tap"])
+                , tools= [xsigma_hover, "pan,box_zoom,reset,crosshair, tap"]
+                )
 
         # Color Map
         px.circle('x1','y1', source = source, name="data", radius = radius,
@@ -251,9 +252,10 @@ class Xwsigma:
         # ======
         # WSIGMA
         pw = Figure( title = 'WSIGMA', x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=700, plot_height=550
+                , plot_width=500, plot_height=350
                 , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-                , tools= [wsigma_hover, "pan,box_zoom,reset,crosshair,tap"])
+                , tools= [wsigma_hover, "pan,box_zoom,reset,crosshair,tap"]
+                )
 
         # Color Map
         pw.circle('x1','y1', source = source, name="data", radius = radius,
@@ -348,9 +350,10 @@ class Xwsigma:
 
         p_hist_x = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
                 y_axis_label= ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-                , plot_width=700, plot_height=300
+                , plot_width=600, plot_height=300
                 , x_axis_type="auto",    y_axis_type=yscale
-                , y_range=yrange, x_range= hist_rg )#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
+                , y_range=yrange, x_range= hist_rg
+                )#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
         p_hist_x.quad(top=histval, bottom=bottomval, left='left', right='right',
             source=source_hist, 
@@ -391,7 +394,7 @@ class Xwsigma:
 
         p_hist_w = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
                 y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white"
-                , plot_width=700, plot_height=300
+                , plot_width=600, plot_height=300
                 , x_axis_type="auto",    y_axis_type=yscale
                 ,y_range=yrange, x_range=hist_rg)#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
@@ -491,9 +494,13 @@ class Xwsigma:
         nrg= tests['xwsigma']['XWSIGMA_NORMAL_RANGE']
         wrg= tests['xwsigma']['XWSIGMA_WARN_RANGE']
         tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma['XWSIGMA'], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=600, height=200)
+        tbinfo=Div(text=tb)
 
         layoutplot= row([pxh, Spacer(width=0),pwh]) #, sizing_mode='scale_width')
-        layout = column(widgetbox(info_col), tbinfo, layoutplot) #, row( [xamp, Spacer(width=80), wamp]))
-        
+        # layout = column(widgetbox(info_col), tbinfo, layoutplot) #, row( [xamp, Spacer(width=80), wamp]))
+        layout = column(widgetbox(info_col, css_classes=["header-xwsigma"]),
+                widgetbox(tbinfo, css_classes=["table-ranges-xwsigma"]),
+                column(px, xhist, p_hist_x, xamp, css_classes=["xsigma"]),
+                column(pw, whist, p_hist_w, wamp, css_classes=["wsigma"]),
+                css_classes=["display-grid"])
         return file_html(layout, CDN, "XWSIGMA")

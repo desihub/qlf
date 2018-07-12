@@ -177,7 +177,7 @@ class Countbins:
 
         p2 = Figure(title='GOOD FIBERS'#: sum of counts in peak regions '
                 , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=550, plot_height=550
+                , plot_width=450, plot_height=450
                 , tools=[hover, "pan,box_zoom,reset,lasso_select,crosshair, tap"]
                 , toolbar_location="right"
                 )

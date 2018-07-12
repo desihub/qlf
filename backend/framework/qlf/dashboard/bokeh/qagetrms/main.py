@@ -96,9 +96,12 @@ class RMS:
                     <b>Get RMS</b> <br>Used to calculate RMS of region of 2D image, including overscan.</body></div>"""
         nlines=2
         txt = Div(text=info, width=p.plot_width)
-        info_col=Div(text=write_description('getrms'), width=p.plot_width)
-        layout = column(widgetbox(info_col, css_classes=["header"]), widgetbox(
-            tbinfo, css_classes=["table-ranges"]), p, p2, css_classes=["display-grid"])
+        info_col=Div(text=write_description('getrms'))
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+            widgetbox(tbinfo, css_classes=["table-ranges"]),
+            p,
+            p2,
+            css_classes=["display-grid"])
 
         # End of Bokeh Block
         return file_html(layout, CDN, "GETRMS")

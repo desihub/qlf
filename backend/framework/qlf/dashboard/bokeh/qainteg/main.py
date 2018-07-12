@@ -90,7 +90,7 @@ class Integ:
 
         #List of mag diff b/w the fibermag and the imaging mag from the fibermap
         tb = html_table(names=['DELTAMAG (Mean)'], vals=[ '{:.3f}'.format(np.mean(integ['DELTAMAG']) )], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=600)
+        tbinfo=Div(text=tb, width=400)
 
         layout = column(widgetbox(info_col, css_classes=["header"]),
                         widgetbox(tbinfo, css_classes=["table-ranges"]),

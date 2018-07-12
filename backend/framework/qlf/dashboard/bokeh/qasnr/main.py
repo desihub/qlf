@@ -305,7 +305,7 @@ class SNR:
         key_name = 'snr'
         info, nlines = write_info(key_name, tests[key_name])
         txt = PreText(text=info, height=nlines*20)
-        info_col = Div(text=write_description('snr'), width= 1400)#*star_plot.plot_width)
+        info_col = Div(text=write_description('snr'))#*star_plot.plot_width)
 
 
         #---------------
@@ -410,7 +410,7 @@ class SNR:
 
         p = Figure(title='Residual SNR'+name_warn
                 , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=650, plot_height=550
+                , plot_width=500, plot_height=400
                 , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"]
                 ,x_range=(left,right), y_range=(bottom, top) )
         # Color Map
@@ -441,10 +441,10 @@ class SNR:
         names = ['FIDSNR %s'%i for i in avobj] #, 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
         vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
         tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=600, height=300)
+        tbinfo=Div(text=tb)
 
-        pltxy_h = 400
-        pltxy_w = 600
+        pltxy_h = 350
+        pltxy_w = 500
         elg_plot.plot_height = pltxy_h
         elg_plot.plot_width = pltxy_w
         lrg_plot.plot_height = pltxy_h
@@ -454,7 +454,9 @@ class SNR:
         star_plot.plot_height = pltxy_h
         star_plot.plot_width = pltxy_w
         #layout = column(widgetbox(info_col), tbinfo, p,  elg_plot, star_plot )# row(plot))# Spacer(width=800-p.plot_width, height=p.plot_height) ,, Spacer(width=700, height=500)), sizing_mode='fixed')
-        ptrx=layout( [[info_col], [tbinfo], [p], [elg_plot, lrg_plot  ],  [qso_plot, star_plot]    ])
         #2#layout=layout( [[info_col], [tbinfo], [p], [elg_plot , star_plot]    ])
-
-        return file_html(ptrx, CDN, "MEDIAN SNR")
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+            widgetbox(tbinfo, css_classes=["table-ranges"]),
+            p, Div(), elg_plot, lrg_plot , qso_plot, star_plot,
+            css_classes=["display-grid"])
+        return file_html(layout, CDN, "MEDIAN SNR")

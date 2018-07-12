@@ -159,7 +159,7 @@ class Skycont:
         layout = column(widgetbox(info_col, css_classes=["header"]),
                       widgetbox(tbinfo, css_classes=["table-ranges"]),
                       p2,
-                      css_classes=["display-grid"])
+                      css_classes=["display-grid-skycont"])
 
         # End of Bokeh Block
         return file_html(layout, CDN, "SKYCONT")

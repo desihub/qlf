@@ -162,8 +162,7 @@ def plot_amp(dz, mapper, name=""):
     p = Figure(title=name, tools=[hover],
            x_range= list([-0.5,1.5]),           # length = 18
            y_range= list([-0.5,1.5]), 
-           plot_width=450, plot_height=400
-          )
+           plot_width=450, plot_height=400)
 
     p.grid.grid_line_color = None
     p.outline_line_color = None
