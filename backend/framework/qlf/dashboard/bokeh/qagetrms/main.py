@@ -91,8 +91,8 @@ p2.add_layout(color_bar, 'right')
 
 
 #infos
-nrg= tests['getrms']['NOISE_NORMAL_RANGE']
-wrg= tests['getrms']['NOISE_WARN_RANGE']
+nrg = tests['getrms']['NOISE_AMP_NORMAL_RANGE']
+wrg = tests['getrms']['NOISE_AMP_WARN_RANGE']
 tb = html_table( nrng=nrg, wrng=wrg  )
 tbinfo=Div(text=tb, width=400, height=300)
 

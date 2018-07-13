@@ -162,9 +162,8 @@ txt = Div(text=info_hist, width= 2*p.plot_width)
 
 from dashboard.bokeh.qlf_plot import html_table
 
-print(tests['getbias']['BIAS_AMP_REF'])
-nrg= tests['getbias']['BIAS_NORMAL_RANGE']
-wrg= tests['getbias']['BIAS_WARN_RANGE']
+nrg = tests['getbias']['BIAS_AMP_NORMAL_RANGE']
+wrg= tests['getbias']['BIAS_AMP_WARN_RANGE']
 #names=['BIAS'], vals=[ getbias['BIAS_AMP']],
 tb = html_table( nrng=nrg, wrng=wrg  )
 tbinfo=Div(text=tb, width=400, height=300)
