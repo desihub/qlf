@@ -111,7 +111,7 @@ class Skycont:
 
         p2 = Figure(title='SKY_CONT', 
                     x_axis_label='RA', y_axis_label='DEC',
-                    plot_width=700, plot_height=550,
+                    plot_width=500, plot_height=350,
                     tools= [hover, "pan,box_zoom,reset,tap"])
 
         p2.circle('ra','dec', source=source2, radius=radius,
@@ -154,7 +154,7 @@ class Skycont:
         nrg= tests['skycont']['SKYCONT_NORMAL_RANGE']
         wrg= tests['skycont']['SKYCONT_WARN_RANGE']
         tb = html_table( names=['Sky continuum averaged over sky fibers'],vals=['{:.3f}'.format(skycont['SKYCONT']) ], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=500)
+        tbinfo=Div(text=tb, width=400)
 
         layout = column(widgetbox(info_col, css_classes=["header"]),
                       widgetbox(tbinfo, css_classes=["table-ranges"]),

@@ -149,7 +149,7 @@ class Skypeak:
 
         p = Figure(title='PEAKCOUNT: sum of counts in peak regions '
                 , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=700, plot_height=550            
+                , plot_width=500, plot_height=350
                 , tools=[peak_hover, "pan,box_zoom,reset,crosshair, tap"])
 
         # Color Map
@@ -210,7 +210,7 @@ class Skypeak:
         hover = HoverTool(tooltips=hist_tooltip)
 
         p_hist = Figure(title='', tools=[hover, "pan,wheel_zoom,box_zoom,reset"],
-                        y_axis_label='Frequency + 1', x_axis_label='PEAKCOUNT', background_fill_color="white", plot_width=700, plot_height=500, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
+                        y_axis_label='Frequency + 1', x_axis_label='PEAKCOUNT', background_fill_color="white", plot_width=500, plot_height=50, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
 
         p_hist.quad(top='histplusone', bottom='bottomplusone', left='left', right='right',
                     source=source_hist,

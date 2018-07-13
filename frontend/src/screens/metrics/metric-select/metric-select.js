@@ -8,7 +8,6 @@ import Button from '@material-ui/core/Button';
 const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
-    flex: 1,
     margin: '0.5vh 0.5vw',
   },
   headerMetrics: {

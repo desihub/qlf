@@ -173,7 +173,7 @@ export default class Metrics extends Component {
           url={url}
           ref={this.storeIframeRef}
           width="100%"
-          height="calc(100vh - 181px)"
+          height="calc(100vh - 191px)"
           display="initial"
           position="relative"
           allowFullScreen

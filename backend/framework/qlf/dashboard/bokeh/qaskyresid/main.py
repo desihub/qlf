@@ -86,14 +86,14 @@ class Skyresid:
 
         p1 = Figure(title= 'MED_RESID_WAVE', 
                     x_axis_label='Wavelength (A)', y_axis_label='Counts',
-                    plot_width = 620, plot_height = 240,
+                    plot_width = 500, plot_height = 240,
                 tools=[skr_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
         p1.line('wl', 'med_resid', source=skyres_source)
 
         p2 = Figure(title= 'WAVG_RESID_WAVE', 
                     x_axis_label='Wavelength (A)', y_axis_label='Counts',
-                    plot_width = 620, plot_height = 240,
+                    plot_width = 500, plot_height = 240,
                 tools=[wavg_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
         p2.line('wl', 'wavg_resid', source=skyres_source)
@@ -136,7 +136,7 @@ class Skyresid:
                             })
 
         #yrange=[0, max(skyresid['MED_RESID_FIBER']) *1.1]
-        fiber_hist = plot_hist(hist_hover,None, ph=300)
+        fiber_hist = plot_hist(hist_hover,None, ph=300, pw=450)
 
         fiber_hist.vbar(top='median_resid', x='x', width=0.8,
                     source=hist_source,
@@ -192,7 +192,7 @@ class Skyresid:
         nrg= tests['skyresid']['RESID_NORMAL_RANGE']
         wrg= tests['skyresid']['RESID_WARN_RANGE']
         tb = html_table(names=resid_names, vals=resid_vals, nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=600)
+        tbinfo=Div(text=tb, width=400)
 
 
         # p2txt = column(widgetbox(info_col), row(column(p1, p2), tbinfo), fiber_hist  )

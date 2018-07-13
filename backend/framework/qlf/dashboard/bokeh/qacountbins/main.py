@@ -177,7 +177,7 @@ class Countbins:
 
         p2 = Figure(title='GOOD FIBERS'#: sum of counts in peak regions '
                 , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=450, plot_height=450
+                , plot_width=450, plot_height=350
                 , tools=[hover, "pan,box_zoom,reset,lasso_select,crosshair, tap"]
                 , toolbar_location="right"
                 )
@@ -201,8 +201,7 @@ class Countbins:
                         nrng=nrg, wrng=wrg  )
         tbinfo = Div(text=tb, width=400)
 
-        info_col = Div(text=write_description('countbins'),
-                       width=550)
+        info_col = Div(text=write_description('countbins'))
 
         layout = column(widgetbox(info_col, css_classes=["header"]),
                       widgetbox(tbinfo, css_classes=["table-ranges"]),
