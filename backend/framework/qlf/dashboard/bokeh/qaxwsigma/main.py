@@ -47,6 +47,19 @@ try:
 except:
     sys.exit('Could not load metrics')
 
+
+from scalar_metrics import LoadMetrics 
+
+scalar = LoadMetrics(selected_process_id, cam) # process_id, camera, exposure_id, night
+output = scalar.load_output()
+print('output:',output.keys())
+print(output['TASKS'].keys())
+print(output['TASKS']['CHECK_FIBERS']['METRICS'].keys())
+
+
+
+
+
 xwsigma = metrics['xwsigma']
 par     = tests['xwsigma']
 snr     = metrics['snr'] #RA and DEC info

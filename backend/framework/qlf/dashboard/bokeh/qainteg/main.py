@@ -57,7 +57,7 @@ except:
 #print(sys.path)
 from scalar_metrics import LoadMetrics 
 
-scalar = LoadMetrics(2, 'z2') # process_id, camera, exposure_id, night
+scalar = LoadMetrics(selected_process_id, cam) # process_id, camera, exposure_id, night
 output = scalar.load_output()
 print('output:',output.keys())
 print(output['TASKS'].keys())
