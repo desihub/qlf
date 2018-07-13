@@ -39,6 +39,7 @@ export default class HistoryHeader extends React.Component {
       flavors: undefined,
       selectedFlavor: 'none',
       id: undefined,
+      filterName: undefined,
       anchorFilterEl: null,
       anchorEl: null,
     };
@@ -182,6 +183,7 @@ export default class HistoryHeader extends React.Component {
     this.setState({
       anchorFilterEl: event.currentTarget,
       id,
+      filterName: this.props.type === 'process' ? 'exposure__flavor' : 'flavor',
     });
   };
 
@@ -223,7 +225,7 @@ export default class HistoryHeader extends React.Component {
               return (
                 <FormControlLabel
                   key={f}
-                  value={`${this.state.filter}=${f}`}
+                  value={`${this.state.filterName}=${f}`}
                   control={<Radio />}
                   label={f}
                 />
@@ -276,7 +278,7 @@ export default class HistoryHeader extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {/* {this.renderCheckbox()} */}
+          {this.renderCheckbox()}
           {this.props.tableColumns
             .filter(column => column.exposureKey !== null)
             .map((column, id) => {

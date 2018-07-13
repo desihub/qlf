@@ -29,13 +29,16 @@ def ws_add(message):
             "notification": alerts.available_space()
         })
     })
+    Group("monitor").send({
+        "text": qlf_state.get_current_state()
+    })
 
 
 # Connected to websocket.receive
 def ws_message(message):
     if message.content['text'] == "startPipeline":
         us.start_daemon()
-        message.reply_channel.send({
+        Group("monitor").send({
             "text": qlf_state.get_current_state()
         })
         return
@@ -45,7 +48,7 @@ def ws_message(message):
                 qlf_state.current_process_id))
         us.stop_daemon()
         qlf_state.update_pipeline_log()
-        message.reply_channel.send({
+        Group("monitor").send({
             "text": qlf_state.get_current_state()
         })
         return
@@ -90,13 +93,17 @@ def ws_message(message):
         return
     # Get Single Camera
     if "camera" in message.content['text']:
-        message.reply_channel.send({
-            "text": json.dumps({
-                "cameralog": us.get_camera_log(
-                    str(message.content['text'].split(":")[1])
-                )
+        camera = str(message.content['text'].split(":")[1])
+        if camera in us.qlf_state.camera_logs.keys():
+            message.reply_channel.send({
+                "text": json.dumps({
+                    "cameralog": us.qlf_state.camera_logs[
+                        camera
+                    ]
+                })
             })
-        })
+            Group(camera).add(message.reply_channel)
+
     # User Channel
     if "uuid" in message.content['text']:
         Group(str(message.content['text'].split("uuid=")[1])).add(
@@ -119,3 +126,5 @@ def ws_message(message):
 # Connected to websocket.disconnect
 def ws_disconnect(message):
     Group("monitor").discard(message.reply_channel)
+    for cam in us.qlf_state.camera_logs.keys():
+        Group(cam).discard(message.reply_channel)

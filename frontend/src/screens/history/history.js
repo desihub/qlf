@@ -16,10 +16,15 @@ const styles = {
     flex: '1',
     height: '90%',
     margin: '1em',
+    width: '95vw',
   },
   tableBody: {
-    overflowY: 'scroll',
-    maxHeight: '65vh',
+    overflow: 'scroll',
+    height: 'calc(100vh - 160px)',
+  },
+  tableBodyHistory: {
+    overflow: 'scroll',
+    height: 'calc(100vh - 216px)',
   },
   submit: {
     paddingLeft: '16px',
@@ -41,6 +46,8 @@ export default class History extends Component {
     lastProcessedId: PropTypes.string,
     rowsCount: PropTypes.number,
     fetchLastProcess: PropTypes.func.isRequired,
+    pipelineRunning: PropTypes.string.isRequired,
+    openCCDViewer: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -122,6 +129,8 @@ export default class History extends Component {
         changeLimit={this.changeLimit}
         limit={this.state.limit}
         fetchLastProcess={this.props.fetchLastProcess}
+        pipelineRunning={this.props.pipelineRunning}
+        openCCDViewer={this.props.openCCDViewer}
       />
     );
   };
@@ -145,6 +154,7 @@ export default class History extends Component {
         changeLimit={this.changeLimit}
         limit={this.state.limit}
         fetchLastProcess={this.props.fetchLastProcess}
+        openCCDViewer={this.props.openCCDViewer}
       />
     );
   };
@@ -186,6 +196,7 @@ export default class History extends Component {
           changeLimit={this.changeLimit}
           limit={this.state.limit}
           fetchLastProcess={this.props.fetchLastProcess}
+          openCCDViewer={this.props.openCCDViewer}
         />
       );
     }
@@ -221,7 +232,7 @@ export default class History extends Component {
           <ToolbarSeparator />
           {this.renderSelectDate()}
         </ToolbarGroup>
-        {/* {this.renderReprocessButton()} */}
+        {this.renderReprocessButton()}
       </Toolbar>
     );
   };
@@ -303,7 +314,7 @@ export default class History extends Component {
               </div>
             </Tab>
             <Tab label="History" value="history">
-              <div style={styles.tableBody}>{this.renderRows()}</div>
+              <div style={styles.tableBodyHistory}>{this.renderRows()}</div>
               {this.renderToolbar()}
             </Tab>
           </Tabs>

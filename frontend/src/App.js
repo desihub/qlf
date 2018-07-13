@@ -49,6 +49,13 @@ const theme = {
 };
 
 const styles = {
+  grid: {
+    display: 'grid',
+    gridTemplateRows: '38px auto 28px',
+    gridTemplateColumns: 'auto',
+    height: '100vh',
+    width: '100vw',
+  },
   headerTop: {
     fontSize: '35px',
     padding: '0px 6vw 35px 6vw',
@@ -58,10 +65,6 @@ const styles = {
     fontSize: '16px',
     height: '28px',
     lineHeight: '28px',
-  },
-  headerBottom: {
-    position: 'absolute',
-    bottom: '0px',
   },
   logo: {
     height: '90px',
@@ -98,10 +101,6 @@ const styles = {
     alignSelf: 'center',
     paddingRight: '8px',
     cursor: 'pointer',
-  },
-  container: {
-    maxHeight: '87.5vh',
-    overflowY: 'scroll',
   },
   footerRight: {
     display: 'flex',
@@ -146,6 +145,10 @@ class App extends React.Component {
         return '- Observing History';
       case '/afternoon-planning':
         return '- Afternoon Planning';
+      case '/camera-log':
+        return '- Camera Log';
+      case '/ccd-viewer':
+        return '- CCD Viewer';
       default:
         return '';
     }
@@ -187,9 +190,9 @@ class App extends React.Component {
             >
               home
             </Icon>
-            <span style={styles.hideMenu} onClick={this.toggleHeader}>
+            {/* <span style={styles.hideMenu} onClick={this.toggleHeader}>
               Hide Menu
-            </span>
+            </span> */}
           </div>
         </div>
       );
@@ -201,7 +204,7 @@ class App extends React.Component {
   };
 
   renderTopBar = () => {
-    if (!this.state.displayHeaders) return;
+    // if (!this.state.displayHeaders) return;
     const homeAppleTitleStyle =
       this.renderRouteName() === '' ? styles.headerTop : styles.headerTopSmall;
     return (
@@ -215,22 +218,22 @@ class App extends React.Component {
   };
 
   renderBottomBar = () => {
-    if (!this.state.displayHeaders)
-      return (
-        <span
-          style={{
-            color: 'gray',
-            marginRight: '1em',
-            cursor: 'pointer',
-            fontSize: '10px',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-          onClick={this.toggleHeader}
-        >
-          Show Menu
-        </span>
-      );
+    // if (!this.state.displayHeaders)
+    //   return (
+    //     <span
+    //       style={{
+    //         color: 'gray',
+    //         marginRight: '1em',
+    //         cursor: 'pointer',
+    //         fontSize: '10px',
+    //         display: 'flex',
+    //         justifyContent: 'flex-end',
+    //       }}
+    //       onClick={this.toggleHeader}
+    //     >
+    //       Show Menu
+    //     </span>
+    //   );
 
     return (
       <AppBar
@@ -270,11 +273,12 @@ class App extends React.Component {
 
   render() {
     const containerStyle = this.state.displayHeaders ? styles.container : null;
+    const useGrid = this.renderRouteName() === '' ? null : styles.grid;
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
-            <div>
+            <div style={useGrid}>
               {this.renderTopBar()}
               <div style={containerStyle}>
                 {['/', '/about', '/help', '/tutorials', '/contact'].map(

@@ -3,7 +3,6 @@ import Controls from './widgets/controls/controls';
 import Stages from './widgets/stages/stages';
 import Terminal from './widgets/terminal/terminal';
 import Status from '../../components/status/status';
-import Dialog from './widgets/dialog/dialog';
 import PropTypes from 'prop-types';
 import QA from '../qa/qa';
 import ConfirmDialog from '../../components/dialog/dialog';
@@ -14,12 +13,10 @@ const styles = {
     marginLeft: '1vw',
   },
   grid: {
-    flex: 1,
     display: 'grid',
-    marginBottom: '1vh',
-    flexDirection: 'row',
     gridTemplateColumns: '50% 50%',
     gridTemplateRows: 'auto 32vh',
+    height: 'calc(100vh - 160px)',
   },
   gridItem: {
     paddingTop: '1vh',
@@ -61,8 +58,10 @@ export default class Monitor extends Component {
     arms: PropTypes.array.isRequired,
     spectrographs: PropTypes.array.isRequired,
     time: PropTypes.string.isRequired,
+    flavor: PropTypes.string.isRequired,
     mjd: PropTypes.string.isRequired,
     resetCameraLog: PropTypes.func.isRequired,
+    navigateToCamera: PropTypes.func.isRequired,
   };
 
   state = {
@@ -108,6 +107,7 @@ export default class Monitor extends Component {
       qaTests,
       spectrographs,
       time,
+      flavor,
     } = nextProps;
 
     this.setState({
@@ -124,17 +124,12 @@ export default class Monitor extends Component {
       qaTests,
       spectrographs,
       time,
+      flavor,
     });
   }
 
   openDialog = (cameraIndex, arm) => {
-    this.props.socketRef.state.ws.send(`camera:${arm}${cameraIndex}`);
-    this.setState({ cameraIndex, openDialog: true });
-  };
-
-  closeDialog = () => {
-    this.props.resetCameraLog();
-    this.setState({ openDialog: false });
+    this.props.navigateToCamera(arm, cameraIndex);
   };
 
   resetPipeline = () => {
@@ -166,12 +161,6 @@ export default class Monitor extends Component {
           handleClose={this.closeConfirmDialog}
           onConfirm={this.confirmReset}
         />
-        <Dialog
-          lines={this.state.cameraTerminal}
-          openDialog={this.state.openDialog}
-          cameraIndex={this.state.cameraIndex}
-          closeDialog={this.closeDialog}
-        />
         <div style={styles.topMenu}>
           <div style={styles.menu}>
             <Status
@@ -180,6 +169,7 @@ export default class Monitor extends Component {
               layout={styles.layout}
               mjd={this.state.mjd}
               date={this.state.date}
+              flavor={this.state.flavor}
               processId={String(this.state.processId)}
             />
             <Controls

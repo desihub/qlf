@@ -15,6 +15,7 @@ export default class Status extends Component {
     exposureId: PropTypes.string.isRequired,
     mjd: PropTypes.string,
     date: PropTypes.string,
+    flavor: PropTypes.string,
     processId: PropTypes.string,
   };
 
@@ -31,8 +32,9 @@ export default class Status extends Component {
         {this.props.pipelineRunning ? (
           <Card title={`Status: ${this.props.pipelineRunning}`} />
         ) : null}
-        <Card title={`Process Id: ${processId}`} />
-        <Card title={`Exposure Id: ${this.props.exposureId}`} />
+        <Card title={`Flavor: ${this.props.flavor}`} />
+        {processId ? <Card title={`Process Id: ${processId}`} /> : null}
+        <Card title={`Exposure: ${this.props.exposureId}`} />
         <Card title={`MJD: ${mjd}`} />
         <Card title={`Date: ${this.props.date}`} />
       </div>
