@@ -115,7 +115,7 @@ def get_scalar_metrics(process_id, cam):
     return scalar_metrics
 
 
-def get_scalar_metrics_aux(process_id, cam):
+def get_scalar_metrics_aux():
     """
     Returns cam scalar metrics from the json
     files obtained by Singulani.
@@ -124,23 +124,28 @@ def get_scalar_metrics_aux(process_id, cam):
     import json
 
     qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
-    folder = "/home/foliveira/qlf-root/dataql/ql-021/00003900/"
-    folder = "ql-021/00003900/"
+    folder = "/home/foliveira/qlf-root/dataql/ql-021-e/20180701/{:08d}".format(5)
+    folder = "/app/spectro/redux/exposures/20180701/00000005"
+    #folder = "ql-021/00003900/"
     cam = 'z2'
     met = {} 
     par = {}
-    for iqa in qanames:
-        file = "ql-{}-{}-00003900.json".format(iqa, cam)
+    #for iqa in qanames:
+    #    file = "ql-{}-{}-00003900.json".format(iqa, cam)
+    #
+    #    try:
+    #        f = json.load(open(folder+file))
+    #        met.update({iqa: f['METRICS']})
+    #        par.update({iqa: f['PARAMS']})
+    #    except:
+    #        print('%s not found'%file)
+    #
+    #lm={'results':{'metrics':met, 'tests':par}}
+    file = "ql-mergedQA-b0-00000005.json"
+    mergedqa= json.load(open('{}/{}'.format(folder, file)))
 
-        try:
-            f = json.load(open(folder+file))
-            met.update({iqa: f['METRICS']})
-            par.update({iqa: f['PARAMS']})
-        except:
-            print('%s not found'%file)
-
-    lm={'results':{'metrics':met, 'tests':par}}
-    return lm
+    
+    return mergedqa
 
 
 def init_xy_plot(hover, yscale):
@@ -265,3 +270,4 @@ def get_palette(name_of_mpl_palette):
 
 if __name__ == '__main__':
     logger.info('Standalone execution...')
+    
