@@ -11,7 +11,7 @@ from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
-from dashboard.bokeh.helper import get_palette
+from dashboard.bokeh.helper import get_palette, get_scalar_metrics_aux
 from dashboard.bokeh.qlf_plot import plot_hist
 from dashboard.bokeh.qlf_plot import html_table, info_table, range_table
 from bokeh.models import TapTool, OpenURL
@@ -26,7 +26,7 @@ from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 from bokeh.models import PrintfTickFormatter
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 
 class Xwsigma:
@@ -36,6 +36,7 @@ class Xwsigma:
             self.selected_spectrograph = spectrograph
 
     def load_qa(self):
+
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
             lm = get_scalar_metrics(self.selected_process_id, cam)
@@ -44,15 +45,51 @@ class Xwsigma:
             #print(metrics.keys())
         except:
             sys.exit('Could not load metrics')
+        
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.INFO)
+
+        handler = logging.FileHandler("logs/bokeh_qlf.log")
+        handler.setLevel(logging.INFO)
+        logger.addHandler(handler)
+
+        
+        mergedqa =get_scalar_metrics_aux()
+
+        logger.info(mergedqa.keys())
+        logger.info(mergedqa['TASKS'].keys())
+
+        gen_info = mergedqa['GENERAL_INFO']
+
+        ra = gen_info['RA']
+        dec = gen_info['DEC']
+        
+        elg_id = gen_info['ELG_FIBERID']
+        lrg_id = gen_info['LRG_FIBERID']
+        qso_id = gen_info['QSO_FIBERID']
+        star_id = gen_info['STAR_FIBERID']
+        sky_id = gen_info['SKY_FIBERID']
+
+
+        check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
+        check_ccds = mergedqa['TASKS']['CHECK_CCDs']
+
+        xwsigma = check_fibers['METRICS']['XWSIGMA']
+        xw_amp = check_fibers['METRICS']['XWSIGMA_AMP']
+        
+        xw_fib = check_ccds['METRICS']['XWSIGMA_FIB']
+        
+        nrg = check_fibers['PARAMS']['XWSIGMA_NORMAL_RANGE']
+        wrg = check_fibers['PARAMS']['XWSIGMA_WARN_RANGE']
+        xw_ref = check_fibers['PARAMS']['XWSIGMA_REF']
 
         xwsigma = metrics['xwsigma']
         par     = tests['xwsigma']
         snr     = metrics['snr'] #RA and DEC info
         skycont = metrics['skycont']
 
-        warn_rg = par['XWSIGMA_WARN_RANGE']
-        delta_rg = warn_rg[1]-warn_rg[0]
-        hist_rg = (warn_rg[0] -0.1*delta_rg, warn_rg[1]+0.1*delta_rg)
+        delta_rg = wrg[1]- wrg[0]
+        hist_rg = (wrg[0] -0.1*delta_rg, wrg[1]+0.1*delta_rg)
 
         my_palette = get_palette("viridis") #"seismic")#"RdYlBu_r")#"viridis")
 
