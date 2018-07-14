@@ -496,8 +496,17 @@ class Xwsigma:
         tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma['XWSIGMA'], nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb)
 
+        metricname='Xsigma'
+        comments= 'textextextextextext '*4
+        keyname='XSIGMA'
+        delta = '{:.3f}'.format( xwsigma['XWSIGMA'][0]  )
+        info = info_table(metricname, comments, keyname, delta)
+        tb_met=Div(text=info, width=600, height=200)
+
+
         layout = column(widgetbox(info_col, css_classes=["header-xwsigma"]),
                 widgetbox(tbinfo, css_classes=["table-ranges-xwsigma"]),
+                widgetbox(tb_met, css_classes=["table-ranges-xwsigma"]),        
                 column(px, xhist, p_hist_x, xamp, css_classes=["xwsigma"]),
                 column(pw, whist, p_hist_w, wamp, css_classes=["xwsigma"]),
                 css_classes=["display-grid-xwsigma"])
