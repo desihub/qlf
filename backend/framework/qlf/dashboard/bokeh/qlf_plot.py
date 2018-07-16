@@ -66,7 +66,6 @@ def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrn
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dddddd;
@@ -77,7 +76,7 @@ def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrn
         """
 
     header= """
-    <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+    <div>
     <table>
     <tr>
         <th>Parameter</th>        <th>Value</th>
@@ -97,7 +96,7 @@ def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrn
 
 
 
-def plot_hist(hover,yrange, yscale="auto", pw=700, ph=400):
+def plot_hist(hover,yrange, yscale="auto", pw=600, ph=400):
     """
     Defaults for histograms
     """
@@ -163,8 +162,7 @@ def plot_amp(dz, mapper, name=""):
     p = Figure(title=name, tools=[hover],
            x_range= list([-0.5,1.5]),           # length = 18
            y_range= list([-0.5,1.5]), 
-           plot_width=450, plot_height=400
-          )
+           plot_width=450, plot_height=400)
 
     p.grid.grid_line_color = None
     p.outline_line_color = None

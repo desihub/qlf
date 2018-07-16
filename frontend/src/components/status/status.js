@@ -33,8 +33,8 @@ export default class Status extends Component {
           <Card title={`Status: ${this.props.pipelineRunning}`} />
         ) : null}
         <Card title={`Flavor: ${this.props.flavor}`} />
-        <Card title={`Process Id: ${processId}`} />
-        <Card title={`Exposure Id: ${this.props.exposureId}`} />
+        {processId ? <Card title={`Process Id: ${processId}`} /> : null}
+        <Card title={`Exposure: ${this.props.exposureId}`} />
         <Card title={`MJD: ${mjd}`} />
         <Card title={`Date: ${this.props.date}`} />
       </div>

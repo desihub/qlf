@@ -1,5 +1,4 @@
 #!/bin/bash
-
 conda install -y --file requirements.txt
 pip install -r extras.txt
 

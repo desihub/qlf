@@ -74,7 +74,7 @@ class OfflineContainer extends Component {
 
   navigateToQA = async processId => {
     const urlProcessId = processId ? 'qa?process_id=' + processId : 'qa';
-    window.open(urlProcessId, 'qa', 'width=850, height=650');
+    window.open(urlProcessId, 'qa', 'width=1100, height=750');
   };
 
   componentWillReceiveProps(nextProps) {

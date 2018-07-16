@@ -39,11 +39,6 @@ if [ $DAEMON_TEST = "False" ]; then
 fi
 
 
-if [ $BOKEH_TEST = "False" ]; then
-	echo "Initializing Bokeh Server..."
-	./startBokeh.sh &> $QLF_ROOT/logs/bokeh.log &
-fi
-
 echo "QLF Backend is running at http://$QLF_HOSTNAME:$QLF_PORT/dashboard/api"
 
 python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log

@@ -11,7 +11,6 @@ from log import get_logger
 from procutil import kill_proc_tree
 from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
-from scalar_metrics import LoadMetrics
 from util import get_config
 
 cfg = get_config()
@@ -82,19 +81,9 @@ class Monitoring(object):
 
         return running
 
-    def load_scalar_metrics(self, process_id, cam):
-        scalar_metrics = dict()
-        try:
-            process = QLFModels().get_process_by_process_id(process_id)
-            exposure = process.exposure
-            metrics, tests = LoadMetrics(process_id, cam, process.exposure_id,
-                                         exposure.night).Load_metrics_n_tests()
-            scalar_metrics['metrics'] = metrics
-            scalar_metrics['tests'] = tests
-        except Exception as err:
-            logger.error(err)
-            logger.error('load_scalar_metrics error')
-        return scalar_metrics
+    def add_exposures(self, exposures):
+        # TODO: improvements
+        return None
 
     def get_current_configuration(self):
         configuration = QLFConfiguration()

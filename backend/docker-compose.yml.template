@@ -33,7 +33,7 @@ services:
       - REDIS_NAME=redis
       - QLF_REDIS=True
       - WEBSOCKET_UPDATE_INTERVAL=3 # websocket update time (seconds)
-      - UPDATE_DEPENDENCIES=true # run conda and pip install when starting container
+      - UPDATE_DEPENDENCIES=True # run conda and pip install when starting container
       - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
       - QLF_CFG=/app/framework/config/qlf.cfg
       # Database
@@ -50,11 +50,6 @@ services:
       - ICS_NAME=ICSDaemon
       - ICS_HOST=localhost
       - ICS_PORT=50006
-      # Bokeh
-      - BOKEH_TEST=False
-      - BOKEH_SERVER=localhost
-      - BOKEH_PORT=5007
-      - BOKEH_CONFIGURATION=--allow-websocket-origin=localhost:8001
       # ICS
       - START_ICS=False
       - PYRO_HOST=localhost

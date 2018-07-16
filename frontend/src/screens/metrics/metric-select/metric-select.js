@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
-import { Card, CardTitle } from 'material-ui/Card';
+import Card from '@material-ui/core/Card';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
-    flex: 1,
     margin: '0.5vh 0.5vw',
+  },
+  headerMetrics: {
+    display: 'grid',
+    gridTemplateAreas: "'button button'",
+    justifyContent: 'space-between',
+    marginLeft: 8,
   },
   titleContainer: {
     padding: '0px',
@@ -18,9 +25,9 @@ const styles = {
     color: 'rgba(0, 0, 0, 0.54)',
   },
   buttons: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    display: 'grid',
+    gridTemplateAreas: "'button button' 'button button'",
+    justifyContent: 'space-around',
     fontSize: '14px',
   },
   selected: {
@@ -38,6 +45,9 @@ const styles = {
   warning: {
     color: '#EFD469',
   },
+  back: {
+    color: 'red',
+  },
 };
 
 const stepsQa = {
@@ -53,6 +63,7 @@ export default class MetricSelect extends Component {
     selectedQA: PropTypes.string,
     camera: PropTypes.string.isRequired,
     selectQA: PropTypes.func.isRequired,
+    back: PropTypes.func.isRequired,
     qaTests: PropTypes.array.isRequired,
   };
 
@@ -145,14 +156,23 @@ export default class MetricSelect extends Component {
     }
   };
 
+  renderTitle = () => {
+    return (
+      <div style={styles.headerMetrics}>
+        <Typography variant="body2" style={styles.title}>
+          Metrics
+        </Typography>
+        <Button style={styles.back} onClick={this.props.back}>
+          Back
+        </Button>
+      </div>
+    );
+  };
+
   render() {
     return (
       <Card style={styles.card}>
-        <CardTitle
-          titleStyle={styles.title}
-          style={styles.titleContainer}
-          title={'Metrics'}
-        />
+        {this.renderTitle()}
         {this.renderMetricOptions()}
       </Card>
     );

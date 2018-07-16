@@ -1,0 +1,208 @@
+{% block content %}
+<style>
+.bk-widget-box {
+  padding: 0px !important;
+}
+
+.header {
+  grid-area: header;
+  width: auto !important;
+}
+
+.table-ranges {
+  grid-area: table-ranges;
+  width: auto !important;
+}
+
+.table-ranges-xwsigma {
+  grid-area: table-ranges;
+}
+
+.header-xwsigma {
+  grid-area: header;
+}
+
+.display-grid {
+  display: grid !important;
+  grid-gap: 1rem;
+  grid-template-columns: auto;
+  width: auto !important;
+  height: auto !important;
+  justify-content: center;
+  grid-template-areas:
+  "header"
+  "table-ranges"
+  "main";
+}
+
+.display-grid-xwsigma {
+    display: grid !important;
+    grid-gap: 1rem;
+    grid-template-columns: auto;
+    width: auto !important;
+    height: auto !important;
+    justify-content: center;
+    grid-template-areas:
+    "header"
+    "table-ranges"
+    "main";
+  }
+
+.display-grid-skypeak {
+  display: grid !important;
+  grid-gap: 1rem;
+  grid-template-columns: auto;
+  width: auto !important;
+  height: auto !important;
+  justify-content: center;
+  justify-items: center;
+  grid-template-areas:
+  "header"
+  "table-ranges"
+  "main";
+}
+
+.display-grid-countbins {
+  display: grid !important;
+  grid-gap: 1rem;
+  grid-template-columns: auto;
+  width: auto !important;
+  height: auto !important;
+  justify-content: center;
+  justify-items: center;
+  grid-template-areas:
+  "header"
+  "table-ranges"
+  "main";
+}
+
+.display-grid-skyresid {
+  display: grid !important;
+  grid-gap: 1rem;
+  grid-template-columns: auto;
+  width: auto !important;
+  height: auto !important;
+  justify-content: center;
+  justify-items: center;
+  grid-template-areas:
+  "header"
+  "table-ranges"
+  "main";
+}
+
+.display-grid-skycont {
+  display: grid !important;
+  grid-gap: 1rem;
+  grid-template-columns: auto;
+  width: auto !important;
+  height: auto !important;
+  justify-content: center;
+  justify-items: center;
+  grid-template-areas:
+  "header"
+  "table-ranges"
+  "main";
+}
+
+@media screen and (min-width: 1500px) {
+  .display-grid-xwsigma {
+      display: grid !important;
+      grid-gap: 4em;
+      width: auto !important;
+      height: auto !important;
+      justify-content: center;
+      align-items: center;
+      grid-template-areas: "header table-ranges";
+    }
+}
+
+@media screen and (min-width: 1100px) {
+  .display-grid-skypeak {
+    display: grid !important;
+    grid-gap: 4em;
+    width: auto !important;
+    grid-template-columns: auto auto;
+    height: auto !important;
+    justify-content: center;
+    justify-items: center;
+    align-items: baseline;
+    grid-template-areas:
+    "header table-ranges"
+    "main main";
+  }
+
+  .display-grid-countbins {
+    display: grid !important;
+    grid-gap: 4em;
+    width: auto !important;
+    grid-template-columns: auto auto;
+    height: auto !important;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    grid-template-areas:
+    "header table-ranges"
+    "main main";
+  }
+
+  .display-grid-skycont {
+    display: grid !important;
+    grid-gap: 4em;
+    width: auto !important;
+    grid-template-columns: auto auto;
+    height: auto !important;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    grid-template-areas:
+    "header table-ranges"
+    "main main";
+  }
+
+    .display-grid-skyresid {
+      display: grid !important;
+      grid-gap: 4em;
+      width: auto !important;
+      grid-template-columns: auto auto;
+      height: auto !important;
+      justify-content: center;
+      justify-items: center;
+      align-items: center;
+      grid-template-areas:
+      "header table-ranges"
+      "main main";
+    }
+}
+
+@media screen and (min-width: 800px) {
+  .display-grid {
+    display: grid !important;
+    grid-gap: 4em;
+    width: auto !important;
+    grid-template-columns: 400px 400px;
+    height: auto !important;
+    justify-content: center;
+    grid-template-areas:
+    "header table-ranges"
+    "main main";
+  }
+
+  .display-grid-xwsigma {
+    display: grid !important;
+    grid-gap: 4em;
+    width: 90vw !important;
+    grid-template-columns: 400px 400px;
+    height: auto !important;
+    justify-content: center;
+    grid-template-areas:
+    "header table-ranges"
+    "main main";
+  }
+}
+</style>
+
+<div class="container">
+  {{ image|safe }}
+</div>
+
+{% endblock content %}
