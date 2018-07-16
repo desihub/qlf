@@ -7,6 +7,19 @@ from bokeh.plotting import Figure
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 
 
+def sort_obj(gen_info):
+    """ Hover info of objects type in fibers plots.
+    """
+    obj_type=['']*500
+    for key in ['LRG', 'ELG', 'QSO', 'STAR','SKY']:
+        if gen_info.get(key+'_FIBERID', None):
+            for i in gen_info[key+'_FIBERID']:
+                obj_type[i]=key
+        else:
+            pass
+    return obj_type
+                
+
 
 def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx'):
     """ Create tables in format
@@ -310,3 +323,5 @@ def plot_amp(dz, mapper, name=""):
 
 
 
+if __name__=='__main__':
+    logger.info('Standalone execution')
