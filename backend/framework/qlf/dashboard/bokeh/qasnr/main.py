@@ -9,12 +9,12 @@ from bokeh.layouts import row, column, widgetbox, gridplot, layout
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter, Spacer
-from dashboard.bokeh.helper import write_description, write_info, \
-    get_scalar_metrics
+from dashboard.bokeh.helper import write_description, write_info
+from dashboard.bokeh.helper import  get_scalar_metrics, get_scalar_metrics_aux
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import html_table
-from dashboard.bokeh.helper import get_exposure_ids, \
-    init_xy_plot, get_url_args, get_arms_and_spectrographs
+from dashboard.bokeh.qlf_plot import html_table, sort_obj
+from dashboard.bokeh.helper import get_exposure_ids
+from dashboard.bokeh.helper import init_xy_plot, get_url_args, get_arms_and_spectrographs
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 
@@ -30,28 +30,57 @@ class SNR:
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
+        # try:
+        #     lm = get_scalar_metrics(self.selected_process_id, cam)
+        #     metrics, tests = lm['metrics'], lm['tests']
+        # except:
+        #     sys.exit('Could not load metrics')
+
+        import time
+        t0=time.time()
+        f=open('timer','w')
         try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
 
 
-        if not metrics.get('snr', None):
-            sys.exit('Could not load SNR')
-        else:
-            snr=metrics['snr']
+        gen_info = mergedqa['GENERAL_INFO']
+
+        ra = gen_info['RA']
+        dec = gen_info['DEC']
+       
+        check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
+        snr = check_spectra['METRICS']
+
+        nrg = check_spectra['PARAMS']['FIDSNR_NORMAL_RANGE']
+        wrg = check_spectra['PARAMS']['FIDSNR_WARN_RANGE']
+        f.write('snr load time {}'.format(time.time() - t0))
+
+        obj_type= sort_obj(gen_info)#[""]*500
+
+
+
+
+        # if not metrics.get('snr', None):
+        #     sys.exit('Could not load SNR')
+        # else:
+        #     snr=metrics['snr']
 
         try:
-            exptime = tests['checkHDUs']['EXPTIME']
-            name_warn=[]
+            exptime=gen_info['EXPTIME']
+            #exptime = tests['checkHDUs']['EXPTIME']
+            name_warn=''
         except:
             exptime=1000
             name_warn = ' (exptime fixed)'
             print('EXPTIME NOT FOUND, USING 1000')
 
+
         qlf_obj = ['ELG','LRG','QSO', 'STAR']
         keys_snr=list(snr.keys())
+        keys_snr=list(gen_info.keys())
         objst={}
         avobj = [] #available object   
         for obj in qlf_obj:
@@ -69,8 +98,8 @@ class SNR:
         for i, key in enumerate(avobj):
         #2#for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
             if objst[key]:
-                fiberlen.append( len(snr[key+'_FIBERID']))
-                snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
+                fiberlen.append( len(gen_info[key+'_FIBERID'])) #fiberlen.append( len(snr[key+'_FIBERID']))
+                snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) ) #snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
 
 
 
@@ -149,9 +178,9 @@ class SNR:
         if objst['ELG']:
             elg.data['x'] = elg_snr[1] 
             elg.data['y'] = np.array( elg_snr[0])**2 
-            elg.data['fiber_id'] = snr['ELG_FIBERID']
-            elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
-            elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
+            elg.data['fiber_id'] = gen_info['ELG_FIBERID']
+            elg.data['ra'] = [ra[i] for i in gen_info['ELG_FIBERID'] ]
+            elg.data['dec'] = [dec[i] for i in gen_info['ELG_FIBERID'] ]
 
             xfit, yfit  = fit_func(elg_snr[1], 	snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx+=1
@@ -164,9 +193,9 @@ class SNR:
         if objst['LRG']:
             lrg.data['x'] = lrg_snr[1] 
             lrg.data['y'] = np.array(lrg_snr[0] )**2
-            lrg.data['fiber_id'] = snr['LRG_FIBERID']
-            lrg.data['ra'] = [snr['RA'][i] for i in snr['LRG_FIBERID'] ]
-            lrg.data['dec'] = [snr['DEC'][i] for i in snr['LRG_FIBERID'] ]
+            lrg.data['fiber_id'] = gen_info['LRG_FIBERID']
+            lrg.data['ra'] = [ra[i] for i in gen_info['LRG_FIBERID'] ]
+            lrg.data['dec'] = [dec[i] for i in gen_info['LRG_FIBERID'] ]
 
             xfit, yfit = fit_func(lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx+=1
@@ -179,9 +208,9 @@ class SNR:
         if objst['QSO']:
             qso.data['x'] = qso_snr[1] 
             qso.data['y'] = np.array(qso_snr[0] )**2    
-            qso.data['fiber_id'] = snr['QSO_FIBERID']
-            qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
-            qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
+            qso.data['fiber_id'] = gen_info['QSO_FIBERID']
+            qso.data['ra'] = [ra[i] for i in gen_info['QSO_FIBERID'] ]
+            qso.data['dec'] = [dec[i] for i in gen_info['QSO_FIBERID'] ]
             
             xfit, yfit = fit_func(qso_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx+=1
@@ -194,9 +223,9 @@ class SNR:
         if objst['STAR']:
             star.data['x'] = star_snr[1] 
             star.data['y'] = np.array(star_snr[0] )**2
-            star.data['fiber_id'] = snr['STAR_FIBERID']
-            star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
-            star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
+            star.data['fiber_id'] = gen_info['STAR_FIBERID']
+            star.data['ra'] = [ra[i] for i in gen_info['STAR_FIBERID'] ]
+            star.data['dec'] = [dec[i] for i in gen_info['STAR_FIBERID'] ]
 
             xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             #2#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
@@ -303,7 +332,11 @@ class SNR:
 
         # infos
         key_name = 'snr'
-        info, nlines = write_info(key_name, tests[key_name])
+        # ['FIDMAG', 'FIDSNR_TGT_REF', 'FIDSNR_WARN_RANGE', 'FIDSNR_NORMAL_RANGE']
+        info, nlines = write_info(key_name, check_spectra['PARAMS'] ) #tests[key_name])
+        # f=open('ffffffff.txt','w')
+        # f.write('{}'.format(tests[key_name]))
+        # f.close()
         txt = PreText(text=info, height=nlines*20)
         info_col = Div(text=write_description('snr'))#*star_plot.plot_width)
 
@@ -340,7 +373,7 @@ class SNR:
         """
         snr_hover = HoverTool(tooltips=snr_tooltip)
 
-        skycont=metrics['skycont']
+        #skycont=metrics['skycont']
         median = snr['MEDIAN_SNR']
         resid = snr['SNR_RESID']
         qlf_fiberid = range(0,500)
@@ -349,13 +382,13 @@ class SNR:
 
 
         fibersnr=[]
-        obj_type=['']*500
+        obj_type= sort_obj(gen_info)#['']*500
         for i in avobj:
-            fibersnr.append(snr[i+'_FIBERID'])
-            for j in snr[i+'_FIBERID']:
-                obj_type[j] =  i
-        for j in skycont['SKYFIBERID']:
-            obj_type[j] =  'SKY'
+            fibersnr.append(gen_info[i+'_FIBERID'])
+        #     for j in gen_info[i+'_FIBERID']:
+        #         obj_type[j] =  i
+        # for j in skycont['SKYFIBERID']:
+        #     obj_type[j] =  'SKY'
 
         fibersnr=fibersnr[0]
         fibersnr.sort()
@@ -363,30 +396,32 @@ class SNR:
 
         try:
             for i in qlf_fiberid:
-                if i in snr['ELG_FIBERID']:
-                    obj_type.append('ELG')
+                if i in gen_info['ELG_FIBERID']:
+                    #obj_type.append('ELG')
                     fibersnr.append(i) 
                 #2#'''
-                elif i in snr['QSO_FIBERID']:
-                    obj_type.append('QSO')
+                elif i in gen_info['QSO_FIBERID']:
+                    #obj_type.append('QSO')
                     fibersnr.append(i)
-                elif i in snr['LRG_FIBERID']:
-                    obj_type.append('LRG')
+                elif i in gen_info['LRG_FIBERID']:
+                    #obj_type.append('LRG')
                     fibersnr.append(i)
                 #2#'''
-                elif i in snr['STAR_FIBERID']:
-                    obj_type.append('STAR')
+                elif i in gen_info['STAR_FIBERID']:
+                    #obj_type.append('STAR')
                     fibersnr.append(i)
-                elif i in skycont['SKYFIBERID']:
-                    obj_type.append('SKY')
+                elif i in gen_info['SKY_FIBERID']:
+                    pass#obj_type.append('SKY')
                 else:
-                    obj_type.append('UNKNOWN')
+                    pass#obj_type.append('UNKNOWN')
         except:
             pass#obj_type = ['']*500
 
+        obj_type = sort_obj(gen_info)
+
         source = ColumnDataSource(data={
-            'x1': [snr['RA'][i] for i in fibersnr ],
-            'y1': [snr['DEC'][i] for i in fibersnr ],
+            'x1': [ra[i] for i in fibersnr ],
+            'y1': [dec[i] for i in fibersnr ],
             'resid_snr': snr['SNR_RESID'],
             'QLF_FIBERID': fibersnr,
             'OBJ_TYPE': [obj_type[i] for i in fibersnr],
@@ -402,8 +437,8 @@ class SNR:
 
         # axes limit
 
-        xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
-        ymin, ymax = [min(snr['DEC'][:]), max(snr['DEC'][:])]
+        xmin, xmax = [min(ra[:]), max(ra[:])]
+        ymin, ymax = [min(dec[:]), max(dec[:])]
         xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
         left, right = xmin -xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
@@ -434,14 +469,11 @@ class SNR:
         taptool = p.select(type=TapTool)
         taptool.callback = OpenURL(url=url)
 
-        #plot= gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
-
-        nrg= tests['snr']['FIDSNR_NORMAL_RANGE']
-        wrg= tests['snr']['FIDSNR_WARN_RANGE']
         names = ['FIDSNR %s'%i for i in avobj] #, 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
         vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
         tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb)
+
 
         pltxy_h = 350
         pltxy_w = 500

@@ -11,8 +11,9 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
-from dashboard.bokeh.qlf_plot import plot_hist, html_table
+from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics, \
+        get_scalar_metrics_aux
+from dashboard.bokeh.qlf_plot import plot_hist, html_table, sort_obj
 
 import numpy as np
 import logging
@@ -40,6 +41,11 @@ class Countbins:
             sys.exit('Could not load metrics')
 
         countbins = metrics['countbins']
+
+        try:
+            mergedqa = get_scalar_metrics_aux()
+        except Exception as e:
+            raise e
 
         # ============================================
         # THIS: Given the set up in the block above, 
@@ -78,6 +84,7 @@ class Countbins:
         except:
             logger.info('Problems in obj sorter')
             obj_type=['']*500
+        obj_type = sort_obj(mergedqa['GENERAL_INFO'])
         # ---------------------------------
 
 
@@ -177,7 +184,7 @@ class Countbins:
 
         p2 = Figure(title='GOOD FIBERS'#: sum of counts in peak regions '
                 , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=450, plot_height=350
+                , plot_width=400, plot_height=400
                 , tools=[hover, "pan,box_zoom,reset,lasso_select,crosshair, tap"]
                 , toolbar_location="right"
                 )

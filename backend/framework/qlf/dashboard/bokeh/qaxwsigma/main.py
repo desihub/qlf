@@ -12,7 +12,7 @@ from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
 from dashboard.bokeh.helper import get_palette, get_scalar_metrics_aux
-from dashboard.bokeh.qlf_plot import plot_hist
+from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
 from dashboard.bokeh.qlf_plot import html_table, info_table, range_table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
@@ -38,13 +38,13 @@ class Xwsigma:
     def load_qa(self):
 
         cam = self.selected_arm+str(self.selected_spectrograph)
-        try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests  = lm['metrics'], lm['tests']
+        # try:
+        #     lm = get_scalar_metrics(self.selected_process_id, cam)
+        #     metrics, tests  = lm['metrics'], lm['tests']
 
-            #print(metrics.keys())
-        except:
-            sys.exit('Could not load metrics')
+        #     #print(metrics.keys())
+        # except:
+        #     sys.exit('Could not load metrics')
         
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.INFO)
@@ -53,8 +53,11 @@ class Xwsigma:
         handler.setLevel(logging.INFO)
         logger.addHandler(handler)
 
-        
-        mergedqa =get_scalar_metrics_aux()
+        try:
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
 
         logger.info(mergedqa.keys())
         logger.info(mergedqa['TASKS'].keys())
@@ -63,14 +66,7 @@ class Xwsigma:
 
         ra = gen_info['RA']
         dec = gen_info['DEC']
-        
-        elg_id = gen_info['ELG_FIBERID']
-        lrg_id = gen_info['LRG_FIBERID']
-        qso_id = gen_info['QSO_FIBERID']
-        star_id = gen_info['STAR_FIBERID']
-        sky_id = gen_info['SKY_FIBERID']
-
-
+       
         check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
         check_ccds = mergedqa['TASKS']['CHECK_CCDs']
 
@@ -83,10 +79,14 @@ class Xwsigma:
         wrg = check_fibers['PARAMS']['XWSIGMA_WARN_RANGE']
         xw_ref = check_fibers['PARAMS']['XWSIGMA_REF']
 
-        xwsigma = metrics['xwsigma']
-        par     = tests['xwsigma']
-        snr     = metrics['snr'] #RA and DEC info
-        skycont = metrics['skycont']
+        #xwsigma = metrics['xwsigma']
+        #par     = tests['xwsigma']
+        #snr     = metrics['snr'] #RA and DEC info
+        #skycont = metrics['skycont']
+
+
+        xsigma = xw_fib[0]#xwsigma['XWSIGMA_FIB'][0]
+        wsigma = xw_fib[1]#xwsigma['XWSIGMA_FIB'][1]       
 
         delta_rg = wrg[1]- wrg[0]
         hist_rg = (wrg[0] -0.1*delta_rg, wrg[1]+0.1*delta_rg)
@@ -150,36 +150,8 @@ class Xwsigma:
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
         # determining the position of selected cam fibers:
-        c1,c2 = 0,500 #int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
-        qlf_fiberid = np.arange(0,5000)[c1:c2] 
-        try:
-            snr = metrics['snr']
-        except:
-            snr= {'ELG_FIBERID':[],'QSO_FIBERID':[],
-                'LRG_FIBERID':[],'STAR_FIBERID':[]}
-        try:
-            skycont = metrics['skycont']
-        except:
-            skycont ={'SKYFIBERID':[]}
-        # marking type of objects:
-        try:
-            obj_type=[]
-            for i in range(500):
-                if  i in snr['ELG_FIBERID']:
-                    obj_type.append('ELG')
-                elif  i  in snr['QSO_FIBERID']:
-                    obj_type.append('QSO')
-                elif  i  in snr['LRG_FIBERID']:
-                    obj_type.append('LRG')
-                elif  i in snr['STAR_FIBERID']:
-                    obj_type.append('STAR')
-                elif i in skycont['SKYFIBERID']:
-                    obj_type.append('SKY')
-                else:
-                    obj_type.append('UNKNOWN')
-        except:
-            logger.info('Problems in obj sorter')
-            obj_type=[""]*500
+   
+        obj_type= sort_obj(gen_info)#[""]*500
         # ---------------------------------
 
 
@@ -187,8 +159,6 @@ class Xwsigma:
         wsigma_hover = HoverTool(tooltips=wsigma_tooltip)
 
 
-        xsigma = xwsigma['XWSIGMA_FIB'][0]
-        wsigma = xwsigma['XWSIGMA_FIB'][1]
         xfiber = np.arange(len(xsigma))
         wfiber = np.arange(len(wsigma))
 
@@ -196,8 +166,8 @@ class Xwsigma:
 
 
         source = ColumnDataSource(data={
-            'x1'     : snr['RA'], #xwsigma['RA'][c1:c2],
-            'y1'     : snr['DEC'], #xwsigma['DEC'][c1:c2],
+            'x1'     : ra, #xwsigma['RA'][c1:c2],
+            'y1'     : dec, #xwsigma['DEC'][c1:c2],
             'xsigma' : xsigma,
             'wsigma' : wsigma,
             'xfiber': xfiber,
@@ -219,8 +189,8 @@ class Xwsigma:
         '''
 
         # axes limit
-        xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
-        ymin, ymax = [min(snr['DEC'][:]), max(snr['DEC'][:])]
+        xmin, xmax = [min(ra[:]), max(ra[:])]
+        ymin, ymax = [min(dec[:]), max(dec[:])]
         xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
         left, right = xmin -xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
@@ -351,9 +321,9 @@ class Xwsigma:
                 histval = 'hist'
             return [ylabel,yrange,bottomval,histval]
 
-        yrangex=yrange
+        yrangex = yrange
 
-        xhistlabel= "XSIGMA"
+        xhistlabel = "XSIGMA"
         yscale = "auto"
 
         hist_tooltip_x = """
@@ -370,7 +340,7 @@ class Xwsigma:
         """
 
 
-        hist, edges = np.histogram(xsigma,'sqrt')# auto: Maximum of the ‘sturges’ and ‘fd’ estimators.
+        hist, edges = np.histogram(xsigma,'sqrt') #auto: max('sturges', 'fd') estimators
 
         source_hist = ColumnDataSource(data={
             'hist': hist,
@@ -394,7 +364,7 @@ class Xwsigma:
 
         p_hist_x.quad(top=histval, bottom=bottomval, left='left', right='right',
             source=source_hist, 
-                fill_color="dodgerblue", line_color="black", alpha=0.8,
+                fill_color="dodgerblue", line_color='blue', alpha=0.8,
             hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
 
         # Histogram 2
@@ -437,32 +407,26 @@ class Xwsigma:
 
         p_hist_w.quad(top= histval, bottom=bottomval, left='left', right='right',
             source=source_hist, 
-                fill_color="dodgerblue", line_color="black", alpha=0.8,
+                fill_color="dodgerblue", line_color='blue', alpha=0.8,
             hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
 
         #--------------------------------------------------------------
         # vlines ranges:
         bname = 'XWSIGMA'
 
-        #print(par[bname+'_NORMAL_RANGE'])
-
-        for ialert in par[bname+'_NORMAL_RANGE']:
+        for ialert in nrg:#par[bname+'_NORMAL_RANGE']:
             spans = Span(location= ialert , dimension='height', line_color='green',
                                 line_dash='dashed', line_width=2)
             p_hist_x.add_layout(spans)
             my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data', text='Normal Range', text_color='green', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
 
-        for ialert in par[bname+'_WARN_RANGE']:
+        for ialert in wrg:#par[bname+'_WARN_RANGE']:
             spans = Span(location= ialert , dimension='height', line_color='tomato',
                                 line_dash='dotdash', line_width=2)
             p_hist_x.add_layout(spans)
             my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
-
-
-
-
 
         #medianline = Span(location= residmed, dimension='height', line_color='black', line_dash='solid', line_width=2)
         #p_hist.add_layout(medianline)
@@ -471,21 +435,22 @@ class Xwsigma:
         #p_hist.add_layout(my_label)
 
 
-        for ialert in par[bname+'_NORMAL_RANGE']:
+        for ialert in nrg:#par[bname+'_NORMAL_RANGE']:
             spans = Span(location= ialert , dimension='height', line_color='green',
                                 line_dash='dashed', line_width=2)
             p_hist_w.add_layout(spans)
             my_label = Label(x=ialert, y=yrangew[-1]/2.2, y_units='data', text='Normal Range', text_color='green', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
-        for ialert in par[bname+'_WARN_RANGE']:
+        for ialert in wrg:#par[bname+'_WARN_RANGE']:
             spans = Span(location= ialert , dimension='height', line_color='tomato',
                                 line_dash='dotdash', line_width=2)
             p_hist_w.add_layout(spans)
             my_label = Label(x=ialert, y=yrangew[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
-        dz = xwsigma['XWSIGMA_AMP'][0]
+
+        dz =  xw_amp[0] #xwsigma['XWSIGMA_AMP'][0]
         name = 'XSIGMA AMP'
         Reds = get_palette('Reds')
         mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
@@ -502,7 +467,7 @@ class Xwsigma:
         xamp.add_layout(color_bar, 'right')
 
 
-        dz = xwsigma['XWSIGMA_AMP'][1]
+        dz = xw_amp[1] #xwsigma['XWSIGMA_AMP'][1]
         name = 'WSIGMA AMP'
         Reds = get_palette('Reds')
         mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
@@ -516,27 +481,23 @@ class Xwsigma:
                         formatter=formatter, title="", title_text_baseline="alphabetic" )
         wamp.height=400
         wamp.width =500
-
         wamp.add_layout(color_bar, 'right')
 
 
 
         # -------------------------------------------------------------------------
-        from bokeh.models import Spacer
-
         info_col=Div(text=write_description('xwsigma'))
         pxh = column(px, xhist, p_hist_x, xamp )
         pwh = column(pw, whist, p_hist_w, wamp )
 
-        nrg= tests['xwsigma']['XWSIGMA_NORMAL_RANGE']
-        wrg= tests['xwsigma']['XWSIGMA_WARN_RANGE']
-        tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma['XWSIGMA'], nrng=nrg, wrng=wrg  )
+
+        tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma, nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb)
 
         metricname='Xsigma'
         comments= 'textextextextextext '*4
         keyname='XSIGMA'
-        delta = '{:.3f}'.format( xwsigma['XWSIGMA'][0]  )
+        delta = '{:.3f}'.format( xwsigma[0]  )
         info = info_table(metricname, comments, keyname, delta)
         tb_met=Div(text=info, width=600, height=200)
 

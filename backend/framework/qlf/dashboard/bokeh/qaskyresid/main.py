@@ -5,7 +5,7 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics
+from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_scalar_metrics_aux
 
 from dashboard.bokeh.qlf_plot import html_table
 from bokeh.io import curdoc
@@ -39,10 +39,19 @@ class Skyresid:
         except:
             sys.exit('Could not load metrics')
 
-        skyresid  = metrics['skyresid']
-        par = tests['skyresid']
+        try:
+            mergedqa = get_scalar_metrics_aux()
+        except Exception as e:
+            raise e
 
-        residmed = skyresid['MED_RESID']
+        check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
+
+
+        skyresid  = check_spectra['METRICS']#metrics['skyresid']
+        par = check_spectra['PARAMS']#tests['skyresid']
+
+        residmed = ''#np.median(skyresid['MED_RESID_WAVE'])
+        
 
         # ============================================
         # THIS: Given the set up in the block above, 
@@ -80,8 +89,8 @@ class Skyresid:
 
         skyres_source = ColumnDataSource(
                         data={'wl': skyresid['WAVELENGTH'],
-                            'med_resid' : skyresid['MED_RESID_WAVE'],
-                            'wavg_resid':  skyresid['WAVG_RES_WAVE']
+                            'med_resid' : np.zeros(len(skyresid['WAVELENGTH'])),#skyresid['MED_RESID_WAVE'],
+                            'wavg_resid': skyresid['WAVG_RES_WAVE']
                             })
 
         p1 = Figure(title= 'MED_RESID_WAVE', 
@@ -127,12 +136,12 @@ class Skyresid:
                 """
         hist_hover = HoverTool(tooltips=hist_tooltip)
         hist_source = ColumnDataSource(
-                        data={'median_resid': skyresid['MED_RESID_FIBER'],
-                            'fiberid' : skyresid['SKYFIBERID'],#[str(i) for i in skyresid['SKYFIBERID'] ],
-                            'x': np.arange(len(skyresid['SKYFIBERID'])),
-                            'left': np.arange(len(skyresid['SKYFIBERID'])) -0.4,
-                            'right':np.arange(len(skyresid['SKYFIBERID']))+0.4,
-                            'bottom':[0]*len(skyresid['SKYFIBERID']),
+                        data={'median_resid': np.zeros(len(skyresid['SKYCONT_FIBER'])),#skyresid['MED_RESID_FIBER'],
+                            'fiberid' : skyresid['SKYCONT_FIBER'],#[str(i) for i in skyresid['SKYFIBERID'] ],
+                            'x': np.arange(len(skyresid['SKYCONT_FIBER'])),
+                            'left': np.arange(len(skyresid['SKYCONT_FIBER'])) -0.4,
+                            'right':np.arange(len(skyresid['SKYCONT_FIBER']))+0.4,
+                            'bottom':[0]*len(skyresid['SKYCONT_FIBER']),
                             })
 
         #yrange=[0, max(skyresid['MED_RESID_FIBER']) *1.1]
@@ -145,12 +154,12 @@ class Skyresid:
         fiber_hist.xaxis.axis_label="Fiber number"
         fiber_hist.yaxis.axis_label="Median resid."
 
-        strx=[str(i) for i in range(len(skyresid['SKYFIBERID']))]
-        strf=[str(i) for i in skyresid['SKYFIBERID'] ]
+        strx=[str(i) for i in range(len(skyresid['SKYCONT_FIBER']))]
+        strf=[str(i) for i in skyresid['SKYCONT_FIBER'] ]
         fiber_hist.xaxis.major_label_overrides = dict(zip(strx,strf))
 
         text2=""""""
-        for i in ['NBAD_PCHI','NREJ','NSKY_FIB','RESID_PER']:      
+        for i in ['NSKY_FIB']:#['NBAD_PCHI','NREJ','NSKY_FIB','RESID_PER']:      
             text2=text2+ ("""<tr>
                             <td>{:>40}:</td> <td style='text-align:left'>{:}</td>
                             </tr> """.format(i,skyresid[i]))
@@ -179,16 +188,16 @@ class Skyresid:
 
         resid_vals=[]
         resid_names=[]
-        for i in ['MED_RESID','NREJ','NSKY_FIB']:#,'RESID_PER']:
+        for i in ['NSKY_FIB']:#['MED_RESID','NREJ','NSKY_FIB']:#,'RESID_PER']:
             resid_names.append(i)
             if i == 'RESID_PER': #95% c.l. boundaries of residuals distribution
                 resid_vals.append('[{:.3f}, {:.3f}]'.format(skyresid[i][0], skyresid[i][1])) 
             elif isinstance(skyresid[i], float):
                 resid_vals.append('{:.3f}'.format(skyresid[i])  )
             else:
-                resid_vals.append(skyresid[i]) 
+                resid_vals.append('%i'%(skyresid[i])) 
         
-        resid_names=['Median of Residuals (sky fibers)', 'Number of reject fibers', 'Number of good sky fibers'] 
+        resid_names= ['Number of Sky Fibers']#['Median of Residuals (sky fibers)', 'Number of reject fibers', 'Number of good sky fibers'] 
         nrg= tests['skyresid']['RESID_NORMAL_RANGE']
         wrg= tests['skyresid']['RESID_WARN_RANGE']
         tb = html_table(names=resid_names, vals=resid_vals, nrng=nrg, wrng=wrg  )
