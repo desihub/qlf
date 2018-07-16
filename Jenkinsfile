@@ -16,7 +16,7 @@ pipeline {
         stage('Test Backend') {
             steps {
                 dir('backend'){
-                    sh 'CURRENT_UID=$(id -u):$(id -g) docker-compose run qlf ./test.sh'
+                    sh 'docker-compose run qlf ./test.sh'
                 }
             }
         }
