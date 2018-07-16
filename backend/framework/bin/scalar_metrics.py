@@ -114,11 +114,13 @@ class LoadMetrics:
 
         return data
 
+
     def load_output(self):
         """ Returns a json with the camera output per job """
 
         cam, process_id = self.cam, self.process_id
         return self.models.get_output(process_id, cam)
+
 
     def Load_metrics_n_tests(self):
         """ Gathers all the json info in 'METRICS' and 'PARAMS'
