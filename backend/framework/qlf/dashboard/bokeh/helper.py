@@ -115,36 +115,45 @@ def get_scalar_metrics(process_id, cam):
     return scalar_metrics
 
 
-def get_scalar_metrics_aux():
+def get_scalar_metrics_aux(process_id, cam):
     """
     Returns cam scalar metrics from the json
     files obtained by Singulani.
     Just a test for desispec 0.21.0
-    """
-    import json
-
-    qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
-    folder = "/home/foliveira/qlf-root/dataql/ql-021-e/20180701/{:08d}".format(5)
-    folder = "/app/spectro/redux/exposures/20180701/00000005"
-    #folder = "ql-021/00003900/"
-    cam = 'z2'
-    met = {} 
-    par = {}
-    #for iqa in qanames:
-    #    file = "ql-{}-{}-00003900.json".format(iqa, cam)
-    #
-    #    try:
-    #        f = json.load(open(folder+file))
-    #        met.update({iqa: f['METRICS']})
-    #        par.update({iqa: f['PARAMS']})
-    #    except:
-    #        print('%s not found'%file)
-    #
-    #lm={'results':{'metrics':met, 'tests':par}}
-    file = "ql-mergedQA-b0-00000005.json"
-    mergedqa= json.load(open('{}/{}'.format(folder, file)))
-
+    """  
+    #qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
+    #!folder = "/home/foliveira/qlf-root/dataql/ql-021-e/20180701/{:08d}".format(5)
+    #!met = {} 
+    #!par = {}
+    import time
+    f = open('error','w')
     
+    # t1 = time.time()
+    # try:
+    #     process = Process.objects.get(pk=process_id)
+    #     exposure = process.exposure
+    #     mergedqa = LoadMetrics(process_id, cam, process.exposure_id
+    #                 ,exposure.night).load_output()
+    # except Exception as err:
+    #     logger.info(err)
+    #     sys.exit('Could not load merged QA')
+    # f.write('db:    {}\n'.format(time.time()-t1))
+
+    t0 = time.time()
+    try:
+        import json
+        process = Process.objects.get(pk=process_id)
+        exposure = process.exposure
+        folder = "/app/spectro/redux/exposures/{}/{:08d}".format(
+            exposure.night, process.exposure_id)#process_id)
+
+        file = "ql-mergedQA-{}-{:08d}.json".format(cam, process.exposure_id)
+        mergedqa = json.load(open('{}/{}'.format(folder, file)))
+    except Exception as err:
+        f.write('Json error:{}'.format(err))
+    f.write('json: {}\n'.format(time.time()-t0))
+
+    #f.close()   
     return mergedqa
 
 
