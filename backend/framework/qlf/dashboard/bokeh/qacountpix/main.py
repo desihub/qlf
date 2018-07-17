@@ -39,9 +39,11 @@ class Countpix:
         #     sys.exit('Could not load metrics')
 
         try:
-            mergedqa = get_scalar_metrics_aux()
-        except Exception as e:
-            raise e
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
+
 
         countpix = mergedqa['TASKS']['CHECK_CCDs']['METRICS']
         tests =  mergedqa['TASKS']['CHECK_CCDs']['PARAMS']

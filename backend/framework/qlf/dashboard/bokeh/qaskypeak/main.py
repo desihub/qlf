@@ -47,7 +47,12 @@ class Skypeak:
         skypeak = metrics['skypeak']
         par = tests['skypeak']
 
-        mergedqa = get_scalar_metrics_aux()
+        try:
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
+
         gen_info=mergedqa['GENERAL_INFO']
 
         # ============================================
@@ -217,7 +222,7 @@ class Skypeak:
         p_hist = Figure(title='', tools=[hover, "pan,wheel_zoom,box_zoom,reset"],
                         y_axis_label='Frequency + 1', 
                         x_axis_label='PEAKCOUNT', background_fill_color="white", 
-                        plot_width=400, plot_height=400, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
+                        plot_width=550, plot_height=300, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
 
         p_hist.quad(top='histplusone', bottom='bottomplusone', left='left', right='right',
                     source=source_hist,
