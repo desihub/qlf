@@ -436,8 +436,8 @@ class SNR:
 
         #plot= gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
 
-        nrg= tests['snr']['FIDSNR_NORMAL_RANGE']
-        wrg= tests['snr']['FIDSNR_WARN_RANGE']
+        nrg= tests['snr']['FIDSNR_TGT_NORMAL_RANGE']
+        wrg= tests['snr']['FIDSNR_TGT_WARN_RANGE']
         names = ['FIDSNR %s'%i for i in avobj] #, 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
         vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
         tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )

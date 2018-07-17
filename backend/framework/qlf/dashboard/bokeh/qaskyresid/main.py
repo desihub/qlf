@@ -169,8 +169,8 @@ class Skyresid:
                         </table>"""
                 .format("Median of Residuals:", residmed
                         ,text2
-                        ,"Residuals Normal Range",par['RESID_NORMAL_RANGE']
-                        , "Residuals Warning Range",par['RESID_WARN_RANGE'])
+                        ,"Residuals Normal Range",par['MED_RESID_NORMAL_RANGE']
+                        , "Residuals Warning Range",par['MED_RESID_WARN_RANGE'])
                 , width=p2.plot_width)
         info, nlines = write_info('skyresid', tests['skyresid'])
 
@@ -189,8 +189,8 @@ class Skyresid:
                 resid_vals.append(skyresid[i]) 
         
         resid_names=['Median of Residuals (sky fibers)', 'Number of reject fibers', 'Number of good sky fibers'] 
-        nrg= tests['skyresid']['RESID_NORMAL_RANGE']
-        wrg= tests['skyresid']['RESID_WARN_RANGE']
+        nrg= tests['skyresid']['MED_RESID_NORMAL_RANGE']
+        wrg= tests['skyresid']['MED_RESID_WARN_RANGE']
         tb = html_table(names=resid_names, vals=resid_vals, nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 

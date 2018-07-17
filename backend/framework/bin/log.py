@@ -1,4 +1,5 @@
 import logging
+import os
 
 pattern = logging.Formatter("%(asctime)s %(message)s",
                             "%Y-%m-%d %H:%M:%S")
@@ -22,6 +23,10 @@ def get_logger(name, log_file, level=logging.INFO, formatter=pattern):
     Returns:
         [logging.Logger] -- logging.Logger class
     """
+
+    if os.path.exists(log_file):
+        with open(log_file, 'w+') as f:
+            f.write('')
 
     handler = logging.FileHandler(log_file)
     handler.setFormatter(formatter)
