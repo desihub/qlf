@@ -222,6 +222,20 @@ class Skyresid:
         for obj in obj_list:
             arg = np.random.choice(gen_info[obj+'_FIBERID'],1)
             spec = hdul['FLUX'].data[arg][0]
+            spec_tooltip = """
+                <div>
+                    <div>
+                        <span style="font-size: 12px; font-weight: bold; color: #303030;">Wavelength: </span>
+                        <span style="font-size: 13px; color: #515151">@wlength &#8491</span>
+                    </div>
+                    <div>
+                        <span style="font-size: 12px; font-weight: bold; color: #303030;">Counts: </span>
+                        <span style="font-size: 13px; color: #515151;">@spec</span>
+                    </div>
+                </div>
+            """
+            spec_hover = HoverTool(tooltips=spec_tooltip, mode='vline')
+
             try:
                 spec_source = ColumnDataSource(data={
                 'wlength': wlength,
@@ -230,7 +244,7 @@ class Skyresid:
                 p_spec = Figure(title= obj, 
                     x_axis_label='Wavelength (A)', y_axis_label='Counts',
                     plot_width = 500, plot_height = 240,
-                    tools=["pan,box_zoom,reset,crosshair, lasso_select" ])
+                    tools=[spec_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
                 p_spec.line('wlength', 'spec', source = spec_source)
                 p_s.append(p_spec)
@@ -241,14 +255,18 @@ class Skyresid:
 
         # p2txt = column(widgetbox(info_col), row(column(p1, p2), tbinfo), fiber_hist  )
         try:
-            layout = column(widgetbox(info_col, css_classes=["header"]),
-                      widgetbox(tbinfo, css_classes=["table-ranges"]),
-                      #p1,
-                      #fiber_hist,
-                      p2,
-                      p_s[0], p_s[1], p_s[2], p_s[3], p_s[4],
-                      css_classes=["display-grid-skyresid"], 
-                      )
+            # layout = column(widgetbox(info_col, css_classes=["header"]),
+            #           widgetbox(tbinfo, css_classes=["table-ranges"]),
+            #           #p1,
+            #           #iber_hist,
+            #           p2,
+            #           p_s[0], p_s[1], p_s[2], p_s[3], p_s[4],
+            #           css_classes=["display-grid-skyresid"], 
+            #           )
+            layout = column([widgetbox(info_col, css_classes=["header"]),
+                        widgetbox(tbinfo, css_classes=["table-ranges"])]
+                        +[p2]
+                        +p_s,css_classes=['display-grid-skyresid'])
         except Exception as err:
             f=open('error', 'w')
             f.write('{}'.format(err))
