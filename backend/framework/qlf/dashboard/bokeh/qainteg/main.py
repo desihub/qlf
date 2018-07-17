@@ -85,8 +85,8 @@ class Integ:
 
         info_col=Div(text=write_description('integ'), width=fiber_hist.plot_width)
 
-        nrg= tests['integ']['DELTAMAG_WARN_RANGE']
-        wrg= tests['integ']['DELTAMAG_NORMAL_RANGE']
+        nrg= tests['integ']['DELTAMAG_TGT_WARN_RANGE']
+        wrg= tests['integ']['DELTAMAG_TGT_NORMAL_RANGE']
 
         #List of mag diff b/w the fibermag and the imaging mag from the fibermap
         tb = html_table(names=['DELTAMAG (Mean)'], vals=[ '{:.3f}'.format(np.mean(integ['DELTAMAG']) )], nrng=nrg, wrng=wrg  )
