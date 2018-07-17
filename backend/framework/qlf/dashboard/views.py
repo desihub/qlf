@@ -42,6 +42,8 @@ from dashboard.bokeh.qainteg.main import Integ
 from dashboard.bokeh.qaskyresid.main import Skyresid
 from dashboard.bokeh.qasnr.main import SNR
 
+from .filters import ProcessingHistoryFilter
+
 from django.core.mail import send_mail
 import os
 
@@ -161,17 +163,7 @@ class ProcessingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.Model
 
     queryset = Process.objects.order_by('-pk')
     serializer_class = ProcessingHistorySerializer
-    filter_fields = (
-        'exposure_id',
-        'exposure__tile',
-        'exposure__telra',
-        'exposure__night',
-        'exposure__exptime',
-        'exposure__flavor',
-        'exposure__program',
-        'exposure__dateobs',
-        'exposure__airmass',
-        'exposure__teldec')
+    filter_class = ProcessingHistoryFilter
     ordering_fields = (
         'pk',
         'exposure_id',
