@@ -31,6 +31,16 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 
 from dashboard.bokeh.fits2png.fits2png import Fits2png
+from dashboard.bokeh.qacountpix.main import Countpix
+from dashboard.bokeh.qagetbias.main import Bias
+from dashboard.bokeh.qagetrms.main import RMS
+from dashboard.bokeh.qaxwsigma.main import Xwsigma
+from dashboard.bokeh.qacountbins.main import Countbins
+from dashboard.bokeh.qaskycont.main import Skycont
+from dashboard.bokeh.qaskypeak.main import Skypeak
+from dashboard.bokeh.qainteg.main import Integ
+from dashboard.bokeh.qaskyresid.main import Skyresid
+from dashboard.bokeh.qasnr.main import SNR
 
 from django.core.mail import send_mail
 import os
@@ -366,24 +376,6 @@ class DistinctFlavorsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelVi
     serializer_class = ExposureFlavorSerializer
 
 
-class LoadScalarMetricsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Process.objects.none()
-    serializer_class = ProcessSerializer
-
-    def list(self, request, *args, **kwargs):
-        response = super(LoadScalarMetricsViewSet, self).list(
-            request, args, kwargs)
-        process_id = request.GET.get('process_id')
-        cam = request.GET.get('cam')
-        if process_id is not None:
-            load_scalar_metrics = qlf.load_scalar_metrics(process_id, cam)
-            response.data = {'results': load_scalar_metrics}
-            return response
-        else:
-            response.data = {'Error': 'Missing process_id'}
-            return response
-
-
 class AddExposureViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Process.objects.none()
     serializer_class = ProcessSerializer
@@ -633,6 +625,42 @@ def fits_to_png(request):
     exposure = request.GET.get('exposure')
     png_image = Fits2png(cam, processing, night, exposure).convert_fits2png()
     context = {'image': png_image}
+    response = HttpResponse(template.render(context, request))
+
+    return response
+
+
+def load_qa(request):
+    """Generates and render png"""
+    template = loader.get_template('dashboard/qa.html')
+    # Generate Image
+    qa = request.GET.get('qa')
+    spectrograph = request.GET.get('spectrograph')
+    process_id = request.GET.get('process_id')
+    arm = request.GET.get('arm')
+    if qa == 'qacountpix':
+        qa_html = Countpix(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qagetbias':
+        qa_html = Bias(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qagetrms':
+        qa_html = RMS(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qaxwsigma':
+        qa_html = Xwsigma(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qacountbins':
+        qa_html = Countbins(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qaskycont':
+        qa_html = Skycont(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qaskypeak':
+        qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qainteg':
+        qa_html = Integ(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qaskyresid':
+        qa_html = Skyresid(process_id, arm, spectrograph).load_qa()
+    elif qa == 'qasnr':
+        qa_html = SNR(process_id, arm, spectrograph).load_qa()
+    else:
+        qa_html = 'QA not found'
+    context = {'image': qa_html}
     response = HttpResponse(template.render(context, request))
 
     return response

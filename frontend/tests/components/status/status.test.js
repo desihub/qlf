@@ -31,9 +31,9 @@ describe('Monitor Status', () => {
     expect(
       wrapper
         .find('Cards')
-        .at(3)
+        .at(2)
         .props().title
-    ).toBe('Exposure Id: 3');
+    ).toBe('Exposure: 3');
     expect(
       wrapper
         .find('Cards')

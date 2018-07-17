@@ -38,8 +38,6 @@ api_router.register(r'datatable_exposures',
 api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'exposures_date_range',
                     views.ExposuresDateRangeViewSet, 'exposures_date_range')
-api_router.register(r'load_scalar_metrics',
-                    views.LoadScalarMetricsViewSet, 'load_scalar_metrics')
 api_router.register(r'add_exposure', views.AddExposureViewSet, 'add_exposure')
 
 urlpatterns = [
@@ -60,6 +58,7 @@ urlpatterns = [
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
     url(r'^dashboard/fits_to_png', views.fits_to_png, name='fits_to_png'),
+    url(r'^dashboard/load_qa', views.load_qa, name='load_qa'),
     url(r'^dashboard/(?P<bokeh_app>\w+)/$',
         views.embed_bokeh, name='embed-bokeh'),
     url(r'^dashboard/observing_history',
