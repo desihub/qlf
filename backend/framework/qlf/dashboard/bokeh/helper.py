@@ -126,7 +126,7 @@ def get_scalar_metrics_aux(process_id, cam):
     #!met = {} 
     #!par = {}
     import time
-    f = open('error','w')
+    f = open('timer','w')
     
     # t1 = time.time()
     # try:
