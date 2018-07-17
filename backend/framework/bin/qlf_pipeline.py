@@ -72,8 +72,9 @@ class QLFProcess(object):
             }
         ]
 
-        self.models = QLFModels()
         self.configuration = configuration
+
+        self.models = QLFModels()
 
         output_dir = os.path.join(
             'exposures',
@@ -83,12 +84,8 @@ class QLFProcess(object):
 
         output_full_dir = os.path.join(desi_spectro_redux, output_dir)
 
-        # Remove old dir
-        if os.path.isdir(output_full_dir):
-            shutil.rmtree(output_full_dir)
-
-        # Make output dir
-        os.makedirs(output_full_dir)
+        if not os.path.isdir(output_full_dir):
+            os.makedirs(output_full_dir)
 
         self.data['output_dir'] = output_dir
 
@@ -106,9 +103,6 @@ class QLFProcess(object):
 
         self.data['process_id'] = process.id
         self.data['status'] = process.status
-
-        # TODO: ingest configuration file used, this should be done by process
-        # self.models.insert_config(process.id)
 
         logger.info('...\n\n')
         logger.info('Process {}'.format(process.id))
