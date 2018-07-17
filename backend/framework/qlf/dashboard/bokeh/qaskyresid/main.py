@@ -40,9 +40,15 @@ class Skyresid:
             sys.exit('Could not load metrics')
 
         try:
-            mergedqa = get_scalar_metrics_aux()
-        except Exception as e:
-            raise e
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
+            gen_info = mergedqa['GENERAL_INFO']
+
+        except Exception as err:
+            logger.info(err)
+            f = open('error','w')
+            f.write('{}'.format(err))
+            sys.exit('Could not load data')
 
         check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
 
@@ -51,7 +57,7 @@ class Skyresid:
         par = check_spectra['PARAMS']#tests['skyresid']
 
         residmed = ''#np.median(skyresid['MED_RESID_WAVE'])
-        
+        obj_list = ['ELG','LRG','QSO', 'STAR', 'SKY']
 
         # ============================================
         # THIS: Given the set up in the block above, 
@@ -83,8 +89,8 @@ class Skyresid:
             </div>
         """
 
-        skr_hover=HoverTool(tooltips=skr_tooltip, mode='vline')
-        wavg_hover=HoverTool(tooltips=wavg_tooltip, mode='vline')
+        skr_hover = HoverTool(tooltips=skr_tooltip, mode='vline')
+        wavg_hover = HoverTool(tooltips=wavg_tooltip, mode='vline')
 
 
         skyres_source = ColumnDataSource(
@@ -203,12 +209,49 @@ class Skyresid:
         tb = html_table(names=resid_names, vals=resid_vals, nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
+        
+        # Spectra of Objects
+        from astropy.io import fits
+
+        hdul=fits.open('/app/spectro/redux/exposures/20180701/00000005/sframe-b0-00000005.fits')
+        wlength = hdul['WAVELENGTH'].data
+        obj_idx = 0
+
+
+        p_s = []
+        for obj in obj_list:
+            arg = np.random.choice(gen_info[obj+'_FIBERID'],1)
+            spec = hdul['FLUX'].data[arg][0]
+            try:
+                spec_source = ColumnDataSource(data={
+                'wlength': wlength,
+                'spec': spec,
+                })
+                p_spec = Figure(title= obj, 
+                    x_axis_label='Wavelength (A)', y_axis_label='Counts',
+                    plot_width = 500, plot_height = 240,
+                    tools=["pan,box_zoom,reset,crosshair, lasso_select" ])
+
+                p_spec.line('wlength', 'spec', source = spec_source)
+                p_s.append(p_spec)
+            except Exception as err:
+                f=open('error', 'w')
+                f.write('{}'.format(err))
+
 
         # p2txt = column(widgetbox(info_col), row(column(p1, p2), tbinfo), fiber_hist  )
-        layout = column(widgetbox(info_col, css_classes=["header"]),
+        try:
+            layout = column(widgetbox(info_col, css_classes=["header"]),
                       widgetbox(tbinfo, css_classes=["table-ranges"]),
-                      p1,
-                      fiber_hist,
+                      #p1,
+                      #fiber_hist,
                       p2,
-                      css_classes=["display-grid-skyresid"])
+                      p_s[0], p_s[1], p_s[2], p_s[3], p_s[4],
+                      css_classes=["display-grid-skyresid"], 
+                      )
+        except Exception as err:
+            f=open('error', 'w')
+            f.write('{}'.format(err))
+
+
         return file_html(layout, CDN, "SKYRESID")
