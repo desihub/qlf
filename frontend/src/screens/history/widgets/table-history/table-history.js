@@ -6,7 +6,8 @@ import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TablePagination from '@material-ui/core/TablePagination';
-import { tableColumns } from './columns';
+import { processColumns } from './process-columns';
+import { exposureColumns } from './exposure-columns';
 import Modal from '@material-ui/core/Modal';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -46,6 +47,8 @@ class TableHistory extends Component {
       ordering: this.props.type === 'process' ? 'exposure__dateobs' : 'dateobs',
       offset: 0,
       filters: '',
+      flavorFilter: '',
+      statusFilter: '',
       tableColumnsHidden: [],
       openColumnsModal: false,
       openCommentModal: false,
@@ -126,8 +129,35 @@ class TableHistory extends Component {
     });
   };
 
-  addFilters = filters => {
-    this.setState({ filters });
+  addStatusFilter = filter => {
+    let statusFilter = '';
+    switch (filter) {
+      case 'all':
+        break;
+      case 'fail':
+        statusFilter = 'status=1';
+        break;
+      case 'normal':
+        statusFilter = 'status=0';
+        break;
+      case 'abort':
+        statusFilter = 'end__isnull=True';
+    }
+    const filters = `${this.state.flavorFilter}&${statusFilter}`;
+    this.setState({ statusFilter, filters });
+    this.props.getHistory(
+      this.props.startDate,
+      this.props.endDate,
+      this.state.ordering,
+      this.state.offset,
+      this.props.limit,
+      filters
+    );
+  };
+
+  addFlavorFilter = flavorFilter => {
+    const filters = `${flavorFilter}&${this.state.statusFilter}`;
+    this.setState({ flavorFilter, filters });
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
@@ -184,9 +214,7 @@ class TableHistory extends Component {
 
   renderColumnsModal = () => {
     const availableColumns =
-      this.props.type === 'process'
-        ? tableColumns
-        : tableColumns.filter(tc => tc.exposureKey !== null);
+      this.props.type === 'process' ? processColumns : exposureColumns;
     return (
       <Modal
         open={this.state.openColumnsModal}
@@ -245,7 +273,11 @@ class TableHistory extends Component {
   };
 
   hadleSelectNone = () => {
-    this.setState({ tableColumnsHidden: tableColumns.map(c => c.name) });
+    const availableColumns =
+      this.props.type === 'process'
+        ? processColumns.map(c => c.name)
+        : exposureColumns.map(c => c.name);
+    this.setState({ tableColumnsHidden: availableColumns });
   };
 
   handleChangeColumns = name => {
@@ -262,7 +294,9 @@ class TableHistory extends Component {
   };
 
   availableColumns = () => {
-    return tableColumns.filter(
+    const availableColumns =
+      this.props.type === 'process' ? processColumns : exposureColumns;
+    return availableColumns.filter(
       tc => !this.state.tableColumnsHidden.includes(tc.name)
     );
   };
@@ -315,7 +349,8 @@ class TableHistory extends Component {
         <Table style={styles.table}>
           <HistoryHeader
             addOrder={this.addOrder}
-            addFilters={this.addFilters}
+            addFlavorFilter={this.addFlavorFilter}
+            addStatusFilter={this.addStatusFilter}
             type={this.props.type}
             asc={this.state.asc}
             ordering={this.state.ordering}
