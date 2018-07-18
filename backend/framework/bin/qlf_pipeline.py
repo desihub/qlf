@@ -110,6 +110,20 @@ class QLFProcess(object):
             self.data.get('exposure_id')
         ))
 
+        process_dir = os.path.join(
+            self.data.get('output_dir'),
+            str(process.id).zfill(8)
+        )
+
+        if not os.path.isdir(os.path.join(
+            desi_spectro_redux, process_dir
+        )):
+            os.makedirs(os.path.join(
+                desi_spectro_redux, process_dir
+            ))
+
+        self.data['process_dir'] = process_dir
+
         return process.id
 
     def start_jobs(self):
@@ -125,7 +139,7 @@ class QLFProcess(object):
             camera['start'] = datetime.now().replace(microsecond=0)
 
             logname = os.path.join(
-                self.data.get('output_dir'),
+                self.data.get('process_dir'),
                 "run-%s.log" % camera.get('name')
             )
 
