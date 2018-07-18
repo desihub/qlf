@@ -321,30 +321,16 @@ class SNR:
         star_plot.yaxis.axis_label = "MEDIAN SNR^2"
         star_plot.title.text = "STAR"
 
-        #taptool = star_plot.select(type=TapTool)
-        #taptool.callback = OpenURL(url=url)
-
-
-        #r1=row(children=[elg_plot, lrg_plot], sizing_mode='fixed') 
-        #r2=row( children=[qso_plot, star_plot], sizing_mode='fixed')
-        #plot = column([r1,r2], sizing_mode='fixed')
-        plot = row(elg_plot,star_plot)#column(row(elg_plot,star_plot), sizing_mode='fixed')
 
         # infos
         key_name = 'snr'
         # ['FIDMAG', 'FIDSNR_TGT_REF', 'FIDSNR_WARN_RANGE', 'FIDSNR_NORMAL_RANGE']
         info, nlines = write_info(key_name, check_spectra['PARAMS'] ) #tests[key_name])
-        # f=open('ffffffff.txt','w')
-        # f.write('{}'.format(tests[key_name]))
-        # f.close()
         txt = PreText(text=info, height=nlines*20)
         info_col = Div(text=write_description('snr'))#*star_plot.plot_width)
 
 
-        #---------------
-        #wedges
-
-
+        # --- wedges --------
         snr_tooltip = """
             <div>
                 <div>
@@ -385,37 +371,33 @@ class SNR:
         obj_type= sort_obj(gen_info)#['']*500
         for i in avobj:
             fibersnr.append(gen_info[i+'_FIBERID'])
-        #     for j in gen_info[i+'_FIBERID']:
-        #         obj_type[j] =  i
-        # for j in skycont['SKYFIBERID']:
-        #     obj_type[j] =  'SKY'
 
         fibersnr=fibersnr[0]
-        fibersnr.sort()
+        #fibersnr.sort()
 
 
-        try:
-            for i in qlf_fiberid:
-                if i in gen_info['ELG_FIBERID']:
-                    #obj_type.append('ELG')
-                    fibersnr.append(i) 
-                #2#'''
-                elif i in gen_info['QSO_FIBERID']:
-                    #obj_type.append('QSO')
-                    fibersnr.append(i)
-                elif i in gen_info['LRG_FIBERID']:
-                    #obj_type.append('LRG')
-                    fibersnr.append(i)
-                #2#'''
-                elif i in gen_info['STAR_FIBERID']:
-                    #obj_type.append('STAR')
-                    fibersnr.append(i)
-                elif i in gen_info['SKY_FIBERID']:
-                    pass#obj_type.append('SKY')
-                else:
-                    pass#obj_type.append('UNKNOWN')
-        except:
-            pass#obj_type = ['']*500
+        # try:
+        #     for i in qlf_fiberid:
+        #         if i in gen_info['ELG_FIBERID']:
+        #             #obj_type.append('ELG')
+        #             fibersnr.append(i) 
+        #         #2#'''
+        #         elif i in gen_info['QSO_FIBERID']:
+        #             #obj_type.append('QSO')
+        #             fibersnr.append(i)
+        #         elif i in gen_info['LRG_FIBERID']:
+        #             #obj_type.append('LRG')
+        #             fibersnr.append(i)
+        #         #2#'''
+        #         elif i in gen_info['STAR_FIBERID']:
+        #             #obj_type.append('STAR')
+        #             fibersnr.append(i)
+        #         elif i in gen_info['SKY_FIBERID']:
+        #             pass#obj_type.append('SKY')
+        #         else:
+        #             pass#obj_type.append('UNKNOWN')
+        # except:
+        #     pass #obj_type = ['']*500
 
         obj_type = sort_obj(gen_info)
 
@@ -428,15 +410,35 @@ class SNR:
 
         })
 
+        ra_not = []
+        dec_not = []
+        obj_not = []
+        fiber_not = []
+
+        for i in range(500):
+            if i not in fibersnr:
+                ra_not.append( ra[i])
+                dec_not.append( dec[i])
+                fiber_not.append(i) 
+                obj_not.append( obj_type[i])
+
+        source_not = ColumnDataSource(data={
+            'x1': ra_not, 
+            'y1': dec_not,
+            'resid_snr': ['']*len(dec_not),           
+            'QLF_FIBERID': fiber_not,
+            'OBJ_TYPE': obj_not
+        })
+
 
         dy = (np.max(resid) - np.min(resid))*0.02
         mapper = LinearColorMapper(palette=my_palette,
-                                low=np.min(resid)- dy, high= np.max(resid)+dy)
+                        #low= -np.max([np.min(resid), np.max(resid)]), high= np.max(resid))
+                        low=np.min(resid)- dy, high= np.max(resid)+dy)
         radius = 0.013#0.015
         radius_hover = 0.015#0.0165
 
         # axes limit
-
         xmin, xmax = [min(ra[:]), max(ra[:])]
         ymin, ymax = [min(dec[:]), max(dec[:])]
         xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
@@ -455,8 +457,13 @@ class SNR:
                 hover_line_color='red')
 
         # marking the Hover point
-        p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-                'field': 'resid_snr', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+        p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, 
+            hover_fill_color={'field': 'resid_snr', 'transform': mapper}, 
+            fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+
+        p.circle('x1', 'y1', source= source_not, radius= radius, 
+                    fill_color = 'lightgray', line_color='black', line_width=0.3)
+
 
         xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
                             title="",
