@@ -373,31 +373,6 @@ class SNR:
             fibersnr.append(gen_info[i+'_FIBERID'])
 
         fibersnr=fibersnr[0]
-        #fibersnr.sort()
-
-
-        # try:
-        #     for i in qlf_fiberid:
-        #         if i in gen_info['ELG_FIBERID']:
-        #             #obj_type.append('ELG')
-        #             fibersnr.append(i) 
-        #         #2#'''
-        #         elif i in gen_info['QSO_FIBERID']:
-        #             #obj_type.append('QSO')
-        #             fibersnr.append(i)
-        #         elif i in gen_info['LRG_FIBERID']:
-        #             #obj_type.append('LRG')
-        #             fibersnr.append(i)
-        #         #2#'''
-        #         elif i in gen_info['STAR_FIBERID']:
-        #             #obj_type.append('STAR')
-        #             fibersnr.append(i)
-        #         elif i in gen_info['SKY_FIBERID']:
-        #             pass#obj_type.append('SKY')
-        #         else:
-        #             pass#obj_type.append('UNKNOWN')
-        # except:
-        #     pass #obj_type = ['']*500
 
         obj_type = sort_obj(gen_info)
 
@@ -407,6 +382,7 @@ class SNR:
             'resid_snr': snr['SNR_RESID'],
             'QLF_FIBERID': fibersnr,
             'OBJ_TYPE': [obj_type[i] for i in fibersnr],
+            'median': median
 
         })
 
@@ -449,7 +425,8 @@ class SNR:
                 , x_axis_label='RA', y_axis_label='DEC'
                 , plot_width=500, plot_height=400
                 , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"]
-                ,x_range=(left,right), y_range=(bottom, top) )
+                ) #,x_range=(left,right), y_range=(bottom, top) )
+
         # Color Map
         p.circle('x1', 'y1', source=source, name="data", radius=radius,
                 fill_color={'field': 'resid_snr', 'transform': mapper},
@@ -462,7 +439,7 @@ class SNR:
             fill_color=None, line_color=None, line_width=3, hover_line_color='red')
 
         p.circle('x1', 'y1', source= source_not, radius= radius, 
-                    fill_color = 'lightgray', line_color='black', line_width=0.3)
+                    fill_color = 'lightgray', line_color=None, line_width=0.3)
 
 
         xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
@@ -476,7 +453,52 @@ class SNR:
         taptool = p.select(type=TapTool)
         taptool.callback = OpenURL(url=url)
 
-        names = ['FIDSNR %s'%i for i in avobj] #, 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
+        # Median plot
+
+        median_tooltip = """
+            <div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">MEDIAN: </span>
+                    <span style="font-size: 13px; color: #515151">@median</span>
+                </div>
+       <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Resid: </span>
+                    <span style="font-size: 13px; color: #515151">@resid_snr</span>
+                </div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                </div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                </div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                </div>
+
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 13px; color: #515151;">@QLF_FIBERID</span>
+                </div>
+
+            </div>
+        """
+        median_hover = HoverTool(tooltips=median_tooltip, mode='vline')
+
+        p_m =  Figure(title= '', 
+                    x_axis_label='Fiber ', y_axis_label = 'Median S/N',
+                    plot_width = 500, plot_height = 240,
+                    tools=[median_hover, "pan,box_zoom,reset,crosshair" ],
+                    toolbar_location='above')
+
+        p_m.vbar('QLF_FIBERID', width=1, top='median', source = source,
+            hover_color='red')
+        
+
+
+        names = ['FIDSNR %s'%i for i in avobj] 
         vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
         tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb)
@@ -496,6 +518,6 @@ class SNR:
         #2#layout=layout( [[info_col], [tbinfo], [p], [elg_plot , star_plot]    ])
         layout = column(widgetbox(info_col, css_classes=["header"]),
             widgetbox(tbinfo, css_classes=["table-ranges"]),
-            p, Div(), elg_plot, lrg_plot , qso_plot, star_plot,
+            row(p_m,p), Div(), elg_plot, lrg_plot , qso_plot, star_plot,
             css_classes=["display-grid"])
         return file_html(layout, CDN, "MEDIAN SNR")
