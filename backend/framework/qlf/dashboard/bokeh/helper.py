@@ -156,6 +156,25 @@ def get_scalar_metrics_aux(process_id, cam):
     #f.close()   
     return mergedqa
 
+def load_fits(process_id, cam):
+    '''Load reduced fits '''
+    from astropy.io import fits
+
+    try:
+        process = Process.objects.get(pk=process_id)
+        exposure = process.exposure
+        folder = "/app/spectro/redux/exposures/{}/{:08d}".format(
+            exposure.night, process.exposure_id)
+
+        file = "sframe-{}-{:08d}.fits".format(cam, process.exposure_id)
+        fitsfile = fits.open('{}/{}'.format(folder, file))
+        return fitsfile
+
+    except Exception as err:
+        logger.info('{}'.format(err))
+        return None
+
+
 
 def init_xy_plot(hover, yscale):
     """
