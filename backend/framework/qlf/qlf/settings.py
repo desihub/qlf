@@ -117,11 +117,6 @@ DATABASES = {
 #     'pool_size': 10
 # }
 
-BOKEH_URL = 'http://{}:{}'.format(
-    os.environ.get('BOKEH_SERVER', 'localhost'),
-    os.environ.get('BOKEH_PORT', '5006')
-)
-
 QLF_BASE_URL = os.environ.get('QLF_BASE_URL', 'http://localhost:8000')
 if os.environ.get('QLF_REDIS', False):
     CHANNEL_LAYERS = {

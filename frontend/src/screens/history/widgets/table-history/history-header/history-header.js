@@ -278,7 +278,9 @@ export default class HistoryHeader extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {this.renderCheckbox()}
+          {process.env.REACT_APP_OFFLINE === 'true'
+            ? null
+            : this.renderCheckbox()}
           {this.props.tableColumns
             .filter(column => column.exposureKey !== null)
             .map((column, id) => {

@@ -3,7 +3,6 @@ echo "Initializing QLF Daemon..."
 
 export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
-export QLF_REDIS=True
 
 for package in desispec desiutil desimodel specter; do
 	echo "Setting $package..."

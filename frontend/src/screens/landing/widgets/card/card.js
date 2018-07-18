@@ -53,7 +53,7 @@ export default class Cards extends React.Component {
   renderIcon = () => {
     const isMonitor = this.props.title === 'Pipeline Monitor';
     const deactivate =
-      isMonitor && process.env.REACT_APP_DEACTIVATE_MONITOR === 'true'
+      isMonitor && process.env.REACT_APP_OFFLINE === 'true'
         ? { color: 'gray', fontWeight: 100 }
         : {};
     switch (this.props.icon) {
@@ -83,10 +83,10 @@ export default class Cards extends React.Component {
   render() {
     const isMonitor =
       this.props.title === 'Pipeline Monitor' &&
-      process.env.REACT_APP_DEACTIVATE_MONITOR === 'true';
+      process.env.REACT_APP_OFFLINE === 'true';
     const deactivate = isMonitor ? { color: 'gray' } : {};
     const deactivateCard =
-      isMonitor && process.env.REACT_APP_DEACTIVATE_MONITOR === 'true'
+      isMonitor && process.env.REACT_APP_OFFLINE === 'true'
         ? { borderLeft: 'solid 4px gray' }
         : {};
     return (
