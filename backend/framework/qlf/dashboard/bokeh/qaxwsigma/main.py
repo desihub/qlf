@@ -247,8 +247,9 @@ class Xwsigma:
         d_yplt = (max(xsigma) - min(xsigma))*0.1
         yrange = [0, max(xsigma) +d_yplt]
 
-        xhist = plot_hist(xsigma_hover, yrange, ph=280, pw=500)
-        xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data',source=source,
+        xhist = plot_hist(xsigma_hover, yrange, ph=240, pw=500)
+        xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data'
+                ,source=source,
                     fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
                     hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
 
@@ -296,7 +297,7 @@ class Xwsigma:
         d_yplt = (max(wsigma) - min(wsigma))*0.1
         yrange = [0, max(wsigma) +d_yplt]
 
-        whist = plot_hist(wsigma_hover, yrange, ph=280, pw=500)
+        whist = plot_hist(wsigma_hover, yrange, ph=240, pw=500)
         whist.quad(top='wsigma', bottom='bottom', left='left', right='right', name='data',source=source,
                     fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
                     hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -494,17 +495,26 @@ class Xwsigma:
         tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma, nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb)
 
-        metricname='Xsigma'
+        metricname='x sigma'
         comments= 'textextextextextext '*4
         keyname='XSIGMA'
         delta = '{:.3f}'.format( xwsigma[0]  )
         info = info_table(metricname, comments, keyname, delta)
-        tb_met=Div(text=info, width=600, height=200)
+        tb_xsig=Div(text=info, width=400, height=200)
+
+        metricname='w sigma'
+        comments= 'textextextextextext '*4
+        keyname='WSIGMA'
+        delta = '{:.3f}'.format( xwsigma[1]  )
+        info = info_table(metricname, comments, keyname, delta)
+        tb_wsig=Div(text=info, width=400, height=200)
+
 
 
         layout = column(widgetbox(info_col, css_classes=["header-xwsigma"]),
-                widgetbox(tbinfo, css_classes=["table-ranges-xwsigma"]),
-                widgetbox(tb_met, css_classes=["table-ranges-xwsigma"]),        
+                widgetbox(Div(), css_classes=["table-ranges-xwsigma"]),#widgetbox(tbinfo, css_classes=["table-ranges-xwsigma"]),
+                widgetbox(tb_xsig, css_classes=["table-comments-xwsigma"]),        
+                widgetbox(tb_wsig, css_classes=["table-comments-xwsigma"]),
                 column(px, xhist, p_hist_x, xamp, css_classes=["xwsigma"]),
                 column(pw, whist, p_hist_w, wamp, css_classes=["xwsigma"]),
                 css_classes=["display-grid-xwsigma"])
