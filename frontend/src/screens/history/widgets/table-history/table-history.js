@@ -127,11 +127,13 @@ class TableHistory extends Component {
   };
 
   addFilters = filters => {
+    const { asc, ordering } = this.state;
+    const order = asc ? ordering : `-${ordering}`;
     this.setState({ filters });
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
-      this.state.ordering,
+      order,
       this.state.offset,
       this.props.limit,
       filters
@@ -139,10 +141,12 @@ class TableHistory extends Component {
   };
 
   handleChangePage = (evt, offset) => {
+    const { asc, ordering } = this.state;
+    const order = asc ? ordering : `-${ordering}`;
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
-      this.state.ordering,
+      order,
       offset * this.props.limit,
       this.props.limit,
       this.state.filters
@@ -151,10 +155,12 @@ class TableHistory extends Component {
   };
 
   handleChangeRowsPerPage = event => {
+    const { asc, ordering } = this.state;
+    const order = asc ? ordering : `-${ordering}`;
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
-      this.state.ordering,
+      order,
       this.state.offset * this.props.limit,
       event.target.value,
       this.state.filters
