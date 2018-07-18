@@ -12,7 +12,7 @@ export default class Petals extends Component {
 
   stageColor = index => {
     if (this.props.selected.includes(index)) return 'green';
-    return 'gray';
+    return 'lightgray';
   };
 
   renderData = () => {
@@ -103,7 +103,7 @@ export default class Petals extends Component {
               stroke: '#fff',
               strokeWidth: 1,
             },
-            labels: { fill: 'white', fontSize: this.props.size / 10 },
+            labels: { fill: 'black', fontSize: this.props.size / 10 },
           }}
         />
       </svg>

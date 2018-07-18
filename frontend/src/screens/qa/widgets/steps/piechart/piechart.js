@@ -26,7 +26,7 @@ export default class PieChart extends Component {
       test.steps_status.includes('WARNING') &&
       !test.steps_status.includes('ALARM')
     )
-      return '#EFD469';
+      return 'yellow';
     if (
       (test && test.steps_status && test.steps_status.includes('ALARM')) ||
       (!this.props.monitor &&
@@ -35,7 +35,7 @@ export default class PieChart extends Component {
     )
       return 'red';
     if (test && test.steps_status && test.steps_status.includes('None'))
-      return 'gray';
+      return 'lightgray';
     return 'green';
   };
 
@@ -44,7 +44,7 @@ export default class PieChart extends Component {
     if (currentTest) {
       return this.getColor(currentTest);
     }
-    return 'gray';
+    return 'lightgray';
   };
 
   getCurrentTest = index => {
@@ -153,7 +153,7 @@ export default class PieChart extends Component {
               stroke: '#fff',
               strokeWidth: 1,
             },
-            labels: { fill: 'white', fontSize: this.props.size / 10 },
+            labels: { fill: 'black', fontSize: this.props.size / 10 },
           }}
         />
       </svg>
