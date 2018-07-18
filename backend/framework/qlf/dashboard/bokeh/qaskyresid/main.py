@@ -33,16 +33,19 @@ class Skyresid:
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
-        try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
+        # try:
+        #     lm = get_scalar_metrics(self.selected_process_id, cam)
+        #     metrics, tests = lm['metrics'], lm['tests']
+        # except:
+        #     sys.exit('Could not load metrics')
 
         try:
             mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
-            check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
+            check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
             gen_info = mergedqa['GENERAL_INFO']
+            nrg = check_spectra['PARAMS']['RESID_NORMAL_RANGE']
+            wrg = check_spectra['PARAMS']['RESID_WARN_RANGE']
+
 
         except Exception as err:
             logger.info(err)
@@ -100,14 +103,14 @@ class Skyresid:
                             })
 
         p1 = Figure(title= 'MED_RESID_WAVE', 
-                    x_axis_label='Wavelength (A)', y_axis_label='Counts',
+                    x_axis_label='Wavelength (A)', y_axis_label='Flux (counts)',
                     plot_width = 500, plot_height = 240,
                 tools=[skr_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
         p1.line('wl', 'med_resid', source=skyres_source)
 
         p2 = Figure(title= 'WAVG_RESID_WAVE', 
-                    x_axis_label='Wavelength (A)', y_axis_label='Counts',
+                    x_axis_label='Wavelength (A)', y_axis_label='Flux (counts)',
                     plot_width = 500, plot_height = 240,
                 tools=[wavg_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
@@ -187,7 +190,7 @@ class Skyresid:
                         ,"Residuals Normal Range",par['RESID_NORMAL_RANGE']
                         , "Residuals Warning Range",par['RESID_WARN_RANGE'])
                 , width=p2.plot_width)
-        info, nlines = write_info('skyresid', tests['skyresid'])
+        info, nlines = write_info('skyresid', par)
 
 
         info_col=Div(text=write_description('skyresid'), width=p2.plot_width)
@@ -204,24 +207,25 @@ class Skyresid:
                 resid_vals.append('%i'%(skyresid[i])) 
         
         resid_names= ['Number of Sky Fibers']#['Median of Residuals (sky fibers)', 'Number of reject fibers', 'Number of good sky fibers'] 
-        nrg= tests['skyresid']['RESID_NORMAL_RANGE']
-        wrg= tests['skyresid']['RESID_WARN_RANGE']
         tb = html_table(names=resid_names, vals=resid_vals, nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
         
         # Spectra of Objects
         from astropy.io import fits
+        from dashboard.bokeh.helper import load_fits
 
-        hdul=fits.open('/app/spectro/redux/exposures/20180701/00000005/sframe-b0-00000005.fits')
-        wlength = hdul['WAVELENGTH'].data
-        obj_idx = 0
+
+        #hdul=fits.open('/app/spectro/redux/exposures/20180701/00000005/sframe-b0-00000005.fits')
+        try:
+            hdul = load_fits(self.selected_process_id, cam)
+            wlength = hdul['WAVELENGTH'].data
+        except Exception as err:
+            logger.info('{}'.format(err))   
 
 
         p_s = []
         for obj in obj_list:
-            arg = np.random.choice(gen_info[obj+'_FIBERID'],1)
-            spec = hdul['FLUX'].data[arg][0]
             spec_tooltip = """
                 <div>
                     <div>
@@ -237,12 +241,15 @@ class Skyresid:
             spec_hover = HoverTool(tooltips=spec_tooltip, mode='vline')
 
             try:
+                arg = np.random.choice(gen_info[obj+'_FIBERID'],1)
+                spec = hdul['FLUX'].data[arg][0]
+
                 spec_source = ColumnDataSource(data={
                 'wlength': wlength,
                 'spec': spec,
                 })
-                p_spec = Figure(title= obj, 
-                    x_axis_label='Wavelength (A)', y_axis_label='Counts',
+                p_spec = Figure(title= obj+' Spectrum Sample (Fiber ID: %d)'%arg, 
+                    x_axis_label='Wavelength (A)', y_axis_label=obj+' Flux (counts)',
                     plot_width = 500, plot_height = 240,
                     tools=[spec_hover,"pan,box_zoom,reset,crosshair, lasso_select" ])
 
@@ -265,8 +272,8 @@ class Skyresid:
             #           )
             layout = column([widgetbox(info_col, css_classes=["header"]),
                         widgetbox(tbinfo, css_classes=["table-ranges"])]
-                        +[p2]
-                        +p_s,css_classes=['display-grid-skyresid'])
+                        + [p2]
+                        + p_s,css_classes=['display-grid-skyresid'])
         except Exception as err:
             f=open('error', 'w')
             f.write('{}'.format(err))
