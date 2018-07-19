@@ -44,7 +44,7 @@ export default class Home extends React.Component {
 
   render() {
     const navigateToMonitor =
-      process.env.REACT_APP_DEACTIVATE_MONITOR === 'true'
+      process.env.REACT_APP_OFFLINE === 'true'
         ? null
         : () => this.navigateTo('/monitor-realtime');
     return (

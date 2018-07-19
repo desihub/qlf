@@ -4,7 +4,6 @@ pip install -r extras.txt
 
 export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
-export QLF_REDIS=True
 
 for package in desispec desiutil desimodel desisim desitarget specter; do
 	echo "Setting $package..."

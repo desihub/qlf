@@ -341,7 +341,9 @@ export default class HistoryData extends React.Component {
         style={lastProcessed}
         striped={striped}
       >
-        {this.renderCheckbox(selectedExposure)}
+        {process.env.REACT_APP_OFFLINE === 'true'
+          ? null
+          : this.renderCheckbox(selectedExposure)}
         {this.props.tableColumns
           .filter(column => column.key !== null)
           .map((column, key) => {

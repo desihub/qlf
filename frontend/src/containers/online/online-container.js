@@ -130,7 +130,7 @@ class OnlineContainer extends Component {
             />
           )}
         />
-        {process.env.REACT_APP_DEACTIVATE_MONITOR === 'true' ? null : (
+        {process.env.REACT_APP_OFFLINE === 'true' ? null : (
           <Route
             path="/monitor-realtime"
             render={() => (

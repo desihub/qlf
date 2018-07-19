@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TableHistory from './widgets/table-history/table-history';
 import SelectDate from './widgets/select-date/select-date';
-import { Tabs, Tab } from 'material-ui/Tabs';
 import { Card } from 'material-ui/Card';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 import FontIcon from 'material-ui/FontIcon';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import QlfApi from '../../containers/offline/connection/qlf-api';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 const styles = {
   card: {
@@ -53,7 +54,7 @@ export default class History extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tab: 'history',
+      tab: process.env.REACT_APP_OFFLINE === 'true' ? 'history' : 'last',
       confirmDialog: false,
       selectedExposures: [],
       startDate: this.props.startDate,
@@ -232,7 +233,9 @@ export default class History extends Component {
           <ToolbarSeparator />
           {this.renderSelectDate()}
         </ToolbarGroup>
-        {this.renderReprocessButton()}
+        {process.env.REACT_APP_OFFLINE === 'true'
+          ? null
+          : this.renderReprocessButton()}
       </Toolbar>
     );
   };
@@ -278,6 +281,29 @@ export default class History extends Component {
     return `exposure${exposures.length > 1 ? 's' : ''} ${exposures}`;
   };
 
+  renderLast = () => {
+    return (
+      <div style={styles.tableBody}>
+        {this.props.type === 'process'
+          ? this.renderRecentProcesses()
+          : this.renderRecentExposures()}
+      </div>
+    );
+  };
+
+  renderHistory = () => {
+    return (
+      <div>
+        <div style={styles.tableBodyHistory}>{this.renderRows()}</div>
+        {this.renderToolbar()}
+      </div>
+    );
+  };
+
+  handleTabChange = (evt, tab) => {
+    this.setState({ tab });
+  };
+
   render() {
     const actions = [
       <FlatButton
@@ -294,6 +320,7 @@ export default class History extends Component {
       />,
     ];
 
+    const { tab } = this.state;
     return (
       <div style={styles.historyContainer}>
         <Dialog
@@ -305,19 +332,21 @@ export default class History extends Component {
           Reprocess {this.exposuresToReprocess()}?
         </Dialog>
         <Card style={styles.card}>
-          <Tabs value={this.state.value} onChange={this.handleChange}>
-            <Tab label="Most Recent" value="last">
-              <div style={styles.tableBody}>
-                {this.props.type === 'process'
-                  ? this.renderRecentProcesses()
-                  : this.renderRecentExposures()}
-              </div>
-            </Tab>
-            <Tab label="History" value="history">
-              <div style={styles.tableBodyHistory}>{this.renderRows()}</div>
-              {this.renderToolbar()}
-            </Tab>
+          <Tabs
+            value={tab}
+            onChange={this.handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            fullWidth
+            centered
+          >
+            {process.env.REACT_APP_OFFLINE === 'true' ? null : (
+              <Tab label="Most Recent" value={'last'} />
+            )}
+            <Tab label="History" value={'history'} />
           </Tabs>
+          {tab === 'last' ? this.renderLast() : null}
+          {tab === 'history' ? this.renderHistory() : null}
         </Card>
       </div>
     );
