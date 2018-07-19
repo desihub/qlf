@@ -18,8 +18,7 @@ program_mapping = {
     'flat': 'flat',  # flat_preproc
     'arc': 'arcs',
     'dark': 'darksurvey',
-    'gray': 'greysurvey',
-    'grey': 'greysurvey',
+    'gray': 'graysurvey',
     'bright': 'brightsurvey'
 }
 
@@ -46,13 +45,10 @@ def get_config(config_path=None):
     return cfg
 
 
-def change_config_file(night, exposure_id, program):
-    """ Makes a copy of the original configuration file by modifying
-    some values defined in qlf.cfg.
+def get_ql_config_file(program):
+    """ Gets configuration file from directory defined in qlf.cfg.
 
     Arguments:
-        night {str} -- night
-        exposure_id {int} -- exposure ID
         program {str} -- program
 
     Returns:
@@ -60,13 +56,9 @@ def change_config_file(night, exposure_id, program):
     """
 
     cfg = get_config()
-
     program_file = program_mapping.get(program, 'darksurvey')
-    if program_file == 'greysurvey':
-        program_file = 'graysurvey'
-    config_file = cfg.get('main', 'qlconfig').format(program_file)
 
-    return config_file
+    return cfg.get('main', 'qlconfig').format(program_file)
 
 
 def extract_exposure_data(exposure_id, night):
@@ -97,8 +89,8 @@ def extract_exposure_data(exposure_id, night):
 
     # TODO: improve after understanding the QL pipeline cycle.
     program = hdr.get('program')
+    current_config = get_ql_config_file(program)
 
-    current_config = change_config_file(night, exposure_id, program)
     define_calibration_files(night)
 
     return {

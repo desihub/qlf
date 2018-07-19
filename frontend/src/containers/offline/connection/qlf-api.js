@@ -193,7 +193,7 @@ export default class QlfApi {
           limit
         }&offset=${offset}&ordering=${order}&datemin=${
           start.split('T')[0]
-        }&&datemax=${end.split('T')[0]}&${filters}`,
+        }&datemax=${end.split('T')[0]}&${filters}`,
         {
           method: 'GET',
           headers: headers,
