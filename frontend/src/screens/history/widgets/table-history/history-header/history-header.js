@@ -215,6 +215,7 @@ export default class HistoryHeader extends React.Component {
     const selectedStatus = evt.target.value;
     this.setState({ selectedStatus });
     this.props.addStatusFilter(selectedStatus);
+    this.handlePopOverClose();
   };
 
   renderStatusRadioGroup = () => {
@@ -243,6 +244,7 @@ export default class HistoryHeader extends React.Component {
     } else {
       this.props.addFlavorFilter(`${filterName}=${selectedFlavor}`);
     }
+    this.handlePopOverClose();
   };
 
   renderFlavorRadioGroup = () => {

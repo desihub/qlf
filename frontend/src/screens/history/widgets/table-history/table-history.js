@@ -45,6 +45,7 @@ class TableHistory extends Component {
     this.state = {
       asc: false,
       ordering: this.props.type === 'process' ? 'exposure__dateobs' : 'dateobs',
+      order: this.props.type === 'process' ? '-exposure__dateobs' : '-dateobs',
       offset: 0,
       filters: '',
       flavorFilter: '',
@@ -125,6 +126,7 @@ class TableHistory extends Component {
     this.setState({
       asc,
       ordering,
+      order,
       offset: 0,
     });
   };
@@ -138,17 +140,20 @@ class TableHistory extends Component {
         statusFilter = 'status=1';
         break;
       case 'normal':
-        statusFilter = 'status=0';
+        statusFilter = 'status=0&end__isnull=False';
         break;
       case 'abort':
         statusFilter = 'end__isnull=True';
+        break;
+      default:
+        break;
     }
     const filters = `${this.state.flavorFilter}&${statusFilter}`;
     this.setState({ statusFilter, filters });
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
-      this.state.ordering,
+      this.state.order,
       this.state.offset,
       this.props.limit,
       filters
@@ -161,7 +166,7 @@ class TableHistory extends Component {
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
-      order,
+      this.state.order,
       this.state.offset,
       this.props.limit,
       filters
@@ -169,12 +174,10 @@ class TableHistory extends Component {
   };
 
   handleChangePage = (evt, offset) => {
-    const { asc, ordering } = this.state;
-    const order = asc ? ordering : `-${ordering}`;
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
-      order,
+      this.state.order,
       offset * this.props.limit,
       this.props.limit,
       this.state.filters
@@ -183,12 +186,10 @@ class TableHistory extends Component {
   };
 
   handleChangeRowsPerPage = event => {
-    const { asc, ordering } = this.state;
-    const order = asc ? ordering : `-${ordering}`;
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
-      order,
+      this.state.order,
       this.state.offset * this.props.limit,
       event.target.value,
       this.state.filters
