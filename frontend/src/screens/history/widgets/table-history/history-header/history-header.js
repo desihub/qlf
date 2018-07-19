@@ -37,9 +37,9 @@ export default class HistoryHeader extends React.Component {
     super(props);
     this.state = {
       flavors: undefined,
-      selectedFlavor: 'none',
+      selectedFlavor: 'all',
+      selectedStatus: 'all',
       id: undefined,
-      filterName: undefined,
       anchorFilterEl: null,
       anchorEl: null,
     };
@@ -48,7 +48,7 @@ export default class HistoryHeader extends React.Component {
   static propTypes = {
     type: PropTypes.string.isRequired,
     addOrder: PropTypes.func.isRequired,
-    addFilters: PropTypes.func.isRequired,
+    addFlavorFilter: PropTypes.func.isRequired,
     asc: PropTypes.bool,
     ordering: PropTypes.string,
     orderable: PropTypes.bool,
@@ -56,6 +56,7 @@ export default class HistoryHeader extends React.Component {
     selectExposure: PropTypes.func,
     tableColumns: PropTypes.array.isRequired,
     openColumnsModal: PropTypes.func.isRequired,
+    addStatusFilter: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -153,7 +154,9 @@ export default class HistoryHeader extends React.Component {
               <Divider />
             </div>
           ) : null}
-          {this.state.id && this.state.id.includes('flavor') ? (
+          {this.state.id &&
+          (this.state.id.includes('flavor') ||
+            this.state.id.includes('runtime')) ? (
             <div>
               <ListItem
                 onClick={event => this.handleFilterClick(event, this.state.id)}
@@ -183,7 +186,6 @@ export default class HistoryHeader extends React.Component {
     this.setState({
       anchorFilterEl: event.currentTarget,
       id,
-      filterName: this.props.type === 'process' ? 'exposure__flavor' : 'flavor',
     });
   };
 
@@ -197,14 +199,11 @@ export default class HistoryHeader extends React.Component {
         onClose={this.handlePopOverClose}
         elevation={1}
       >
-        {this.renderRadioGroup()}
+        {this.state.id === 'runtime'
+          ? this.renderStatusRadioGroup()
+          : this.renderFlavorRadioGroup()}
       </Popover>
     );
-  };
-
-  openFilterModal = () => {
-    this.handlePopOverClose();
-    this.props.openColumnsModal();
   };
 
   openColumnsModal = () => {
@@ -212,20 +211,56 @@ export default class HistoryHeader extends React.Component {
     this.props.openColumnsModal();
   };
 
-  renderRadioGroup = () => {
+  handleStatusRadioChange = evt => {
+    const selectedStatus = evt.target.value;
+    this.setState({ selectedStatus });
+    this.props.addStatusFilter(selectedStatus);
+    this.handlePopOverClose();
+  };
+
+  renderStatusRadioGroup = () => {
+    return (
+      <RadioGroup
+        name="flavor"
+        style={styles.radioGroup}
+        value={this.state.selectedStatus}
+        onChange={this.handleStatusRadioChange}
+      >
+        <FormControlLabel value="abort" control={<Radio />} label="Abort" />
+        <FormControlLabel value="fail" control={<Radio />} label="Fail" />
+        <FormControlLabel value="normal" control={<Radio />} label="Normal" />
+        <FormControlLabel value="all" control={<Radio />} label="All" />
+      </RadioGroup>
+    );
+  };
+
+  handleFlavorRadioChange = evt => {
+    const selectedFlavor = evt.target.value;
+    const filterName =
+      this.props.type === 'process' ? 'exposure__flavor' : 'flavor';
+    this.setState({ selectedFlavor });
+    if (selectedFlavor === 'all') {
+      this.props.addFlavorFilter(`${filterName}=`);
+    } else {
+      this.props.addFlavorFilter(`${filterName}=${selectedFlavor}`);
+    }
+    this.handlePopOverClose();
+  };
+
+  renderFlavorRadioGroup = () => {
     return (
       <RadioGroup
         name="flavor"
         style={styles.radioGroup}
         value={this.state.selectedFlavor}
-        onChange={this.handleRadioChange}
+        onChange={this.handleFlavorRadioChange}
       >
         {this.state.flavors
           ? this.state.flavors.map(f => {
               return (
                 <FormControlLabel
                   key={f}
-                  value={`${this.state.filterName}=${f}`}
+                  value={f}
                   control={<Radio />}
                   label={f}
                 />
@@ -237,16 +272,6 @@ export default class HistoryHeader extends React.Component {
     );
   };
 
-  handleRadioChange = evt => {
-    const selectedFlavor = evt.target.value;
-    this.setState({ selectedFlavor });
-    if (selectedFlavor === 'all') {
-      this.props.addFilters('');
-    } else {
-      this.props.addFilters(`${selectedFlavor}`);
-    }
-  };
-
   renderProcessingHistoryHeader = () => {
     return (
       <TableHead>
@@ -254,7 +279,7 @@ export default class HistoryHeader extends React.Component {
           {this.props.tableColumns.map((column, id) => {
             return (
               <TableCell key={`PROCESS${id}`} style={styles.tableCell}>
-                {this.renderHeader(column.processKey, column.name)}
+                {this.renderHeader(column.key, column.name)}
               </TableCell>
             );
           })}
@@ -280,11 +305,11 @@ export default class HistoryHeader extends React.Component {
         <TableRow>
           {this.renderCheckbox()}
           {this.props.tableColumns
-            .filter(column => column.exposureKey !== null)
+            .filter(column => column.key !== null)
             .map((column, id) => {
               return (
                 <TableCell key={`EXP${id}`} style={styles.tableCell}>
-                  {this.renderHeader(column.exposureKey, column.name)}
+                  {this.renderHeader(column.key, column.name)}
                 </TableCell>
               );
             })}

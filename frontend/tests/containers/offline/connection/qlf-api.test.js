@@ -182,7 +182,7 @@ describe('QlfApi', () => {
       null
     );
     expect(fetch).toBeCalledWith(
-      'http://localhost:8001/dashboard/api/observing_history/?format=json&limit=10&offset=2&ordering=-pk&datemin=2019-01-01&&datemax=2019-01-01&null',
+      'http://localhost:8001/dashboard/api/observing_history/?format=json&limit=10&offset=2&ordering=-pk&datemin=2019-01-01&datemax=2019-01-01&null',
       {
         headers: {
           _headers: {

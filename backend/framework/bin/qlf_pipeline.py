@@ -257,6 +257,9 @@ class QLFProcess(object):
 
         qa_tests = self.generate_qa_tests()
 
+        if "ALARM" in str(qa_tests):
+            self.data['status'] = 1
+
         self.models.update_process(
             process_id=self.data.get('process_id'),
             end=self.data.get('end'),
