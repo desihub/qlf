@@ -72,8 +72,9 @@ class QLFProcess(object):
             }
         ]
 
-        self.models = QLFModels()
         self.configuration = configuration
+
+        self.models = QLFModels()
 
         output_dir = os.path.join(
             'exposures',
@@ -83,12 +84,8 @@ class QLFProcess(object):
 
         output_full_dir = os.path.join(desi_spectro_redux, output_dir)
 
-        # Remove old dir
-        if os.path.isdir(output_full_dir):
-            shutil.rmtree(output_full_dir)
-
-        # Make output dir
-        os.makedirs(output_full_dir)
+        if not os.path.isdir(output_full_dir):
+            os.makedirs(output_full_dir)
 
         self.data['output_dir'] = output_dir
 
@@ -107,14 +104,25 @@ class QLFProcess(object):
         self.data['process_id'] = process.id
         self.data['status'] = process.status
 
-        # TODO: ingest configuration file used, this should be done by process
-        # self.models.insert_config(process.id)
-
         logger.info('...\n\n')
         logger.info('Process {}'.format(process.id))
         logger.info('Exposure {} started.'.format(
             self.data.get('exposure_id')
         ))
+
+        process_dir = os.path.join(
+            self.data.get('output_dir'),
+            str(process.id).zfill(8)
+        )
+
+        if not os.path.isdir(os.path.join(
+            desi_spectro_redux, process_dir
+        )):
+            os.makedirs(os.path.join(
+                desi_spectro_redux, process_dir
+            ))
+
+        self.data['process_dir'] = process_dir
 
         return process.id
 
@@ -131,7 +139,7 @@ class QLFProcess(object):
             camera['start'] = datetime.now().replace(microsecond=0)
 
             logname = os.path.join(
-                self.data.get('output_dir'),
+                self.data.get('process_dir'),
                 "run-%s.log" % camera.get('name')
             )
 

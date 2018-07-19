@@ -169,7 +169,7 @@ class Job(models.Model):
         on_delete=models.CASCADE
     )
     logname = models.CharField(
-        max_length=45, null=True,
+        max_length=65, null=True,
         help_text='Name of the log file.'
     )
     output = JSONField(
