@@ -140,7 +140,7 @@ class CommentModal extends React.Component {
     if (!this.state.comments) return null;
     return (
       <div className={classes.list}>
-        {this.props.readOnly ? (
+        {this.props.readOnly || process.env.REACT_APP_OFFLINE === 'true' ? (
           <Typography variant="title" id="modal-title">
             Comments
           </Typography>
@@ -154,7 +154,9 @@ class CommentModal extends React.Component {
                   onMouseLeave={this.hoverCommentEnd}
                 >
                   {this.renderOrEditComment(comment)}
-                  {this.renderCommentControls(comment)}
+                  {process.env.REACT_APP_OFFLINE === 'true'
+                    ? null
+                    : this.renderCommentControls(comment)}
                 </ListItem>
                 <Divider />
               </div>
@@ -360,7 +362,9 @@ class CommentModal extends React.Component {
       >
         <div className={classes.modalBody}>
           {this.renderDeleteConfirmation()}
-          {this.renderAddComment()}
+          {process.env.REACT_APP_OFFLINE === 'true'
+            ? null
+            : this.renderAddComment()}
           {this.renderComments()}
           {this.renderLoading()}
           <Button

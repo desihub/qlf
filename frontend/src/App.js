@@ -253,11 +253,13 @@ class App extends React.Component {
           <span>
             {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
           </span>
-          {this.state.websocketConnected ? (
-            <Icon style={styles.connected}>check</Icon>
-          ) : (
-            <Icon style={styles.disconnected}>close</Icon>
-          )}
+          {process.env.REACT_APP_OFFLINE === 'false' ? (
+            this.state.websocketConnected ? (
+              <Icon style={styles.connected}>check</Icon>
+            ) : (
+              <Icon style={styles.disconnected}>close</Icon>
+            )
+          ) : null}
         </div>
       </div>
     );
@@ -291,10 +293,12 @@ class App extends React.Component {
                     />
                   )
                 )}
-                <OnlineContainer
-                  connected={this.websocketConnected}
-                  disconnected={this.websocketDisconnected}
-                />
+                {process.env.REACT_APP_OFFLINE === 'false' ? (
+                  <OnlineContainer
+                    connected={this.websocketConnected}
+                    disconnected={this.websocketDisconnected}
+                  />
+                ) : null}
                 <OfflineContainer toggleHeader={this.toggleHeader} />
               </div>
               {this.renderBottomBar()}
