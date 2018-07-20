@@ -62,7 +62,7 @@ export default class PieChart extends Component {
   };
 
   renderData = () => {
-    return _.map(_.range(9, -1), index => {
+    return _.map([4, 3, 2, 1, 0, 9, 8, 7, 6, 5], index => {
       return {
         x: index,
         y: 1,
@@ -86,6 +86,8 @@ export default class PieChart extends Component {
           height={this.props.size}
           standalone={false}
           colorScale={['gray']}
+          startAngle={18}
+          endAngle={378}
           labelRadius={this.props.size / 3}
           data={data}
           dataComponent={<Slice events={tooltip} />}
@@ -97,10 +99,10 @@ export default class PieChart extends Component {
                   return [
                     {
                       mutation: props => {
-                        if (this.getCurrentTest(9 - props.index)) {
+                        if (this.getCurrentTest((9 - props.index + 5) % 10)) {
                           this.props.renderMetrics(
                             this.props.step,
-                            9 - props.index,
+                            (9 - props.index + 5) % 10,
                             this.props.arm
                           );
                         }
@@ -114,7 +116,8 @@ export default class PieChart extends Component {
                     {
                       target: 'data',
                       mutation: props => {
-                        const camera = arms[this.props.arm] + (9 - props.index);
+                        const camera =
+                          arms[this.props.arm] + (9 - props.index + 5) % 10;
                         this.props.showQaAlarms(camera, this.props.step);
                         return { style: { fill: 'gray', cursor: 'pointer' } };
                       },
