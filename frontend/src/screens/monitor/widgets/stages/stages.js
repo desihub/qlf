@@ -105,7 +105,7 @@ class Stages extends Component {
   timer = null;
 
   componentDidMount() {
-    this.timer = setInterval(this.progress, 500);
+    this.timer = setInterval(this.progress, 2000);
   }
 
   componentWillUnmount() {
@@ -117,7 +117,7 @@ class Stages extends Component {
     if (completed === 100) {
       this.setState({ completed: 0 });
     } else {
-      const diff = 7;
+      const diff = 22;
       this.setState({ completed: Math.min(completed + diff, 100) });
     }
   };
