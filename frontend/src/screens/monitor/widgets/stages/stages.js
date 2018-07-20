@@ -47,6 +47,7 @@ class Stages extends Component {
     status: PropTypes.array.isRequired,
     renderHeader: PropTypes.bool.isRequired,
     classes: PropTypes.object,
+    pipelineRunning: PropTypes.string,
   };
 
   state = {
@@ -114,6 +115,7 @@ class Stages extends Component {
 
   progress = () => {
     const { completed } = this.state;
+    if (this.props.pipelineRunning !== 'Running') return;
     if (completed === 100) {
       this.setState({ completed: 0 });
     } else {
