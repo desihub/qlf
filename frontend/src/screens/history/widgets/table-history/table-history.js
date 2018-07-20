@@ -38,6 +38,7 @@ class TableHistory extends Component {
     fetchLastProcess: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
     openCCDViewer: PropTypes.func.isRequired,
+    handleHistoryStateChange: PropTypes.func,
   };
 
   constructor(props) {
@@ -55,6 +56,14 @@ class TableHistory extends Component {
       openCommentModal: false,
       commentProcessId: 1,
     };
+  }
+
+  componentDidMount() {
+    if (this.props.handleHistoryStateChange) {
+      this.props.handleHistoryStateChange('order', this.state.order);
+      this.props.handleHistoryStateChange('offset', this.state.offset);
+      this.props.handleHistoryStateChange('filters', this.state.filters);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -129,6 +138,7 @@ class TableHistory extends Component {
       order,
       offset: 0,
     });
+    this.props.handleHistoryStateChange('order', order);
   };
 
   addStatusFilter = filter => {
@@ -150,6 +160,7 @@ class TableHistory extends Component {
     }
     const filters = `${this.state.flavorFilter}&${statusFilter}`;
     this.setState({ statusFilter, filters });
+    this.props.handleHistoryStateChange('filters', filters);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
@@ -163,6 +174,7 @@ class TableHistory extends Component {
   addFlavorFilter = flavorFilter => {
     const filters = `${flavorFilter}&${this.state.statusFilter}`;
     this.setState({ flavorFilter, filters });
+    this.props.handleHistoryStateChange('filters', filters);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
@@ -174,6 +186,7 @@ class TableHistory extends Component {
   };
 
   handleChangePage = (evt, offset) => {
+    this.props.handleHistoryStateChange('offset', offset);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,

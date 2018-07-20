@@ -178,6 +178,12 @@ export default class History extends Component {
     this.setState({ selectedExposures });
   };
 
+  handleHistoryStateChange = (key, value) => {
+    this.setState({
+      [key]: value,
+    });
+  };
+
   renderRows = () => {
     if (this.props.rows) {
       return (
@@ -198,6 +204,7 @@ export default class History extends Component {
           limit={this.state.limit}
           fetchLastProcess={this.props.fetchLastProcess}
           openCCDViewer={this.props.openCCDViewer}
+          handleHistoryStateChange={this.handleHistoryStateChange}
         />
       );
     }
@@ -220,11 +227,12 @@ export default class History extends Component {
             title="Refresh"
             onClick={() =>
               this.props.getHistory(
-                this.props.startDate,
-                this.props.endDate,
-                '-pk',
-                0,
-                this.state.limit
+                this.state.startDate,
+                this.state.endDate,
+                this.state.order,
+                this.state.offset,
+                this.state.limit,
+                this.state.filters
               )
             }
           >

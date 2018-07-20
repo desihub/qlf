@@ -178,6 +178,7 @@ class OfflineContainer extends Component {
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
               openCCDViewer={this.navigateToCCD}
+              pipelineRunning={this.props.pipelineRunning}
             />
           )}
         />
