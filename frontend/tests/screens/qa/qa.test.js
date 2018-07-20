@@ -101,13 +101,13 @@ describe('QA', () => {
         .find('path')
         .at(0)
         .props().style.fill
-    ).toBe('gray');
+    ).toBe('lightgray');
     expect(
       wrapper
         .find('path')
         .at(2)
         .props().style.fill
-    ).toBe('gray');
+    ).toBe('lightgray');
   });
 
   // it('enters qa second screen and change selection clicking on flatbutton', () => {

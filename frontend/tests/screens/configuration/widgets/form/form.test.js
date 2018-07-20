@@ -229,7 +229,7 @@ describe('Configuration Form', () => {
     expect(
       wrapper
         .find('path')
-        .at(2)
+        .at(7)
         .props().style.fill
     ).toBe('green');
     expect(
@@ -247,7 +247,7 @@ describe('Configuration Form', () => {
         .find('path')
         .at(18)
         .props().style.fill
-    ).toBe('gray');
+    ).toBe('lightgray');
     expect(
       wrapper
         .find('input')
@@ -260,17 +260,17 @@ describe('Configuration Form', () => {
     expect(
       wrapper
         .find('path')
-        .at(18)
+        .at(23)
         .props().style.fill
-    ).toBe('gray');
+    ).toBe('lightgray');
     wrapper
       .find('path')
-      .at(18)
+      .at(23)
       .simulate('click');
     expect(
       wrapper
         .find('path')
-        .at(18)
+        .at(23)
         .props().style.fill
     ).toBe('green');
   });

@@ -12,11 +12,11 @@ export default class Petals extends Component {
 
   stageColor = index => {
     if (this.props.selected.includes(index)) return 'green';
-    return 'gray';
+    return 'lightgray';
   };
 
   renderData = () => {
-    return _.map(_.range(9, -1), index => {
+    return _.map([4, 3, 2, 1, 0, 9, 8, 7, 6, 5], index => {
       return {
         x: index,
         y: 1,
@@ -42,6 +42,8 @@ export default class Petals extends Component {
           colorScale={['gray']}
           labelRadius={this.props.size / 3}
           data={data}
+          startAngle={18}
+          endAngle={378}
           dataComponent={<Slice events={tooltip} />}
           events={[
             {
@@ -103,7 +105,10 @@ export default class Petals extends Component {
               stroke: '#fff',
               strokeWidth: 1,
             },
-            labels: { fill: 'white', fontSize: this.props.size / 10 },
+            labels: {
+              fill: 'black',
+              fontSize: this.props.size / 10,
+            },
           }}
         />
       </svg>

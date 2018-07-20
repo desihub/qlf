@@ -226,7 +226,7 @@ class CameraStatus:
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
                 next
 
-            elif "Starting to run step Preproc" in ''.join(log):
+            elif "Starting to run step Initialize" in ''.join(log):
                 if "Traceback (most recent call last):" in ''.join(log):
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
                 else:

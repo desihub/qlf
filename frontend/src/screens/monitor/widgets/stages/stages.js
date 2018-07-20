@@ -47,11 +47,13 @@ class Stages extends Component {
     status: PropTypes.array.isRequired,
     renderHeader: PropTypes.bool.isRequired,
     classes: PropTypes.object,
+    pipelineRunning: PropTypes.string,
   };
 
   state = {
     columnHeight: 0,
     openDialog: true,
+    completed: 0,
   };
 
   handleToggle = (event, toggled) => {
@@ -99,6 +101,27 @@ class Stages extends Component {
         </TableRow>
       </TableHead>
     );
+  };
+
+  timer = null;
+
+  componentDidMount() {
+    this.timer = setInterval(this.progress, 2000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  progress = () => {
+    const { completed } = this.state;
+    if (this.props.pipelineRunning !== 'Running') return;
+    if (completed === 100) {
+      this.setState({ completed: 0 });
+    } else {
+      const diff = 22;
+      this.setState({ completed: Math.min(completed + diff, 100) });
+    }
   };
 
   render() {
@@ -154,7 +177,11 @@ class Stages extends Component {
                             }}
                           >
                             {row.pre === 'processing_stage' ? (
-                              <LinearProgress style={styles.loading} />
+                              <LinearProgress
+                                style={styles.loading}
+                                variant="determinate"
+                                value={this.state.completed}
+                              />
                             ) : null}
                           </TableCell>
                           <TableCell
@@ -166,7 +193,11 @@ class Stages extends Component {
                             }}
                           >
                             {row.spec === 'processing_stage' ? (
-                              <LinearProgress style={styles.loading} />
+                              <LinearProgress
+                                style={styles.loading}
+                                variant="determinate"
+                                value={this.state.completed}
+                              />
                             ) : null}
                           </TableCell>
                           <TableCell
@@ -178,7 +209,11 @@ class Stages extends Component {
                             }}
                           >
                             {row.fib === 'processing_stage' ? (
-                              <LinearProgress style={styles.loading} />
+                              <LinearProgress
+                                style={styles.loading}
+                                variant="determinate"
+                                value={this.state.completed}
+                              />
                             ) : null}
                           </TableCell>
                           <TableCell
@@ -190,7 +225,11 @@ class Stages extends Component {
                             }}
                           >
                             {row.sky === 'processing_stage' ? (
-                              <LinearProgress style={styles.loading} />
+                              <LinearProgress
+                                style={styles.loading}
+                                variant="determinate"
+                                value={this.state.completed}
+                              />
                             ) : null}
                           </TableCell>
                         </TableRow>

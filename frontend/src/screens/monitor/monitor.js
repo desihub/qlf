@@ -186,18 +186,21 @@ export default class Monitor extends Component {
               arm={'b'}
               openDialog={this.openDialog}
               renderHeader={true}
+              pipelineRunning={this.props.pipelineRunning}
             />
             <Stages
               status={this.state.camerasStages.r}
               arm={'r'}
               openDialog={this.openDialog}
               renderHeader={false}
+              pipelineRunning={this.props.pipelineRunning}
             />
             <Stages
               status={this.state.camerasStages.z}
               arm={'z'}
               openDialog={this.openDialog}
               renderHeader={false}
+              pipelineRunning={this.props.pipelineRunning}
             />
           </div>
           <div style={styles.gridItem}>

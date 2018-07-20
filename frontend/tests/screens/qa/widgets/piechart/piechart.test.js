@@ -40,7 +40,7 @@ describe('QA', () => {
         .find('path')
         .at(0)
         .props().style.fill
-    ).toBe('gray');
+    ).toBe('lightgray');
     wrapper
       .find(VictoryPie)
       .find('path')
