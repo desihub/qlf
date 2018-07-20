@@ -61,11 +61,11 @@ export default class Configuration extends React.Component {
         >
           <Tab label="Dark" value={0} />
           <Tab label="Bright" value={1} />
-          <Tab label="Grey" value={2} />
+          <Tab label="Gray" value={2} />
         </Tabs>
         {qlScienceTab === 0 ? <Display config={'darksurvey'} /> : null}
         {qlScienceTab === 1 ? <Display config={'brightsurvey'} /> : null}
-        {qlScienceTab === 2 ? <Display config={'greysurvey'} /> : null}
+        {qlScienceTab === 2 ? <Display config={'graysurvey'} /> : null}
       </div>
     );
   };
@@ -84,16 +84,14 @@ export default class Configuration extends React.Component {
           centered
         >
           <Tab label="Flat" value={0} />
-          <Tab label="Flat Preproc" value={1} />
-          <Tab label="Dark Current" value={2} />
-          <Tab label="Bias" value={3} />
-          <Tab label="ARC" value={4} />
+          <Tab label="Dark Current" value={1} />
+          <Tab label="Bias" value={2} />
+          <Tab label="ARC" value={3} />
         </Tabs>
         {qlCalibrationTab === 0 ? <Display config={'flat'} /> : null}
-        {qlCalibrationTab === 1 ? <Display config={'flat_preproc'} /> : null}
-        {qlCalibrationTab === 2 ? <Display config={'darkcurrent'} /> : null}
-        {qlCalibrationTab === 3 ? <Display config={'bias'} /> : null}
-        {qlCalibrationTab === 4 ? <Display config={'arcs'} /> : null}
+        {qlCalibrationTab === 1 ? <Display config={'darkcurrent'} /> : null}
+        {qlCalibrationTab === 2 ? <Display config={'bias'} /> : null}
+        {qlCalibrationTab === 3 ? <Display config={'arcs'} /> : null}
       </div>
     );
   };
