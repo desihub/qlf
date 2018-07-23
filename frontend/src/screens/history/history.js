@@ -132,7 +132,7 @@ export default class History extends Component {
     const nightsApi = await QlfApi.getNights();
     if (nightsApi && nightsApi.results) {
       const nights = nightsApi.results.map(n => n.night);
-      this.setState({ nights, night: nights[0] });
+      this.setState({ nights, night: nights[nights.length - 1] });
       this.refreshRows();
     }
   };
