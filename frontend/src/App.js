@@ -145,6 +145,8 @@ class App extends React.Component {
         return '- Observing History';
       case '/afternoon-planning':
         return '- Afternoon Planning';
+      case '/survey-report':
+        return '- Survey Report';
       case '/camera-log':
         return '- Camera Log';
       case '/ccd-viewer':

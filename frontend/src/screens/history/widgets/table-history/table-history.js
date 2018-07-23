@@ -39,6 +39,7 @@ class TableHistory extends Component {
     pipelineRunning: PropTypes.string,
     openCCDViewer: PropTypes.func.isRequired,
     handleHistoryStateChange: PropTypes.func,
+    night: PropTypes.string,
   };
 
   constructor(props) {
@@ -81,7 +82,8 @@ class TableHistory extends Component {
         order,
         this.state.offset,
         this.props.limit,
-        this.state.filters
+        this.state.filters,
+        this.props.night
       );
     }
   }
@@ -130,7 +132,8 @@ class TableHistory extends Component {
       order,
       this.state.offset,
       this.props.limit,
-      this.state.filters
+      this.state.filters,
+      this.props.night
     );
     this.setState({
       asc,
@@ -167,7 +170,8 @@ class TableHistory extends Component {
       this.state.order,
       this.state.offset,
       this.props.limit,
-      filters
+      filters,
+      this.props.night
     );
   };
 
@@ -181,7 +185,8 @@ class TableHistory extends Component {
       this.state.order,
       this.state.offset,
       this.props.limit,
-      filters
+      filters,
+      this.props.night
     );
   };
 
@@ -380,7 +385,7 @@ class TableHistory extends Component {
           />
           {this.renderBody()}
         </Table>
-        {this.renderPagination()}
+        {this.props.night ? null : this.renderPagination()}
       </div>
     );
   }
