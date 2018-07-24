@@ -263,17 +263,11 @@ class QLFProcess(object):
         for proc in proc_qas:
             proc.join()
 
-        qa_tests = self.generate_qa_tests()
-
-        if "ALARM" in str(qa_tests):
-            self.data['status'] = 1
-
         self.models.update_process(
             process_id=self.data.get('process_id'),
             end=self.data.get('end'),
             process_dir=self.data.get('output_dir'),
             status=self.data.get('status'),
-            qa_tests=qa_tests
         )
 
         duration_ingestion = datetime.now().replace(

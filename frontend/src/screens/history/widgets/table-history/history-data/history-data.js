@@ -100,7 +100,7 @@ export default class HistoryData extends React.Component {
 
   renderViewQA = (processing, runtime) => {
     if (processing && !runtime) return <CircularProgress size={20} />;
-    if (!runtime) return;
+    // if (!runtime) return;
 
     return (
       <span

@@ -9,6 +9,7 @@ import os
 import json
 import logging
 from util import get_config
+import datetime
 
 try:
     cfg = get_config()
@@ -62,6 +63,12 @@ class QLFState:
         self.camera_logs = dict()
         self.camera_status_generator.reset_camera_status()
 
+    def pipeline_end(self):
+        self.camera_status = self.camera_status_generator.get_camera_status()
+        self.qa_results = self.camera_status_generator.get_qa_petals()
+        self.current_process.qa_tests = self.qa_results
+        self.current_process.save()
+
     def update_pipeline_status(self):
         """
         0: Not Running
@@ -69,10 +76,13 @@ class QLFState:
         2: Running
         """
         qlf = get_exposure_monitoring()
+        current_pipeline = str(self.pipeline_running)
         self.pipeline_running = 0 if not qlf.get_status() else 2
         if self.pipeline_running:
             if not qlf.is_running():
                 self.pipeline_running = 1
+        if '2' in current_pipeline and self.pipeline_running is not 2:
+            self.pipeline_end()
 
     def update_qlf_state(self):
         self.update_pipeline_status()

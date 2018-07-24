@@ -181,6 +181,7 @@ class CameraStatus:
             }
             self.update_qa_state(camera, cam, log, cam_index)
             self.qa_petals.append(camera)
+            return camera
         else:
             try:
                 camera = self.qa_petals[cam_index]
@@ -193,47 +194,51 @@ class CameraStatus:
         for cam in self.qlf_state.camera_logs.keys():
             log = self.qlf_state.camera_logs[cam]
             camera = self.update_petals(cam, log)
-            logger.info(camera)
 
-            if "Pipeline completed. Final result" in ''.join(log):
+            if "Pipeline completed. Final result" in str(log):
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 3, int(cam[1:]), 'success_stage')
-            elif "Starting to run step SkySub_QL" in ''.join(log):
+            elif "Starting to run step SkySub_QL" in str(log):
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in ''.join(log):
+                if "CRITICAL" in str(log) or "Error" in str(log):
+                    camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail']
                     self.update_stage(cam[:1], 3, int(cam[1:]), 'error_stage')
                 else:
                     self.update_stage(cam[:1], 3, int(cam[1:]), 'processing_stage')
                 next
 
-            elif "Starting to run step ApplyFiberFlat_QL" in ''.join(log):
+            elif "Starting to run step ApplyFiberFlat_QL" in str(log):
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in ''.join(log):
+                if "CRITICAL" in str(log) or "Error" in str(log):
+                    camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail']
                     self.update_stage(cam[:1], 2, int(cam[1:]), 'error_stage')
                 else:
                     self.update_stage(cam[:1], 2, int(cam[1:]), 'processing_stage')
                 next
 
-            elif "Starting to run step BoxcarExtract" in ''.join(log):
+            elif "Starting to run step BoxcarExtract" in str(log):
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in ''.join(log):
+                if "CRITICAL" in str(log) or "Error" in str(log):
+                    camera[cam]['extract']['steps_status'] = ['Fail']
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'error_stage')
                 else:
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
                 next
 
-            elif "Starting to run step Initialize" in ''.join(log):
-                if "CRITICAL" in ''.join(log):
+            elif "Starting to run step Initialize" in str(log):
+                if "CRITICAL" in str(log) or "Error" in str(log):
+                    camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail', 'Fail']
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
                 else:
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
                 next
-            elif "CRITICAL" in ''.join(log):
+            elif "CRITICAL" in str(log) or "Error" in str(log):
+                camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail', 'Fail']
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
             else:
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'none')
