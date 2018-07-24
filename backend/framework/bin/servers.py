@@ -1,16 +1,16 @@
 import os
-
+import gc
 import Pyro4
-
-from clients import (EXPOSURE_GENERATOR_NS, EXPOSURE_MONITORING_NS, PYRO_HOST,
-                     PYRO_PORT, get_exposure_generator)
+from clients import (
+    EXPOSURE_GENERATOR_NS, EXPOSURE_MONITORING_NS,
+    PYRO_HOST, PYRO_PORT
+)
 from exposure_generator import ExposureGenerator
 from exposure_monitoring import ExposureMonitoring
 from log import get_logger
 from procutil import kill_proc_tree
 from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
-from scalar_metrics import LoadMetrics
 from util import get_config
 
 cfg = get_config()
@@ -31,14 +31,9 @@ logger = get_logger(
 class Monitoring(object):
 
     monitor = False
-    exposure_generator = None
-
-    if emulate:
-        exposure_generator = get_exposure_generator()
 
     def start(self):
         if self.monitor and self.monitor.is_alive():
-            self.monitor.exit.clear()
             logger.debug(
                 "Monitor is already initialized (pid: {}).".format(
                     self.monitor.pid))
@@ -47,23 +42,18 @@ class Monitoring(object):
             self.monitor.start()
             logger.debug("Starting pid %i..." % self.monitor.pid)
 
-        if self.exposure_generator:
-            self.exposure_generator.start()
-
     def stop(self):
         if self.monitor and self.monitor.is_alive():
-            QLFModels().abort_current_process()
-            self.monitor.exit.set()
             logger.debug("Stop pid %i" % self.monitor.pid)
-
             pid = self.monitor.pid
-
+            self.monitor.shutdown()
             kill_proc_tree(pid, include_parent=False)
+            QLFModels().abort_current_process()
+            del self.monitor
+            gc.collect
+            self.monitor = None
         else:
             logger.debug("Monitor is not initialized.")
-
-        if self.exposure_generator:
-            self.exposure_generator.stop()
 
     def reset(self):
         self.stop()
@@ -94,20 +84,6 @@ class Monitoring(object):
     def add_exposures(self, exposures):
         # TODO: improvements
         return None
-
-    def load_scalar_metrics(self, process_id, cam):
-        scalar_metrics = dict()
-        try:
-            process = QLFModels().get_process_by_process_id(process_id)
-            exposure = process.exposure
-            metrics, tests = LoadMetrics(process_id, cam, process.exposure_id,
-                                         exposure.night).Load_metrics_n_tests()
-            scalar_metrics['metrics'] = metrics
-            scalar_metrics['tests'] = tests
-        except Exception as err:
-            logger.error(err)
-            logger.error('load_scalar_metrics error')
-        return scalar_metrics
 
     def get_current_configuration(self):
         configuration = QLFConfiguration()
@@ -156,16 +132,6 @@ class GeneratorControl(object):
             last = dict()
 
         return last
-
-    # def get_exposure_summary(self, date_range=None, expid_range=None,
-    #  require_data_written=True):
-    #   # TODO
-    #   return
-
-    # def get_exposure_files(self, expid, dest=None,
-    # file_class=['desi', 'fibermap'], overwrite=True):
-    #   # TODO
-    #   return
 
 
 def main():

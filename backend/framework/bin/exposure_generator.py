@@ -89,9 +89,10 @@ class ExposureGenerator(Process):
         """ """
 
         if not os.path.exists(base_exposures_path):
-            log.error("Directory does not exist: {}".format(
-                base_exposures_path))
-            raise OSError
+            msg = "Directory does not exist: {}".format(
+                base_exposures_path)
+            log.error(msg)
+            raise OSError(msg)
 
         exposures_list = re.findall(
             r"desi-(\d+).fits.fz",

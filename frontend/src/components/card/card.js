@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Card, CardTitle } from 'material-ui/Card';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import PropTypes from 'prop-types';
@@ -10,6 +9,7 @@ const styles = {
     borderLeft: 'solid 4px #424242',
     flex: 1,
     margin: '1.5vh 1vw 1vh 1vw',
+    minHeight: 30,
   },
   titleStyle: {
     fontSize: 14,

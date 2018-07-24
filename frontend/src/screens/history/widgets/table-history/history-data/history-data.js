@@ -300,9 +300,9 @@ export default class HistoryData extends React.Component {
     return (
       <TableRow>
         {this.props.tableColumns.map((column, key) => {
-          const id = column.processKey.includes('exposure__')
-            ? column.processKey.split('__')[1]
-            : column.processKey;
+          const id = column.key.includes('exposure__')
+            ? column.key.split('__')[1]
+            : column.key;
           return this.renderColumns(column.type, key, id);
         })}
       </TableRow>
@@ -341,11 +341,13 @@ export default class HistoryData extends React.Component {
         style={lastProcessed}
         striped={striped}
       >
-        {this.renderCheckbox(selectedExposure)}
+        {process.env.REACT_APP_OFFLINE === 'true'
+          ? null
+          : this.renderCheckbox(selectedExposure)}
         {this.props.tableColumns
-          .filter(column => column.exposureKey !== null)
+          .filter(column => column.key !== null)
           .map((column, key) => {
-            const id = column.exposureKey;
+            const id = column.key;
             return this.renderColumns(column.type, key, id);
           })}
       </TableRow>

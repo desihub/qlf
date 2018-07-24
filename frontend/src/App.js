@@ -190,9 +190,9 @@ class App extends React.Component {
             >
               home
             </Icon>
-            <span style={styles.hideMenu} onClick={this.toggleHeader}>
+            {/* <span style={styles.hideMenu} onClick={this.toggleHeader}>
               Hide Menu
-            </span>
+            </span> */}
           </div>
         </div>
       );
@@ -204,7 +204,7 @@ class App extends React.Component {
   };
 
   renderTopBar = () => {
-    if (!this.state.displayHeaders) return;
+    // if (!this.state.displayHeaders) return;
     const homeAppleTitleStyle =
       this.renderRouteName() === '' ? styles.headerTop : styles.headerTopSmall;
     return (
@@ -218,22 +218,22 @@ class App extends React.Component {
   };
 
   renderBottomBar = () => {
-    if (!this.state.displayHeaders)
-      return (
-        <span
-          style={{
-            color: 'gray',
-            marginRight: '1em',
-            cursor: 'pointer',
-            fontSize: '10px',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-          onClick={this.toggleHeader}
-        >
-          Show Menu
-        </span>
-      );
+    // if (!this.state.displayHeaders)
+    //   return (
+    //     <span
+    //       style={{
+    //         color: 'gray',
+    //         marginRight: '1em',
+    //         cursor: 'pointer',
+    //         fontSize: '10px',
+    //         display: 'flex',
+    //         justifyContent: 'flex-end',
+    //       }}
+    //       onClick={this.toggleHeader}
+    //     >
+    //       Show Menu
+    //     </span>
+    //   );
 
     return (
       <AppBar
@@ -253,11 +253,13 @@ class App extends React.Component {
           <span>
             {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
           </span>
-          {this.state.websocketConnected ? (
-            <Icon style={styles.connected}>check</Icon>
-          ) : (
-            <Icon style={styles.disconnected}>close</Icon>
-          )}
+          {process.env.REACT_APP_OFFLINE === 'false' ? (
+            this.state.websocketConnected ? (
+              <Icon style={styles.connected}>check</Icon>
+            ) : (
+              <Icon style={styles.disconnected}>close</Icon>
+            )
+          ) : null}
         </div>
       </div>
     );
@@ -291,10 +293,12 @@ class App extends React.Component {
                     />
                   )
                 )}
-                <OnlineContainer
-                  connected={this.websocketConnected}
-                  disconnected={this.websocketDisconnected}
-                />
+                {process.env.REACT_APP_OFFLINE === 'false' ? (
+                  <OnlineContainer
+                    connected={this.websocketConnected}
+                    disconnected={this.websocketDisconnected}
+                  />
+                ) : null}
                 <OfflineContainer toggleHeader={this.toggleHeader} />
               </div>
               {this.renderBottomBar()}
