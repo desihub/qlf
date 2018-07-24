@@ -104,7 +104,9 @@ export default class MetricSelect extends Component {
               : styles.failure;
         const label = qa
           .toUpperCase()
-          .concat(buttonsStatus[index] !== 'ALARM' ? ' ✓' : ' ✖︎');
+          .concat(
+            buttonsStatus[index].toUpperCase() === 'NORMAL' ? ' ✓' : ' ✖︎'
+          );
         return (
           <FlatButton
             key={index}

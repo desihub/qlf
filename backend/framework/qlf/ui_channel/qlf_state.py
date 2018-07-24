@@ -62,12 +62,18 @@ class QLFState:
         self.diff_alerts = dict()
         self.camera_logs = dict()
         self.camera_status_generator.reset_camera_status()
+        self.end_date = None
 
     def pipeline_end(self):
-        self.camera_status = self.camera_status_generator.get_camera_status()
-        self.qa_results = self.camera_status_generator.get_qa_petals()
-        self.current_process.qa_tests = self.qa_results
-        self.current_process.save()
+        if self.end_date is None and self.current_process.end is not None:
+            self.end_date = self.current_process.end
+            self.qa_results = self.camera_status_generator.get_qa_petals()
+            self.current_process.qa_tests = self.qa_results
+            self.current_process.end = self.end_date
+            if 'Fail' in str(self.qa_results) or \
+               'Alarm' in str(self.qa_results):
+                self.current_process.status = 1
+            self.current_process.save()
 
     def update_pipeline_status(self):
         """
@@ -76,13 +82,10 @@ class QLFState:
         2: Running
         """
         qlf = get_exposure_monitoring()
-        current_pipeline = str(self.pipeline_running)
         self.pipeline_running = 0 if not qlf.get_status() else 2
         if self.pipeline_running:
             if not qlf.is_running():
                 self.pipeline_running = 1
-        if '2' in current_pipeline and self.pipeline_running is not 2:
-            self.pipeline_end()
 
     def update_qlf_state(self):
         self.update_pipeline_status()
@@ -112,6 +115,7 @@ class QLFState:
             self.mjd = date.mjd if date else ''
             self.camera_status = self.camera_status_generator.get_camera_status()
             self.qa_results = self.camera_status_generator.get_qa_petals()
+            self.pipeline_end()
 
     def get_current_state(self):
         return json.dumps({
