@@ -715,7 +715,7 @@ def get_camera_log(request):
     camera = request.GET.get('camera')
     if not process or not camera:
             return JsonResponse({
-                'error': 'missing process or camera'
+                'lines': ['missing process or camera']
             })
     job = Job.objects.filter(process=process, camera=camera)
     log = []
