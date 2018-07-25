@@ -101,8 +101,7 @@ export default class HistoryData extends React.Component {
 
   renderViewQA = (processing, runtime) => {
     if (processing && !runtime) return <CircularProgress size={20} />;
-    // if (!runtime) return;
-    console.log(runtime)
+
     return (
       <span
         style={styles.link}
@@ -277,8 +276,6 @@ export default class HistoryData extends React.Component {
             </TableCell>
           );
         }
-        console.log('aqui')
-        console.log(row.qa_tests)
         if (!row.qa_tests || (!row.qa_tests.length && !processing))
           return <TableCell key={'err'} />;
         return (
