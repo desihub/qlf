@@ -44,7 +44,7 @@ const styles = {
   listStyle: {
     padding: 0,
     maxHeight: 300,
-    overflowY: 'scroll',
+    overflowY: 'auto',
   },
   none: {
     display: 'none',

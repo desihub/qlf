@@ -20,11 +20,11 @@ const styles = {
     width: '95vw',
   },
   tableBody: {
-    overflow: 'scroll',
+    overflow: 'auto',
     height: 'calc(100vh - 160px)',
   },
   tableBodyHistory: {
-    overflow: 'scroll',
+    overflow: 'auto',
     height: 'calc(100vh - 216px)',
   },
   submit: {

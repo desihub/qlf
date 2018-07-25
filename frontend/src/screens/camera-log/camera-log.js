@@ -9,6 +9,7 @@ const styles = {
     cursor: 'pointer',
   },
   main: {
+    width: 'calc(100vw - 64px)',
     margin: '16px',
     padding: '16px',
   },

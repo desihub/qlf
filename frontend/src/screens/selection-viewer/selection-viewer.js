@@ -18,6 +18,7 @@ const styles = {
     minWidth: 200,
     justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
+    overflowY: 'auto',
   },
   column: {
     display: 'flex',
@@ -28,10 +29,14 @@ const styles = {
     gridTemplateColumns: 'auto auto',
     height: 'calc(100vh - 135px)',
   },
-  loading: {
-    position: 'absolute',
-    top: '80px',
-    left: '50px',
+  viewer: {
+    width: '70vw',
+  },
+  fadeLoader: {
+    paddingLeft: '35vw',
+  },
+  selection: {
+    textAlign: 'center',
   },
   button: {
     float: 'right',
@@ -98,7 +103,12 @@ class SelectionViewer extends React.Component {
     if (!this.state.loading) return null;
     return (
       <div className={this.props.classes.loading}>
-        <FadeLoader color="#424242" size="16px" margin="4px" />
+        <FadeLoader
+          style={styles.fadeLoader}
+          color="#424242"
+          size="16px"
+          margin="4px"
+        />
       </div>
     );
   };
@@ -134,7 +144,7 @@ class SelectionViewer extends React.Component {
   renderArmSelection = () => {
     if (this.props.arm)
       return (
-        <div>
+        <div className={this.props.classes.selection}>
           <FormLabel component="legend">Arm:</FormLabel>
           <div className={this.props.classes.row}>
             <RadioGroup
@@ -154,7 +164,7 @@ class SelectionViewer extends React.Component {
   renderProcessingSelection = () => {
     if (this.props.processing)
       return (
-        <div>
+        <div className={this.props.classes.selection}>
           <FormLabel component="legend">Processing:</FormLabel>
           <RadioGroup
             value={this.state.processing}
@@ -213,11 +223,13 @@ class SelectionViewer extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <Paper elevation={4} style={styles.main}>
+      <Paper elevation={4} className={classes.main}>
         <div className={classes.gridRow}>
           {this.renderControls()}
-          {this.renderLoading()}
-          {this.renderViewer()}
+          <div className={classes.viewer}>
+            {this.renderLoading()}
+            {this.renderViewer()}
+          </div>
         </div>
       </Paper>
     );

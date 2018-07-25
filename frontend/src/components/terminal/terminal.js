@@ -8,7 +8,7 @@ const styles = {
     margin: '0 auto',
     borderRadius: '3px',
     background: 'rgba(0, 0, 0, 1)',
-    overflowY: 'scroll',
+    overflow: 'auto',
     flexDirection: 'column',
   },
   terminalOutput: {
