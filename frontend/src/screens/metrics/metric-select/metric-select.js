@@ -95,7 +95,7 @@ export default class MetricSelect extends Component {
         this.props.selectedQA && this.props.selectedQA.includes(qa)
           ? styles.selected
           : null;
-      if (buttonsStatus) {
+      if (buttonsStatus && buttonsStatus[index]) {
         const labelColor =
           buttonsStatus[index] === 'NORMAL'
             ? styles.normal
