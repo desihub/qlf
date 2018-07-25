@@ -47,6 +47,7 @@ class PNGPreview extends React.Component {
   };
 
   componentDidMount() {
+    document.title = 'PNG Viewer';
     if (window.location.pathname === '/ccd-viewer') {
       if (
         window.location.search.includes('exposure=') &&

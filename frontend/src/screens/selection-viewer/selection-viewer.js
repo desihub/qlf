@@ -10,12 +10,13 @@ import FormLabel from '@material-ui/core/FormLabel';
 import { FadeLoader } from 'halogenium';
 import Button from '@material-ui/core/Button';
 import PNGViewer from './png-preview/png-preview';
+import LogViewer from './log-viewer/log-viewer';
 
 const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
-    minWidth: 200,
+    width: 200,
     justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
@@ -30,7 +31,7 @@ const styles = {
     height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: '70vw',
+    width: 'calc(100vw - 280px)',
   },
   fadeLoader: {
     paddingLeft: '35vw',
@@ -72,16 +73,22 @@ class SelectionViewer extends React.Component {
   handleChangeSpectrograph = spectrograph => {
     this.setState({ spectrograph: [spectrograph] });
     if (
-      this.state.arm !== null &&
-      this.state.processing !== null &&
-      spectrograph !== this.state.spectrograph[0]
+      this.props.processing
+        ? this.state.arm !== null &&
+          this.state.processing !== null &&
+          spectrograph !== this.state.spectrograph[0]
+        : this.state.arm !== null && spectrograph !== this.state.spectrograph[0]
     )
       this.loadStart();
   };
 
   handleChangeArm = evt => {
     this.setState({ arm: evt.target.value });
-    if (this.state.spectrograph.length !== 0 && this.state.processing !== null)
+    if (
+      this.props.processing
+        ? this.state.spectrograph.length !== 0 && this.state.processing !== null
+        : this.state.spectrograph.length !== 0
+    )
       this.loadStart();
   };
 
@@ -213,6 +220,16 @@ class SelectionViewer extends React.Component {
             arm={this.state.arm}
             spectrograph={this.state.spectrograph}
             loadEnd={this.loadEnd}
+          />
+        );
+      case '/log-viewer':
+        return (
+          <LogViewer
+            arm={this.state.arm}
+            spectrograph={this.state.spectrograph}
+            loadEnd={this.loadEnd}
+            loadStart={this.loadStart}
+            loading={this.state.loading}
           />
         );
       default:

@@ -126,7 +126,7 @@ class OfflineContainer extends Component {
     window.open(
       `log-viewer?process=${processId}`,
       'log-viewer',
-      'width=1050, height=850'
+      'width=1050, height=650'
     );
   };
 
