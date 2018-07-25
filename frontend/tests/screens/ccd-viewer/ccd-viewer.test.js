@@ -1,5 +1,5 @@
 import React from 'react';
-import CCDViewer from '../../../src/screens/ccd-viewer/ccd-viewer';
+import CCDViewer from '../../../src/screens/selection-viewer/selection-viewer';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 

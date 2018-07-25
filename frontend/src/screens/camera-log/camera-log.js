@@ -16,34 +16,20 @@ const styles = {
 
 export default class CameraLog extends React.Component {
   static propTypes = {
-    cameraIndex: PropTypes.string.isRequired,
-    arm: PropTypes.string.isRequired,
+    cameraIndex: PropTypes.string,
+    arm: PropTypes.string,
     lines: PropTypes.array.isRequired,
-    websocketRef: PropTypes.object,
+    getLines: PropTypes.func.isRequired,
     online: PropTypes.bool,
   };
 
   componentDidMount() {
-    // this.refreshLog = setInterval(this.getLines, 5000);
-    this.refreshLog = setTimeout(this.getLines, 2000);
+    this.refreshLog = setTimeout(this.props.getLines, 2000);
   }
 
   componentWillUnmount() {
     clearInterval(this.refreshLog);
   }
-
-  getLines = () => {
-    if (
-      this.props.online &&
-      this.props.arm &&
-      this.props.cameraIndex &&
-      this.props.websocketRef
-    ) {
-      this.props.websocketRef.state.ws.send(
-        `camera:${this.props.arm}${this.props.cameraIndex}`
-      );
-    }
-  };
 
   renderTitle = () => {
     return (

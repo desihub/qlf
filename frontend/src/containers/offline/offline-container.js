@@ -19,7 +19,7 @@ import QA from '../../screens/qa/qa';
 import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
 import UnderConstruction from '../../screens/under-construction/under-construction';
-import CCDViewer from '../../screens/ccd-viewer/ccd-viewer';
+import CCDViewer from '../../screens/selection-viewer/selection-viewer';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -70,6 +70,7 @@ class OfflineContainer extends Component {
 
   state = {
     loading: false,
+    cameraLogProcessId: undefined,
   };
 
   navigateToQA = async processId => {

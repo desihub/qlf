@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import styles from './styles.css'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
 const styles = {
