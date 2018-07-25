@@ -286,6 +286,20 @@ export default class HistoryData extends React.Component {
             {this.renderViewQA(processing, row.runtime)}
           </TableCell>
         );
+      case 'log':
+        return (
+          <TableCell
+            key={`PROCV${key}`}
+            style={{ ...styles.tableCell, ...lastProcessed }}
+          >
+            <Icon
+              // onClick={() => this.props.handleCommentModalOpen(processId)}
+              style={styles.notificationsIcon}
+            >
+              event_note
+            </Icon>
+          </TableCell>
+        )
       default:
         return (
           <TableCell
