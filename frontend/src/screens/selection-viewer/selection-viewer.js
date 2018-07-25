@@ -59,6 +59,9 @@ class SelectionViewer extends React.Component {
 
   static propTypes = {
     classes: PropTypes.object,
+    spectrograph: PropTypes.bool,
+    arm: PropTypes.bool,
+    processing: PropTypes.bool,
   };
 
   handleChangeSpectrograph = spectrograph => {
@@ -109,51 +112,64 @@ class SelectionViewer extends React.Component {
     });
   };
 
-  renderSpectrographSelection = () => (
-    <div>
-      <FormLabel
-        className={this.props.classes.spectrographLabel}
-        component="legend"
-      >
-        Spectrograph:
-      </FormLabel>
-      <Petals
-        selected={this.state.spectrograph}
-        onClick={this.handleChangeSpectrograph}
-        size={100}
-      />
-    </div>
-  );
+  renderSpectrographSelection = () => {
+    if (this.props.spectrograph)
+      return (
+        <div>
+          <FormLabel
+            className={this.props.classes.spectrographLabel}
+            component="legend"
+          >
+            Spectrograph:
+          </FormLabel>
+          <Petals
+            selected={this.state.spectrograph}
+            onClick={this.handleChangeSpectrograph}
+            size={100}
+          />
+        </div>
+      );
+  };
 
-  renderArmSelection = () => (
-    <div>
-      <FormLabel component="legend">Arm:</FormLabel>
-      <div className={this.props.classes.row}>
-        <RadioGroup
-          className={this.props.classes.column}
-          value={this.state.arm}
-          onChange={this.handleChangeArm}
-        >
-          <FormControlLabel value="b" control={<Radio />} label="b" />
-          <FormControlLabel value="r" control={<Radio />} label="r" />
-          <FormControlLabel value="z" control={<Radio />} label="z" />
-        </RadioGroup>
-      </div>
-    </div>
-  );
+  renderArmSelection = () => {
+    if (this.props.arm)
+      return (
+        <div>
+          <FormLabel component="legend">Arm:</FormLabel>
+          <div className={this.props.classes.row}>
+            <RadioGroup
+              className={this.props.classes.column}
+              value={this.state.arm}
+              onChange={this.handleChangeArm}
+            >
+              <FormControlLabel value="b" control={<Radio />} label="b" />
+              <FormControlLabel value="r" control={<Radio />} label="r" />
+              <FormControlLabel value="z" control={<Radio />} label="z" />
+            </RadioGroup>
+          </div>
+        </div>
+      );
+  };
 
-  renderProcessingSelection = () => (
-    <div>
-      <FormLabel component="legend">Processing:</FormLabel>
-      <RadioGroup
-        value={this.state.processing}
-        onChange={this.handleChangeProcessing}
-      >
-        <FormControlLabel value="raw" control={<Radio />} label="raw" />
-        <FormControlLabel value="reduced" control={<Radio />} label="reduced" />
-      </RadioGroup>
-    </div>
-  );
+  renderProcessingSelection = () => {
+    if (this.props.processing)
+      return (
+        <div>
+          <FormLabel component="legend">Processing:</FormLabel>
+          <RadioGroup
+            value={this.state.processing}
+            onChange={this.handleChangeProcessing}
+          >
+            <FormControlLabel value="raw" control={<Radio />} label="raw" />
+            <FormControlLabel
+              value="reduced"
+              control={<Radio />}
+              label="reduced"
+            />
+          </RadioGroup>
+        </div>
+      );
+  };
 
   renderControls = () => {
     const { classes } = this.props;
@@ -178,6 +194,22 @@ class SelectionViewer extends React.Component {
     </Button>
   );
 
+  renderViewer = () => {
+    switch (window.location.pathname) {
+      case '/ccd-viewer':
+        return (
+          <PNGViewer
+            processing={this.state.processing}
+            arm={this.state.arm}
+            spectrograph={this.state.spectrograph}
+            loadEnd={this.loadEnd}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -185,12 +217,7 @@ class SelectionViewer extends React.Component {
         <div className={classes.gridRow}>
           {this.renderControls()}
           {this.renderLoading()}
-          <PNGViewer
-            processing={this.state.processing}
-            arm={this.state.arm}
-            spectrograph={this.state.spectrograph}
-            loadEnd={this.loadEnd}
-          />
+          {this.renderViewer()}
         </div>
       </Paper>
     );

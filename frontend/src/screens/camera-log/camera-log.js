@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Terminal from './widgets/terminal/terminal';
+import Terminal from '../../components/terminal/terminal';
 import Paper from '@material-ui/core/Paper';
 
 const styles = {
@@ -24,11 +24,7 @@ export default class CameraLog extends React.Component {
   };
 
   componentDidMount() {
-    this.refreshLog = setTimeout(this.props.getLines, 2000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.refreshLog);
+    setTimeout(this.props.getLines, 2000);
   }
 
   renderTitle = () => {
@@ -43,7 +39,10 @@ export default class CameraLog extends React.Component {
     return (
       <Paper elevation={4} style={styles.main}>
         {this.renderTitle()}
-        <Terminal lines={this.props.lines.reverse()} />
+        <Terminal
+          height={'calc(100vh - 150px)'}
+          lines={this.props.lines.reverse()}
+        />
       </Paper>
     );
   }

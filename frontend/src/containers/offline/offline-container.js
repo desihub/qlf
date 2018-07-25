@@ -19,7 +19,7 @@ import QA from '../../screens/qa/qa';
 import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
 import UnderConstruction from '../../screens/under-construction/under-construction';
-import CCDViewer from '../../screens/selection-viewer/selection-viewer';
+import SelectionViewer from '../../screens/selection-viewer/selection-viewer';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -122,11 +122,28 @@ class OfflineContainer extends Component {
     );
   };
 
+  navigateToLogViewer = processId => {
+    window.open(
+      `log-viewer?process=${processId}`,
+      'log-viewer',
+      'width=1050, height=850'
+    );
+  };
+
   render() {
     return (
       <div>
         {this.renderLoading()}
-        <Route path="/ccd-viewer" render={() => <CCDViewer />} />
+        <Route
+          path="/log-viewer"
+          render={() => <SelectionViewer spectrograph={true} arm={true} />}
+        />
+        <Route
+          path="/ccd-viewer"
+          render={() => (
+            <SelectionViewer spectrograph={true} arm={true} processing={true} />
+          )}
+        />
         <Route
           path="/afternoon-planning"
           render={() => (
@@ -142,6 +159,7 @@ class OfflineContainer extends Component {
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
               openCCDViewer={this.navigateToCCD}
+              openLogViewer={this.navigateToLogViewer}
             />
           )}
         />
@@ -161,6 +179,7 @@ class OfflineContainer extends Component {
               fetchLastProcess={this.props.fetchLastProcess}
               pipelineRunning={this.props.pipelineRunning}
               openCCDViewer={this.navigateToCCD}
+              openLogViewer={this.navigateToLogViewer}
             />
           )}
         />

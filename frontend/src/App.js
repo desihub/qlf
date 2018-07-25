@@ -151,6 +151,8 @@ class App extends React.Component {
         return '- Camera Log';
       case '/ccd-viewer':
         return '- CCD Viewer';
+      case '/log-viewer':
+        return '- Log Viewer';
       default:
         return '';
     }

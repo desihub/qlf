@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import styles from './styles.css'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
 const styles = {
@@ -25,6 +24,7 @@ export default class Terminal extends Component {
   static propTypes = {
     lines: PropTypes.array.isRequired,
     height: PropTypes.string,
+    width: PropTypes.string,
   };
 
   renderLines = () => {
@@ -40,8 +40,18 @@ export default class Terminal extends Component {
       height: this.props.height ? this.props.height : '300px',
     };
 
+    const terminalWidth = {
+      width: this.props.width ? this.props.width : '100%',
+    };
+
     return (
-      <div style={{ ...styles.terminal, ...terminalHeight }}>
+      <div
+        style={{
+          ...styles.terminal,
+          ...terminalHeight,
+          ...terminalWidth,
+        }}
+      >
         <div style={styles.terminalOutput}>{this.renderLines()}</div>
       </div>
     );

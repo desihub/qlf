@@ -49,6 +49,7 @@ export default class HistoryData extends React.Component {
     openCCDViewer: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
+    openLogViewer: PropTypes.func,
   };
 
   formatDate = dateString => {
@@ -293,7 +294,7 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             <Icon
-              // onClick={() => this.props.handleCommentModalOpen(processId)}
+              onClick={() => this.props.openLogViewer(processId)}
               style={styles.notificationsIcon}
             >
               event_note

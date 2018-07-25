@@ -49,6 +49,7 @@ export default class History extends Component {
     fetchLastProcess: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string.isRequired,
     openCCDViewer: PropTypes.func.isRequired,
+    openLogViewer: PropTypes.func,
   };
 
   constructor(props) {
@@ -132,6 +133,7 @@ export default class History extends Component {
         fetchLastProcess={this.props.fetchLastProcess}
         pipelineRunning={this.props.pipelineRunning}
         openCCDViewer={this.props.openCCDViewer}
+        openLogViewer={this.props.openLogViewer}
       />
     );
   };
@@ -198,6 +200,7 @@ export default class History extends Component {
           limit={this.state.limit}
           fetchLastProcess={this.props.fetchLastProcess}
           openCCDViewer={this.props.openCCDViewer}
+          openLogViewer={this.props.openLogViewer}
         />
       );
     }
