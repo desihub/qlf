@@ -488,32 +488,6 @@ class Xwsigma:
         # -------------------------------------------------------------------------
         from bokeh.models import Spacer
 
-<<<<<<< HEAD
-# tables:
-info_col=Div(text=write_description('xwsigma'), width=2*pw.plot_width)
-pxh = column(px, xhist, p_hist_x, xamp )
-pwh = column(pw, whist, p_hist_w, wamp )
-
-nrg= tests['xwsigma']['XWSIGMA_NORMAL_RANGE']
-wrg= tests['xwsigma']['XWSIGMA_WARN_RANGE']
-tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma['XWSIGMA'], nrng=nrg, wrng=wrg  )
-tbinfo=Div(text=tb, width=1200, height=200)
-
-metricname='Xsigma'
-comments= 'textextextextextext '*4
-keyname='XSIGMA'
-delta = '{:.3f}'.format( xwsigma['XWSIGMA'][0]  )
-info = info_table(metricname, comments, keyname, delta)
-tb_met=Div(text=info, width=600, height=200)
-
-tb_rng=Div(text=range_table(), width=600, height=200)
-layoutplot= row([pxh, Spacer(width=200),pwh]) 
-#layout = column(widgetbox(info_col),tb1, tb2, tbinfo, layoutplot) 
-layout = column(widgetbox(info_col),tb_met, tb_rng, layoutplot) 
- 
-curdoc().add_root(layout)
-curdoc().title = "XWSIGMA"
-=======
         info_col=Div(text=write_description('xwsigma'))
         pxh = column(px, xhist, p_hist_x, xamp )
         pwh = column(pw, whist, p_hist_w, wamp )
@@ -529,4 +503,3 @@ curdoc().title = "XWSIGMA"
                 column(pw, whist, p_hist_w, wamp, css_classes=["xwsigma"]),
                 css_classes=["display-grid-xwsigma"])
         return file_html(layout, CDN, "XWSIGMA")
->>>>>>> 3e32a36cc887f1e5585e8702d483ad60593836d7
