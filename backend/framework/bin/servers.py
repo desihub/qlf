@@ -43,12 +43,13 @@ class Monitoring(object):
             logger.debug("Starting pid %i..." % self.monitor.pid)
 
     def stop(self):
+        if self.is_running():
+            QLFModels().abort_current_process()
         if self.monitor and self.monitor.is_alive():
             logger.debug("Stop pid %i" % self.monitor.pid)
             pid = self.monitor.pid
             self.monitor.shutdown()
             kill_proc_tree(pid, include_parent=False)
-            QLFModels().abort_current_process()
             del self.monitor
             gc.collect
             self.monitor = None

@@ -9,6 +9,7 @@ import os
 import json
 import logging
 from util import get_config
+import datetime
 
 try:
     cfg = get_config()
@@ -61,6 +62,21 @@ class QLFState:
         self.diff_alerts = dict()
         self.camera_logs = dict()
         self.camera_status_generator.reset_camera_status()
+        self.end_date = None
+
+    def pipeline_end(self):
+        if self.end_date is None and self.current_process.end is not None:
+            self.end_date = self.current_process.end
+            print(self.current_process)
+            self.qa_results = self.camera_status_generator.get_qa_petals()
+            if 'Fail' in str(self.qa_results) or \
+               'Alarm' in str(self.qa_results):
+                Process.objects.filter(id=self.current_process.id).update(
+                    status=1
+                )
+            Process.objects.filter(id=self.current_process.id).update(
+                qa_tests=self.qa_results
+            )
 
     def update_pipeline_status(self):
         """
@@ -102,6 +118,7 @@ class QLFState:
             self.mjd = date.mjd if date else ''
             self.camera_status = self.camera_status_generator.get_camera_status()
             self.qa_results = self.camera_status_generator.get_qa_petals()
+            self.pipeline_end()
 
     def get_current_state(self):
         return json.dumps({
