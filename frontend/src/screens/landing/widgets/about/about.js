@@ -9,7 +9,7 @@ const styles = {
   main: {
     maxWidth: '70vw',
     maxHeight: '65vh',
-    overflowY: 'scroll',
+    overflowY: 'auto',
     margin: '16px',
     padding: '16px',
     hyphens: 'auto',

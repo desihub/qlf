@@ -38,6 +38,7 @@ class TableHistory extends Component {
     fetchLastProcess: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
     openCCDViewer: PropTypes.func.isRequired,
+    openLogViewer: PropTypes.func,
     handleHistoryStateChange: PropTypes.func,
     night: PropTypes.string,
   };
@@ -117,6 +118,7 @@ class TableHistory extends Component {
               openCCDViewer={this.openCCDViewer}
               handleCommentModalOpen={this.handleCommentModalOpen}
               pipelineRunning={this.props.pipelineRunning}
+              openLogViewer={this.props.openLogViewer}
             />
           );
         })}

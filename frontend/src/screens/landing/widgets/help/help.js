@@ -9,7 +9,7 @@ const styles = {
   main: {
     maxWidth: '70vw',
     maxHeight: '65vh',
-    overflowY: 'scroll',
+    overflowY: 'auto',
     hyphens: 'auto',
     wordWrap: 'break-word',
     fontSize: 16,

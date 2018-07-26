@@ -61,6 +61,7 @@ urlpatterns = [
     url(r'^dashboard/api/', include(api_router.urls)),
     url(r'^dashboard/fits_to_png', views.fits_to_png, name='fits_to_png'),
     url(r'^dashboard/load_qa', views.load_qa, name='load_qa'),
+    url(r'^dashboard/get_camera_log', views.get_camera_log, name='get_camera_log'),
     url(r'^dashboard/(?P<bokeh_app>\w+)/$',
         views.embed_bokeh, name='embed-bokeh'),
     url(r'^dashboard/observing_history',

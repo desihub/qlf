@@ -290,6 +290,19 @@ export default class QlfApi {
     return commentResponse.json();
   }
 
+  static async getCameraLog(processId, arm, spectrograph) {
+    const cameraLog = await fetch(
+      `${apiUrl}dashboard/get_camera_log/?process=${processId}&camera=${arm}${
+        spectrograph
+      }`,
+      {
+        method: 'GET',
+        headers: headers,
+      }
+    );
+    return cameraLog.json();
+  }
+
   static async sendTicketMail(email, message, subject, name) {
     const ticket = await fetch(
       `${apiUrl}send_ticket_email/?format=json&email=${email}&message=${

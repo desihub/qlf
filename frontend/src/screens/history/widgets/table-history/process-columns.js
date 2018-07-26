@@ -89,4 +89,9 @@ export const processColumns = [
     name: 'COM',
     type: 'comments',
   },
+  {
+    key: '',
+    name: 'Logs',
+    type: 'log',
+  },
 ];

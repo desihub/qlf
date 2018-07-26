@@ -721,3 +721,27 @@ def default_configuration(request):
     return JsonResponse({
         'status': 'Done'
     })
+
+def get_camera_log(request):
+    process = request.GET.get('process')
+    camera = request.GET.get('camera')
+    if not process or not camera:
+            return JsonResponse({
+                'lines': ['missing process or camera']
+            })
+    job = Job.objects.filter(process=process, camera=camera)
+    log = []
+    if job:
+        log_path = job[0].logname
+
+        cfg = get_config()
+        spectro_redux = cfg.get("namespace", "desi_spectro_redux")
+        path = '{}/{}'.format(spectro_redux, log_path)
+        try:
+            arq = open(path, 'r')
+            log = arq.readlines()
+        except FileNotFoundError:
+            log = ['File not found']
+    return JsonResponse({
+        'lines': log
+    })

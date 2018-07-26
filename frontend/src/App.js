@@ -149,8 +149,12 @@ class App extends React.Component {
         return '- Survey Report';
       case '/camera-log':
         return '- Camera Log';
+      case '/camera-log-realtime':
+        return '- Camera Log';
       case '/ccd-viewer':
         return '- CCD Viewer';
+      case '/log-viewer':
+        return '- Log Viewer';
       default:
         return '';
     }

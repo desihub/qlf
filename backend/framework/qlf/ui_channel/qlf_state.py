@@ -9,16 +9,17 @@ import os
 import json
 import logging
 from util import get_config
+from log import get_logger
 import datetime
 
-try:
-    cfg = get_config()
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-except Exception as error:
-    logger.error(error)
-    logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
+cfg = get_config()
+desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+qlf_root = cfg.get("environment", "qlf_root")
 
-logger = logging.getLogger()
+logger = get_logger(
+    "qlf.qlf_state",
+    os.path.join(qlf_root, "logs", "qlf_state.log")
+)
 
 
 class QLFState:
@@ -207,9 +208,8 @@ class QLFState:
             arq = open(path, 'r')
             log = arq.readlines()
             return log
-        except Exception as err:
-            logger.error(err)
-            return "Error"
+        except Exception:
+            return ["File not found"]
 
     def update_camera_logs(self):
         for job in Job.objects.filter(process=self.current_process.id):

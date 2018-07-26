@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Controls from './widgets/controls/controls';
 import Stages from './widgets/stages/stages';
-import Terminal from './widgets/terminal/terminal';
+import Terminal from '../../components/terminal/terminal';
 import Status from '../../components/status/status';
 import PropTypes from 'prop-types';
 import QA from '../qa/qa';
