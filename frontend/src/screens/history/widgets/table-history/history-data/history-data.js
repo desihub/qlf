@@ -300,7 +300,7 @@ export default class HistoryData extends React.Component {
               event_note
             </Icon>
           </TableCell>
-        )
+        );
       default:
         return (
           <TableCell
