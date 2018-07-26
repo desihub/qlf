@@ -17,7 +17,8 @@ from .serializers import (
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
-    ExposureFlavorSerializer, ProcessCommentSerializer
+    ExposureFlavorSerializer, ProcessCommentSerializer,
+    ExposureNightSerializer
 )
 
 from datetime import datetime, timedelta
@@ -212,7 +213,7 @@ class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelV
 
     queryset = Exposure.objects.order_by('-pk')
     serializer_class = ObservingHistorySerializer
-    filter_fields = ('exposure_id', 'flavor')
+    filter_fields = ('exposure_id', 'flavor', 'night',)
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -366,6 +367,13 @@ class DistinctFlavorsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelVi
 
     queryset = Exposure.objects.all().distinct('flavor')
     serializer_class = ExposureFlavorSerializer
+
+
+class DistinctNightsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing exposures distinct nights"""
+
+    queryset = Exposure.objects.all().distinct('night')
+    serializer_class = ExposureNightSerializer
 
 
 class AddExposureViewSet(viewsets.ReadOnlyModelViewSet):
@@ -630,28 +638,32 @@ def load_qa(request):
     spectrograph = request.GET.get('spectrograph')
     process_id = request.GET.get('process_id')
     arm = request.GET.get('arm')
-    if qa == 'qacountpix':
-        qa_html = Countpix(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qagetbias':
-        qa_html = Bias(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qagetrms':
-        qa_html = RMS(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qaxwsigma':
-        qa_html = Xwsigma(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qacountbins':
-        qa_html = Countbins(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qaskycont':
-        qa_html = Skycont(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qaskypeak':
-        qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qainteg':
-        qa_html = Integ(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qaskyresid':
-        qa_html = Skyresid(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qasnr':
-        qa_html = SNR(process_id, arm, spectrograph).load_qa()
-    else:
-        qa_html = 'QA not found'
+    try:
+        if qa == 'qacountpix':
+            qa_html = Countpix(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qagetbias':
+            qa_html = Bias(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qagetrms':
+            qa_html = RMS(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qaxwsigma':
+            qa_html = Xwsigma(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qacountbins':
+            qa_html = Countbins(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qaskycont':
+            qa_html = Skycont(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qaskypeak':
+            qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qainteg':
+            qa_html = Integ(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qaskyresid':
+            qa_html = Skyresid(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qasnr':
+            qa_html = SNR(process_id, arm, spectrograph).load_qa()
+        else:
+            qa_html = "Couldn't load QA"
+    except:
+        qa_html = "Can't load QA"
+
     context = {'image': qa_html}
     response = HttpResponse(template.render(context, request))
 

@@ -85,7 +85,8 @@ export default class HistoryData extends React.Component {
     if (qaTests) {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
-        !JSON.stringify(qaTests).includes('ALARM');
+        !JSON.stringify(qaTests).includes('ALARM') &&
+        !JSON.stringify(qaTests).includes('FAIL');
       return testsFailed;
     }
     return false;
@@ -101,7 +102,6 @@ export default class HistoryData extends React.Component {
 
   renderViewQA = (processing, runtime) => {
     if (processing && !runtime) return <CircularProgress size={20} />;
-    if (!runtime) return;
 
     return (
       <span
