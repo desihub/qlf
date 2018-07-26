@@ -43,7 +43,6 @@ class GlobalFiber:
             process_id = self.selected_process_id
             process = Process.objects.get(pk=process_id)
             joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-
             exposure = process.exposure
             folder = "/app/spectro/data/{}/{:08d}".format(
             exposure.night, process.exposure_id)
