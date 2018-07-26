@@ -16,6 +16,8 @@ api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'last_process', views.LastProcessViewSet, 'monitor')
 api_router.register(r'datatable_exposures',
                     views.DataTableExposureViewSet, 'datatable_exposures')
+api_router.register(r'distinct_nights',
+                    views.DistinctNightsViewSet, 'distinct_nights')
 api_router.register(r'distinct_flavors',
                     views.DistinctFlavorsViewSet, 'distinct_flavors')
 api_router.register(r'processing_history',

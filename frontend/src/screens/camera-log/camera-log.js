@@ -24,7 +24,6 @@ export default class CameraLog extends React.Component {
   };
 
   componentDidMount() {
-    // this.refreshLog = setInterval(this.getLines, 5000);
     this.refreshLog = setTimeout(this.getLines, 2000);
   }
 

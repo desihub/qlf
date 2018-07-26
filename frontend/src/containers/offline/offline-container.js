@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import {
   getProcessingHistory,
   getObservingHistory,
+  getSurveyReport,
   getQA,
   navigateToProcessingHistory,
   navigateToOfflineMetrics,
@@ -39,6 +40,7 @@ class OfflineContainer extends Component {
   static propTypes = {
     getProcessingHistory: PropTypes.func.isRequired,
     getObservingHistory: PropTypes.func.isRequired,
+    getSurveyReport: PropTypes.func.isRequired,
     rows: PropTypes.array.isRequired,
     getQA: PropTypes.func.isRequired,
     pathname: PropTypes.string,
@@ -178,6 +180,26 @@ class OfflineContainer extends Component {
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
               openCCDViewer={this.navigateToCCD}
+              pipelineRunning={this.props.pipelineRunning}
+            />
+          )}
+        />
+        <Route
+          path="/survey-report"
+          render={() => (
+            <History
+              getHistory={this.props.getSurveyReport}
+              rows={this.props.rows}
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
+              navigateToQA={this.navigateToQA}
+              recentExposures={this.props.recentExposures}
+              type={'exposure'}
+              lastProcessedId={this.props.lastProcessedId}
+              rowsCount={this.props.rowsCount}
+              fetchLastProcess={this.props.fetchLastProcess}
+              openCCDViewer={this.navigateToCCD}
+              pipelineRunning={this.props.pipelineRunning}
             />
           )}
         />
@@ -276,5 +298,7 @@ export default connect(
       dispatch(getObservingHistory(start, end, order, offset, limit, filters)),
     fetchLastProcess: () => dispatch(fetchLastProcess()),
     getHistoryDateRange: () => dispatch(getHistoryDateRange()),
+    getSurveyReport: (_start, _end, order, _offset, _limit, filters, night) =>
+      dispatch(getSurveyReport(order, filters, night)),
   })
 )(OfflineContainer);

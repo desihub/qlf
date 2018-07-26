@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TableHistory from './widgets/table-history/table-history';
 import SelectDate from './widgets/select-date/select-date';
+import SelectNight from './widgets/select-night/select-night';
 import { Card } from 'material-ui/Card';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 import FontIcon from 'material-ui/FontIcon';
@@ -53,32 +54,54 @@ export default class History extends Component {
 
   constructor(props) {
     super(props);
+    const renderTabs =
+      process.env.REACT_APP_OFFLINE !== 'true' &&
+      window.location.pathname !== '/survey-report';
     this.state = {
-      tab: process.env.REACT_APP_OFFLINE === 'true' ? 'history' : 'last',
+      renderTabs,
+      tab: renderTabs ? 'history' : 'last',
       confirmDialog: false,
       selectedExposures: [],
       startDate: this.props.startDate,
       endDate: this.props.endDate,
       limit: 10,
       firstLoad: false,
+      nights: undefined,
+      night: undefined,
     };
   }
 
   componentDidMount() {
-    switch (this.props.type) {
-      case 'process':
+    switch (window.location.pathname) {
+      case '/processing-history':
         document.title = 'Processing History';
         break;
-      case 'exposure':
+      case '/observing-history':
         document.title = 'Observing History';
+        break;
+      case '/survey-report':
+        document.title = 'Survey Reports';
         break;
       default:
         document.title = 'History';
     }
   }
 
+  selectNight = dir => {
+    const index = this.state.nights.indexOf(this.state.night);
+    if (dir === 'next' && index < this.state.nights.length - 1) {
+      this.setState({ night: this.state.nights[index + 1] }, this.refreshRows);
+    } else if (dir !== 'next' && index > 0) {
+      this.setState({ night: this.state.nights[index - 1] }, this.refreshRows);
+    }
+  };
+
   renderSelectDate = () => {
-    if (this.props.startDate && this.props.endDate)
+    if (window.location.pathname === '/survey-report') {
+      return (
+        <SelectNight night={this.state.night} selectNight={this.selectNight} />
+      );
+    } else if (this.props.startDate && this.props.endDate)
       return (
         <SelectDate
           startDate={this.props.startDate}
@@ -97,6 +120,21 @@ export default class History extends Component {
 
   changeLimit = limit => {
     this.setState({ limit });
+  };
+
+  componentWillMount() {
+    if (window.location.pathname === '/survey-report') {
+      this.storeAvailableNights();
+    }
+  }
+
+  storeAvailableNights = async () => {
+    const nightsApi = await QlfApi.getNights();
+    if (nightsApi && nightsApi.results) {
+      const nights = nightsApi.results.map(n => n.night);
+      this.setState({ nights, night: nights[nights.length - 1] });
+      this.refreshRows();
+    }
   };
 
   componentWillReceiveProps(nextProps) {
@@ -178,6 +216,12 @@ export default class History extends Component {
     this.setState({ selectedExposures });
   };
 
+  handleHistoryStateChange = (key, value) => {
+    this.setState({
+      [key]: value,
+    });
+  };
+
   renderRows = () => {
     if (this.props.rows) {
       return (
@@ -188,7 +232,7 @@ export default class History extends Component {
           rows={this.props.rows}
           navigateToQA={this.props.navigateToQA}
           type={this.props.type}
-          selectable={true}
+          selectable={true && this.state.renderTabs}
           orderable={true}
           lastProcessedId={this.props.lastProcessedId}
           selectExposure={this.selectExposure}
@@ -198,9 +242,23 @@ export default class History extends Component {
           limit={this.state.limit}
           fetchLastProcess={this.props.fetchLastProcess}
           openCCDViewer={this.props.openCCDViewer}
+          handleHistoryStateChange={this.handleHistoryStateChange}
+          night={this.state.night}
         />
       );
     }
+  };
+
+  refreshRows = () => {
+    this.props.getHistory(
+      this.state.startDate,
+      this.state.endDate,
+      this.state.order,
+      this.state.offset,
+      this.state.limit,
+      this.state.filters,
+      this.state.night
+    );
   };
 
   renderToolbar = () => {
@@ -218,24 +276,14 @@ export default class History extends Component {
           <FontIcon
             className="material-icons"
             title="Refresh"
-            onClick={() =>
-              this.props.getHistory(
-                this.props.startDate,
-                this.props.endDate,
-                '-pk',
-                0,
-                this.state.limit
-              )
-            }
+            onClick={this.refreshRows}
           >
             refresh
           </FontIcon>
           <ToolbarSeparator />
           {this.renderSelectDate()}
         </ToolbarGroup>
-        {process.env.REACT_APP_OFFLINE === 'true'
-          ? null
-          : this.renderReprocessButton()}
+        {!this.state.renderTabs ? null : this.renderReprocessButton()}
       </Toolbar>
     );
   };
@@ -304,6 +352,27 @@ export default class History extends Component {
     this.setState({ tab });
   };
 
+  renderTabs = () => {
+    const { tab } = this.state;
+    return (
+      <div>
+        <Tabs
+          value={tab}
+          onChange={this.handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          fullWidth
+          centered
+        >
+          <Tab label="Most Recent" value={'last'} />
+          <Tab label="History" value={'history'} />
+        </Tabs>
+        {tab === 'last' ? this.renderLast() : null}
+        {tab === 'history' ? this.renderHistory() : null}
+      </div>
+    );
+  };
+
   render() {
     const actions = [
       <FlatButton
@@ -320,7 +389,6 @@ export default class History extends Component {
       />,
     ];
 
-    const { tab } = this.state;
     return (
       <div style={styles.historyContainer}>
         <Dialog
@@ -332,21 +400,7 @@ export default class History extends Component {
           Reprocess {this.exposuresToReprocess()}?
         </Dialog>
         <Card style={styles.card}>
-          <Tabs
-            value={tab}
-            onChange={this.handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            fullWidth
-            centered
-          >
-            {process.env.REACT_APP_OFFLINE === 'true' ? null : (
-              <Tab label="Most Recent" value={'last'} />
-            )}
-            <Tab label="History" value={'history'} />
-          </Tabs>
-          {tab === 'last' ? this.renderLast() : null}
-          {tab === 'history' ? this.renderHistory() : null}
+          {!this.state.renderTabs ? this.renderHistory() : this.renderTabs()}
         </Card>
       </div>
     );
