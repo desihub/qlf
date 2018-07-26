@@ -143,6 +143,16 @@ export function getObservingHistory(start, end, order, offset, limit, filters) {
   };
 }
 
+export function getSurveyReport(order, filters, night) {
+  return async function(dispatch) {
+    const rows = await QlfApi.getSurveyReport(night, order, filters);
+    if (rows && rows.results) {
+      dispatch(updateRowsCount(rows.count));
+      dispatch(updateRows(rows.results));
+    }
+  };
+}
+
 export function getQA(processId) {
   return async function(dispatch) {
     const qa = await QlfApi.getQA(processId);

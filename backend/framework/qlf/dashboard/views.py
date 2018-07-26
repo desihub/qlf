@@ -17,7 +17,8 @@ from .serializers import (
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
-    ExposureFlavorSerializer, ProcessCommentSerializer
+    ExposureFlavorSerializer, ProcessCommentSerializer,
+    ExposureNightSerializer
 )
 
 from datetime import datetime, timedelta
@@ -212,7 +213,7 @@ class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelV
 
     queryset = Exposure.objects.order_by('-pk')
     serializer_class = ObservingHistorySerializer
-    filter_fields = ('exposure_id', 'flavor')
+    filter_fields = ('exposure_id', 'flavor', 'night',)
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -366,6 +367,13 @@ class DistinctFlavorsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelVi
 
     queryset = Exposure.objects.all().distinct('flavor')
     serializer_class = ExposureFlavorSerializer
+
+
+class DistinctNightsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing exposures distinct nights"""
+
+    queryset = Exposure.objects.all().distinct('night')
+    serializer_class = ExposureNightSerializer
 
 
 class AddExposureViewSet(viewsets.ReadOnlyModelViewSet):

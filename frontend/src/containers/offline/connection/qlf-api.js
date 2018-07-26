@@ -164,6 +164,19 @@ export default class QlfApi {
     }
   }
 
+  static async getNights() {
+    try {
+      const nights = await fetch(`${apiUrl}dashboard/api/distinct_nights/`, {
+        method: 'GET',
+        headers: headers,
+      });
+      const responseJson = await nights.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getProcessingHistory(start, end, order, offset, limit, filters) {
     if (!start && !end) return;
     try {
@@ -194,6 +207,25 @@ export default class QlfApi {
         }&offset=${offset}&ordering=${order}&datemin=${
           start.split('T')[0]
         }&datemax=${end.split('T')[0]}&${filters}`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await exposures.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static async getSurveyReport(night, order, filters) {
+    if (!night) return;
+    try {
+      const exposures = await fetch(
+        `${apiUrl}dashboard/api/observing_history/?format=json&night=${
+          night
+        }&ordering=${order}&${filters}`,
         {
           method: 'GET',
           headers: headers,
