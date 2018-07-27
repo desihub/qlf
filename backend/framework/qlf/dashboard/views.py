@@ -622,9 +622,12 @@ def fits_to_png(request):
     # Generate Image
     cam = request.GET.get('cam')
     processing = request.GET.get('processing')
-    night = request.GET.get('night')
-    exposure = request.GET.get('exposure')
-    png_image = Fits2png(cam, processing, night, exposure).convert_fits2png()
+    process_id = request.GET.get('process')
+    process = Process.objects.get(pk=process_id)
+    night = process.exposure.night
+    exposure_id = process.exposure_id
+    png_image = Fits2png(cam, processing, night,
+                         exposure_id).convert_fits2png()
     context = {'image': png_image}
     response = HttpResponse(template.render(context, request))
 

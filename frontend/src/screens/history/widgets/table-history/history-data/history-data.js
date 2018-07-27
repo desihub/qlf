@@ -46,10 +46,10 @@ export default class HistoryData extends React.Component {
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
     tableColumns: PropTypes.array.isRequired,
-    openCCDViewer: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
     openLogViewer: PropTypes.func,
+    setAnchorEl: PropTypes.func.isRequired,
   };
 
   formatDate = dateString => {
@@ -218,7 +218,7 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             <Icon
-              onClick={() => this.props.openCCDViewer(night, exposureId)}
+              onClick={evt => this.props.setAnchorEl(evt, processId)}
               style={styles.notificationsIcon}
             >
               image

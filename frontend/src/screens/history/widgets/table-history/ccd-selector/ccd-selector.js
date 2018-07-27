@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import Popover from '@material-ui/core/Popover';
 
 const styles = theme => ({
   typography: {
     margin: theme.spacing.unit * 2,
+    cursor: 'pointer',
   },
 });
 
@@ -15,32 +15,24 @@ class CCDSelector extends React.Component {
   static propTypes = {
     anchorEl: PropTypes.object,
     classes: PropTypes.object.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    openCCDViewer: PropTypes.func.isRequired,
   };
 
-  handleClick = event => {
-    this.setState({
-      anchorEl: event.currentTarget,
-    });
-  };
-
-  handleClose = () => {
-    this.setState({
-      anchorEl: null,
-    });
-  };
+  openViewer = viewer => {
+    this.props.handleClose();
+    this.props.openCCDViewer(viewer);
+  }
 
   render() {
     const { classes, anchorEl } = this.props;
 
     return (
       <div>
-        <Button variant="contained" onClick={this.handleClick}>
-          Open Popover
-        </Button>
         <Popover
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
-          onClose={this.handleClose}
+          onClose={this.props.handleClose}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'center',
@@ -50,8 +42,17 @@ class CCDSelector extends React.Component {
             horizontal: 'center',
           }}
         >
-          <Typography className={classes.typography}>
-            The content of the Popover.
+          <Typography
+            className={classes.typography}
+            onClick={() => this.openViewer('png')}
+          >
+            PNG
+          </Typography>
+          <Typography
+            className={classes.typography}
+            onClick={() => this.openViewer('fiber')}
+          >
+            Fibers
           </Typography>
         </Popover>
       </div>

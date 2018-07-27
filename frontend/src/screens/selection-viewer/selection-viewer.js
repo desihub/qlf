@@ -9,8 +9,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import { FadeLoader } from 'halogenium';
 import Button from '@material-ui/core/Button';
-import PNGViewer from './png-preview/png-preview';
+import PNGViewer from './png-viewer/png-viewer';
 import LogViewer from './log-viewer/log-viewer';
+import FiberViewer from './fiber-viewer/fiber-viewer';
 
 const styles = {
   controlsContainer: {
@@ -190,14 +191,15 @@ class SelectionViewer extends React.Component {
 
   renderControls = () => {
     const { classes } = this.props;
-    return (
-      <div className={classes.controlsContainer}>
-        {this.renderSpectrographSelection()}
-        {this.renderArmSelection()}
-        {this.renderProcessingSelection()}
-        {this.renderClear()}
-      </div>
-    );
+    if (this.props.arm || this.props.spectrograph || this.props.processing)
+      return (
+        <div className={classes.controlsContainer}>
+          {this.renderSpectrographSelection()}
+          {this.renderArmSelection()}
+          {this.renderProcessingSelection()}
+          {this.renderClear()}
+        </div>
+      );
   };
 
   renderClear = () => (
@@ -213,7 +215,7 @@ class SelectionViewer extends React.Component {
 
   renderViewer = () => {
     switch (window.location.pathname) {
-      case '/ccd-viewer':
+      case '/png-viewer':
         return (
           <PNGViewer
             processing={this.state.processing}
@@ -232,6 +234,8 @@ class SelectionViewer extends React.Component {
             loading={this.state.loading}
           />
         );
+      case '/fiber-viewer':
+        return <FiberViewer />;
       default:
         return null;
     }
