@@ -38,6 +38,9 @@ class TableHistory extends Component {
     fetchLastProcess: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
     openCCDViewer: PropTypes.func.isRequired,
+    openLogViewer: PropTypes.func,
+    handleHistoryStateChange: PropTypes.func,
+    night: PropTypes.string,
   };
 
   constructor(props) {
@@ -57,6 +60,14 @@ class TableHistory extends Component {
     };
   }
 
+  componentDidMount() {
+    if (this.props.handleHistoryStateChange) {
+      this.props.handleHistoryStateChange('order', this.state.order);
+      this.props.handleHistoryStateChange('offset', this.state.offset);
+      this.props.handleHistoryStateChange('filters', this.state.filters);
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (
       nextProps.startDate &&
@@ -72,7 +83,8 @@ class TableHistory extends Component {
         order,
         this.state.offset,
         this.props.limit,
-        this.state.filters
+        this.state.filters,
+        this.props.night
       );
     }
   }
@@ -106,6 +118,7 @@ class TableHistory extends Component {
               openCCDViewer={this.openCCDViewer}
               handleCommentModalOpen={this.handleCommentModalOpen}
               pipelineRunning={this.props.pipelineRunning}
+              openLogViewer={this.props.openLogViewer}
             />
           );
         })}
@@ -121,7 +134,8 @@ class TableHistory extends Component {
       order,
       this.state.offset,
       this.props.limit,
-      this.state.filters
+      this.state.filters,
+      this.props.night
     );
     this.setState({
       asc,
@@ -129,6 +143,7 @@ class TableHistory extends Component {
       order,
       offset: 0,
     });
+    this.props.handleHistoryStateChange('order', order);
   };
 
   addStatusFilter = filter => {
@@ -150,30 +165,35 @@ class TableHistory extends Component {
     }
     const filters = `${this.state.flavorFilter}&${statusFilter}`;
     this.setState({ statusFilter, filters });
+    this.props.handleHistoryStateChange('filters', filters);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
       this.state.order,
       this.state.offset,
       this.props.limit,
-      filters
+      filters,
+      this.props.night
     );
   };
 
   addFlavorFilter = flavorFilter => {
     const filters = `${flavorFilter}&${this.state.statusFilter}`;
     this.setState({ flavorFilter, filters });
+    this.props.handleHistoryStateChange('filters', filters);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
       this.state.order,
       this.state.offset,
       this.props.limit,
-      filters
+      filters,
+      this.props.night
     );
   };
 
   handleChangePage = (evt, offset) => {
+    this.props.handleHistoryStateChange('offset', offset);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
@@ -367,7 +387,7 @@ class TableHistory extends Component {
           />
           {this.renderBody()}
         </Table>
-        {this.renderPagination()}
+        {this.props.night ? null : this.renderPagination()}
       </div>
     );
   }

@@ -119,14 +119,14 @@ describe('TableHistory Controls', () => {
   it('calls navigateToQA error', async () => {
     await wrapper
       .find('TableCell')
-      .at(51)
+      .at(53)
       .find('span')
       .at(0)
       .simulate('click');
     expect(
       wrapper
         .find('TableCell')
-        .at(51)
+        .at(53)
         .find('span')
         .at(0)
         .text()
@@ -137,14 +137,14 @@ describe('TableHistory Controls', () => {
   it('calls navigateToQA ok', async () => {
     await wrapper
       .find('TableCell')
-      .at(33)
+      .at(34)
       .find('span')
       .at(0)
       .simulate('click');
     expect(
       wrapper
         .find('TableCell')
-        .at(33)
+        .at(34)
         .find('span')
         .at(0)
         .text()

@@ -14,6 +14,10 @@ api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'process_comment', views.ProcessCommentViewSet)
 api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'last_process', views.LastProcessViewSet, 'monitor')
+api_router.register(r'datatable_exposures',
+                    views.DataTableExposureViewSet, 'datatable_exposures')
+api_router.register(r'distinct_nights',
+                    views.DistinctNightsViewSet, 'distinct_nights')
 api_router.register(r'distinct_flavors',
                     views.DistinctFlavorsViewSet, 'distinct_flavors')
 api_router.register(r'processing_history',
@@ -55,6 +59,7 @@ urlpatterns = [
     url(r'^dashboard/api/', include(api_router.urls)),
     url(r'^dashboard/fits_to_png', views.fits_to_png, name='fits_to_png'),
     url(r'^dashboard/load_qa', views.load_qa, name='load_qa'),
+    url(r'^dashboard/get_camera_log', views.get_camera_log, name='get_camera_log'),
     url(r'^dashboard/(?P<bokeh_app>\w+)/$',
         views.embed_bokeh, name='embed-bokeh')
 ]

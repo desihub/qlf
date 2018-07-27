@@ -49,6 +49,7 @@ export default class HistoryData extends React.Component {
     openCCDViewer: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
+    openLogViewer: PropTypes.func,
   };
 
   formatDate = dateString => {
@@ -84,7 +85,8 @@ export default class HistoryData extends React.Component {
     if (qaTests) {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
-        !JSON.stringify(qaTests).includes('ALARM');
+        !JSON.stringify(qaTests).includes('ALARM') &&
+        !JSON.stringify(qaTests).includes('FAIL');
       return testsFailed;
     }
     return false;
@@ -100,7 +102,6 @@ export default class HistoryData extends React.Component {
 
   renderViewQA = (processing, runtime) => {
     if (processing && !runtime) return <CircularProgress size={20} />;
-    if (!runtime) return;
 
     return (
       <span
@@ -284,6 +285,20 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             {this.renderViewQA(processing, row.runtime)}
+          </TableCell>
+        );
+      case 'log':
+        return (
+          <TableCell
+            key={`PROCV${key}`}
+            style={{ ...styles.tableCell, ...lastProcessed }}
+          >
+            <Icon
+              onClick={() => this.props.openLogViewer(processId)}
+              style={styles.notificationsIcon}
+            >
+              event_note
+            </Icon>
           </TableCell>
         );
       default:

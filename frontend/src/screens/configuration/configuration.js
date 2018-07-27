@@ -9,8 +9,9 @@ import PropTypes from 'prop-types';
 const styles = {
   container: {
     margin: '1em',
-    overflowY: 'scroll',
+    overflow: 'auto',
     height: '85vh',
+    width: 'calc(100vw - 2em)',
   },
 };
 
