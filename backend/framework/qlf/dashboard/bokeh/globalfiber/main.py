@@ -48,11 +48,15 @@ class GlobalFiber:
             exposure = process.exposure
             folder = "{}/{}/{:08d}".format(
                 spectro_data, exposure.night, process.exposure_id)
+
             file = "fibermap-{:08d}.fits".format(process.exposure_id)
             fitsfile = fits.open('{}/{}'.format(folder, file))
+
             ra_tile = fitsfile['FIBERMAP'].data['RA_OBS']
             dec_tile = fitsfile['FIBERMAP'].data['DEC_OBS']
             fid_tile = fitsfile['FIBERMAP'].data['FIBER']
+            ra_center = fitsfile['FIBERMAP'].header['TELRA']
+            dec_center = fitsfile['FIBERMAP'].header['TELDEC']
 
             y = []
             ra = []
@@ -135,15 +139,20 @@ class GlobalFiber:
                                 'dec_tile': dec_not,   
                                 'color': ['lightgrey']*len(fid_not)
                             })
+        radius = 0.017
+        radius_hover = 0.018 
+
+        xrange = Range1d(start=ra_center +2, end=ra_center-2) 
+        yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8) 
 
         p = Figure( title='FIBERS'
                 , x_axis_label='RA', y_axis_label='DEC'
                 , plot_width=600, plot_height=600
                 , tools=[hover, "pan,wheel_zoom,reset,lasso_select,crosshair"]
+                ,x_range=xrange, y_range=yrange
                 )
 
-        radius = 0.017
-        radius_hover = 0.018 
+
         p.circle('ra_tile', 'dec_tile', source=source_not, radius=radius,
             fill_color='color', line_color='black', line_width=0.3)
         
