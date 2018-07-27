@@ -255,6 +255,24 @@ class ProcessViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     filter_fields = ('exposure',)
 
 
+class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+    def list(self, request, *args, **kwargs):
+        response = super(QlConfigViewSet, self).list(
+            request, args, kwargs)
+        try:
+            ql_type = request.GET.get('type')
+            ql_path = '{}/qlconfig_{}.yaml'.format(os.environ.get('QL_CONFIG_DIR'), ql_type)
+            with open(ql_path) as f:
+                qlconfig = f.read()
+        except Exception as err:
+            logger.info(err)
+            qlconfig = 'Error reading qlconfig: {}'.format(err)
+        response.data = qlconfig
+        return response
+
+
 class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing configurations"""
 
@@ -278,7 +296,8 @@ class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
             spectrographs=os.environ.get('PIPELINE_SPECTROGRAPHS'),
             desi_spectro_data=os.environ.get('DESI_SPECTRO_DATA'),
             desi_spectro_redux=os.environ.get('DESI_SPECTRO_REDUX'),
-            calibration_path=os.environ.get('DESI_CCD_CALIBRATION_DATA')
+            calibration_path=os.environ.get('DESI_CCD_CALIBRATION_DATA'),
+            max_workers=os.environ.get('PIPELINE_MAX_WORKERS')
         )
         response.data = {'results': configuration}
         return response

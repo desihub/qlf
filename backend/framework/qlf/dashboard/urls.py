@@ -38,6 +38,7 @@ api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'exposures_date_range',
                     views.ExposuresDateRangeViewSet, 'exposures_date_range')
 api_router.register(r'add_exposure', views.AddExposureViewSet, 'add_exposure')
+api_router.register(r'qlconfig', views.QlConfigViewSet, 'qlconfig')
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),

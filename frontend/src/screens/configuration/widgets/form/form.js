@@ -72,12 +72,7 @@ class Form extends React.Component {
       qlconfig: '',
       spectrographs: [],
       loading: false,
-      minInterval: '',
-      maxInterval: '',
-      maxExposures: '',
-      maxNights: '',
-      allowedDelay: '',
-      baseExposures: '',
+      maxWorkers: '',
       diskAlert: 20,
       diskWarning: 80,
       calibrationPath: '',
@@ -158,14 +153,9 @@ class Form extends React.Component {
         desi_spectro_data,
         desi_spectro_redux,
         exposures,
-        min_interval,
-        max_interval,
-        max_exposures,
-        max_nights,
-        qlconfig,
         spectrographs,
-        base_exposures_path,
         calibration_path,
+        max_workers,
       } = configuration.results;
 
       const specs = spectrographs.split(',').map(s => parseInt(s, 10));
@@ -175,15 +165,10 @@ class Form extends React.Component {
         input: desi_spectro_data,
         output: desi_spectro_redux,
         exposures: exposures,
-        qlconfig: qlconfig,
         spectrographs: specs,
-        minInterval: min_interval,
-        maxInterval: max_interval,
-        maxExposures: max_exposures,
-        maxNights: max_nights,
         allowedDelay: allowed_delay,
-        baseExposures: base_exposures_path,
         calibrationPath: calibration_path,
+        maxWorkers: max_workers,
       });
     }
   };

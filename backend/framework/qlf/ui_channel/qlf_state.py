@@ -1,7 +1,6 @@
 from ui_channel.camera_status import CameraStatus
 from dashboard.models import Process, Job
 from clients import get_exposure_monitoring
-from .views import open_file
 from dashboard.utils import get_date
 import io
 import os
