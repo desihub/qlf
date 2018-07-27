@@ -3,26 +3,15 @@ import configparser
 import copy
 import logging
 from log import get_logger
-from util import get_config
 from ui_channel.alerts import Alerts
 
-cfg = get_config()
-qlf_root = cfg.get("environment", "qlf_root")
+desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
+qlf_root = os.getenv('QLF_ROOT')
 
 logger = get_logger(
     "qlf.camera_status",
     os.path.join(qlf_root, "logs", "camera_status.log")
 )
-
-qlf_root = os.getenv('QLF_ROOT')
-cfg = configparser.ConfigParser()
-
-try:
-    cfg.read('%s/framework/config/qlf.cfg' % qlf_root)
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-except Exception as error:
-    logger.error(error)
-    logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
 
 
 class CameraStatus:

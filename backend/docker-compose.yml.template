@@ -36,6 +36,8 @@ services:
       - UPDATE_DEPENDENCIES=True # run conda and pip install when starting container
       - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
       - QLF_CFG=/app/framework/config/qlf.cfg
+      - DISK_SPACE_PERCENT_WARNING=40
+      - DISK_SPACE_PERCENT_ALERT=20
       # Database
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
@@ -45,7 +47,6 @@ services:
       - DB_NAME=db
       # Daemon
       - DAEMON_TEST=False
-      - EXPOSURE_GENERATOR_NS=exposure.generator
       - EXPOSURE_MONITORING_NS=exposure.monitoring
       - ICS_NAME=ICSDaemon
       - ICS_HOST=localhost
@@ -58,6 +59,12 @@ services:
       - PYRO_THREADPOOL_SIZE=64
       - PYRO_PORT=56006
       - PYRO_SERIALIZERS_ACCEPTED=pickle
+      # Pipeline Configuration
+      - PIPELINE_ARMS=b # e.g. b,r,z
+      - PIPELINE_SPECTROGRAPHS=0 # e.g. 0,1,2,3,4,5,6,7,8,9
+      - PIPELINE_LOGLEVEL=INFO # e.g. DEBUG, INFO, WARNING or ERROR
+      - PIPELINE_MAX_WORKERS=0 # maximum workers running at the same time (0 for unlimited)
+      - PIPELINE_DELAY=20
     volumes:
       - .:/app # maps host diretory to internal container directory
     working_dir: /app/

@@ -207,7 +207,7 @@ class Form extends React.Component {
       values.push(value);
       keys.push(config.api);
     });
-    await QlfApi.editConfiguration(keys, values);
+    // await QlfApi.editConfiguration(keys, values);
     this.setState({ loading: false });
   };
 
@@ -216,9 +216,9 @@ class Form extends React.Component {
       <div style={styles.container}>
         {this.state.loading ? <CircularProgress size={50} /> : null}
         <Typography style={styles.title} variant="headline" component="h2">
-          Exposure Generator
+          Workers
         </Typography>
-        {configMap.filter(c => c.type === 'exposureGen').map(c => (
+        {configMap.filter(c => c.type === 'workers').map(c => (
           <TextField
             disabled={true}
             key={c.label}

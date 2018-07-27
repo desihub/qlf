@@ -4,14 +4,11 @@ from astropy.io import fits
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-from util import get_config
 from bokeh.models import LogColorMapper, ColorMapper
 import numpy as np
 
-cfg = get_config()
-
-desi_spectro_data = cfg.get("namespace", "desi_spectro_data")
-desi_spectro_redux = cfg.get("namespace", "desi_spectro_redux")
+desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
 
 
 class Fits2png:

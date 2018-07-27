@@ -111,6 +111,8 @@ class Process(models.Model):
     )
     configuration = models.ForeignKey(
         Configuration,
+        blank=True,
+        null=True,
         related_name='process_configuration'
     )
 
