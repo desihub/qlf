@@ -38,15 +38,19 @@ class FiberViewer extends React.Component {
   static propTypes = {
     classes: PropTypes.object,
     loadEnd: PropTypes.func.isRequired,
+    loadStart: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
     document.title = 'Fiber Viewer';
     if (window.location.pathname === '/fiber-viewer') {
       if (window.location.search.includes('process=')) {
-        this.setState({
-          processId: window.location.search.split('process=')[1],
-        });
+        this.setState(
+          {
+            processId: window.location.search.split('process=')[1],
+          },
+          this.props.loadStart
+        );
       }
     }
   }
@@ -56,7 +60,6 @@ class FiberViewer extends React.Component {
     const url = `${apiUrl}dashboard/load_qa/?qa=globalfiber&process_id=${
       this.state.processId
     }`;
-    console.log(url)
 
     return (
       <iframe

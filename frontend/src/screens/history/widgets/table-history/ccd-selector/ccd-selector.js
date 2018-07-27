@@ -22,7 +22,7 @@ class CCDSelector extends React.Component {
   openViewer = viewer => {
     this.props.handleClose();
     this.props.openCCDViewer(viewer);
-  }
+  };
 
   render() {
     const { classes, anchorEl } = this.props;

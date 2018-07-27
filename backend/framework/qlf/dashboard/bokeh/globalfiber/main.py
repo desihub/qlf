@@ -11,8 +11,7 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics, \
-        get_scalar_metrics_aux
+from dashboard.bokeh.helper import get_url_args, write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist, html_table
 
 import numpy as np
@@ -23,7 +22,10 @@ from bokeh.models.widgets import Div
 
 from dashboard.models import Process
 from astropy.io import fits
+from util import get_config
 
+cfg = get_config()
+spectro_data = cfg.get("namespace", "desi_spectro_data")
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +46,8 @@ class GlobalFiber:
             process = Process.objects.get(pk=process_id)
             joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
             exposure = process.exposure
-            folder = "/app/spectro/data/{}/{:08d}".format(
-            exposure.night, process.exposure_id)
+            folder = "{}/{}/{:08d}".format(
+                spectro_data, exposure.night, process.exposure_id)
             file = "fibermap-{:08d}.fits".format(process.exposure_id)
             fitsfile = fits.open('{}/{}'.format(folder, file))
             ra_tile = fitsfile['FIBERMAP'].data['RA_OBS']
@@ -58,14 +60,16 @@ class GlobalFiber:
             obj_type = []
 
             for cam in joblist:
-                mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
-                countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
-                ra_wedge = mergedqa['GENERAL_INFO']['RA']
-                dec_wedge = mergedqa['GENERAL_INFO']['DEC']
-                y = y + countbins
-                ra = ra + ra_wedge
-                dec = dec + dec_wedge
-                obj_type = obj_type + 500*['']
+                mergedqa = get_merged_qa_scalar_metrics(
+                    self.selected_process_id, cam)
+                if mergedqa:
+                    countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
+                    ra_wedge = mergedqa['GENERAL_INFO']['RA']
+                    dec_wedge = mergedqa['GENERAL_INFO']['DEC']
+                    y = y + countbins
+                    ra = ra + ra_wedge
+                    dec = dec + dec_wedge
+                    obj_type = obj_type + 500*['']
               
         except Exception as err:
             logger.info(err)

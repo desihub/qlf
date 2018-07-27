@@ -3,7 +3,7 @@ import logging
 import requests
 from furl import furl
 from bokeh.plotting import Figure
-from dashboard.models import Process
+from dashboard.models import Process, QA, Job
 from scalar_metrics import LoadMetrics
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
@@ -112,6 +112,20 @@ def get_scalar_metrics(process_id, cam):
     except Exception as err:
         logger.error(err)
         logger.error('load_scalar_metrics error')
+    return scalar_metrics
+
+
+def get_merged_qa_scalar_metrics(process_id, cam):
+    """
+    Returns cam scalar metrics
+    """
+
+    scalar_metrics = dict()
+    try:
+        obj = Job.objects.filter(process_id=process_id).get(camera=cam)
+        scalar_metrics = obj.output
+    except QA.DoesNotExist:
+        scalar_metrics = None
     return scalar_metrics
 
 

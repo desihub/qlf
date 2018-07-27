@@ -34,8 +34,15 @@ const styles = {
   viewer: {
     width: 'calc(100vw - 280px)',
   },
+  fadeLoaderFull: {
+    position: 'absolute',
+    paddingLeft: 'calc((100vw - 40px) / 2)',
+    paddingTop: 'calc(25vh)',
+  },
   fadeLoader: {
-    paddingLeft: '35vw',
+    position: 'absolute',
+    paddingLeft: 'calc((100vw - 300px) / 2)',
+    paddingTop: 'calc(25vh)',
   },
   selection: {
     textAlign: 'center',
@@ -109,10 +116,15 @@ class SelectionViewer extends React.Component {
 
   renderLoading = () => {
     if (!this.state.loading) return null;
+    const showControls =
+      this.props.arm || this.props.spectrograph || this.props.processing;
+    const classLoading = showControls
+      ? styles.fadeLoader
+      : styles.fadeLoaderFull;
     return (
       <div className={this.props.classes.loading}>
         <FadeLoader
-          style={styles.fadeLoader}
+          style={classLoading}
           color="#424242"
           size="16px"
           margin="4px"
@@ -235,7 +247,9 @@ class SelectionViewer extends React.Component {
           />
         );
       case '/fiber-viewer':
-        return <FiberViewer />;
+        return (
+          <FiberViewer loadEnd={this.loadEnd} loadStart={this.loadStart} />
+        );
       default:
         return null;
     }
@@ -243,11 +257,13 @@ class SelectionViewer extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const showControls =
+      this.props.arm || this.props.spectrograph || this.props.processing;
     return (
       <Paper elevation={4} className={classes.main}>
-        <div className={classes.gridRow}>
+        <div className={showControls ? classes.gridRow : null}>
           {this.renderControls()}
-          <div className={classes.viewer}>
+          <div className={showControls ? classes.viewer : null}>
             {this.renderLoading()}
             {this.renderViewer()}
           </div>

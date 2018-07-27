@@ -59,13 +59,6 @@ export default class HistoryData extends React.Component {
     return month + '/' + day + '/' + date.getFullYear();
   };
 
-  formatNight = dateString => {
-    const date = new Date(dateString);
-    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
-    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
-    return date.getFullYear() + month + day;
-  };
-
   formatTime = dateString => {
     const time = new Date(dateString);
     const hour = (time.getHours() + 1 < 10 ? '0' : '') + time.getHours();
@@ -143,12 +136,7 @@ export default class HistoryData extends React.Component {
         ? 'chat_bubble'
         : 'chat_bubble_outline';
     }
-    const night = this.formatNight(
-      isNotProcessingHistory ? row.dateobs : row.exposure.dateobs
-    );
-    const exposureId = isNotProcessingHistory
-      ? row['exposure_id']
-      : row.exposure['exposure_id'];
+
     const status = !row.runtime
       ? processing ? 'pending' : 'aborted'
       : this.qaSuccess() ? 'normal' : 'failed';
@@ -221,7 +209,7 @@ export default class HistoryData extends React.Component {
               onClick={evt => this.props.setAnchorEl(evt, processId)}
               style={styles.notificationsIcon}
             >
-              image
+              pageview
             </Icon>
           </TableCell>
         );
