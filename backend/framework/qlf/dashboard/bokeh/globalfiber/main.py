@@ -40,27 +40,118 @@ class GlobalFiber:
     def data_source(self, fmap ):
         """ Creating data source for plots
         """
+        data_model = {
+            'goodfiber_b':[],
+            'goodfiber_r':[],
+            'goodfiber_z':[],
+            'status_b':   [],
+            'status_r':   [],
+            'status_z':   [],
+            'color_b': [],
+            'color_r': [],
+            'color_z': [],
+            'cam_b': [],
+            'cam_r': [],
+            'cam_z': [],          
+            'OBJ_TYPE': [],
+            'ra':  [],
+            'dec': [],
+            }
+
+        #source = ColumnDataSource(data=data_model.copy())
+        #source_not = ColumnDataSource(data=data_model.copy())
+
         try:
             process_id = self.selected_process_id
             process = Process.objects.get(pk=process_id)
             joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
             exposure = process.exposure
-            folder = "{}/{}/{:08d}".format(
-                spectro_data, exposure.night, process.exposure_id)
+ 
 
-            file = "fibermap-{:08d}.fits".format(process.exposure_id)
+            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
+            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
+            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
+            fid_tile = fmap['FIBERMAP'].data['FIBER']
+            ra_center = fmap['FIBERMAP'].header['TELRA']
+            dec_center = fmap['FIBERMAP'].header['TELDEC']
+
+        except Exception as err:
+            logger.info(err)
+            #sys.exit('Could not load data')
+
+
+        # value assignment for valid fibers
+        y = []
+        color = []
+        status = []
+        ra = []
+        dec = []
+        obj_type = []
+
+        f=open('dbg', 'w')
+
+        #for cam in [ arm+str(spec) for arm in ['b','r','z'] for spec in list(range(10))]:
+        for arm in ['b','r','z']:
+            y = []
+            color = []
+            status = []
+            cam_inst = []
+            for spec in list(range(10)): 
+                cam = arm+str(spec)   
+                if cam in joblist:
+                    try:
+                        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+                        countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
+                        y = y + countbins
+                        color = color + [ 'green' if idx==1 else 'red' for idx in countbins]
+                        status = status + ['GOOD' if idx==1 else 'BAD' for idx in countbins]
+                        f.write('{} \n {} \t {}\n'.format(cam, len(color), len(y)))
+
+                    except Exception as err:
+                        f.write('{}'.format(err))
+                        sys.exit(err)
+
+                else:
+                    y = y + 500*['']
+                    color = color + ['lightgray']*500
+                    status = status + ['']*500
+                cam_inst = cam_inst +[cam]*500
+
+                data_model['goodfiber_' + cam[0]] = y
+                data_model['color_'+ cam[0]] =  color
+                data_model['status_'+ cam[0]] =  status
+                data_model['cam_'+cam[0]] = cam_inst
+
+            data_model['OBJ_TYPE'] = otype_tile
+            data_model['ra'] = ra_tile
+            data_model['dec'] = dec_tile
+        for k,v in data_model.items():
+            f.write('{} {} \n'.format(k,len(v)))
+        source = ColumnDataSource(data=data_model)
+
+        return source #, source_not
+
+
+
+    def wedge_plot(self, wedge_arm, fmap, common_source=None, common_source_not=None):
+
+        try:
+            process_id = self.selected_process_id
+            process = Process.objects.get(pk=process_id)
+            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+            exposure = process.exposure
 
             ra_tile = fmap['FIBERMAP'].data['RA_OBS']
             dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
             fid_tile = fmap['FIBERMAP'].data['FIBER']
             ra_center = fmap['FIBERMAP'].header['TELRA']
             dec_center = fmap['FIBERMAP'].header['TELDEC']
+            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
 
             y = []
             ra = []
             dec = []
             obj_type = []
-            f2.write('{}\n '.format(joblist))
 
             for cam in joblist:
                 mergedqa = get_merged_qa_scalar_metrics(
@@ -72,97 +163,14 @@ class GlobalFiber:
                     y = y + countbins
                     ra = ra + ra_wedge
                     dec = dec + dec_wedge
-                    obj_type = obj_type + 500*['']
+                    j = int(cam[1:])
+                    obj_type = obj_type + [otype_tile[idx] for idx in list( range(j*500, (j+1)*500 ))] #500*['']
 
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')
 
 
-        fid_yes = []
-        for i in joblist:
-            if wedge_arm in i:
-                j = int(i[1:])
-                fid_aux = list( range(j*500, (j+1)*500 ))
-                fid_yes = fid_yes + (fid_aux)
-
-        fid_not = list( set(fid_tile).difference(set(fid_yes))  )
-
-        qlf_fiberid = fid_yes
-
-        source = ColumnDataSource(
-                        data={'goodfiber': y,
-                            'fiberid' : fid_yes,
-                            'status': ['GOOD' if i==1 else 'BAD' for i in y],
-                            'x1': ra,
-                            'y1': dec,   
-                            'QLF_FIBERID': qlf_fiberid,
-                            'OBJ_TYPE': obj_type,
-                            'color': ['#319b5c' if i ==1 else 'red' for i in y],
-                            'arm': [wedge_arm]*len(y)
-                            })
-
-        ra_not = []
-        dec_not = []
-        for i in fid_not:
-            ra_not.append(ra_tile[i]) 
-            dec_not.append(dec_tile[i])
-
-        source_not = ColumnDataSource(
-                        data={  'x1': ra_not,
-                                'y1': dec_not,   
-                                'color': ['lightgrey']*len(fid_not),
-                                'arm': [wedge_arm]*len(ra_not),
-                                'OBJ_TYPE':['']*len(ra_not)
-                            })
-
-        return source, source_not
-
-
-
-    def wedge_plot(self, wedge_arm, fmap, common_source, common_source_not):
-        f2 = open('dbg2','w')
-
-        try:
-            process_id = self.selected_process_id
-            process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-            exposure = process.exposure
-            folder = "{}/{}/{:08d}".format(
-                spectro_data, exposure.night, process.exposure_id)
-
-            file = "fibermap-{:08d}.fits".format(process.exposure_id)
-
-            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
-            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
-            fid_tile = fmap['FIBERMAP'].data['FIBER']
-            ra_center = fmap['FIBERMAP'].header['TELRA']
-            dec_center = fmap['FIBERMAP'].header['TELDEC']
-
-            y = []
-            ra = []
-            dec = []
-            obj_type = []
-            f2.write('{}\n '.format(joblist))
-
-            for cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
-                    self.selected_process_id, cam)
-                if mergedqa:
-                    countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
-                    ra_wedge = mergedqa['GENERAL_INFO']['RA']
-                    dec_wedge = mergedqa['GENERAL_INFO']['DEC']
-                    y = y + countbins
-                    ra = ra + ra_wedge
-                    dec = dec + dec_wedge
-                    obj_type = obj_type + 500*['']
-
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
-
-        #obj_type = sort_obj(mergedqa['GENERAL_INFO']) #tbfixed
         fiber_tooltip = """
             <div>
                 <div>
@@ -171,22 +179,21 @@ class GlobalFiber:
                 </div>
                 <div>
                     <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 13px; color: #515151;">@ra</span>
                 </div>
                 <div>
                     <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 13px; color: #515151;">@dec</span>
                 </div>
                 <div>
                     <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
                     <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Arm: </span>
-                    <span style="font-size: 13px; color: #515151;">@arm</span>
-                </div>                
-            </div>
-        """
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">CAM: </span>
+                    <span style="font-size: 13px; color: #515151;">@cam_</span>
+                </div>
+        """.replace('@status', '@status_'+wedge_arm).replace('@cam_','@cam_'+wedge_arm)
 
 
         hover = HoverTool(tooltips=fiber_tooltip)
@@ -203,8 +210,9 @@ class GlobalFiber:
         fid_not = list( set(fid_tile).difference(set(fid_yes))  )
 
         qlf_fiberid = fid_yes
-
-        source = ColumnDataSource(
+        try:
+            if common_source == None:
+                source = ColumnDataSource(
                         data={'goodfiber': y,
                             'fiberid' : fid_yes,
                             'status': ['GOOD' if i==1 else 'BAD' for i in y],
@@ -215,6 +223,11 @@ class GlobalFiber:
                             'color': ['#319b5c' if i ==1 else 'red' for i in y],
                             'arm': [wedge_arm]*len(y)
                             })
+            else:
+                source=common_source
+        except Exception as err:
+            sys.exit(err)
+
 
         ra_not = []
         dec_not = []
@@ -243,34 +256,31 @@ class GlobalFiber:
                 )
 
 
-        p.circle('x1', 'y1', source=source_not, radius=radius,
-            fill_color='color', line_color='black', line_width=0.3)
+        # p.circle('x1', 'y1', source=source_not, radius=radius,
+        #    fill_color='color', line_color='black', line_width=0.3)
         
-        p.circle('x1', 'y1', source=source, name="data", radius=radius,
-                fill_color= {'field':'color'}, 
-                line_color='black', line_width=0.4,
-                hover_line_color='red')
+        # p.circle('x1', 'y1', source=source, name="data", radius=radius,
+        #         fill_color= {'field':'color'}, 
+        #         line_color='black', line_width=0.4,
+        #         hover_line_color='red')
 
-        # marking the Hover point
-        p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, 
-                  hover_fill_color={'field': 'color'}, fill_color=None,
-                  line_color=None, line_width=3, hover_line_color='red')
+        # p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, 
+        #           hover_fill_color={'field': 'color'}, fill_color=None,
+        #           line_color=None, line_width=3, hover_line_color='red')
+        p.circle('ra', 'dec', source=source, name="data", radius=radius,
+               fill_color= {'field':'color_'+wedge_arm}, 
+               line_color='black', line_width=0.4,
+               hover_line_color='red')
+
+        p.circle('ra', 'dec', source=source, name="data", radius=radius_hover, 
+                 hover_fill_color={'field': 'color_'+wedge_arm}, fill_color=None,
+                 line_color=None, line_width=3, hover_line_color='red')
 
         return p 
 
 
 
-
-
-
-
-
-
-
-
-
     def load_qa(self):
-        #cam = self.selected_arm+str(self.selected_spectrograph)
 
         try:
             from dashboard.models import Job, Process
@@ -285,132 +295,28 @@ class GlobalFiber:
             file = "fibermap-{:08d}.fits".format(process.exposure_id)
             fitsfile = fits.open('{}/{}'.format(folder, file))
             fmap = fitsfile
-
-            ra_tile = fitsfile['FIBERMAP'].data['RA_OBS']
-            dec_tile = fitsfile['FIBERMAP'].data['DEC_OBS']
-            fid_tile = fitsfile['FIBERMAP'].data['FIBER']
-            ra_center = fitsfile['FIBERMAP'].header['TELRA']
-            dec_center = fitsfile['FIBERMAP'].header['TELDEC']
-
-            y = []
-            ra = []
-            dec = []
-            obj_type = []
-
-            for cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
-                    self.selected_process_id, cam)
-                if mergedqa:
-                    countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
-                    ra_wedge = mergedqa['GENERAL_INFO']['RA']
-                    dec_wedge = mergedqa['GENERAL_INFO']['DEC']
-                    y = y + countbins
-                    ra = ra + ra_wedge
-                    dec = dec + dec_wedge
-                    obj_type = obj_type + 500*['']
               
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')
 
-
-        # #obj_type = sort_obj(mergedqa['GENERAL_INFO']) #tbfixed
-        # fiber_tooltip = """
-        #     <div>
-        #         <div>
-        #             <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER STATUS: </span>
-        #             <span style="font-size: 13px; color: #515151">@status</span>
-        #         </div>
-        #         <div>
-        #             <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-        #             <span style="font-size: 13px; color: #515151;">@x1</span>
-        #         </div>
-        #         <div>
-        #             <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-        #             <span style="font-size: 13px; color: #515151;">@y1</span>
-        #         </div>
-        #         <div>
-        #             <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-        #             <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
-        #         </div>
-        #     </div>
-        # """
-
-
-        # hover = HoverTool(tooltips=fiber_tooltip)
-
-
-
-        # fid_yes = []
-        # for i in joblist:
-        #     j = int(i[1:])
-        #     fid_aux = list( range(j*500, (j+1)*500 ))
-        #     fid_yes = fid_yes + (fid_aux)
-
-        # fid_not = list( set(fid_tile).difference(set(fid_yes))  )
-
-        # qlf_fiberid = fid_yes
-
-        # source = ColumnDataSource(
-        #                 data={'goodfiber': y,
-        #                     'fiberid' : fid_yes,
-        #                     'status': ['GOOD' if i==1 else 'BAD' for i in y],
-        #                     'x1': ra,
-        #                     'y1': dec,   
-        #                     'QLF_FIBERID': qlf_fiberid,
-        #                     'OBJ_TYPE': obj_type,
-        #                     'color': ['#319b5c' if i ==1 else 'red' for i in y]
-        #                     })
-
-        # ra_not = []
-        # dec_not = []
-        # for i in fid_not:
-        #     ra_not.append(ra_tile[i]) 
-        #     dec_not.append(dec_tile[i])
-
-        # source_not = ColumnDataSource(
-        #                 data={  'ra_tile': ra_not,
-        #                         'dec_tile': dec_not,   
-        #                         'color': ['lightgrey']*len(fid_not)
-        #                     })
-        # radius = 0.017
-        # radius_hover = 0.018 
-
-        # xrange = Range1d(start=ra_center +2, end=ra_center-2) 
-        # yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8) 
-
-        # p = Figure( title='FIBERS'
-        #         , x_axis_label='RA', y_axis_label='DEC'
-        #         , plot_width=600, plot_height=600
-        #         , tools=[hover, "pan,wheel_zoom,reset,lasso_select,crosshair"]
-        #         ,x_range=xrange, y_range=yrange
-        #         )
-
-
-        # p.circle('ra_tile', 'dec_tile', source=source_not, radius=radius,
-        #     fill_color='color', line_color='black', line_width=0.3)
         
-        # p.circle('x1', 'y1', source=source, name="data", radius=radius,
-        #         fill_color= {'field':'color'}, 
-        #         line_color='black', line_width=0.4,
-        #         hover_line_color='red')
+        f=open('dbg2','w')
 
-        # # marking the Hover point
-        # p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, 
-        #           hover_fill_color={'field': 'color'}, fill_color=None,
-        #           line_color=None, line_width=3, hover_line_color='red')
+        src = self.data_source(fmap)
+        f.write('{}'.format(src))
 
-        # #layout = column(p, css_classes=["display-grid-countbins"])
-        # #f=open('dbg','w')
 
         try:
-            #f.write('should be working')
-            pb = self.wedge_plot('b', fmap)
-            pr = self.wedge_plot('r', fmap)
-            pz = self.wedge_plot('z', fmap)
-            layout = row( column( pb, css_classes=["display-grid-countbins"]), column(pr, css_classes=["display-grid-countbins"])) #, pz, 
+            pb = self.wedge_plot('b', fmap, common_source=src)#, common_source=source)
+            pr = self.wedge_plot('r', fmap, common_source=src)
+            pz = self.wedge_plot('z', fmap, common_source=src)
+            layout = row( column( pb, css_classes=["display-grid-countbins"]), 
+                        column(pr, css_classes=["display-grid-countbins"]),
+                        column(pz, css_classes=["display-grid-countbins"])) #, pz, 
         except Exception as err:
-            sys.exit(err)#f.write('{}'.format(err))
+            f.write('{}'.format(err))
+            sys.exit(err)
 
         return file_html(layout, CDN, "COUNTBINS")
 
