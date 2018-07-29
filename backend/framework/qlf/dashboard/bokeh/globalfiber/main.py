@@ -58,8 +58,6 @@ class GlobalFiber:
             'dec': [],
             }
 
-        #source = ColumnDataSource(data=data_model.copy())
-        #source_not = ColumnDataSource(data=data_model.copy())
 
         try:
             process_id = self.selected_process_id
@@ -77,18 +75,9 @@ class GlobalFiber:
 
         except Exception as err:
             logger.info(err)
-            #sys.exit('Could not load data')
+            sys.exit('Could not load data')
 
 
-        # value assignment for valid fibers
-        y = []
-        color = []
-        status = []
-        ra = []
-        dec = []
-        obj_type = []
-
-        f=open('dbg', 'w')
 
         #for cam in [ arm+str(spec) for arm in ['b','r','z'] for spec in list(range(10))]:
         for arm in ['b','r','z']:
@@ -105,10 +94,8 @@ class GlobalFiber:
                         y = y + countbins
                         color = color + [ 'green' if idx==1 else 'red' for idx in countbins]
                         status = status + ['GOOD' if idx==1 else 'BAD' for idx in countbins]
-                        f.write('{} \n {} \t {}\n'.format(cam, len(color), len(y)))
 
                     except Exception as err:
-                        f.write('{}'.format(err))
                         sys.exit(err)
 
                 else:
@@ -125,11 +112,10 @@ class GlobalFiber:
             data_model['OBJ_TYPE'] = otype_tile
             data_model['ra'] = ra_tile
             data_model['dec'] = dec_tile
-        for k,v in data_model.items():
-            f.write('{} {} \n'.format(k,len(v)))
+
         source = ColumnDataSource(data=data_model)
 
-        return source #, source_not
+        return source
 
 
 
@@ -255,18 +241,6 @@ class GlobalFiber:
                 , x_range = xrange, y_range=yrange
                 )
 
-
-        # p.circle('x1', 'y1', source=source_not, radius=radius,
-        #    fill_color='color', line_color='black', line_width=0.3)
-        
-        # p.circle('x1', 'y1', source=source, name="data", radius=radius,
-        #         fill_color= {'field':'color'}, 
-        #         line_color='black', line_width=0.4,
-        #         hover_line_color='red')
-
-        # p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, 
-        #           hover_fill_color={'field': 'color'}, fill_color=None,
-        #           line_color=None, line_width=3, hover_line_color='red')
         p.circle('ra', 'dec', source=source, name="data", radius=radius,
                fill_color= {'field':'color_'+wedge_arm}, 
                line_color='black', line_width=0.4,
