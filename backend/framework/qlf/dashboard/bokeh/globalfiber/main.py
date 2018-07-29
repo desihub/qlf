@@ -119,13 +119,9 @@ class GlobalFiber:
 
 
 
-    def wedge_plot(self, wedge_arm, fmap, common_source=None, common_source_not=None):
+    def wedge_plot(self, wedge_arm, fmap, common_source=None):
 
         try:
-            process_id = self.selected_process_id
-            process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-            exposure = process.exposure
 
             ra_tile = fmap['FIBERMAP'].data['RA_OBS']
             dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
@@ -133,24 +129,6 @@ class GlobalFiber:
             ra_center = fmap['FIBERMAP'].header['TELRA']
             dec_center = fmap['FIBERMAP'].header['TELDEC']
             otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
-
-            y = []
-            ra = []
-            dec = []
-            obj_type = []
-
-            for cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
-                    self.selected_process_id, cam)
-                if mergedqa:
-                    countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
-                    ra_wedge = mergedqa['GENERAL_INFO']['RA']
-                    dec_wedge = mergedqa['GENERAL_INFO']['DEC']
-                    y = y + countbins
-                    ra = ra + ra_wedge
-                    dec = dec + dec_wedge
-                    j = int(cam[1:])
-                    obj_type = obj_type + [otype_tile[idx] for idx in list( range(j*500, (j+1)*500 ))] #500*['']
 
         except Exception as err:
             logger.info(err)
@@ -184,50 +162,8 @@ class GlobalFiber:
 
         hover = HoverTool(tooltips=fiber_tooltip)
 
-
-
-        fid_yes = []
-        for i in joblist:
-            if wedge_arm in i:
-                j = int(i[1:])
-                fid_aux = list( range(j*500, (j+1)*500 ))
-                fid_yes = fid_yes + (fid_aux)
-
-        fid_not = list( set(fid_tile).difference(set(fid_yes))  )
-
-        qlf_fiberid = fid_yes
-        try:
-            if common_source == None:
-                source = ColumnDataSource(
-                        data={'goodfiber': y,
-                            'fiberid' : fid_yes,
-                            'status': ['GOOD' if i==1 else 'BAD' for i in y],
-                            'x1': ra,
-                            'y1': dec,   
-                            'QLF_FIBERID': qlf_fiberid,
-                            'OBJ_TYPE': obj_type,
-                            'color': ['#319b5c' if i ==1 else 'red' for i in y],
-                            'arm': [wedge_arm]*len(y)
-                            })
-            else:
-                source=common_source
-        except Exception as err:
-            sys.exit(err)
-
-
-        ra_not = []
-        dec_not = []
-        for i in fid_not:
-            ra_not.append(ra_tile[i]) 
-            dec_not.append(dec_tile[i])
-
-        source_not = ColumnDataSource(
-                        data={  'x1': ra_not,
-                                'y1': dec_not,   
-                                'color': ['lightgrey']*len(fid_not),
-                                'arm': [wedge_arm]*len(ra_not),
-                                'OBJ_TYPE':['']*len(ra_not)
-                            })
+        source=common_source
+        
         radius = 0.017
         radius_hover = 0.018 
 
@@ -275,11 +211,7 @@ class GlobalFiber:
             sys.exit('Could not load data')
 
         
-        f=open('dbg2','w')
-
         src = self.data_source(fmap)
-        f.write('{}'.format(src))
-
 
         try:
             pb = self.wedge_plot('b', fmap, common_source=src)#, common_source=source)
@@ -289,7 +221,6 @@ class GlobalFiber:
                         column(pr, css_classes=["display-grid-countbins"]),
                         column(pz, css_classes=["display-grid-countbins"])) #, pz, 
         except Exception as err:
-            f.write('{}'.format(err))
             sys.exit(err)
 
         return file_html(layout, CDN, "COUNTBINS")
