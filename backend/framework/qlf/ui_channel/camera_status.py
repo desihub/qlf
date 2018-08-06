@@ -204,7 +204,7 @@ class CameraStatus:
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in str(log) or "Error" in str(log):
+                if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
                     camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail']
                     self.update_stage(cam[:1], 3, int(cam[1:]), 'error_stage')
                 else:
@@ -214,7 +214,7 @@ class CameraStatus:
             elif "Starting to run step ApplyFiberFlat_QL" in str(log):
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
                 self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in str(log) or "Error" in str(log):
+                if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
                     camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail']
                     self.update_stage(cam[:1], 2, int(cam[1:]), 'error_stage')
                 else:
@@ -223,7 +223,7 @@ class CameraStatus:
 
             elif "Starting to run step BoxcarExtract" in str(log):
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in str(log) or "Error" in str(log):
+                if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
                     camera[cam]['extract']['steps_status'] = ['Fail']
                     self.update_stage(cam[:1], 1, int(cam[1:]), 'error_stage')
                 else:
@@ -231,13 +231,13 @@ class CameraStatus:
                 next
 
             elif "Starting to run step Initialize" in str(log):
-                if "CRITICAL" in str(log) or "Error" in str(log):
+                if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
                     camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail', 'Fail']
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
                 else:
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
                 next
-            elif "CRITICAL" in str(log) or "Error" in str(log):
+            elif "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
                 camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail', 'Fail']
                 self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
             else:
