@@ -255,10 +255,19 @@ class App extends React.Component {
     );
   };
 
+  openLineaWebSite = () => {
+    window.open('http://www.linea.gov.br/', 'linea');
+  };
+
   renderBottomBarTitle = () => {
     return (
       <div style={styles.bottom}>
-        <span>© Copyright 2018, <a href='http://www.linea.gov.br/' target='_blank' title="LIneA"><img src={logoLinea} alt={'logo linea'}  style={styles.logoLinea} /></a></span>
+        <span>
+          © Copyright 2018,{' '}
+          <a onClick={this.openLineaWebSite} title="LIneA">
+            <img src={logoLinea} alt={'logo linea'} style={styles.logoLinea} />
+          </a>
+        </span>
         <div style={styles.footerRight}>
           <span>
             {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
