@@ -73,6 +73,7 @@ const styles = {
   },
   logoLinea: {
     verticalAlign: 'middle',
+    cursor: 'pointer',
   },
   title: {
     display: 'flex',
