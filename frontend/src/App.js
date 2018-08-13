@@ -116,6 +116,12 @@ const styles = {
     color: 'red',
     paddingLeft: 8,
   },
+  volumeIcon: {
+    fontSize: 20,
+    alignSelf: 'center',
+    paddingRight: '8px',
+    cursor: 'pointer',
+  },
 };
 
 class App extends React.Component {
@@ -123,6 +129,7 @@ class App extends React.Component {
     url: '/',
     displayHeaders: true,
     websocketConnected: false,
+    soundActivated: true,
   };
 
   renderRouteName = () => {
@@ -187,6 +194,9 @@ class App extends React.Component {
             DESI Quick Look {this.renderRouteName()}
           </span>
           <div style={{ display: 'flex' }}>
+            <Icon onClick={this.onToggleSound} style={styles.volumeIcon}>
+              {this.state.soundActivated ? 'volume_up' : 'volume_off'}
+            </Icon>
             {history.location.pathname === '/monitor-realtime' ? (
               <Notification />
             ) : null}
@@ -279,6 +289,10 @@ class App extends React.Component {
     this.setState({ websocketConnected: false });
   };
 
+  onToggleSound = () => {
+    this.setState({ soundActivated: !this.state.soundActivated });
+  };
+
   render() {
     const containerStyle = this.state.displayHeaders ? styles.container : null;
     const useGrid = this.renderRouteName() === '' ? null : styles.grid;
@@ -301,6 +315,7 @@ class App extends React.Component {
                 )}
                 {process.env.REACT_APP_OFFLINE === 'false' ? (
                   <OnlineContainer
+                    appSoundActivated={this.state.soundActivated}
                     connected={this.websocketConnected}
                     disconnected={this.websocketDisconnected}
                   />

@@ -11,6 +11,7 @@ import {
   navigateToOnlineQA,
   updateCameraState,
   updateWebsocket,
+  setSound,
 } from './online-store';
 import { navigateToProcessingHistory } from '../offline/offline-store';
 import CameraLog from '../../screens/camera-log/camera-log';
@@ -49,6 +50,9 @@ class OnlineContainer extends Component {
     resetCameraLog: PropTypes.func.isRequired,
     updateWebsocket: PropTypes.func.isRequired,
     online: PropTypes.bool,
+    appSoundActivated: PropTypes.bool,
+    soundActivated: PropTypes.bool,
+    setSound: PropTypes.func,
   };
 
   state = {
@@ -62,6 +66,12 @@ class OnlineContainer extends Component {
   getWebsocketRef = socket => {
     this.setState({ socket });
   };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.appSoundActivated !== nextProps.soundActivated) {
+      this.props.setSound(nextProps.appSoundActivated);
+    }
+  }
 
   componentWillMount() {
     if (window.location.pathname === '/camera-log-realtime') {
@@ -237,6 +247,7 @@ export default connect(
     step: state.qlfOnline.step,
     spectrograph: state.qlfOnline.spectrograph,
     online: state.qlfOnline.online,
+    soundActivated: state.qlfOnline.soundActivated,
   }),
   dispatch => ({
     navigateToMetrics: (step, spectrograph, arm, exp) =>
@@ -245,5 +256,6 @@ export default connect(
     navigateToQA: () => dispatch(navigateToOnlineQA()),
     resetCameraLog: () => dispatch(updateCameraState([])),
     updateWebsocket: state => dispatch(updateWebsocket(state)),
+    setSound: soundActivated => dispatch(setSound(soundActivated)),
   })
 )(OnlineContainer);
