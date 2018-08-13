@@ -268,6 +268,7 @@ class App extends React.Component {
           <a onClick={this.openLineaWebSite} title="LIneA">
             <img src={logoLinea} alt={'logo linea'} style={styles.logoLinea} />
           </a>
+          /DESI
         </span>
         <div style={styles.footerRight}>
           <span>
