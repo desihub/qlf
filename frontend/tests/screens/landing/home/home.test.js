@@ -71,7 +71,7 @@ describe('Landing Home', () => {
         .at(5)
         .text()
     ).toBe(
-      'Sky ConditionsDisplay sky conditions such as atmospheric transparency, seeing, and sky background from the GFA camera'
+      'Observing ConditionsDisplay observing conditions such as atmospheric transparency, seeing, and observing background from the GFA camera'
     );
     expect(
       wrapper

@@ -31,12 +31,12 @@ export const exposureColumns = [
   },
   {
     key: 'telra',
-    name: 'RA (hms)',
+    name: 'RA (deg)',
     type: 'normal',
   },
   {
     key: 'teldec',
-    name: 'Dec (dms)',
+    name: 'Dec (deg)',
     type: 'normal',
   },
   {
@@ -56,7 +56,7 @@ export const exposureColumns = [
   },
   {
     key: '',
-    name: 'CCDs',
+    name: 'View',
     type: 'image',
   },
   {

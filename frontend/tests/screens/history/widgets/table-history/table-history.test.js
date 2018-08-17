@@ -87,6 +87,123 @@ describe('TableHistory Controls', () => {
     wrapper = mount(tableHistory);
   });
 
+  it('Render processing history header', () => {
+    expect(
+      wrapper
+        .find('span')
+        .at(0)
+        .text()
+    ).toBe('Status');
+    expect(
+      wrapper
+        .find('span')
+        .at(1)
+        .text()
+    ).toBe('Program');
+    expect(
+      wrapper
+        .find('span')
+        .at(2)
+        .text()
+    ).toBe('Process ID');
+    expect(
+      wrapper
+        .find('span')
+        .at(3)
+        .text()
+    ).toBe('Exp ID');
+    expect(
+      wrapper
+        .find('span')
+        .at(4)
+        .text()
+    ).toBe('Flavor');
+    expect(
+      wrapper
+        .find('span')
+        .at(5)
+        .text()
+    ).toBe('Tile ID');
+    expect(
+      wrapper
+        .find('span')
+        .at(6)
+        .text()
+    ).toBe('Process Date');
+    expect(
+      wrapper
+        .find('span')
+        .at(7)
+        .text()
+    ).toBe('Process Time');
+    expect(
+      wrapper
+        .find('span')
+        .at(8)
+        .text()
+    ).toBe('OBS Date');
+    expect(
+      wrapper
+        .find('span')
+        .at(9)
+        .text()
+    ).toBe('MJD');
+    expect(
+      wrapper
+        .find('span')
+        .at(10)
+        .text()
+    ).toBe('RA (deg)');
+    expect(
+      wrapper
+        .find('span')
+        .at(11)
+        .text()
+    ).toBe('Dec (deg)');
+    expect(
+      wrapper
+        .find('span')
+        .at(12)
+        .text()
+    ).toBe('Exp Time(s)');
+    expect(
+      wrapper
+        .find('span')
+        .at(13)
+        .text()
+    ).toBe('Airmass');
+    expect(
+      wrapper
+        .find('span')
+        .at(14)
+        .text()
+    ).toBe('FWHM (arcsec)');
+    expect(
+      wrapper
+        .find('span')
+        .at(15)
+        .text()
+    ).toBe('QA');
+    expect(
+      wrapper
+        .find('span')
+        .at(16)
+        .text()
+    ).toBe('View');
+    expect(
+      wrapper
+        .find('span')
+        .at(17)
+        .text()
+    ).toBe('COM');
+    expect(
+      wrapper
+        .find('span')
+        .at(18)
+        .text()
+    ).toBe('Logs');
+  });
+
   // it('mounts rendering table', () => {
   //   expect(getHistory).toBeCalled();
   //   expect(
