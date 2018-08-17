@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import Steps from './widgets/steps/steps';
 import PropTypes from 'prop-types';
-import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
-import { Info } from 'material-ui-icons';
 
 const styles = {
   container: {
@@ -12,13 +10,6 @@ const styles = {
     flexDirection: 'column',
     marginBottom: '1vh',
     flex: 1,
-    position: 'relative',
-  },
-  icon: {
-    position: 'absolute',
-    top: 0,
-    left: '5px',
-    cursor: 'pointer',
   },
   green: {
     display: 'inline-block',
@@ -127,39 +118,8 @@ class QA extends Component {
     );
   };
 
-  renderLegendColor = () => {
-    return (
-      <div>
-        <p>
-          <span style={styles.green}>Green</span>: All tests passed
-        </p>
-        <p>
-          <span style={styles.yellow}>Yellow</span>: Warning on one or more QA
-          test
-        </p>
-        <p>
-          <span style={styles.red}>Red</span>: Error on one or more QA test
-        </p>
-        <p>
-          <span style={styles.lightgray}>Lightgray</span>: QA test file not
-          generated
-        </p>
-        <p>
-          <span style={styles.black}>Black</span>: Pipeline not completed
-        </p>
-      </div>
-    );
-  };
-
   render() {
-    return (
-      <div style={styles.container}>
-        <Tooltip title={this.renderLegendColor()} placement="bottom">
-          <Info style={styles.icon} />
-        </Tooltip>
-        {this.renderSteps()}
-      </div>
-    );
+    return <div style={styles.container}>{this.renderSteps()}</div>;
   }
 }
 
