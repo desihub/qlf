@@ -105,8 +105,8 @@ export default class Home extends React.Component {
           >
             <Card
               icon="Cloud"
-              title="Sky Conditions"
-              subtitle="Display sky conditions such as atmospheric transparency, seeing, and sky background from the GFA camera"
+              title="Observing Conditions"
+              subtitle="Display observing conditions such as atmospheric transparency, seeing, and observing background from the GFA camera"
             />
           </a>
           <a
