@@ -51,12 +51,12 @@ export const processColumns = [
   },
   {
     key: 'exposure__telra',
-    name: 'RA (hms)',
+    name: 'RA (deg)',
     type: 'normal',
   },
   {
     key: 'exposure__teldec',
-    name: 'Dec (dms)',
+    name: 'Dec (deg)',
     type: 'normal',
   },
   {
