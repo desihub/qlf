@@ -11,7 +11,10 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import { clearNotifications } from '../../containers/online/online-store';
+import {
+  clearNotifications,
+  setSound,
+} from '../../containers/online/online-store';
 
 const styles = {
   container: {
@@ -49,6 +52,13 @@ const styles = {
   none: {
     display: 'none',
   },
+  volumeIcon: {
+    fontSize: 20,
+    alignSelf: 'center',
+    paddingRight: '8px',
+    cursor: 'pointer',
+    verticalAlign: 'middle',
+  },
 };
 
 class Notification extends React.Component {
@@ -70,6 +80,8 @@ class Notification extends React.Component {
     notifications: PropTypes.array.isRequired,
     clearNotifications: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
+    soundActivated: PropTypes.bool.isRequired,
+    setSound: PropTypes.func.isRequired,
   };
 
   handleNotificationClick = event => {
@@ -124,12 +136,19 @@ class Notification extends React.Component {
     );
   };
 
+  onToggleSound = () => {
+    this.props.setSound(!this.props.soundActivated);
+  };
+
   render() {
     const { classes } = this.props;
     const count = this.props.notifications.length;
     const badge = count ? classes.badge : classes.none;
     return (
       <div style={styles.container}>
+        <Icon onClick={this.onToggleSound} style={styles.volumeIcon}>
+          {this.props.soundActivated ? 'volume_up' : 'volume_off'}
+        </Icon>
         <Popover
           open={Boolean(this.state.anchorEl)}
           anchorEl={this.state.anchorEl}
@@ -157,17 +176,15 @@ class Notification extends React.Component {
   }
 }
 
-Notification.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 const NotificationWithStyles = withStyles(styles)(Notification);
 
 export default connect(
   state => ({
     notifications: state.qlfOnline.notifications,
+    soundActivated: state.qlfOnline.soundActivated,
   }),
   dispatch => ({
     clearNotifications: () => dispatch(clearNotifications()),
+    setSound: soundActivated => dispatch(setSound(soundActivated)),
   })
 )(NotificationWithStyles);
