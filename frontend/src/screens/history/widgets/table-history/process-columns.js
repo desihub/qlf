@@ -81,7 +81,7 @@ export const processColumns = [
   },
   {
     key: '',
-    name: 'CCDs',
+    name: 'View',
     type: 'image',
   },
   {

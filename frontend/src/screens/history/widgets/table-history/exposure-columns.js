@@ -56,7 +56,7 @@ export const exposureColumns = [
   },
   {
     key: '',
-    name: 'CCDs',
+    name: 'View',
     type: 'image',
   },
   {
