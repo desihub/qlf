@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Steps from './widgets/steps/steps';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   container: {
@@ -9,11 +10,65 @@ const styles = {
     flexDirection: 'column',
     marginBottom: '1vh',
     flex: 1,
-    position: 'relative',
+  },
+  green: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#008000',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  yellow: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#ffff00',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  red: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#ff0000',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  lightgray: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#d3d3d3',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  black: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#000000',
+    fontSize: 0,
+    textIndent: '-9999em',
   },
 };
 
-export default class QA extends Component {
+class QA extends Component {
   static propTypes = {
     exposureId: PropTypes.string,
     qaTests: PropTypes.array,
@@ -67,3 +122,5 @@ export default class QA extends Component {
     return <div style={styles.container}>{this.renderSteps()}</div>;
   }
 }
+
+export default withStyles(styles)(QA);
