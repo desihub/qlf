@@ -28,7 +28,7 @@ spectro_data = cfg.get("namespace", "desi_spectro_data")
 logger = logging.getLogger(__name__)
 
 
-class GlobalFiber:
+class GlobalFocus:
     def __init__(self, process_id, arm, spectrograph):
             self.selected_process_id = process_id
             self.selected_arm = arm
