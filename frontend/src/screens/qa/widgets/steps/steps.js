@@ -6,7 +6,6 @@ import ReactTooltip from 'react-tooltip';
 import Status from '../../../../components/status/status';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
-//import { Info } from 'material-ui-icons';
 import Icon from '@material-ui/core/Icon';
 
 const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
