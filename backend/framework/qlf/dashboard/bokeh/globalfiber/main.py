@@ -22,10 +22,9 @@ from bokeh.models.widgets import Div
 
 from dashboard.models import Process, Job
 from astropy.io import fits
-from util import get_config
+import os
 
-cfg = get_config()
-spectro_data = cfg.get("namespace", "desi_spectro_data")
+spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
 logger = logging.getLogger(__name__)
 
