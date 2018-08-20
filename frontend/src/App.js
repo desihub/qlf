@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { store, history } from './store';
 import { ConnectedRouter } from 'react-router-redux';
 import logo from './assets/DESILogo.png';
+import logoLinea from './assets/linea-logo-mini.png';
 import OnlineContainer from './containers/online/online-container';
 import OfflineContainer from './containers/offline/offline-container';
 import Icon from '@material-ui/core/Icon';
@@ -69,6 +70,10 @@ const styles = {
   logo: {
     height: '90px',
     paddingTop: '5px',
+  },
+  logoLinea: {
+    verticalAlign: 'middle',
+    cursor: 'pointer',
   },
   title: {
     display: 'flex',
@@ -251,10 +256,20 @@ class App extends React.Component {
     );
   };
 
+  openLineaWebSite = () => {
+    window.open('http://www.linea.gov.br/', 'linea');
+  };
+
   renderBottomBarTitle = () => {
     return (
       <div style={styles.bottom}>
-        <span>© Copyright 2018, LIneA/DESI</span>
+        <span>
+          © Copyright 2018,{' '}
+          <a onClick={this.openLineaWebSite} title="LIneA">
+            <img src={logoLinea} alt={'logo linea'} style={styles.logoLinea} />
+          </a>
+          /DESI
+        </span>
         <div style={styles.footerRight}>
           <span>
             {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
