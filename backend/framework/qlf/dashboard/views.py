@@ -42,6 +42,8 @@ from dashboard.bokeh.qaskypeak.main import Skypeak
 from dashboard.bokeh.qainteg.main import Integ
 from dashboard.bokeh.qaskyresid.main import Skyresid
 from dashboard.bokeh.qasnr.main import SNR
+from dashboard.bokeh.globalfiber.main import GlobalFiber
+from dashboard.bokeh.globalfocus.main import GlobalFocus
 
 from .filters import ProcessingHistoryFilter
 
@@ -524,9 +526,12 @@ def fits_to_png(request):
     # Generate Image
     cam = request.GET.get('cam')
     processing = request.GET.get('processing')
-    night = request.GET.get('night')
-    exposure = request.GET.get('exposure')
-    png_image = Fits2png(cam, processing, night, exposure).convert_fits2png()
+    process_id = request.GET.get('process')
+    process = Process.objects.get(pk=process_id)
+    night = process.exposure.night
+    exposure_id = process.exposure_id
+    png_image = Fits2png(cam, processing, night,
+                         exposure_id).convert_fits2png()
     context = {'image': png_image}
     response = HttpResponse(template.render(context, request))
 
@@ -562,6 +567,10 @@ def load_qa(request):
             qa_html = Skyresid(process_id, arm, spectrograph).load_qa()
         elif qa == 'qasnr':
             qa_html = SNR(process_id, arm, spectrograph).load_qa()
+        elif qa == 'globalfiber':
+            qa_html = GlobalFiber(process_id, arm, spectrograph).load_qa()
+        elif qa == 'globalfocus':
+            qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
         else:
             qa_html = "Couldn't load QA"
     except:

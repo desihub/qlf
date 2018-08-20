@@ -116,10 +116,10 @@ class OfflineContainer extends Component {
     );
   };
 
-  navigateToCCD = (night, exposureId) => {
+  navigateToCCD = (viewer, processId) => {
     window.open(
-      `ccd-viewer?exposure=${exposureId}&night=${night}`,
-      'ccd-viewer',
+      `${viewer}-viewer?process=${processId}`,
+      `${viewer}-viewer`,
       'width=1050, height=850'
     );
   };
@@ -136,12 +136,13 @@ class OfflineContainer extends Component {
     return (
       <div>
         {this.renderLoading()}
+        <Route path="/fiber-viewer" render={() => <SelectionViewer />} />
         <Route
           path="/log-viewer"
           render={() => <SelectionViewer spectrograph={true} arm={true} />}
         />
         <Route
-          path="/ccd-viewer"
+          path="/png-viewer"
           render={() => (
             <SelectionViewer spectrograph={true} arm={true} processing={true} />
           )}

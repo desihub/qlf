@@ -16,6 +16,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import CommentModal from '../comment-modal/comment-modal';
+import CCDSelector from './ccd-selector/ccd-selector';
 
 class TableHistory extends Component {
   static propTypes = {
@@ -56,7 +57,7 @@ class TableHistory extends Component {
       tableColumnsHidden: [],
       openColumnsModal: false,
       openCommentModal: false,
-      commentProcessId: 1,
+      currentProcessId: 1,
     };
   }
 
@@ -93,6 +94,19 @@ class TableHistory extends Component {
     this.props.navigateToQA(pk);
   };
 
+  setAnchorEl = (event, processId) => {
+    if (!event) {
+      this.setState({
+        anchorEl: null,
+      });
+    } else {
+      this.setState({
+        anchorEl: event.currentTarget,
+        currentProcessId: processId,
+      });
+    }
+  };
+
   renderBody = () => {
     const isProcessHistory = this.props.type === 'process';
     return (
@@ -119,6 +133,7 @@ class TableHistory extends Component {
               handleCommentModalOpen={this.handleCommentModalOpen}
               pipelineRunning={this.props.pipelineRunning}
               openLogViewer={this.props.openLogViewer}
+              setAnchorEl={this.setAnchorEl}
             />
           );
         })}
@@ -345,7 +360,7 @@ class TableHistory extends Component {
   renderCommentModal = () => {
     return this.state.openCommentModal ? (
       <CommentModal
-        processId={this.state.commentProcessId}
+        processId={this.state.currentProcessId}
         handleClose={this.handleCommentModalClose}
         readOnly={this.props.type !== 'process'}
         fetchLastProcess={this.props.fetchLastProcess}
@@ -353,9 +368,9 @@ class TableHistory extends Component {
     ) : null;
   };
 
-  handleCommentModalOpen = commentProcessId => {
+  handleCommentModalOpen = currentProcessId => {
     this.setState({
-      commentProcessId,
+      currentProcessId,
       openCommentModal: true,
     });
   };
@@ -372,6 +387,13 @@ class TableHistory extends Component {
         {this.renderCommentModal()}
         {this.renderColumnsModal()}
         <Table style={styles.table}>
+          <CCDSelector
+            anchorEl={this.state.anchorEl}
+            handleClose={() => this.setAnchorEl(null)}
+            openCCDViewer={viewer =>
+              this.props.openCCDViewer(viewer, this.state.currentProcessId)
+            }
+          />
           <HistoryHeader
             addOrder={this.addOrder}
             addFlavorFilter={this.addFlavorFilter}

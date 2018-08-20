@@ -60,7 +60,7 @@ export default class History extends Component {
       window.location.pathname !== '/survey-report';
     this.state = {
       renderTabs,
-      tab: renderTabs ? 'history' : 'last',
+      tab: renderTabs ? 'last' : 'history',
       confirmDialog: false,
       selectedExposures: [],
       startDate: this.props.startDate,
