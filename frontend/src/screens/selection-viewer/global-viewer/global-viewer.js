@@ -27,7 +27,7 @@ const styles = {
   },
 };
 
-class FiberViewer extends React.Component {
+class GlobalViewer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,27 +39,26 @@ class FiberViewer extends React.Component {
     classes: PropTypes.object,
     loadEnd: PropTypes.func.isRequired,
     loadStart: PropTypes.func.isRequired,
+    screen: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
     document.title = 'Fiber Viewer';
-    if (window.location.pathname === '/fiber-viewer') {
-      if (window.location.search.includes('process=')) {
-        this.setState(
-          {
-            processId: window.location.search.split('process=')[1],
-          },
-          this.props.loadStart
-        );
-      }
+    if (window.location.search.includes('process=')) {
+      this.setState(
+        {
+          processId: window.location.search.split('process=')[1],
+        },
+        this.props.loadStart
+      );
     }
   }
 
   renderImage = () => {
     const { classes } = this.props;
-    const url = `${apiUrl}dashboard/load_qa/?qa=globalfiber&process_id=${
-      this.state.processId
-    }`;
+    const url = `${apiUrl}dashboard/load_qa/?qa=${
+      this.props.screen
+    }&process_id=${this.state.processId}`;
 
     return (
       <iframe
@@ -78,4 +77,4 @@ class FiberViewer extends React.Component {
   }
 }
 
-export default withStyles(styles)(FiberViewer);
+export default withStyles(styles)(GlobalViewer);

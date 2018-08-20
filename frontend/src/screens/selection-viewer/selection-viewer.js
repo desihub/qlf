@@ -11,7 +11,7 @@ import { FadeLoader } from 'halogenium';
 import Button from '@material-ui/core/Button';
 import PNGViewer from './png-viewer/png-viewer';
 import LogViewer from './log-viewer/log-viewer';
-import FiberViewer from './fiber-viewer/fiber-viewer';
+import GlobalViewer from './global-viewer/global-viewer';
 
 const styles = {
   controlsContainer: {
@@ -248,7 +248,11 @@ class SelectionViewer extends React.Component {
         );
       case '/fiber-viewer':
         return (
-          <FiberViewer loadEnd={this.loadEnd} loadStart={this.loadStart} />
+          <GlobalViewer
+            screen={'globalfiber'}
+            loadEnd={this.loadEnd}
+            loadStart={this.loadStart}
+          />
         );
       default:
         return null;
