@@ -2,22 +2,16 @@ import os
 import gc
 import Pyro4
 from clients import (
-    EXPOSURE_GENERATOR_NS, EXPOSURE_MONITORING_NS,
+    EXPOSURE_MONITORING_NS,
     PYRO_HOST, PYRO_PORT
 )
-from exposure_generator import ExposureGenerator
 from exposure_monitoring import ExposureMonitoring
 from log import get_logger
 from procutil import kill_proc_tree
-# from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
-from util import get_config
 
-cfg = get_config()
-loglevel = cfg.get("main", "loglevel")
-emulate = cfg.getboolean("main", "emulate_dos")
-qlf_root = cfg.get("environment", "qlf_root")
-base_exposures_path = cfg.get("namespace", "base_exposures_path")
+loglevel = os.environ.get('PIPELINE_LOGLEVEL')
+qlf_root = os.environ.get('QLF_ROOT')
 
 logger = get_logger(
     "pyro.servers",
@@ -59,8 +53,8 @@ class Monitoring(object):
     def reset(self):
         self.stop()
 
-        logfile = cfg.get("main", "logfile")
-        logpipeline = cfg.get('main', 'logpipeline')
+        logfile = os.path.join(qlf_root, "logs", "qlf.log")
+        logpipeline = os.path.join(qlf_root, "logs", "pipeline.log")
 
         for log in [logfile, logpipeline]:
             with open(log, 'r+') as filelog:
@@ -82,69 +76,14 @@ class Monitoring(object):
 
         return running
 
-    # def add_exposures(self, exposures):
-    #     # TODO: improvements
-    #     return None
-
-    # def get_current_configuration(self):
-    #     configuration = QLFConfiguration()
-    #     current = configuration.get_current_configuration()
-    #     return current.configuration
-
-    # def get_default_configuration(self):
-    #     configuration = QLFConfiguration()
-    #     default = configuration.get_default_configuration()
-    #     return default
-
-    # def get_calibration(self):
-    #     return os.listdir(os.path.join(base_exposures_path, 'psf'))
-
-
-@Pyro4.expose
-@Pyro4.behavior(instance_mode="single")
-class GeneratorControl(object):
-
-    generator = False
-
-    def start(self):
-        if self.generator and self.generator.is_alive():
-            logger.debug("Exposure generator is already initialized.")
-        else:
-            self.generator = ExposureGenerator()
-            self.generator.start()
-
-    def stop(self):
-        logger.debug(self.generator)
-        if self.generator and self.generator.is_alive():
-            logger.debug("Stop pid %i" % self.generator.pid)
-            self.generator.terminate()
-        else:
-            logger.debug("Exposure generator is not initialized.")
-
-    def last_exposure(self):
-        if self.generator:
-            try:
-                last = dict(self.generator.get_last_exposure())
-            except Exception as err:
-                logger.error(err)
-                last = dict()
-        else:
-            logger.debug("Exposure generator is not initialized.")
-            last = dict()
-
-        return last
-
-
 def main():
     exposure_monitoring = EXPOSURE_MONITORING_NS
-    exposure_generator = EXPOSURE_GENERATOR_NS
     host = PYRO_HOST
     port = int(PYRO_PORT)
 
     Pyro4.Daemon.serveSimple(
         {
             Monitoring: exposure_monitoring,
-            GeneratorControl: exposure_generator
         },
         host=host,
         port=port,

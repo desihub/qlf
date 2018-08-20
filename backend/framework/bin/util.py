@@ -1,5 +1,4 @@
 import logging
-import configparser
 import os
 import astropy.io.fits
 import datetime
@@ -23,38 +22,8 @@ program_mapping = {
 }
 
 
-def get_config(config_path=None):
-    """ Gets configuraton
-    
-    Keyword Arguments:
-        config_path {str} -- alternative configuration path (default: {None})
-    
-    Returns:
-        object -- configparser object
-    """
-
-
-    if not config_path:
-        config_path = os.path.join(
-            qlf_root,
-            "framework/config/qlf.cfg"
-        )
-
-    cfg = configparser.ConfigParser()
-    cfg.read(config_path)
-
-    section = 'environment'
-
-    if not cfg.has_section(section):
-        cfg.add_section(section)
-
-    cfg.set(section, 'qlf_root', qlf_root)
-
-    return cfg
-
-
 def get_ql_config_file(program):
-    """ Gets configuration file from directory defined in qlf.cfg.
+    """ Gets configuration file from directory defined in env QL_CONFIG_DIR
 
     Arguments:
         program {str} -- program
@@ -63,10 +32,9 @@ def get_ql_config_file(program):
         str -- config file path that will be used
     """
 
-    cfg = get_config()
     program_file = program_mapping.get(program, 'darksurvey')
 
-    return cfg.get('main', 'qlconfig').format(program_file)
+    return '{}/qlconfig_{}.yaml'.format(os.environ.get('QL_CONFIG_DIR'), program_file)
 
 
 def extract_exposure_data(exposure_id, night):
@@ -80,9 +48,8 @@ def extract_exposure_data(exposure_id, night):
         dict -- exposure data from fits file.
     """
 
-    cfg = get_config()
-    desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+    desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+    desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
 
     exposure_zfill = str(exposure_id).zfill(8)
     expo_name = "desi-{}.fits.fz".format(exposure_zfill)

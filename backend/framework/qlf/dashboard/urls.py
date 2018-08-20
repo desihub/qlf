@@ -22,9 +22,6 @@ api_router.register(r'processing_history',
                     views.ProcessingHistoryViewSet, 'processing_history')
 api_router.register(r'observing_history',
                     views.ObservingHistoryViewSet, 'observing_history')
-api_router.register(r'qlconfig', views.QlConfigViewSet, 'qlconfig')
-api_router.register(r'ql_calibration',
-                    views.QlCalibrationViewSet, 'ql_calibration')
 api_router.register(r'configuration', views.ConfigurationViewSet)
 api_router.register(r'current_configuration',
                     views.CurrentConfigurationViewSet, 'current_configuration')
@@ -37,20 +34,17 @@ api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'exposures_date_range',
                     views.ExposuresDateRangeViewSet, 'exposures_date_range')
 api_router.register(r'add_exposure', views.AddExposureViewSet, 'add_exposure')
+api_router.register(r'qlconfig', views.QlConfigViewSet, 'qlconfig')
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^start', views.start, name='start'),
     url(r'^stop', views.stop, name='stop'),
     url(r'^reset', views.reset, name='reset'),
-    url(r'^dashboard/api/default_configuration/',
-        views.default_configuration, name='default_configuration'),
     url(r'^send_ticket_email',
         views.send_ticket_email, name='send_ticket_email'),
     url(r'^dashboard/api/disk_thresholds',
         views.disk_thresholds, name='disk_thresholds'),
-    url(r'^dashboard/api/edit_qlf_config/',
-        views.edit_qlf_config, name='edit_qlf_config'),
     url(r'^daemon_status', views.daemon_status, name='daemon_status'),
     url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),
     url(r'^dashboard/admin', include(admin.site.urls)),

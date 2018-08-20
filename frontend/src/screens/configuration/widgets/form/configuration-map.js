@@ -1,38 +1,10 @@
 export const configMap = [
   {
-    label: 'Min Interval',
-    helperText: 'Minimum interval for exposure generation (minutes)',
-    state: 'minInterval',
-    api: 'min_interval',
-    type: 'exposureGen',
-  },
-  {
-    label: 'Max Interval',
-    helperText: 'Maximum interval for exposure generation (minutes)',
-    state: 'maxInterval',
-    api: 'max_interval',
-    type: 'exposureGen',
-  },
-  {
-    label: 'Allowed Delay',
-    helperText: 'Delay for the next available exposure (seconds)',
-    state: 'allowedDelay',
-    api: 'allowed_delay',
-    type: 'exposureGen',
-  },
-  {
-    label: 'Max Exposures',
-    helperText: 'Maximum number exposures generated per run',
-    state: 'maxExposures',
-    api: 'max_exposures',
-    type: 'exposureGen',
-  },
-  {
-    label: 'Max Nights',
-    helperText: 'Maximum number nights generated per run',
-    state: 'maxNights',
-    api: 'max_nights',
-    type: 'exposureGen',
+    label: 'Max Workers',
+    helperText: 'Maximum workers running at the same time (0 for unlimited)',
+    state: 'maxWorkers',
+    api: 'max_workers',
+    type: 'workers',
   },
   {
     label: 'Input Directory',
@@ -50,27 +22,12 @@ export const configMap = [
     type: 'io',
   },
   {
-    label: 'Base Exposures',
-    helperText: 'Base exposures used by Exposure Generator',
-    state: 'baseExposures',
-    api: 'base_exposures_path',
-    type: 'io',
-  },
-  {
     label: 'Calibration Directory',
     helperText: 'e.g. full/path/to/spectro/calibration',
     state: 'calibrationPath',
     api: 'calibration_path',
     type: 'io',
   },
-  // {
-  //   label: 'Configuration file for the quick look pipeline',
-  //   helperText:
-  //     'e.g. full/path/to/desispec/py/desispec/data/quicklook/qlconfig_darksurvey.yaml',
-  //   state: 'qlconfig',
-  //   api: 'qlconfig',
-  //   type: 'io',
-  // },
   {
     label: 'Warning',
     helperText: '',

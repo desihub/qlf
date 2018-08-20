@@ -55,10 +55,6 @@ from clients import get_exposure_monitoring
 from django.contrib import messages
 import logging
 
-from util import get_config
-
-from .config_file import edit_qlf_config_file, set_default_configuration
-
 qlf = get_exposure_monitoring()
 
 logger = logging.getLogger(__name__)
@@ -261,6 +257,24 @@ class ProcessViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     filter_fields = ('exposure',)
 
 
+class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+    def list(self, request, *args, **kwargs):
+        response = super(QlConfigViewSet, self).list(
+            request, args, kwargs)
+        try:
+            ql_type = request.GET.get('type')
+            ql_path = '{}/qlconfig_{}.yaml'.format(os.environ.get('QL_CONFIG_DIR'), ql_type)
+            with open(ql_path) as f:
+                qlconfig = f.read()
+        except Exception as err:
+            logger.info(err)
+            qlconfig = 'Error reading qlconfig: {}'.format(err)
+        response.data = qlconfig
+        return response
+
+
 class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing configurations"""
 
@@ -275,59 +289,19 @@ class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         response = super(CurrentConfigurationViewSet, self).list(
             request, args, kwargs)
-        cfg = get_config()
+        qlf_root = os.environ.get('QLF_ROOT')
         configuration = dict(
-            base_exposures_path=cfg.get("namespace", "base_exposures_path"),
-            min_interval=cfg.get("main", "min_interval"),
-            max_interval=cfg.get("main", "max_interval"),
-            allowed_delay=cfg.get("main", "allowed_delay"),
-            max_exposures=cfg.get("main", "max_exposures"),
-            max_nights=cfg.get("main", "max_nights"),
-            logfile=cfg.get("main", "logfile"),
-            loglevel=cfg.get("main", "loglevel"),
-            logpipeline=cfg.get("main", "logpipeline"),
-            qlconfig=cfg.get("main", "qlconfig"),
-            night=cfg.get("data", "night"),
-            exposures=cfg.get("data", "exposures"),
-            arms=cfg.get("data", "arms"),
-            spectrographs=cfg.get("data", "spectrographs"),
-            desi_spectro_data=cfg.get("namespace", "desi_spectro_data"),
-            desi_spectro_redux=cfg.get("namespace", "desi_spectro_redux"),
-            calibration_path=cfg.get("namespace", "calibration_path")
+            logfile=os.path.join(qlf_root, "logs", "qlf.log"),
+            loglevel=os.environ.get('PIPELINE_LOGLEVEL'),
+            logpipeline=os.path.join(qlf_root, "logs", "pipeline.log"),
+            arms=os.environ.get('PIPELINE_ARMS'),
+            spectrographs=os.environ.get('PIPELINE_SPECTROGRAPHS'),
+            desi_spectro_data=os.environ.get('DESI_SPECTRO_DATA'),
+            desi_spectro_redux=os.environ.get('DESI_SPECTRO_REDUX'),
+            calibration_path=os.environ.get('DESI_CCD_CALIBRATION_DATA'),
+            max_workers=os.environ.get('PIPELINE_MAX_WORKERS')
         )
         response.data = {'results': configuration}
-        return response
-
-
-class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Configuration.objects.order_by('creation_date')
-    serializer_class = ConfigurationSerializer
-
-    def list(self, request, *args, **kwargs):
-        response = super(QlConfigViewSet, self).list(
-            request, args, kwargs)
-        try:
-            cfg = get_config()
-            ql_type = request.GET.get('type')
-            ql_path = cfg.get("main", "qlconfig")
-            with open(ql_path.format(ql_type)) as f:
-                qlconfig = f.read()
-        except Exception as err:
-            logger.info(err)
-            qlconfig = 'Error reading qlconfig: {}'.format(err)
-        response.data = qlconfig
-        return response
-
-
-class QlCalibrationViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Configuration.objects.order_by('creation_date')
-    serializer_class = ConfigurationSerializer
-
-    def list(self, request, *args, **kwargs):
-        response = super(QlCalibrationViewSet, self).list(
-            request, args, kwargs)
-        calibration = qlf.get_calibration()
-        response.data = calibration
         return response
 
 
@@ -599,39 +573,11 @@ def send_ticket_email(request):
 
 
 def disk_thresholds(request):
-    cfg = get_config()
-
-    disk_percent_warning = cfg.get('main', 'disk_percent_warning')
-    disk_percent_alert = cfg.get('main', 'disk_percent_alert')
+    disk_percent_warning = os.environ.get('DISK_SPACE_PERCENT_WARNING')
+    disk_percent_alert = os.environ.get('DISK_SPACE_PERCENT_ALERT')
     return JsonResponse({
         "disk_percent_warning": disk_percent_warning,
         "disk_percent_alert": disk_percent_alert
-    })
-
-
-@csrf_exempt
-def edit_qlf_config(request):
-    # TODO: Use configparser
-    """Edit qlf.cfg file"""
-    body = json.loads(request.body)
-    keys = body.get('keys')
-    values = body.get('values')
-    if keys is not None and values is not None:
-        edit_qlf_config_file(keys, values)
-        return JsonResponse({
-            "keys": keys,
-            "values": values
-        })
-    else:
-        return JsonResponse({
-            'error': 'Missing key or value'
-        })
-
-
-def default_configuration(request):
-    set_default_configuration()
-    return JsonResponse({
-        'status': 'Done'
     })
 
 def get_camera_log(request):
@@ -646,8 +592,7 @@ def get_camera_log(request):
     if job:
         log_path = job[0].logname
 
-        cfg = get_config()
-        spectro_redux = cfg.get("namespace", "desi_spectro_redux")
+        spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
         path = '{}/{}'.format(spectro_redux, log_path)
         try:
             arq = open(path, 'r')
