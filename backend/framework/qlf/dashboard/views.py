@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
 from django.db.models import Max, Min
-from django.db.models import Q
+# from django.db.models import Q
 
 from .models import Job, Exposure, Camera, QA, Process, Configuration, ProcessComment
 from .serializers import (
@@ -409,76 +409,6 @@ class ExposuresDateRangeViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ExposuresDateRangeSerializer
 
 
-class DataTableExposureViewSet(viewsets.ModelViewSet):
-    queryset = Exposure.objects.order_by('exposure_id')
-    serializer_class = ExposureSerializer
-
-    ORDER_COLUMN_CHOICES = {
-        '0': 'dateobs',
-        '1': 'exposure_id',
-        '2': 'tile',
-        '3': 'telra',
-        '4': 'teldec',
-        '5': 'exptime',
-        '6': 'flavor',
-        '7': 'airmass'
-    }
-
-    def list(self, request, **kwargs):
-
-        try:
-            params = dict(request.query_params)
-
-            start_date = params.get('start_date', [None])[0]
-            end_date = params.get('end_date', [None])[0]
-            draw = int(params.get('draw', [1])[0])
-            length = int(params.get('length', [10])[0])
-            start_items = int(params.get('start', [0])[0])
-            search_value = params.get('search[value]', [''])[0]
-            order_column = params.get('order[0][column]', ['0'])[0]
-            order = params.get('order[0][dir]', ['asc'])[0]
-
-            order_column = self.ORDER_COLUMN_CHOICES[order_column]
-
-            # django orm '-' -> desc
-            if order == 'desc':
-                order_column = '-' + order_column
-
-            if start_date and end_date:
-                queryset = Exposure.objects.filter(
-                    dateobs__range=(
-                        "{} 00:00:00".format(start_date),
-                        "{} 23:59:59".format(end_date)
-                    )
-                )
-            else:
-                queryset = Exposure.objects
-
-            if search_value:
-                queryset = queryset.filter(
-                    Q(exposure_id__icontains=search_value) |
-                    Q(tile__icontains=search_value) |
-                    Q(telra__icontains=search_value) |
-                    Q(teldec__icontains=search_value) |
-                    Q(flavor__icontains=search_value)
-                )
-
-            count = queryset.count()
-            queryset = queryset.order_by(order_column)[
-                start_items:start_items + length]
-
-            serializer = ExposureSerializer(queryset, many=True)
-            result = dict()
-            result['data'] = serializer.data
-            result['draw'] = draw
-            result['recordsTotal'] = count
-            result['recordsFiltered'] = count
-
-            return Response(result, status=status.HTTP_200_OK, template_name=None, content_type=None)
-        except Exception as e:
-            return Response(e, status=status.HTTP_404_NOT_FOUND, template_name=None, content_type=None)
-
-
 class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing cameras"""
 
@@ -496,11 +426,6 @@ class ProcessCommentViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelVie
 
 
 def start(request):
-    # qlf_manual_status = qlf_manual.get_status()
-    #
-    # if qlf_manual_status:
-    #     qlf_manual.stop()
-
     qlf.start()
     return HttpResponseRedirect('dashboard/monitor')
 
@@ -512,7 +437,6 @@ def stop(request):
 
 
 def reset(request):
-
     qlf.reset()
     return HttpResponseRedirect('dashboard/monitor')
 
@@ -556,27 +480,6 @@ def run_manual_mode(request):
         "success": True,
         "message": "Processing in background."
     })
-
-
-def observing_history(request):
-    exposure = Exposure.objects.all()
-    start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']
-    end_date = exposure.aggregate(Max('dateobs'))['dateobs__max']
-
-    if not start_date and not end_date:
-        end_date = start_date = datetime.datetime.now()
-
-    start_date = start_date.strftime("%Y-%m-%d")
-    end_date = end_date.strftime("%Y-%m-%d")
-
-    return render(
-        request,
-        'dashboard/observing_history.html',
-        {
-            'start_date': start_date,
-            'end_date': end_date
-        }
-    )
 
 
 def index(request):

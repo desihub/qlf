@@ -9,7 +9,7 @@ from exposure_generator import ExposureGenerator
 from exposure_monitoring import ExposureMonitoring
 from log import get_logger
 from procutil import kill_proc_tree
-from qlf_configuration import QLFConfiguration
+# from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
 from util import get_config
 
@@ -82,22 +82,22 @@ class Monitoring(object):
 
         return running
 
-    def add_exposures(self, exposures):
-        # TODO: improvements
-        return None
+    # def add_exposures(self, exposures):
+    #     # TODO: improvements
+    #     return None
 
-    def get_current_configuration(self):
-        configuration = QLFConfiguration()
-        current = configuration.get_current_configuration()
-        return current.configuration
+    # def get_current_configuration(self):
+    #     configuration = QLFConfiguration()
+    #     current = configuration.get_current_configuration()
+    #     return current.configuration
 
-    def get_default_configuration(self):
-        configuration = QLFConfiguration()
-        default = configuration.get_default_configuration()
-        return default
+    # def get_default_configuration(self):
+    #     configuration = QLFConfiguration()
+    #     default = configuration.get_default_configuration()
+    #     return default
 
-    def get_calibration(self):
-        return os.listdir(os.path.join(base_exposures_path, 'psf'))
+    # def get_calibration(self):
+    #     return os.listdir(os.path.join(base_exposures_path, 'psf'))
 
 
 @Pyro4.expose
