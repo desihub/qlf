@@ -3,7 +3,7 @@ import logging
 import requests
 from furl import furl
 from bokeh.plotting import Figure
-from dashboard.models import Process
+from dashboard.models import Process, QA, Job
 from scalar_metrics import LoadMetrics
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
@@ -115,32 +115,80 @@ def get_scalar_metrics(process_id, cam):
     return scalar_metrics
 
 
+def get_merged_qa_scalar_metrics(process_id, cam):
+    """
+    Returns cam scalar metrics
+    """
+
+    scalar_metrics = dict()
+    try:
+        obj = Job.objects.filter(process_id=process_id).get(camera=cam)
+        scalar_metrics = obj.output
+    except QA.DoesNotExist:
+        scalar_metrics = None
+    return scalar_metrics
+
+
 def get_scalar_metrics_aux(process_id, cam):
     """
     Returns cam scalar metrics from the json
     files obtained by Singulani.
     Just a test for desispec 0.21.0
-    """
-    import json
+    """  
+    #qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
+    #!folder = "/home/foliveira/qlf-root/dataql/ql-021-e/20180701/{:08d}".format(5)
+    #!met = {} 
+    #!par = {}
+    #import time
+    #f = open('timer','w')
+    
+    # t1 = time.time()
+    # try:
+    #     process = Process.objects.get(pk=process_id)
+    #     exposure = process.exposure
+    #     mergedqa = LoadMetrics(process_id, cam, process.exposure_id
+    #                 ,exposure.night).load_output()
+    # except Exception as err:
+    #     logger.info(err)
+    #     sys.exit('Could not load merged QA')
+    # f.write('db:    {}\n'.format(time.time()-t1))
 
-    qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
-    folder = "/home/foliveira/qlf-root/dataql/ql-021/00003900/"
-    folder = "ql-021/00003900/"
-    cam = 'z2'
-    met = {} 
-    par = {}
-    for iqa in qanames:
-        file = "ql-{}-{}-00003900.json".format(iqa, cam)
+    #t0 = time.time()
+    try:
+        import json
+        process = Process.objects.get(pk=process_id)
+        exposure = process.exposure
+        folder = "/app/spectro/redux/exposures/{}/{:08d}".format(
+            exposure.night, process.exposure_id)#process_id)
 
-        try:
-            f = json.load(open(folder+file))
-            met.update({iqa: f['METRICS']})
-            par.update({iqa: f['PARAMS']})
-        except:
-            print('%s not found'%file)
+        file = "ql-mergedQA-{}-{:08d}.json".format(cam, process.exposure_id)
+        mergedqa = json.load(open('{}/{}'.format(folder, file)))
+    except Exception as err:
+        sys.exit(err)
+        #f.write('Json error:{}'.format(err))
+    #f.write('json: {}\n'.format(time.time()-t0))
 
-    lm={'results':{'metrics':met, 'tests':par}}
-    return lm
+    #f.close()   
+    return mergedqa
+
+def load_fits(process_id, cam):
+    '''Load reduced fits '''
+    from astropy.io import fits
+
+    try:
+        process = Process.objects.get(pk=process_id)
+        exposure = process.exposure
+        folder = "/app/spectro/redux/exposures/{}/{:08d}".format(
+            exposure.night, process.exposure_id)
+
+        file = "sframe-{}-{:08d}.fits".format(cam, process.exposure_id)
+        fitsfile = fits.open('{}/{}'.format(folder, file))
+        return fitsfile
+
+    except Exception as err:
+        logger.info('{}'.format(err))
+        return None
+
 
 
 def init_xy_plot(hover, yscale):
@@ -204,11 +252,10 @@ def write_info(qa_name, params):
                    'NGOODFIB_WARN_RANGE', 'NGOODFIB_NORMAL_RANGE'],
         skypeak=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
                  'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
-        # , 'PERCENTILES'],
-        getbias=['BIAS_AMP_NORMAL_RANGE',  'BIAS_AMP_WARN_RANGE'],
-        countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'CUTPIX'],
-        integ=['DELTAMAG_TGT_WARN_RANGE', 'DELTAMAG_TGT_NORMAL_RANGE'],
-        snr=['FIDSNR_TGT_NORMAL_RANGE', 'FIDSNR_TGT_WARN_RANGE', 'FIDMAG'])
+        getbias=['BIAS_AMP_NORMAL_RANGE',  'BIAS_AMP_WARN_RANGE'],#, 'PERCENTILES'],
+        countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'CUTPIX'],#, 'LITFRAC_AMP_REF'
+        integ=['DELTAMAG_WARN_RANGE', 'DELTAMAG_NORMAL_RANGE'],
+        snr=['FIDSNR_NORMAL_RANGE', 'FIDSNR_WARN_RANGE', 'FIDMAG'])
 
     keys = dict_test_keys[qa_name]
     for ii in keys:

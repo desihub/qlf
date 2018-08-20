@@ -28,7 +28,7 @@ const styles = {
   },
 };
 
-class PNGPreview extends React.Component {
+class PNGViewer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -48,20 +48,10 @@ class PNGPreview extends React.Component {
 
   componentDidMount() {
     document.title = 'PNG Viewer';
-    if (window.location.pathname === '/ccd-viewer') {
-      if (
-        window.location.search.includes('exposure=') &&
-        window.location.search.includes('night=')
-      ) {
-        const str = window.location.search;
-        const exposureId = str.substring(
-          str.lastIndexOf('exposure='),
-          str.lastIndexOf('&')
-        );
-        const night = str.substring(str.lastIndexOf('night='));
+    if (window.location.pathname === '/png-viewer') {
+      if (window.location.search.includes('process=')) {
         this.setState({
-          exposureId,
-          night,
+          processId: window.location.search.split('process=')[1],
         });
       }
     }
@@ -78,9 +68,9 @@ class PNGPreview extends React.Component {
     )
       url = `${apiUrl}dashboard/fits_to_png/?process_id=1&cam=${
         this.props.arm
-      }${this.props.spectrograph}&${this.state.night}&${
-        this.state.exposureId
-      }&processing=${this.props.processing}`;
+      }${this.props.spectrograph}&process=${this.state.processId}&processing=${
+        this.props.processing
+      }`;
 
     return (
       <iframe
@@ -104,4 +94,4 @@ class PNGPreview extends React.Component {
   }
 }
 
-export default withStyles(styles)(PNGPreview);
+export default withStyles(styles)(PNGViewer);
