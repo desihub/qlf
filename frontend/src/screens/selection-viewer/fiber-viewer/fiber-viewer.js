@@ -7,7 +7,7 @@ const apiUrl = process.env.REACT_APP_API;
 const styles = {
   iframe: {
     height: 'calc(100vh - 135px)',
-    width: '70vw',
+    width: 'calc(100vw - 80px)',
   },
   preview: {
     display: 'flex',

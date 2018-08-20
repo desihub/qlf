@@ -256,9 +256,9 @@ class GlobalFocus:
             pwr = self.wedge_plot('r', fmap, common_source=src, sigma_kind='w')
             pwz = self.wedge_plot('z', fmap, common_source=src, sigma_kind='w')
             layout =   row(
-                       column( row(pb), row(pwb), css_classes=["display-grid-countbins"]), 
-                       column( row(pr), row(pwr), css_classes=["display-grid-countbins"]),
-                       column( row(pz), row(pwz), css_classes=["display-grid-countbins"])) 
+                       column( row(pb), row(pwb)), 
+                       column( row(pr), row(pwr)),
+                       column( row(pz), row(pwz))) 
         except Exception as err:
             sys.exit(err)
 
