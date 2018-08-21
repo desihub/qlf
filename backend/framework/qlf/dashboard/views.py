@@ -545,8 +545,8 @@ def load_qa(request):
             qa_html = GlobalFiber(process_id, arm, spectrograph).load_qa()
         elif qa == 'globalfocus':
             qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
-        else:
-            qa_html = "Couldn't load QA"
+        except Exception as err:
+            qa_html = "Error can't load QA: {}".format(err)
     except:
         qa_html = "Can't load QA"
 
