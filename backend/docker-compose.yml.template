@@ -45,6 +45,7 @@ services:
       - POSTGRES_PORT=
       - POSTGRES_OPTIONS=
       - DB_NAME=db
+      - RUN_DB_MIGRATIONS=True
       # Daemon
       - DAEMON_TEST=False
       - EXPOSURE_MONITORING_NS=exposure.monitoring
@@ -71,7 +72,6 @@ services:
     command: ./run.sh # script that runs on docker-compose up
     ports:
       - "8001:8001" # Django
-      - "5007:5007" # Bokeh (Plots)
       - "56006:56006" # Daemon (Runs QL)
     depends_on:
       - redis

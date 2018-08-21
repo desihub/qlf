@@ -51,42 +51,45 @@ export default class Cards extends React.Component {
   };
 
   renderIcon = () => {
-    const isMonitor = this.props.title === 'Pipeline Monitor';
+    const isOffline =
+      this.props.title === 'Pipeline Monitor' ||
+      this.props.title === 'Configuration';
     const deactivate =
-      isMonitor && process.env.REACT_APP_OFFLINE === 'true'
+      isOffline && process.env.REACT_APP_OFFLINE === 'true'
         ? { color: 'gray', fontWeight: 100 }
         : {};
     switch (this.props.icon) {
       case 'Web':
         return <Web style={{ ...styles.icon, ...deactivate }} />;
       case 'RemoveRedEye':
-        return <RemoveRedEye style={styles.icon} />;
+        return <RemoveRedEye style={{ ...styles.icon, ...deactivate }} />;
       case 'History':
-        return <History style={styles.icon} />;
+        return <History style={{ ...styles.icon, ...deactivate }} />;
       case 'Cloud':
-        return <Cloud style={styles.icon} />;
+        return <Cloud style={{ ...styles.icon, ...deactivate }} />;
       case 'TrendingUp':
-        return <TrendingUp style={styles.icon} />;
+        return <TrendingUp style={{ ...styles.icon, ...deactivate }} />;
       case 'Assignment':
-        return <Assignment style={styles.icon} />;
+        return <Assignment style={{ ...styles.icon, ...deactivate }} />;
       case 'ViewModule':
-        return <ViewModule style={styles.icon} />;
+        return <ViewModule style={{ ...styles.icon, ...deactivate }} />;
       case 'BrightnessMedium':
-        return <BrightnessMedium style={styles.icon} />;
+        return <BrightnessMedium style={{ ...styles.icon, ...deactivate }} />;
       case 'AddToQueue':
-        return <AddToQueue style={styles.icon} />;
+        return <AddToQueue style={{ ...styles.icon, ...deactivate }} />;
       default:
         return;
     }
   };
 
   render() {
-    const isMonitor =
-      this.props.title === 'Pipeline Monitor' &&
+    const isOffline =
+      (this.props.title === 'Configuration' ||
+        this.props.title === 'Pipeline Monitor') &&
       process.env.REACT_APP_OFFLINE === 'true';
-    const deactivate = isMonitor ? { color: 'gray' } : {};
+    const deactivate = isOffline ? { color: 'gray' } : {};
     const deactivateCard =
-      isMonitor && process.env.REACT_APP_OFFLINE === 'true'
+      isOffline && process.env.REACT_APP_OFFLINE === 'true'
         ? { borderLeft: 'solid 4px gray' }
         : {};
     return (
