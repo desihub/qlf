@@ -254,6 +254,14 @@ class SelectionViewer extends React.Component {
             loadStart={this.loadStart}
           />
         );
+      case '/focus-viewer':
+        return (
+          <GlobalViewer
+            screen={'globalfocus'}
+            loadEnd={this.loadEnd}
+            loadStart={this.loadStart}
+          />
+        );
       default:
         return null;
     }

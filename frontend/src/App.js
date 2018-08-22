@@ -162,6 +162,8 @@ class App extends React.Component {
         return '- Log Viewer';
       case '/fiber-viewer':
         return '- Fiber Viewer';
+      case '/focus-viewer':
+        return '- Focus Viewer';
       default:
         return '';
     }

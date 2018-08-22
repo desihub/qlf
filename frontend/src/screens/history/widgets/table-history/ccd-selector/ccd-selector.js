@@ -54,6 +54,12 @@ class CCDSelector extends React.Component {
           >
             Fibers
           </Typography>
+          <Typography
+            className={classes.typography}
+            onClick={() => this.openViewer('focus')}
+          >
+            Focus
+          </Typography>
         </Popover>
       </div>
     );
