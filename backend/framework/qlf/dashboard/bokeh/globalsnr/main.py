@@ -28,7 +28,7 @@ spectro_data = cfg.get("namespace", "desi_spectro_data")
 logger = logging.getLogger(__name__)
 
 
-class GlobalFiber:
+class GlobalSnr:
     def __init__(self, process_id, arm, spectrograph):
             self.selected_process_id = process_id
             self.selected_arm = arm
@@ -38,7 +38,6 @@ class GlobalFiber:
     def data_source_arm(self, fmap, arm ):
         """ Creating data source for plots
         """
-        f2=open('dbg_src','w') 
         data_model = {
             'resids':[],
             'OBJ_TYPE': [],
@@ -68,7 +67,7 @@ class GlobalFiber:
 
         except Exception as err:
             logger.info(err)
-            #sys.exit('Could not load data')
+            sys.exit('Could not load data')
 
 
         ra_snr = []
@@ -91,7 +90,7 @@ class GlobalFiber:
                 med_snr = np.array( mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']["MEDIAN_SNR"])
 
                 # color values:
-                resids_petal = mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']['SNR_RESID']
+                resids_petal = (mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']['SNR_RESID'])
 
                 ra_petal = []
                 dec_petal = []
@@ -119,14 +118,22 @@ class GlobalFiber:
                         dec_petal.append(decs)
                         ot_petal.append(otype)
 
+
                 ra_snr=ra_snr+ra_petal
                 dec_snr=dec_snr+dec_petal
-                resids_snr=resids_snr+resids_petal  
+                resids_snr=resids_snr+ [i if i >-999 else np.nan for i in resids_petal  ]
                 ot_snr= ot_snr + ot_petal   
                 cam_snr = cam_snr + [cam]*len(ra_petal)            
 
-                f2.write('\n{} {} {} ---{} \n'.format( len(ra_snr), len(dec_snr), len(cam_snr), cam    ))
-
+            else:
+                try:
+                    ra_snr = ra_snr+  list(ra_tile[500*spect: 500*(spect +1)])
+                    dec_snr = dec_snr+ list(dec_tile[500*spect: 500*(spect +1)])
+                    resids_snr = resids_snr + 500*[np.nan] 
+                    ot_snr = ot_snr + list(otype_tile[500*spect: 500*(spect +1)]  )
+                    cam_snr = cam_snr + [str(cam)]*500     
+                except Exception as err:
+                    sys.exit()
 
         data_model['ra'] = ra_snr #ra_tile
         data_model['dec'] = dec_snr #dec_tile
@@ -139,114 +146,9 @@ class GlobalFiber:
 
 
 
-
-
-        #     fibaux = []
-        #     y = []
-        #     cam_inst = []
-        #     # rano_tile =[]
-        #     # decno_tile=[]
-        #     ra_all=[]
-        #     dec_all=[]
-
-        #     for spect in list(range(1)): 
-        #         cam = arm+str(spect)   
-        #         if cam in joblist:
-        #             try:
-        #                 mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-                        
-        #                 # Assign available objects
-        #                 objtype = otype_tile[500*spect: 500*(spect + 1) ]
-
-        #                 med_snr = np.array( mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']["MEDIAN_SNR"])
-        #                 resids = mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']['SNR_RESID']
-
-        #                 obj = np.arange(len(objlist))
-
-        #                 rayes = []
-        #                 decyes = []
-
-        #                 for t in range(len(obj)):
-        #                     otype = list(objlist)[t]
-        #                     oid = np.where(np.array(list(objlist))==otype)[0][0]
-
-        #                     if otype == 'STD':
-        #                         fibers = mergedqa['GENERAL_INFO']['STAR_FIBERID']
-        #                     else:
-        #                         fibers = mergedqa['GENERAL_INFO']['%s_FIBERID'%otype]
-
-        #                     fibaux = fibaux + [ 500*spect+ i for i in fibers]
-        
-        #                     f2.write('\n\n0 ra_all {}\n'.format(len(ra_all)))
-
-
-
-        #                     for i in range(len(fibers)):
-        #                         ras = mergedqa['GENERAL_INFO']['RA'][fibers[i]]
-        #                         decs = mergedqa['GENERAL_INFO']['DEC'][fibers[i]]         
-        #                         rayes.append(ras)
-        #                         decyes.append(decs)
-
-        #                 ra_all= ra_all +  rayes
-        #                 dec_all = dec_all + decyes
-        #                 f2.write('\n\n1 ra_all {}\n'.format(len(dec_all)))
-
-
-        #                 # rano = [i for i in mergedqa['GENERAL_INFO']['RA'] if i not in rayes]
-        #                 # decno = [i for i in mergedqa['GENERAL_INFO']['DEC'] if i not in decyes]
-
-        #                 # rayes_tile=rayes_tile+(rayes)
-        #                 # decyes_tile=decyes_tile +(decyes)                
-
-        #                 # rano_tile = rano_tile+rano
-        #                 # decno_tile = decno_tile + decno
-        #                 nanresids = [i if i >-9999.  else np.nan for i in resids]
-
-        #                 y = y + nanresids
-        #                 f2.write('\n resids:{} nanresids: {} rano_tile: {}\n\n'.format(  len(y), len(nanresids), 'dsasda'))
-
-        #             except Exception as err:
-        #                 f = open('dbg8','w')
-        #                 f.write('{}'.format(err))
-        #                 #sys.exit(err)
-
-        #         else:
-        #             y = y + 500*[np.nan]
-        #             ra_all =  ra_all +[ i for i in ra_tile[500*spect:500*(spect + 1)]] 
-        #             dec_all =  dec_all+ [ i for i in dec_tile[500*spect:500*(spect + 1)]] 
-        #             fibaux = fibaux + list(range(500*spect, 500*(spect+1)))
-        #             f2.write('\n\n2 ra_all {}'.format(len(ra_all)))
-
-
-        #         cam_inst = cam_inst +[cam]*500
-
-        #         data_model['x_' + cam[0]] = y
-        #         data_model['cam_'+cam[0]] = cam_inst
-
-        #     f2.write('\n\nRA fibers {}\n'.format( len(ra_all)))
-        #     data_model['OBJ_TYPE'] = [ otype_tile[ii] for ii in fibaux]
-        #     data_model['ra'] = ra_all #ra_tile
-        #     data_model['dec'] = dec_all #dec_tile
-
-        # source = ColumnDataSource(data=data_model)
-        # for k, v in data_model.items():
-        #     try:
-        #         f2.write('{} {}\n'.format(k, len(v)))
-        #     except:
-        #         f2.write('{} {}\n'.format(k, v))
-
-        # f2.write('RA \n{}\n'.format(len(ra_all)))
-        # f2.write('DEC {}\n'.format(len(dec_all)))
-
-
-
-
-
-
     def data_source(self, fmap ):
         """ Creating data source for plots
         """
-        f2=open('dbg2','w') 
         data_model = {
             'x_b':[],
             'x_r':[],
@@ -288,13 +190,10 @@ class GlobalFiber:
         for arm in ['b','r','z']:
             fibaux = []
 
-            f2.write('::{}::\n'.format(arm))
 
 
             y = []
             cam_inst = []
-            # rano_tile =[]
-            # decno_tile=[]
             ra_all=[]
             dec_all=[]
 
@@ -326,9 +225,6 @@ class GlobalFiber:
 
                             fibaux = fibaux + [ 500*spect+ i for i in fibers]
         
-                            f2.write('\n\n0 ra_all {}\n'.format(len(ra_all)))
-
-
 
                             for i in range(len(fibers)):
                                 ras = mergedqa['GENERAL_INFO']['RA'][fibers[i]]
@@ -338,33 +234,19 @@ class GlobalFiber:
 
                         ra_all= ra_all +  rayes
                         dec_all = dec_all + decyes
-                        f2.write('\n\n1 ra_all {}\n'.format(len(dec_all)))
 
-
-                        # rano = [i for i in mergedqa['GENERAL_INFO']['RA'] if i not in rayes]
-                        # decno = [i for i in mergedqa['GENERAL_INFO']['DEC'] if i not in decyes]
-
-                        # rayes_tile=rayes_tile+(rayes)
-                        # decyes_tile=decyes_tile +(decyes)                
-
-                        # rano_tile = rano_tile+rano
-                        # decno_tile = decno_tile + decno
                         nanresids = [i if i >-9999.  else np.nan for i in resids]
 
                         y = y + nanresids
-                        f2.write('\n resids:{} nanresids: {} rano_tile: {}\n\n'.format(  len(y), len(nanresids), 'dsasda'))
 
                     except Exception as err:
-                        f = open('dbg8','w')
-                        f.write('{}'.format(err))
-                        #sys.exit(err)
+                        sys.exit(err)
 
                 else:
                     y = y + 500*[np.nan]
                     ra_all =  ra_all +[ i for i in ra_tile[500*spect:500*(spect + 1)]] 
                     dec_all =  dec_all+ [ i for i in dec_tile[500*spect:500*(spect + 1)]] 
                     fibaux = fibaux + list(range(500*spect, 500*(spect+1)))
-                    f2.write('\n\n2 ra_all {}'.format(len(ra_all)))
 
 
                 cam_inst = cam_inst +[cam]*500
@@ -372,20 +254,11 @@ class GlobalFiber:
                 data_model['x_' + cam[0]] = y
                 data_model['cam_'+cam[0]] = cam_inst
 
-            f2.write('\n\nRA fibers {}\n'.format( len(ra_all)))
             data_model['OBJ_TYPE'] = [ otype_tile[ii] for ii in fibaux]
             data_model['ra'] = ra_all #ra_tile
             data_model['dec'] = dec_all #dec_tile
 
         source = ColumnDataSource(data=data_model)
-        for k, v in data_model.items():
-            try:
-                f2.write('{} {}\n'.format(k, len(v)))
-            except:
-                f2.write('{} {}\n'.format(k, v))
-
-        f2.write('RA \n{}\n'.format(len(ra_all)))
-        f2.write('DEC {}\n'.format(len(dec_all)))
 
         return source
 
@@ -393,7 +266,6 @@ class GlobalFiber:
 
 
     def wedge_plot(self, wedge_arm, fmap, common_source=None, sigma_kind='x'):
-        f1 = open('dbg_plot','w')
         try:
             ra_tile = fmap['FIBERMAP'].data['RA_OBS']
             dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
@@ -404,8 +276,7 @@ class GlobalFiber:
 
         except Exception as err:
             logger.info(err)
-            f1.write('{}'.format(err))
-            #sys.exit('Could not load data')
+            sys.exit('Could not load data')
 
 
         fiber_tooltip = """
@@ -439,10 +310,6 @@ class GlobalFiber:
 
         my_palette = get_palette("bwr") #"seismic")#"RdYlBu_r")#"viridis")
         source = common_source
-        f1.write('\nra_plot = {}\n\n'.format(len(source.data['ra'])))
-        f1.write('\ndec_plot = {}\n'.format(len(source.data['dec'])))
-
-        f1.write('\ndec_plot = {}\n'.format(len(source.data['resids'])))
 
         try:
             sigma = source.data['resids']#['{}_'.format(sigma_kind) +wedge_arm]
@@ -471,7 +338,7 @@ class GlobalFiber:
             p = Figure( title='SNR (ARM {})'.format( wedge_arm)
                     , x_axis_label='RA', y_axis_label='DEC'
                     , plot_width=600, plot_height=600
-                    , tools=[hover, "pan,wheel_zoom,reset,lasso_select,crosshair"]
+                    , tools=[hover, "pan,wheel_zoom,reset,box_zoom,crosshair"]
                     , x_range = xrange, y_range=yrange
                     )
 
@@ -507,16 +374,14 @@ class GlobalFiber:
                 p_list = [p]
 
         except Exception as err:
-            f1.write('Error {}'.format(err))
             p_list=None
-            #sys.exit(err)
+            sys.exit(err)
 
         return p_list
 
 
 
     def load_qa(self):
-        f = open('dbg','w')
 
 
         try:
@@ -540,33 +405,27 @@ class GlobalFiber:
 
         src_b = self.data_source_arm(fmap,'b')
 
-        try:
-            print('asdf')
-            pb = self.wedge_plot('r', fmap, common_source=src_b)#, common_source=source)
-            f.write('{}'.format(pb))
-            layout = row(pb)
-
-        except Exception as err:
-            f.write('{}'.format(err))
-   
         # try:
-        #     pb = self.wedge_plot('b', fmap, common_source=src)#, common_source=source)
-        #     #pr = self.wedge_plot('r', fmap, common_source=src)
-        #     #pz = self.wedge_plot('z', fmap, common_source=src)
-        #     # pwb = self.wedge_plot('b', fmap, common_source=src, sigma_kind='w')
-        #     # pwr = self.wedge_plot('r', fmap, common_source=src, sigma_kind='w')
-        #     # pwz = self.wedge_plot('z', fmap, common_source=src, sigma_kind='w')
-        #     # row(   column( row(pb), css_classes=["display-grid-countbins"]),
-        #     #                 column( row(pr), css_classes=["display-grid-countbins"]),
-        #     #                 column( row(pz), css_classes=["display-grid-countbins"])
-        #     #             )
-        #     # layout =   row(
-        #     #            column( row(pb), row(pwb), css_classes=["display-grid-countbins"]), 
-        #     #            column( row(pr), row(pwr), css_classes=["display-grid-countbins"]),
-        #     #            column( row(pz), row(pwz), css_classes=["display-grid-countbins"])) 
+        #     print('asdf')
+        #     pb = self.wedge_plot('b', fmap, common_source=src_b)#, common_source=source)
+        #     layout = row(pb)
+
         # except Exception as err:
-        #     f = open('dbg','w'); f.write('{}'.format(err))
-        #     #sys.exit(err)
+               
+        try:
+            src_b = self.data_source_arm(fmap,'b')
+            src_r = self.data_source_arm(fmap,'r')
+            src_z = self.data_source_arm(fmap,'z')                        
+
+            pb = self.wedge_plot('b', fmap, common_source=src_b)#, common_source=source)
+            pr = self.wedge_plot('r', fmap, common_source=src_r)
+            pz = self.wedge_plot('z', fmap, common_source=src_z)
+            layout = row(   column( row(pb), css_classes=["display-grid-countbins"]),
+                            column( row(pr), css_classes=["display-grid-countbins"]),
+                            column( row(pz), css_classes=["display-grid-countbins"])
+                        )
+        except Exception as err:
+            sys.exit(err)
 
         return file_html(layout, CDN, "COUNTBINS")
 
