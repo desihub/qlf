@@ -143,7 +143,7 @@ class OfflineContainer extends Component {
           render={() => <SelectionViewer spectrograph={true} arm={true} />}
         />
         <Route
-          path="/png-viewer"
+          path="/ccd-viewer"
           render={() => (
             <SelectionViewer spectrograph={true} arm={true} processing={true} />
           )}

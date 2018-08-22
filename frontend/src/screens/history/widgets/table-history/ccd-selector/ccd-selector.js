@@ -44,9 +44,9 @@ class CCDSelector extends React.Component {
         >
           <Typography
             className={classes.typography}
-            onClick={() => this.openViewer('png')}
+            onClick={() => this.openViewer('ccd')}
           >
-            PNG
+            CCD
           </Typography>
           <Typography
             className={classes.typography}

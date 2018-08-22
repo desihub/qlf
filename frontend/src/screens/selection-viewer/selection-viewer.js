@@ -227,7 +227,7 @@ class SelectionViewer extends React.Component {
 
   renderViewer = () => {
     switch (window.location.pathname) {
-      case '/png-viewer':
+      case '/ccd-viewer':
         return (
           <PNGViewer
             processing={this.state.processing}
