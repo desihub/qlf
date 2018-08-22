@@ -56,6 +56,7 @@ const styles = {
     gridTemplateColumns: 'auto',
     height: '100vh',
     width: '100vw',
+    position: 'relative',
   },
   headerTop: {
     fontSize: '35px',
@@ -69,11 +70,16 @@ const styles = {
   },
   logo: {
     height: '90px',
-    paddingTop: '5px',
   },
   logoLinea: {
     verticalAlign: 'middle',
     cursor: 'pointer',
+  },
+  logoDesi: {
+    position: 'absolute',
+    top: '20px',
+    right: '100px',
+    zIndex: 1250,
   },
   title: {
     display: 'flex',
@@ -100,6 +106,7 @@ const styles = {
   bottom: {
     display: 'flex',
     justifyContent: 'space-between',
+    fontSize: '0.9rem',
   },
   homeIcon: {
     fontSize: 20,
@@ -178,11 +185,6 @@ class App extends React.Component {
       return (
         <div style={styles.title}>
           <span style={styles.spanTitle}>DESI Quick Look</span>
-          {window.innerWidth < 700 ? null : (
-            <div>
-              <img src={logo} alt={'logo'} style={styles.logo} />
-            </div>
-          )}
         </div>
       );
     } else {
@@ -264,11 +266,14 @@ class App extends React.Component {
     return (
       <div style={styles.bottom}>
         <span>
-          © Copyright 2018,{' '}
-          <a onClick={this.openLineaWebSite} title="LIneA">
+          © Copyright 2018, Powered by
+          <a
+            onClick={this.openLineaWebSite}
+            title="LIneA"
+            style={{ marginLeft: '8px' }}
+          >
             <img src={logoLinea} alt={'logo linea'} style={styles.logoLinea} />
           </a>
-          /DESI
         </span>
         <div style={styles.footerRight}>
           <span>
@@ -302,6 +307,11 @@ class App extends React.Component {
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
             <div style={useGrid}>
+              {this.renderRouteName() === '' ? (
+                <div style={styles.logoDesi}>
+                  <img src={logo} alt={'logo'} style={styles.logo} />
+                </div>
+              ) : null}
               {this.renderTopBar()}
               <div style={containerStyle}>
                 {['/', '/about', '/help', '/tutorials', '/contact'].map(
