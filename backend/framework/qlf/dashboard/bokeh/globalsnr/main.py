@@ -322,11 +322,7 @@ class GlobalSnr:
                 mapper = LinearColorMapper(palette= my_palette,  nan_color='lightgray',
                                  low= -0.2 ,
                                  high= 0.2 )
-                                 # low= rng_min - 0.1*rng ,
-                                 # high=rng_max + 0.1*rng )
 
-                #fill_color = {'field':'%s_'%(sigma_kind) +  wedge_arm, 'transform':mapper}
-                #fill_color={'field':'resids', 'transform':'mapper'}
                 fill_color= {'field':'resids', 'transform':mapper}
         
             radius = 0.017
@@ -401,16 +397,10 @@ class GlobalSnr:
              
         except Exception as err:
             logger.info(err)
-            #sys.exit('Could not load data')
+            sys.exit('Could not load data')
 
         src_b = self.data_source_arm(fmap,'b')
 
-        # try:
-        #     print('asdf')
-        #     pb = self.wedge_plot('b', fmap, common_source=src_b)#, common_source=source)
-        #     layout = row(pb)
-
-        # except Exception as err:
                
         try:
             src_b = self.data_source_arm(fmap,'b')
