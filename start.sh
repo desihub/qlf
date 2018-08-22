@@ -3,8 +3,8 @@ if [ -z "$1" ]; then
   echo "Staring backend... $(awk -F'=' '/QLF_API_URL=/ {print $2}' backend/docker-compose.yml)"
   echo "Starting frontend... http://localhost:"$(awk -F'=' '/QLF_UI_PORT=/ {print $2}' frontend/docker-compose.yml)
   echo "It may take a few minutes to start..."
-  docker-compose -f frontend/docker-compose.yml up --force-recreate &
-  docker-compose -f backend/docker-compose.yml up --force-recreate &
+  CURRENT_UID=$(id -u):$(id -g) docker-compose -f frontend/docker-compose.yml up --force-recreate &
+  CURRENT_UID=$(id -u):$(id -g) docker-compose -f backend/docker-compose.yml up --force-recreate &
   exit 1
 fi
 
