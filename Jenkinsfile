@@ -30,8 +30,9 @@ pipeline {
         }
         stage('Deploy to Staging') {
             when {
-                branch "master"
-                not { tag "v*" }
+                expression {
+                   env.BRANCH_NAME.toString().equals('master')
+                }
             }
             steps {
                 sh 'curl -D - -X "POST" -H "Accept: application/json" \
