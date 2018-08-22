@@ -1,5 +1,5 @@
 from util import (
-    get_config, format_night,
+    format_night,
     extract_exposure_data
 )
 import os
@@ -7,8 +7,7 @@ import datetime
 import re
 from log import get_logger
 
-cfg = get_config()
-qlf_root = cfg.get("environment", "qlf_root")
+qlf_root = os.environ.get('QLF_ROOT')
 
 log = get_logger(
     "qlf.interface",
@@ -20,7 +19,7 @@ class QLFInterface(object):
 
     def last_exposure(self):
 
-        spectro_data = cfg.get("namespace", "desi_spectro_data")
+        spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
         night = re.findall(
             r"(\d{8})",

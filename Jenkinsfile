@@ -31,7 +31,7 @@ pipeline {
         stage('Deploy to Staging') {
             when {
                 expression {
-                    env.BRANCH_NAME.toString().equals('master')
+                   env.BRANCH_NAME.toString().equals('master')
                 }
             }
             steps {

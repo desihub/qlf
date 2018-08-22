@@ -1,20 +1,16 @@
 from ui_channel.camera_status import CameraStatus
 from dashboard.models import Process, Job
 from clients import get_exposure_monitoring
-from .views import open_file
-from util import get_config
 from dashboard.utils import get_date
 import io
 import os
 import json
 import logging
-from util import get_config
 from log import get_logger
 import datetime
 
-cfg = get_config()
-desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-qlf_root = cfg.get("environment", "qlf_root")
+desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
+qlf_root = os.environ.get('QLF_ROOT')
 
 logger = get_logger(
     "qlf.qlf_state",
@@ -107,7 +103,8 @@ class QLFState:
         if self.current_process:
             self.update_pipeline_log()
             self.update_camera_logs()
-            self.logfile = self.tail_file(open_file('logfile'), 100)
+            self.logfile = self.tail_file(os.path.join(
+                qlf_root, "logs", "qlf.log"), 100)
             self.available_cameras = self.get_avaiable_cameras(
                 self.current_process
             )
@@ -193,9 +190,8 @@ class QLFState:
 
     def get_pipeline_log(self):
         """ Gets pipeline log """
-        cfg = get_config()
 
-        pipelinelog = cfg.get('main', 'logpipeline')
+        pipelinelog = os.path.join(qlf_root, "logs", "pipeline.log")
 
         try:
             return self.tail_file(pipelinelog, 100)
