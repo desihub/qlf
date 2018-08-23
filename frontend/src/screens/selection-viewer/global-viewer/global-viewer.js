@@ -43,7 +43,7 @@ class GlobalViewer extends React.Component {
   };
 
   componentWillMount() {
-    document.title = 'Fiber Viewer';
+    document.title = 'Focus Viewer';
     if (window.location.search.includes('process=')) {
       this.setState(
         {
