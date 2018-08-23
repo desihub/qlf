@@ -261,7 +261,7 @@ class GlobalFocus:
         except Exception as err:
             sys.exit(err)
 
-        return file_html(layout, CDN, "COUNTBINS")
+        return file_html(layout, CDN, "Global Focus")
 
 
 
