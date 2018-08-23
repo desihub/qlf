@@ -558,8 +558,8 @@ def load_qa(request):
             qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
         else:
             qa_html = "Couldn't load QA"
-    except:
-        qa_html = "Can't load QA"
+    except Exception as err:
+        qa_html = "Can't load QA: {}".format(err)
 
     context = {'image': qa_html}
     response = HttpResponse(template.render(context, request))

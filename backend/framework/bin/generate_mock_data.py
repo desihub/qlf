@@ -18,32 +18,41 @@ class MockData():
 
     def generate_process(self, exposure_id):
         self.new_expid = exposure_id
-        last_process = Process.objects.last()
-        last_process.pk = None
-        last_process.save()
-        last_process.exposure_id = exposure_id
-        last_process.start = datetime.now().replace(microsecond=0)
-        last_process.end = datetime.now().replace(microsecond=0)
-        last_process.save()
-        print(last_process.pk)
-        self.generate_jobs(last_process.pk)
+        exposure = Exposure.objects.get(exposure_id=exposure_id)
+        new_process = Process(
+            start=datetime.now().replace(microsecond=0),
+            end=datetime.now().replace(microsecond=0),
+            status=self.base_process.status,
+            exposure=exposure,
+            qa_tests=self.base_process.qa_tests
+        )
+        new_process.save()
+        self.generate_jobs(new_process)
 
-    def generate_jobs(self, process_id):
+    def generate_jobs(self, process):
         for job in self.base_process.process_jobs.all():
-            job.pḱ = None
-            job.save()
-            job.process_id = process_id
-            job.save()
-            self.generate_qas(job.pk)
+            new_job = Job(
+                camera=job.camera,
+                process=process,
+                output=job.output,
+                status=job.status,
+                logname=job.logname,
+                version=job.version
+            )
+            new_job.save()
+            self.generate_qas(job)
 
-    def generate_qas(self, job_id):
+    def generate_qas(self, job):
         for qa in self.base_process.process_jobs.all()[0].job_qas.all():
-            qa.pk = None
-            qa.save()
-            qa.job_id = job_id
-            qa.name = qa.name.replace(str(self.base_process.exposure_id), str(self.new_expid))
-            qa.save()
+            new_qa = QA(
+                name=qa.name.replace(str(self.base_process.exposure_id), str(self.new_expid)),
+                metrics=qa.metrics,
+                params=qa.params,
+                job=job,
+                paname=qa.paname
+            )
+            new_qa.save()
 
 
-MockData(20).generate_process(3910)
-# MockData().generate_exposure()
+# MockData(1).generate_exposure()
+MockData(20).generate_process(3905)
