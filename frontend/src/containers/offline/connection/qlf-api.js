@@ -316,18 +316,4 @@ export default class QlfApi {
     const responseJson = await ticket.json();
     return responseJson;
   }
-
-  static async editConfiguration(keys, values) {
-    const body = {
-      keys,
-      values,
-    };
-    const config = await fetch(`${apiUrl}dashboard/api/edit_qlf_config/`, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(body),
-    });
-    const responseJson = await config.json();
-    return responseJson;
-  }
 }

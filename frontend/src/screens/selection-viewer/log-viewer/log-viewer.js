@@ -42,7 +42,7 @@ class LogViewer extends React.Component {
           this.props.arm))
     ) {
       this.getLines(nextProps);
-    } else if (!this.props.loading) {
+    } else if (!this.props.loading && !nextProps.arm) {
       this.setState({ lines: [] });
     }
   }

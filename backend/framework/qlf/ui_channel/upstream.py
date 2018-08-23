@@ -4,17 +4,14 @@ import schedule
 from channels import Group
 import os
 import logging
-from util import get_config
 from log import get_logger
-from util import get_config
 from ui_channel.alerts import Alerts
 import json
 from clients import get_exposure_monitoring
 
 from log import get_logger
 
-cfg = get_config()
-qlf_root = cfg.get("environment", "qlf_root")
+qlf_root = os.environ.get('QLF_ROOT')
 
 log = get_logger(
     "qlf.upstream",
@@ -27,17 +24,11 @@ qlf = get_exposure_monitoring()
 
 logger = logging.getLogger()
 
-try:
-    cfg = get_config()
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-    desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
-    night = cfg.get('data', 'night')
-    loglevel = cfg.get("main", "loglevel")
-    logpipeline = cfg.get('main', 'logpipeline')
-    logger_pipeline = get_logger("pipeline", logpipeline, loglevel)
-except Exception as error:
-    logger.error(error)
-    logger.error("Error reading  %s/framework/config/qlf.cfg" % qlf_root)
+desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
+loglevel = os.environ.get('PIPELINE_LOGLEVEL')
+logpipeline = os.path.join(qlf_root, "logs", "pipeline.log")
+logger_pipeline = get_logger("pipeline", logpipeline, loglevel)
 
 
 class Upstream:

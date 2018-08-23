@@ -28,19 +28,11 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Production') {
-            when { tag "v*" }
-            steps {
-                sh 'curl -D - -X "POST" -H "Accept: application/json" \
-                    -H "Content-Type: application/json" \
-                    -H "X-Rundeck-Auth-Token: $RD_AUTH_TOKEN" \
-                    http://fox.linea.gov.br:4440/api/16/job/5068c980-9ecb-4e49-bde3-455591f82c5b/executions'
-            }
-        }
         stage('Deploy to Staging') {
             when {
-                branch "master"
-                not { tag "v*" }
+                expression {
+                   env.BRANCH_NAME.toString().equals('master')
+                }
             }
             steps {
                 sh 'curl -D - -X "POST" -H "Accept: application/json" \

@@ -60,14 +60,13 @@ class QLFModels(object):
         # Save Process for this exposure
         return Exposure.objects.get(exposure_id=exposure_id)
 
-    def insert_process(self, data, pipeline_name, configuration):
+    def insert_process(self, data, pipeline_name):
         """ Inserts initial data in process table. """
 
         exposure = self.insert_exposure(**data)
 
         process = Process(
             exposure_id=exposure.exposure_id,
-            configuration_id=configuration.pk,
             start=data.get('start'),
             pipeline_name=pipeline_name
         )

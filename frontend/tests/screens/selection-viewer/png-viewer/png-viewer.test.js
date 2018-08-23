@@ -1,17 +1,17 @@
 import React from 'react';
-import PNGPreview from '../../../../src/screens/selection-viewer/png-preview/png-preview';
+import PNGViewer from '../../../../src/screens/selection-viewer/png-viewer/png-viewer';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 configure({ adapter: new Adapter() });
 
-describe('PNGPreview', () => {
-  let pngPreview;
+describe('PNGViewer', () => {
+  let pngViewer;
   beforeEach(() => {
-    pngPreview = <PNGPreview loadEnd={jest.fn()} spectrograph={[0]} />;
+    pngViewer = <PNGViewer loadEnd={jest.fn()} spectrograph={[0]} />;
   });
 
   it('mounts', () => {
-    mount(pngPreview);
+    mount(pngViewer);
   });
 });
