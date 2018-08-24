@@ -44,7 +44,9 @@ from dashboard.bokeh.qaskyresid.main import Skyresid
 from dashboard.bokeh.qasnr.main import SNR
 from dashboard.bokeh.globalfiber.main import GlobalFiber
 from dashboard.bokeh.globalfocus.main import GlobalFocus
+from dashboard.bokeh.footprint.main import Footprint
 from dashboard.bokeh.globalsnr.main import GlobalSnr
+
 
 from .filters import ProcessingHistoryFilter
 
@@ -469,7 +471,7 @@ def embed_bokeh(request, bokeh_app):
     # http://bokeh.pydata.org/en/0.12.5/docs/reference/embed.html
 
     # TODO: test if bokeh server is reachable
-    bokeh_script = server_document(arguments=request.GET, url="{}/{}".format(settings.BOKEH_URL,
+    bokeh_script = server_document(arguments=request.GET, url="{}/{}".format(settings.QLF_BASE_URL,
                                                             bokeh_app))
 
     template = loader.get_template('dashboard/embed_bokeh.html')
@@ -494,6 +496,16 @@ def embed_bokeh(request, bokeh_app):
     response.set_cookie('django_full_path', request.get_full_path())
     return response
 
+
+def get_footprint(request):
+    """Generates and render png"""
+    template = loader.get_template('dashboard/fits_to_png.html')
+    # Generate Footprint
+    footprint = Footprint().get_footprint()
+    context = {'image': footprint}
+    response = HttpResponse(template.render(context, request))
+
+    return response
 
 def fits_to_png(request):
     """Generates and render png"""
@@ -550,8 +562,8 @@ def load_qa(request):
             qa_html = GlobalSnr(process_id, arm, spectrograph).load_qa()
         else:
             qa_html = "Couldn't load QA"
-    except:
-        qa_html = "Can't load QA"
+    except Exception as err:
+        qa_html = "Can't load QA: {}".format(err)
 
     context = {'image': qa_html}
     response = HttpResponse(template.render(context, request))
