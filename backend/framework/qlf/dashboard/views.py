@@ -44,6 +44,7 @@ from dashboard.bokeh.qaskyresid.main import Skyresid
 from dashboard.bokeh.qasnr.main import SNR
 from dashboard.bokeh.globalfiber.main import GlobalFiber
 from dashboard.bokeh.globalfocus.main import GlobalFocus
+from dashboard.bokeh.globalsnr.main import GlobalSnr
 
 from .filters import ProcessingHistoryFilter
 
@@ -545,6 +546,8 @@ def load_qa(request):
             qa_html = GlobalFiber(process_id, arm, spectrograph).load_qa()
         elif qa == 'globalfocus':
             qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
+        elif qa == 'globalsnr':
+            qa_html = GlobalSnr(process_id, arm, spectrograph).load_qa()
         else:
             qa_html = "Couldn't load QA"
     except:
