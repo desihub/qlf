@@ -75,7 +75,7 @@ class Skyresid:
             #logger.info(err)
             #sys.exit('Could not load data')
 
-        check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
+        #check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
 
 
         skyresid  = check_spectra['METRICS']#metrics['skyresid']
