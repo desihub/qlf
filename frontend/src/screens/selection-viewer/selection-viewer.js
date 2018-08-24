@@ -262,6 +262,14 @@ class SelectionViewer extends React.Component {
             loadStart={this.loadStart}
           />
         );
+      case '/snr-viewer':
+        return (
+          <GlobalViewer
+            screen={'globalSNR'}
+            loadEnd={this.loadEnd}
+            loadStart={this.loadStart}
+          />
+        );
       default:
         return null;
     }
