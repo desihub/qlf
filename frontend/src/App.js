@@ -58,6 +58,10 @@ const styles = {
     width: '100vw',
     position: 'relative',
   },
+  headerContainer: {
+    position: 'relative',
+    height: '99px',
+  },
   headerTop: {
     fontSize: '35px',
     padding: '0px 6vw 35px 6vw',
@@ -77,7 +81,7 @@ const styles = {
   },
   logoDesi: {
     position: 'absolute',
-    top: '20px',
+    top: '5px',
     right: '100px',
     zIndex: 1250,
   },
@@ -315,12 +319,14 @@ class App extends React.Component {
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
             <div style={useGrid}>
-              {this.renderRouteName() === '' ? (
-                <div style={styles.logoDesi}>
-                  <img src={logo} alt={'logo'} style={styles.logo} />
-                </div>
-              ) : null}
-              {this.renderTopBar()}
+              <div style={styles.headerContainer}>
+                {this.renderRouteName() === '' ? (
+                  <div style={styles.logoDesi}>
+                    <img src={logo} alt={'logo'} style={styles.logo} />
+                  </div>
+                ) : null}
+                {this.renderTopBar()}
+              </div>
               <div style={containerStyle}>
                 {['/', '/about', '/help', '/tutorials', '/contact'].map(
                   path => (
