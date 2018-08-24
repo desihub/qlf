@@ -71,7 +71,7 @@ describe('Landing Home', () => {
         .at(5)
         .text()
     ).toBe(
-      'Sky ConditionsDisplay sky conditions such as atmospheric transparency, seeing, and sky background from the GFA camera'
+      'Observing ConditionsDisplay observing conditions such as atmospheric transparency, seeing, and observing background from the GFA camera'
     );
     expect(
       wrapper
@@ -124,6 +124,14 @@ describe('Landing Home', () => {
     expect(updateUrl).toBeCalledWith('/afternoon-planning');
   });
 
+  it('navigates to /survey-report', () => {
+    wrapper
+      .find('a')
+      .at(6)
+      .simulate('click');
+    expect(updateUrl).toBeCalledWith('/survey-report');
+  });
+
   it('navigates to /', () => {
     wrapper
       .find('a')
@@ -134,12 +142,6 @@ describe('Landing Home', () => {
     wrapper
       .find('a')
       .at(5)
-      .simulate('click');
-    expect(updateUrl).toBeCalledWith('/under-construction');
-    updateUrl.mockReset();
-    wrapper
-      .find('a')
-      .at(6)
       .simulate('click');
     expect(updateUrl).toBeCalledWith('/under-construction');
     updateUrl.mockReset();

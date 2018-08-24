@@ -58,7 +58,7 @@
       "./setup-jest.js"
     ],
     "moduleNameMapper": {
-      ".+\\.(mp3)$": "jest-transform-stub"
+      ".+\\.(mp3|png)$": "jest-transform-stub"
     },
     "modulePathIgnorePatterns": [
       "npm-cache",

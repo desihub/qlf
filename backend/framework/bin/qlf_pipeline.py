@@ -11,28 +11,27 @@ from threading import Thread
 from concurrent import futures
 
 from log import get_logger
-from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
-from util import extract_exposure_data, get_config
+from util import extract_exposure_data
 
-cfg = get_config()
+desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
+loglevel = os.environ.get('PIPELINE_LOGLEVEL')
+max_workers = int(os.environ.get('PIPELINE_MAX_WORKERS'))
+qlf_root = os.environ.get('QLF_ROOT')
 
-desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
-loglevel = cfg.get("main", "loglevel")
-logpipeline = cfg.get('main', 'logpipeline')
-max_workers = cfg.getint('main', 'max_workers')
+logger = get_logger(
+    "qlf.pipeline",
+    os.path.join(qlf_root, "logs", "pipeline.log")
+)
 
 if not max_workers > 0:
     max_workers = None
 
-logger = get_logger("pipeline", logpipeline, loglevel)
-
-
 class QLFProcess(object):
     """ Class responsible for managing Quick Look pipeline process. """
 
-    def __init__(self, data, configuration):
+    def __init__(self, data):
         self.pipeline_name = 'Quick Look'
         self.data = data
 
@@ -72,8 +71,6 @@ class QLFProcess(object):
             }
         ]
 
-        self.configuration = configuration
-
         self.models = QLFModels()
 
         output_dir = os.path.join(
@@ -97,8 +94,7 @@ class QLFProcess(object):
         # create process in database and obtain the process id
         process = self.models.insert_process(
             self.data,
-            self.pipeline_name,
-            self.configuration
+            self.pipeline_name
         )
 
         self.data['process_id'] = process.id
@@ -385,8 +381,8 @@ def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
 
     exposure = extract_exposure_data(exposure_id, night)
 
-    arms = cfg.get('data', 'arms').split(',')
-    spectrographs = cfg.get('data', 'spectrographs').split(',')
+    arms = os.environ.get('data', 'arms').split(',')
+    spectrographs = os.environ.get('data', 'spectrographs').split(',')
 
     cameras = list()
 
@@ -396,13 +392,10 @@ def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
 
     exposure['cameras'] = cameras
 
-    configuration = QLFConfiguration()
-
     if qlconfig:
         exposure['qlconfig'] = qlconfig
 
-    qlf_process = QLFProcess(
-        exposure, configuration.get_current_configuration())
+    qlf_process = QLFProcess(exposure)
     process_id = qlf_process.start_process()
 
     if return_process_id:

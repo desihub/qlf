@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
 from django.db.models import Max, Min
-from django.db.models import Q
+# from django.db.models import Q
 
 from .models import Job, Exposure, Camera, QA, Process, Configuration, ProcessComment
 from .serializers import (
@@ -17,7 +17,8 @@ from .serializers import (
     QASerializer, ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
-    ExposureFlavorSerializer, ProcessCommentSerializer
+    ExposureFlavorSerializer, ProcessCommentSerializer,
+    ExposureNightSerializer
 )
 
 from datetime import datetime, timedelta
@@ -41,6 +42,8 @@ from dashboard.bokeh.qaskypeak.main import Skypeak
 from dashboard.bokeh.qainteg.main import Integ
 from dashboard.bokeh.qaskyresid.main import Skyresid
 from dashboard.bokeh.qasnr.main import SNR
+from dashboard.bokeh.globalfiber.main import GlobalFiber
+from dashboard.bokeh.globalfocus.main import GlobalFocus
 
 from .filters import ProcessingHistoryFilter
 
@@ -51,10 +54,6 @@ from clients import get_exposure_monitoring
 
 from django.contrib import messages
 import logging
-
-from util import get_config
-
-from .config_file import edit_qlf_config_file, set_default_configuration
 
 qlf = get_exposure_monitoring()
 
@@ -212,7 +211,7 @@ class ObservingHistoryViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelV
 
     queryset = Exposure.objects.order_by('-pk')
     serializer_class = ObservingHistorySerializer
-    filter_fields = ('exposure_id', 'flavor')
+    filter_fields = ('exposure_id', 'flavor', 'night',)
 
     # Added to order SerializerMethodFields
     def list(self, request, *args, **kwargs):
@@ -258,6 +257,24 @@ class ProcessViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     filter_fields = ('exposure',)
 
 
+class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Configuration.objects.order_by('creation_date')
+    serializer_class = ConfigurationSerializer
+    def list(self, request, *args, **kwargs):
+        response = super(QlConfigViewSet, self).list(
+            request, args, kwargs)
+        try:
+            ql_type = request.GET.get('type')
+            ql_path = '{}/qlconfig_{}.yaml'.format(os.environ.get('QL_CONFIG_DIR'), ql_type)
+            with open(ql_path) as f:
+                qlconfig = f.read()
+        except Exception as err:
+            logger.info(err)
+            qlconfig = 'Error reading qlconfig: {}'.format(err)
+        response.data = qlconfig
+        return response
+
+
 class ConfigurationViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing configurations"""
 
@@ -272,59 +289,19 @@ class CurrentConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         response = super(CurrentConfigurationViewSet, self).list(
             request, args, kwargs)
-        cfg = get_config()
+        qlf_root = os.environ.get('QLF_ROOT')
         configuration = dict(
-            base_exposures_path=cfg.get("namespace", "base_exposures_path"),
-            min_interval=cfg.get("main", "min_interval"),
-            max_interval=cfg.get("main", "max_interval"),
-            allowed_delay=cfg.get("main", "allowed_delay"),
-            max_exposures=cfg.get("main", "max_exposures"),
-            max_nights=cfg.get("main", "max_nights"),
-            logfile=cfg.get("main", "logfile"),
-            loglevel=cfg.get("main", "loglevel"),
-            logpipeline=cfg.get("main", "logpipeline"),
-            qlconfig=cfg.get("main", "qlconfig"),
-            night=cfg.get("data", "night"),
-            exposures=cfg.get("data", "exposures"),
-            arms=cfg.get("data", "arms"),
-            spectrographs=cfg.get("data", "spectrographs"),
-            desi_spectro_data=cfg.get("namespace", "desi_spectro_data"),
-            desi_spectro_redux=cfg.get("namespace", "desi_spectro_redux"),
-            calibration_path=cfg.get("namespace", "calibration_path")
+            logfile=os.path.join(qlf_root, "logs", "qlf.log"),
+            loglevel=os.environ.get('PIPELINE_LOGLEVEL'),
+            logpipeline=os.path.join(qlf_root, "logs", "pipeline.log"),
+            arms=os.environ.get('PIPELINE_ARMS'),
+            spectrographs=os.environ.get('PIPELINE_SPECTROGRAPHS'),
+            desi_spectro_data=os.environ.get('DESI_SPECTRO_DATA'),
+            desi_spectro_redux=os.environ.get('DESI_SPECTRO_REDUX'),
+            calibration_path=os.environ.get('DESI_CCD_CALIBRATION_DATA'),
+            max_workers=os.environ.get('PIPELINE_MAX_WORKERS')
         )
         response.data = {'results': configuration}
-        return response
-
-
-class QlConfigViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Configuration.objects.order_by('creation_date')
-    serializer_class = ConfigurationSerializer
-
-    def list(self, request, *args, **kwargs):
-        response = super(QlConfigViewSet, self).list(
-            request, args, kwargs)
-        try:
-            cfg = get_config()
-            ql_type = request.GET.get('type')
-            ql_path = cfg.get("main", "qlconfig")
-            with open(ql_path.format(ql_type)) as f:
-                qlconfig = f.read()
-        except Exception as err:
-            logger.info(err)
-            qlconfig = 'Error reading qlconfig: {}'.format(err)
-        response.data = qlconfig
-        return response
-
-
-class QlCalibrationViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Configuration.objects.order_by('creation_date')
-    serializer_class = ConfigurationSerializer
-
-    def list(self, request, *args, **kwargs):
-        response = super(QlCalibrationViewSet, self).list(
-            request, args, kwargs)
-        calibration = qlf.get_calibration()
-        response.data = calibration
         return response
 
 
@@ -368,6 +345,13 @@ class DistinctFlavorsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelVi
     serializer_class = ExposureFlavorSerializer
 
 
+class DistinctNightsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing exposures distinct nights"""
+
+    queryset = Exposure.objects.all().distinct('night')
+    serializer_class = ExposureNightSerializer
+
+
 class AddExposureViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Process.objects.none()
     serializer_class = ProcessSerializer
@@ -401,76 +385,6 @@ class ExposuresDateRangeViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ExposuresDateRangeSerializer
 
 
-class DataTableExposureViewSet(viewsets.ModelViewSet):
-    queryset = Exposure.objects.order_by('exposure_id')
-    serializer_class = ExposureSerializer
-
-    ORDER_COLUMN_CHOICES = {
-        '0': 'dateobs',
-        '1': 'exposure_id',
-        '2': 'tile',
-        '3': 'telra',
-        '4': 'teldec',
-        '5': 'exptime',
-        '6': 'flavor',
-        '7': 'airmass'
-    }
-
-    def list(self, request, **kwargs):
-
-        try:
-            params = dict(request.query_params)
-
-            start_date = params.get('start_date', [None])[0]
-            end_date = params.get('end_date', [None])[0]
-            draw = int(params.get('draw', [1])[0])
-            length = int(params.get('length', [10])[0])
-            start_items = int(params.get('start', [0])[0])
-            search_value = params.get('search[value]', [''])[0]
-            order_column = params.get('order[0][column]', ['0'])[0]
-            order = params.get('order[0][dir]', ['asc'])[0]
-
-            order_column = self.ORDER_COLUMN_CHOICES[order_column]
-
-            # django orm '-' -> desc
-            if order == 'desc':
-                order_column = '-' + order_column
-
-            if start_date and end_date:
-                queryset = Exposure.objects.filter(
-                    dateobs__range=(
-                        "{} 00:00:00".format(start_date),
-                        "{} 23:59:59".format(end_date)
-                    )
-                )
-            else:
-                queryset = Exposure.objects
-
-            if search_value:
-                queryset = queryset.filter(
-                    Q(exposure_id__icontains=search_value) |
-                    Q(tile__icontains=search_value) |
-                    Q(telra__icontains=search_value) |
-                    Q(teldec__icontains=search_value) |
-                    Q(flavor__icontains=search_value)
-                )
-
-            count = queryset.count()
-            queryset = queryset.order_by(order_column)[
-                start_items:start_items + length]
-
-            serializer = ExposureSerializer(queryset, many=True)
-            result = dict()
-            result['data'] = serializer.data
-            result['draw'] = draw
-            result['recordsTotal'] = count
-            result['recordsFiltered'] = count
-
-            return Response(result, status=status.HTTP_200_OK, template_name=None, content_type=None)
-        except Exception as e:
-            return Response(e, status=status.HTTP_404_NOT_FOUND, template_name=None, content_type=None)
-
-
 class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing cameras"""
 
@@ -488,11 +402,6 @@ class ProcessCommentViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelVie
 
 
 def start(request):
-    # qlf_manual_status = qlf_manual.get_status()
-    #
-    # if qlf_manual_status:
-    #     qlf_manual.stop()
-
     qlf.start()
     return HttpResponseRedirect('dashboard/monitor')
 
@@ -504,7 +413,6 @@ def stop(request):
 
 
 def reset(request):
-
     qlf.reset()
     return HttpResponseRedirect('dashboard/monitor')
 
@@ -550,27 +458,6 @@ def run_manual_mode(request):
     })
 
 
-def observing_history(request):
-    exposure = Exposure.objects.all()
-    start_date = exposure.aggregate(Min('dateobs'))['dateobs__min']
-    end_date = exposure.aggregate(Max('dateobs'))['dateobs__max']
-
-    if not start_date and not end_date:
-        end_date = start_date = datetime.datetime.now()
-
-    start_date = start_date.strftime("%Y-%m-%d")
-    end_date = end_date.strftime("%Y-%m-%d")
-
-    return render(
-        request,
-        'dashboard/observing_history.html',
-        {
-            'start_date': start_date,
-            'end_date': end_date
-        }
-    )
-
-
 def index(request):
     return render(request, 'dashboard/index.html')
 
@@ -613,9 +500,12 @@ def fits_to_png(request):
     # Generate Image
     cam = request.GET.get('cam')
     processing = request.GET.get('processing')
-    night = request.GET.get('night')
-    exposure = request.GET.get('exposure')
-    png_image = Fits2png(cam, processing, night, exposure).convert_fits2png()
+    process_id = request.GET.get('process')
+    process = Process.objects.get(pk=process_id)
+    night = process.exposure.night
+    exposure_id = process.exposure_id
+    png_image = Fits2png(cam, processing, night,
+                         exposure_id).convert_fits2png()
     context = {'image': png_image}
     response = HttpResponse(template.render(context, request))
 
@@ -630,28 +520,36 @@ def load_qa(request):
     spectrograph = request.GET.get('spectrograph')
     process_id = request.GET.get('process_id')
     arm = request.GET.get('arm')
-    if qa == 'qacountpix':
-        qa_html = Countpix(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qagetbias':
-        qa_html = Bias(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qagetrms':
-        qa_html = RMS(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qaxwsigma':
-        qa_html = Xwsigma(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qacountbins':
-        qa_html = Countbins(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qaskycont':
-        qa_html = Skycont(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qaskypeak':
-        qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qainteg':
-        qa_html = Integ(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qaskyresid':
-        qa_html = Skyresid(process_id, arm, spectrograph).load_qa()
-    elif qa == 'qasnr':
-        qa_html = SNR(process_id, arm, spectrograph).load_qa()
-    else:
-        qa_html = 'QA not found'
+    try:
+        if qa == 'qacountpix':
+            qa_html = Countpix(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qagetbias':
+            qa_html = Bias(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qagetrms':
+            qa_html = RMS(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qaxwsigma':
+            qa_html = Xwsigma(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qacountbins':
+            qa_html = Countbins(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qaskycont':
+            qa_html = Skycont(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qaskypeak':
+            qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qainteg':
+            qa_html = Integ(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qaskyresid':
+            qa_html = Skyresid(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qasnr':
+            qa_html = SNR(process_id, arm, spectrograph).load_qa()
+        elif qa == 'globalfiber':
+            qa_html = GlobalFiber(process_id, arm, spectrograph).load_qa()
+        elif qa == 'globalfocus':
+            qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
+        else:
+            qa_html = "Couldn't load QA"
+    except:
+        qa_html = "Can't load QA"
+
     context = {'image': qa_html}
     response = HttpResponse(template.render(context, request))
 
@@ -675,37 +573,32 @@ def send_ticket_email(request):
 
 
 def disk_thresholds(request):
-    cfg = get_config()
-
-    disk_percent_warning = cfg.get('main', 'disk_percent_warning')
-    disk_percent_alert = cfg.get('main', 'disk_percent_alert')
+    disk_percent_warning = os.environ.get('DISK_SPACE_PERCENT_WARNING')
+    disk_percent_alert = os.environ.get('DISK_SPACE_PERCENT_ALERT')
     return JsonResponse({
         "disk_percent_warning": disk_percent_warning,
         "disk_percent_alert": disk_percent_alert
     })
 
+def get_camera_log(request):
+    process = request.GET.get('process')
+    camera = request.GET.get('camera')
+    if not process or not camera:
+            return JsonResponse({
+                'lines': ['missing process or camera']
+            })
+    job = Job.objects.filter(process=process, camera=camera)
+    log = []
+    if job:
+        log_path = job[0].logname
 
-@csrf_exempt
-def edit_qlf_config(request):
-    # TODO: Use configparser
-    """Edit qlf.cfg file"""
-    body = json.loads(request.body)
-    keys = body.get('keys')
-    values = body.get('values')
-    if keys is not None and values is not None:
-        edit_qlf_config_file(keys, values)
-        return JsonResponse({
-            "keys": keys,
-            "values": values
-        })
-    else:
-        return JsonResponse({
-            'error': 'Missing key or value'
-        })
-
-
-def default_configuration(request):
-    set_default_configuration()
+        spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
+        path = '{}/{}'.format(spectro_redux, log_path)
+        try:
+            arq = open(path, 'r')
+            log = arq.readlines()
+        except FileNotFoundError:
+            log = ['File not found']
     return JsonResponse({
-        'status': 'Done'
+        'lines': log
     })

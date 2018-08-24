@@ -29,11 +29,17 @@ function defaultState() {
     notifications: [],
     online: undefined,
     websocketRef: undefined,
+    soundActivated: true,
   };
 }
 
 function addNotification(state) {
   return { type: 'ADD_NOTIFICATION', state };
+}
+
+function setNotificationSound(soundActivated) {
+  const state = { soundActivated };
+  return { type: 'SET_NOTIFICATION_SOUND', state };
 }
 
 export function updateWebsocket(state) {
@@ -87,14 +93,22 @@ export function navigateToOnlineQA() {
   };
 }
 
+export function setSound(soundActivated) {
+  return function(dispatch) {
+    dispatch(setNotificationSound(soundActivated));
+  };
+}
+
 export function updateNotifications(notification) {
   return function(dispatch, getState) {
     const notifications = getState().qlfOnline.notifications.splice(0);
     notifications.unshift(notification);
     const sound = new Audio(bell);
+    const { soundActivated } = getState().qlfOnline;
     if (
       process.env.REACT_APP_SOUND &&
-      window.location.pathname === '/monitor-realtime'
+      window.location.pathname === '/monitor-realtime' &&
+      soundActivated
     )
       sound.play();
     dispatch(addNotification({ notifications }));
@@ -169,6 +183,10 @@ export function qlfOnlineReducers(state = defaultState(), action) {
     case 'SAVE_WEBSOCKET_REF':
       return Object.assign({}, state, {
         websocketRef: action.state.websocketRef,
+      });
+    case 'SET_NOTIFICATION_SOUND':
+      return Object.assign({}, state, {
+        soundActivated: action.state.soundActivated,
       });
     default:
       return state;

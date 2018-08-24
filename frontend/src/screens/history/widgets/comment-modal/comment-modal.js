@@ -44,7 +44,7 @@ const styles = {
   list: {
     width: '80vw',
     maxHeight: '80vh',
-    overflowY: 'scroll',
+    overflowY: 'auto',
     animationDuration: '2s',
   },
   primaryText: {

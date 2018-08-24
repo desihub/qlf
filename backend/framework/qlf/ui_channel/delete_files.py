@@ -1,24 +1,20 @@
-from util import get_config
 import os
 import shutil
 
 
 def delete_raw():
-    cfg = get_config()
-    desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
+    desi_spectro_redux = os.environ.get('DESI_SPECTRO_DATA')
     delete_files(desi_spectro_data)
 
 
 def delete_reduced():
-    cfg = get_config()
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+    desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
     delete_files(desi_spectro_redux)
 
 
 def delete_logs():
-    cfg = get_config()
-    logfile = cfg.get('main', 'logfile')
-    logpipeline = cfg.get('main', 'logpipeline')
+    logfile = os.path.join(qlf_root, "logs", "qlf.log")
+    logpipeline = os.path.join(qlf_root, "logs", "pipeline.log")
     with open(logfile, 'w'):
         pass
     with open(logpipeline, 'w'):

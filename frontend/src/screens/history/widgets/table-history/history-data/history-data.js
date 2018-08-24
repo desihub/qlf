@@ -46,9 +46,10 @@ export default class HistoryData extends React.Component {
     displayBorder: PropTypes.bool,
     striped: PropTypes.bool,
     tableColumns: PropTypes.array.isRequired,
-    openCCDViewer: PropTypes.func.isRequired,
     handleCommentModalOpen: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
+    openLogViewer: PropTypes.func,
+    setAnchorEl: PropTypes.func.isRequired,
   };
 
   formatDate = dateString => {
@@ -56,13 +57,6 @@ export default class HistoryData extends React.Component {
     const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
     const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
     return month + '/' + day + '/' + date.getFullYear();
-  };
-
-  formatNight = dateString => {
-    const date = new Date(dateString);
-    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
-    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
-    return date.getFullYear() + month + day;
   };
 
   formatTime = dateString => {
@@ -84,7 +78,8 @@ export default class HistoryData extends React.Component {
     if (qaTests) {
       const testsFailed =
         !JSON.stringify(qaTests).includes('None') &&
-        !JSON.stringify(qaTests).includes('ALARM');
+        !JSON.stringify(qaTests).includes('ALARM') &&
+        !JSON.stringify(qaTests).includes('FAIL');
       return testsFailed;
     }
     return false;
@@ -100,7 +95,6 @@ export default class HistoryData extends React.Component {
 
   renderViewQA = (processing, runtime) => {
     if (processing && !runtime) return <CircularProgress size={20} />;
-    if (!runtime) return;
 
     return (
       <span
@@ -142,12 +136,7 @@ export default class HistoryData extends React.Component {
         ? 'chat_bubble'
         : 'chat_bubble_outline';
     }
-    const night = this.formatNight(
-      isNotProcessingHistory ? row.dateobs : row.exposure.dateobs
-    );
-    const exposureId = isNotProcessingHistory
-      ? row['exposure_id']
-      : row.exposure['exposure_id'];
+
     const status = !row.runtime
       ? processing ? 'pending' : 'aborted'
       : this.qaSuccess() ? 'normal' : 'failed';
@@ -217,10 +206,10 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             <Icon
-              onClick={() => this.props.openCCDViewer(night, exposureId)}
+              onClick={evt => this.props.setAnchorEl(evt, processId)}
               style={styles.notificationsIcon}
             >
-              image
+              pageview
             </Icon>
           </TableCell>
         );
@@ -284,6 +273,20 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             {this.renderViewQA(processing, row.runtime)}
+          </TableCell>
+        );
+      case 'log':
+        return (
+          <TableCell
+            key={`PROCV${key}`}
+            style={{ ...styles.tableCell, ...lastProcessed }}
+          >
+            <Icon
+              onClick={() => this.props.openLogViewer(processId)}
+              style={styles.notificationsIcon}
+            >
+              event_note
+            </Icon>
           </TableCell>
         );
       default:

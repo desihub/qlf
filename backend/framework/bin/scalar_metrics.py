@@ -8,12 +8,10 @@ import os
 import sys
 from qlf_models import QLFModels
 import json
-from util import get_config
 
 logger = logging.getLogger(__name__)
 
-cfg = get_config()
-desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
 
 
 class LoadMetrics:

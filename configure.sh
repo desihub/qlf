@@ -3,10 +3,9 @@
 echo 'Cloning desispec and desiutil'
 git submodule init
 git submodule update
-
-echo 'Copying qlf.cfg default settings to backend/framework/config/qlf.cfg'
-cd backend
-cp framework/config/qlf.cfg.template framework/config/qlf.cfg
+cd backend/desimodel
+svn export https://desi.lbl.gov/svn/code/desimodel/trunk/data
+cd ..
 
 echo 'Copying default backend docker-compose.yml'
 cp docker-compose.yml.template docker-compose.yml
