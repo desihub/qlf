@@ -127,9 +127,5 @@ class TimeSeries():
         source.data['x'] = data_model['time'][st:end]
         source.data['y'] = data_model[select_y.value][st:end]
 
-
-        frame_title = """<div><p align="center" style="font-size: 40px;">Selected arm: b</p></div>"""
-        # layout = column(widgetbox(Div(text=frame_title), width=1000, height=100),
-        #                 row(widgetbox(range_select),  plot))
         layout = column(plot)
         return file_html(layout, CDN, "Time Series")
