@@ -109,8 +109,104 @@ def alert_table(nrg,wrg):
     return style  + header + tblines + end
 
 
+def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', objtype=['XXELG', 'XXSTAR']):
+    """ Create metric tables
+    """
+    
+    style = """    <style>        table {
+            font-family: arial, sans-serif;
+            font-size: 16px;
+            border-collapse: collapse;
+            width: 100%;
+            }
 
-def metric_table(metricname, comments, keyname, curexp='xxx', refexp='xxx'):
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+            }
+        tr:nth-child(even) {
+        background-color: #dcdcdc;
+                text-align:center;
+        }
+        tr:{text-align:center;}
+        </style>"""
+
+    header= """
+        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+        <table>
+              <col width="200">
+              <col width="120">
+              <col width="90">
+              <col width="90">
+        <tr>
+        <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
+        </tr>"""
+
+    end="""</table> </div> """
+
+    title="""<h2 align=center style="text-align:center;">  {} </h2>""".format(metricname)
+    
+    
+    key_tb=[]
+    curtb =(['???'])*len(curexp)
+
+    if keyname in ['snr', 'integ']:
+        # per_TGT
+        for i in list(range(len(curexp))):
+            key_tb.append(keyname +'  ( %s)'%objtype[i])
+            try: curtb[i] = '{:4.3f}'.format(curexp[i])
+            except: curtb[i] = '???'
+        
+    elif keyname in [ 'countpix','getbias','getrms']:
+        #per AMP
+        for i in list(range(len(curexp))):
+            key_tb.append(keyname + ' (AMP %d)'%(i+1))
+            try: curtb[i] = '{:4.3f}'.format(curexp[i])
+            except: curtb[i] = '???'#curexp[i]
+        
+    elif keyname in ['xwsigma']:
+        # per axis x or w
+        for i in list(range(len(curexp))):
+            key_tb.append( keyname + [' (x)',' (w)'][i])
+            try: curtb[i] = '{:4.3f}'.format(curexp[i])
+            except: curtb[i] = '???'#curexp[i]
+                
+    else:
+        key_tb = keyname
+        try: curtb = '%3.2f'%(curexp)
+        except: curtb='???'
+    
+    
+    if isinstance(curexp, list):
+        nrows=len(curexp)
+        tblines=""
+        for i in list(range(len(curexp))):
+            if i ==0:
+                tblines=tblines+\
+                """<tr>
+                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>
+                """.format(nrows, comments, key_tb[i], curtb[i], refexp)
+
+            else:
+                tblines=tblines+\
+                """<tr>
+                <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>
+                """.format( key_tb[i], curtb[i], refexp)
+            
+    else:
+        tblines = """<tr>
+                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>""".format(comments, key_tb, curtb, refexp)
+        
+
+    return style + title + header + tblines + end
+
+
+
+def metric_table_OLD(metricname, comments, keyname, curexp='xxx', refexp='xxx'):
     """ Create alert tables
     """
     style = """    <style>        table {
