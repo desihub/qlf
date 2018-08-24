@@ -71,7 +71,6 @@ services:
     command: ./run.sh # script that runs on docker-compose up
     ports:
       - "8001:8001" # Django
-      - "5007:5007" # Bokeh (Plots)
       - "56006:56006" # Daemon (Runs QL)
     depends_on:
       - redis

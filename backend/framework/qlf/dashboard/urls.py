@@ -49,6 +49,7 @@ urlpatterns = [
     url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
+    url(r'^dashboard/get_footprint', views.get_footprint, name='get_footprint'),
     url(r'^dashboard/fits_to_png', views.fits_to_png, name='fits_to_png'),
     url(r'^dashboard/load_qa', views.load_qa, name='load_qa'),
     url(r'^dashboard/get_camera_log', views.get_camera_log, name='get_camera_log'),
