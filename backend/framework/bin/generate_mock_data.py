@@ -1,3 +1,17 @@
+import sys
+import os
+import django
+
+BASE_DIR = os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))
+)
+
+sys.path.append(os.path.join(BASE_DIR, "qlf"))
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
+
+django.setup()
+
 from dashboard.models import Job, Process, QA, Exposure
 import random
 from datetime import datetime
@@ -57,6 +71,6 @@ class MockData():
             new_qa.save()
 
 
-# MockData().generate_exposure()
-for i in range(100):
-    MockData().generate_process(3)
+MockData().generate_exposure()
+# for i in range(100):
+#     MockData().generate_process(3)
