@@ -5,7 +5,7 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_scalar_metrics_aux
+from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_merged_qa_scalar_metrics
 
 from dashboard.bokeh.qlf_plot import html_table
 from bokeh.io import curdoc
@@ -49,7 +49,7 @@ class Skyresid:
         #     sys.exit('Could not load metrics')
         f = open('dbg', 'w')
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
             gen_info = mergedqa['GENERAL_INFO']
             nrg = check_spectra['PARAMS']['MED_RESID_NORMAL_RANGE']

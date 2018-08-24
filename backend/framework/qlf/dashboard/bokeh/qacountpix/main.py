@@ -14,7 +14,7 @@ import numpy as np
 
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics
-from dashboard.bokeh.helper import get_palette, get_scalar_metrics_aux
+from dashboard.bokeh.helper import get_palette, get_merged_qa_scalar_metrics
 
 import numpy as np
 import logging
@@ -39,7 +39,7 @@ class Countpix:
         #     sys.exit('Could not load metrics')
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')

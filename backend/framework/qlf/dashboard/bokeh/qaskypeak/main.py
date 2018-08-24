@@ -13,7 +13,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_scalar_metrics_aux
+from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import html_table, sort_obj
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -48,7 +48,7 @@ class Skypeak:
         par = tests['skypeak']
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')

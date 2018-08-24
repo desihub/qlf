@@ -10,7 +10,7 @@ from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter, Spacer
 from dashboard.bokeh.helper import write_description, write_info
-from dashboard.bokeh.helper import  get_scalar_metrics, get_scalar_metrics_aux
+from dashboard.bokeh.helper import  get_scalar_metrics, get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import html_table, sort_obj
 from dashboard.bokeh.qlf_plot import alert_table, metric_table
@@ -35,7 +35,7 @@ class SNR:
 
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')
@@ -404,7 +404,8 @@ class SNR:
         else:
             dy = (rmax - rmin)*0.1
             mapper = LinearColorMapper(palette=my_palette, nan_color='lightgray',
-                        low= rmin- dy, high= rmax+dy)
+                        low=-0.2, high=0.2)
+                        #low= rmin- dy, high= rmax+dy)
             fill_color = {'field':'resid_snr', 'transform':mapper}
     
 
@@ -439,7 +440,7 @@ class SNR:
                     fill_color = 'lightgray', line_color=None, line_width=0.3)
 
         cbar = Figure(height=p.plot_height, 
-                width=120, 
+                width=130, 
                 toolbar_location=None, 
                 min_border=0, 
                 outline_line_color=None,

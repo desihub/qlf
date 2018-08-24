@@ -17,7 +17,7 @@ from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics,\
-    get_scalar_metrics_aux
+    get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 
@@ -44,7 +44,7 @@ class RMS:
         #     sys.exit('Could not load metrics')
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
             check_ccds = mergedqa['TASKS']['CHECK_CCDs']
             getrms    =  check_ccds['METRICS']# metrics['getrms']

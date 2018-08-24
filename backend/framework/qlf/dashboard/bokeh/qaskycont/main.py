@@ -13,7 +13,7 @@ from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_palette, \
-     get_scalar_metrics_aux
+     get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import html_table
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -46,7 +46,7 @@ class Skycont:
         #     sys.exit('Could not load metrics')
         
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
         except Exception as err:
             f = open('error','w')
             f.write('{}'.format(err))

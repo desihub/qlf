@@ -12,7 +12,7 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics, \
-        get_scalar_metrics_aux
+        get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist, html_table, sort_obj
 
 import numpy as np
@@ -43,7 +43,7 @@ class Countbins:
         # countbins = metrics['countbins']
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
             gen_info = mergedqa['GENERAL_INFO']
 

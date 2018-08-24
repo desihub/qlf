@@ -11,7 +11,7 @@ from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
-from dashboard.bokeh.helper import get_palette, get_scalar_metrics_aux
+from dashboard.bokeh.helper import get_palette, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
 from dashboard.bokeh.qlf_plot import html_table, info_table 
 from dashboard.bokeh.qlf_plot import alert_table, metric_table
@@ -55,7 +55,7 @@ class Xwsigma:
         logger.addHandler(handler)
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')
