@@ -7,6 +7,19 @@ from bokeh.plotting import Figure
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 
 
+def sort_obj(gen_info):
+    """ Hover info of objects type in fibers plots.
+    """
+    obj_type=['']*500
+    for key in ['LRG', 'ELG', 'QSO', 'STAR','SKY']:
+        if gen_info.get(key+'_FIBERID', None):
+            for i in gen_info[key+'_FIBERID']:
+                obj_type[i]=key
+        else:
+            pass
+    return obj_type
+                
+
 
 def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx'):
     """ Create tables in format
@@ -36,10 +49,11 @@ def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx')
         <tr>
         <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>  <th>Delta</th>
         </tr>"""
-    tblines=""
     end="""</table> </div> """
-    title="""<h2>  {} </h2>""".format(metricname)
+    title="""<h2 style="text-align:center;">  {} </h2>""".format(metricname)
     
+    tblines=""
+
     nlines=1
     for i in range(nlines):
         tblines=tblines+"""<tr>
@@ -48,6 +62,101 @@ def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx')
         
 
     return style + title + header + tblines + end
+
+
+
+def alert_table(nrg,wrg):
+    """ Create metric tables
+    """
+    style = """    <style>        table {
+            font-family: arial, sans-serif;
+            font-size: 16px;
+            border-collapse: collapse;
+            width: 100%;
+            }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+            }
+        tr:nth-child(even) {
+        background-color: #dcdcdc;
+                text-align:center;
+        }
+        tr:{text-align:center;}        </style>        """
+
+    header= """
+        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+        <table>
+        <tr>
+        <th> Alert </th>  <th>Minimum value</th> <th>Maximum value</th>
+        </tr>"""
+
+    end="""</table> </div> """
+
+    # title="""<h2 style="text-align:center;">  {} </h2>""".format(metricname)
+    
+    nlines=1
+    # for i in list(range(2)):
+    tblines="""<tr>
+                <td>{}</td> <td>{}</td> <td>{}</td> 
+                </tr>""".format('Normal',nrg[0],nrg[1])
+    tblines= tblines+"""<tr>
+                <td>{}</td> <td>{}</td> <td>{}</td> 
+                </tr>""".format('Warning', wrg[0], wrg[1])        
+
+    return style  + header + tblines + end
+
+
+
+def metric_table(metricname, comments, keyname, curexp='xxx', refexp='xxx'):
+    """ Create alert tables
+    """
+    style = """    <style>        table {
+            font-family: arial, sans-serif;
+            font-size: 16px;
+            border-collapse: collapse;
+            width: 100%;
+            }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+            }
+        tr:nth-child(even) {
+        background-color: #dcdcdc;
+                text-align:center;
+        }
+        tr:{text-align:center;}        </style>"""
+
+    header= """
+        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+        <table>
+        <tr>
+        <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
+        </tr>"""
+
+    end="""</table> </div> """
+
+    title="""<h2 style="text-align:center;">  {} </h2>""".format(metricname)
+    
+    
+    if isinstance(curexp, list):
+        tblines=""
+        for i in list(range(len(curexp))):
+            tblines=tblines+"""<tr>
+                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>""".format(comments, keyname, curexp[i], refexp)
+    else:
+        tblines = """<tr>
+                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>""".format(comments, keyname, curexp, refexp)
+        
+
+    return style + title + header + tblines + end
+
 
 
 def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0,0],  wrng=[0,0], nlines=None, align='center'):
@@ -310,3 +419,5 @@ def plot_amp(dz, mapper, name=""):
 
 
 
+if __name__=='__main__':
+    logger.info('Standalone execution')

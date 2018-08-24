@@ -13,8 +13,8 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_scalar_metrics_aux
+from dashboard.bokeh.qlf_plot import html_table, sort_obj
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
@@ -46,6 +46,14 @@ class Skypeak:
 
         skypeak = metrics['skypeak']
         par = tests['skypeak']
+
+        try:
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
+
+        gen_info=mergedqa['GENERAL_INFO']
 
         # ============================================
         # values to plot:
@@ -118,6 +126,8 @@ class Skypeak:
         except:
             logger.info('Object type sorter FAILED')
             obj_type=['']*500
+
+        obj_type = sort_obj(gen_info)
         # ---------------------------------
 
         peak_hover = HoverTool(tooltips=peak_tooltip)
@@ -149,7 +159,7 @@ class Skypeak:
 
         p = Figure(title='PEAKCOUNT: sum of counts in peak regions '
                 , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=500, plot_height=350
+                , plot_width=500, plot_height=400
                 , tools=[peak_hover, "pan,box_zoom,reset,crosshair, tap"])
 
         # Color Map
@@ -210,7 +220,9 @@ class Skypeak:
         hover = HoverTool(tooltips=hist_tooltip)
 
         p_hist = Figure(title='', tools=[hover, "pan,wheel_zoom,box_zoom,reset"],
-                        y_axis_label='Frequency + 1', x_axis_label='PEAKCOUNT', background_fill_color="white", plot_width=500, plot_height=50, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
+                        y_axis_label='Frequency + 1', 
+                        x_axis_label='PEAKCOUNT', background_fill_color="white", 
+                        plot_width=550, plot_height=300, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
 
         p_hist.quad(top='histplusone', bottom='bottomplusone', left='left', right='right',
                     source=source_hist,

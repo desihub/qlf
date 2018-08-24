@@ -11,23 +11,23 @@ from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
-from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import plot_hist
-from dashboard.bokeh.qlf_plot import html_table, info_table, range_table
+from dashboard.bokeh.helper import get_palette, get_scalar_metrics_aux
+from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
+from dashboard.bokeh.qlf_plot import html_table, info_table 
+from dashboard.bokeh.qlf_plot import alert_table, metric_table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
 import logging
-
 #--------------------------------------------------------------------------
 #AMP Plots
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 from bokeh.models import PrintfTickFormatter
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 
 class Xwsigma:
@@ -37,23 +37,60 @@ class Xwsigma:
             self.selected_spectrograph = spectrograph
 
     def load_qa(self):
+
         cam = self.selected_arm+str(self.selected_spectrograph)
+        # try:
+        #     lm = get_scalar_metrics(self.selected_process_id, cam)
+        #     metrics, tests  = lm['metrics'], lm['tests']
+
+        #     #print(metrics.keys())
+        # except:
+        #     sys.exit('Could not load metrics')
+        
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.INFO)
+
+        handler = logging.FileHandler("logs/bokeh_qlf.log")
+        handler.setLevel(logging.INFO)
+        logger.addHandler(handler)
+
         try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests  = lm['metrics'], lm['tests']
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
 
-            #print(metrics.keys())
-        except:
-            sys.exit('Could not load metrics')
+        logger.info(mergedqa.keys())
+        logger.info(mergedqa['TASKS'].keys())
 
-        xwsigma = metrics['xwsigma']
-        par     = tests['xwsigma']
-        snr     = metrics['snr'] #RA and DEC info
-        skycont = metrics['skycont']
+        gen_info = mergedqa['GENERAL_INFO']
 
-        warn_rg = par['XWSIGMA_WARN_RANGE']
-        delta_rg = warn_rg[1]-warn_rg[0]
-        hist_rg = (warn_rg[0] -0.1*delta_rg, warn_rg[1]+0.1*delta_rg)
+        ra = gen_info['RA']
+        dec = gen_info['DEC']
+       
+        check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
+        check_ccds = mergedqa['TASKS']['CHECK_CCDs']
+
+        xwsigma = check_fibers['METRICS']['XWSIGMA']
+        xw_amp = check_fibers['METRICS']['XWSIGMA_AMP']
+        
+        xw_fib = check_ccds['METRICS']['XWSIGMA_FIB']
+        
+        nrg = check_fibers['PARAMS']['XWSIGMA_NORMAL_RANGE']
+        wrg = check_fibers['PARAMS']['XWSIGMA_WARN_RANGE']
+        xw_ref = check_fibers['PARAMS']['XWSIGMA_REF']
+
+        #xwsigma = metrics['xwsigma']
+        #par     = tests['xwsigma']
+        #snr     = metrics['snr'] #RA and DEC info
+        #skycont = metrics['skycont']
+
+
+        xsigma = xw_fib[0]#xwsigma['XWSIGMA_FIB'][0]
+        wsigma = xw_fib[1]#xwsigma['XWSIGMA_FIB'][1]       
+
+        delta_rg = wrg[1]- wrg[0]
+        hist_rg = (wrg[0] -0.1*delta_rg, wrg[1]+0.1*delta_rg)
 
         my_palette = get_palette("viridis") #"seismic")#"RdYlBu_r")#"viridis")
 
@@ -114,36 +151,8 @@ class Xwsigma:
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
         # determining the position of selected cam fibers:
-        c1,c2 = 0,500 #int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
-        qlf_fiberid = np.arange(0,5000)[c1:c2] 
-        try:
-            snr = metrics['snr']
-        except:
-            snr= {'ELG_FIBERID':[],'QSO_FIBERID':[],
-                'LRG_FIBERID':[],'STAR_FIBERID':[]}
-        try:
-            skycont = metrics['skycont']
-        except:
-            skycont ={'SKYFIBERID':[]}
-        # marking type of objects:
-        try:
-            obj_type=[]
-            for i in range(500):
-                if  i in snr['ELG_FIBERID']:
-                    obj_type.append('ELG')
-                elif  i  in snr['QSO_FIBERID']:
-                    obj_type.append('QSO')
-                elif  i  in snr['LRG_FIBERID']:
-                    obj_type.append('LRG')
-                elif  i in snr['STAR_FIBERID']:
-                    obj_type.append('STAR')
-                elif i in skycont['SKYFIBERID']:
-                    obj_type.append('SKY')
-                else:
-                    obj_type.append('UNKNOWN')
-        except:
-            logger.info('Problems in obj sorter')
-            obj_type=[""]*500
+   
+        obj_type= sort_obj(gen_info)#[""]*500
         # ---------------------------------
 
 
@@ -151,8 +160,6 @@ class Xwsigma:
         wsigma_hover = HoverTool(tooltips=wsigma_tooltip)
 
 
-        xsigma = xwsigma['XWSIGMA_FIB'][0]
-        wsigma = xwsigma['XWSIGMA_FIB'][1]
         xfiber = np.arange(len(xsigma))
         wfiber = np.arange(len(wsigma))
 
@@ -160,8 +167,8 @@ class Xwsigma:
 
 
         source = ColumnDataSource(data={
-            'x1'     : snr['RA'], #xwsigma['RA'][c1:c2],
-            'y1'     : snr['DEC'], #xwsigma['DEC'][c1:c2],
+            'x1'     : ra, #xwsigma['RA'][c1:c2],
+            'y1'     : dec, #xwsigma['DEC'][c1:c2],
             'xsigma' : xsigma,
             'wsigma' : wsigma,
             'xfiber': xfiber,
@@ -183,8 +190,8 @@ class Xwsigma:
         '''
 
         # axes limit
-        xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
-        ymin, ymax = [min(snr['DEC'][:]), max(snr['DEC'][:])]
+        xmin, xmax = [min(ra[:]), max(ra[:])]
+        ymin, ymax = [min(dec[:]), max(dec[:])]
         xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
         left, right = xmin -xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
@@ -206,7 +213,7 @@ class Xwsigma:
         px = Figure( title = 'XSIGMA', x_axis_label='RA', y_axis_label='DEC'
                 , plot_width=500, plot_height=350
                 , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-                , tools= [xsigma_hover, "pan,box_zoom,reset,crosshair, tap"]
+                , tools= [xsigma_hover, "pan,box_zoom,reset,crosshair"]
                 )
 
         # Color Map
@@ -241,8 +248,9 @@ class Xwsigma:
         d_yplt = (max(xsigma) - min(xsigma))*0.1
         yrange = [0, max(xsigma) +d_yplt]
 
-        xhist = plot_hist(xsigma_hover, yrange, ph=280, pw=500)
-        xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data',source=source,
+        xhist = plot_hist(xsigma_hover, yrange, ph=240, pw=500)
+        xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data'
+                ,source=source,
                     fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
                     hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
 
@@ -255,7 +263,7 @@ class Xwsigma:
         pw = Figure( title = 'WSIGMA', x_axis_label='RA', y_axis_label='DEC'
                 , plot_width=500, plot_height=350
                 , x_range=Range1d(left, right), y_range=Range1d(bottom, top)
-                , tools= [wsigma_hover, "pan,box_zoom,reset,crosshair,tap"]
+                , tools= [wsigma_hover, "pan,box_zoom,reset,crosshair"]
                 )
 
         # Color Map
@@ -290,7 +298,7 @@ class Xwsigma:
         d_yplt = (max(wsigma) - min(wsigma))*0.1
         yrange = [0, max(wsigma) +d_yplt]
 
-        whist = plot_hist(wsigma_hover, yrange, ph=280, pw=500)
+        whist = plot_hist(wsigma_hover, yrange, ph=240, pw=500)
         whist.quad(top='wsigma', bottom='bottom', left='left', right='right', name='data',source=source,
                     fill_color="dodgerblue", line_color="black", line_width =0.01, alpha=0.8,
                     hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -310,14 +318,14 @@ class Xwsigma:
                 histval = 'histplusone'
             else:
                 ylabel = "Frequency"
-                yrange = (0, 1.1*max(hist))
+                yrange = (-0.1*max(hist), 1.1*max(hist))
                 bottomval = 'bottom'
                 histval = 'hist'
             return [ylabel,yrange,bottomval,histval]
 
-        yrangex=yrange
+        yrangex = yrange
 
-        xhistlabel= "XSIGMA"
+        xhistlabel = "XSIGMA"
         yscale = "auto"
 
         hist_tooltip_x = """
@@ -334,7 +342,7 @@ class Xwsigma:
         """
 
 
-        hist, edges = np.histogram(xsigma,'sqrt')# auto: Maximum of the ‘sturges’ and ‘fd’ estimators.
+        hist, edges = np.histogram(xsigma,'sqrt') #auto: max('sturges', 'fd') estimators
 
         source_hist = ColumnDataSource(data={
             'hist': hist,
@@ -352,14 +360,16 @@ class Xwsigma:
         p_hist_x = Figure(title='',tools=[hover,"pan,wheel_zoom,box_zoom,reset"],
                 y_axis_label= ylabel, x_axis_label=xhistlabel, background_fill_color="white"
                 , plot_width=500, plot_height=300
-                , x_axis_type="auto",    y_axis_type=yscale
+                , x_axis_type="auto", y_axis_type=yscale
                 , y_range=yrange, x_range= hist_rg
                 )#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
         p_hist_x.quad(top=histval, bottom=bottomval, left='left', right='right',
             source=source_hist, 
-                fill_color="dodgerblue", line_color="black", alpha=0.8,
+                fill_color="dodgerblue", line_color='blue', alpha=0.8,
             hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
+
+        p_hist_x.xaxis.visible=True
 
         # Histogram 2
         xhistlabel= "WSIGMA"
@@ -401,32 +411,26 @@ class Xwsigma:
 
         p_hist_w.quad(top= histval, bottom=bottomval, left='left', right='right',
             source=source_hist, 
-                fill_color="dodgerblue", line_color="black", alpha=0.8,
+                fill_color="dodgerblue", line_color='blue', alpha=0.8,
             hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
 
         #--------------------------------------------------------------
         # vlines ranges:
         bname = 'XWSIGMA'
 
-        #print(par[bname+'_NORMAL_RANGE'])
-
-        for ialert in par[bname+'_NORMAL_RANGE']:
+        for ialert in nrg:#par[bname+'_NORMAL_RANGE']:
             spans = Span(location= ialert , dimension='height', line_color='green',
                                 line_dash='dashed', line_width=2)
             p_hist_x.add_layout(spans)
             my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data', text='Normal Range', text_color='green', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
 
-        for ialert in par[bname+'_WARN_RANGE']:
+        for ialert in wrg:#par[bname+'_WARN_RANGE']:
             spans = Span(location= ialert , dimension='height', line_color='tomato',
                                 line_dash='dotdash', line_width=2)
             p_hist_x.add_layout(spans)
             my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
-
-
-
-
 
         #medianline = Span(location= residmed, dimension='height', line_color='black', line_dash='solid', line_width=2)
         #p_hist.add_layout(medianline)
@@ -435,21 +439,22 @@ class Xwsigma:
         #p_hist.add_layout(my_label)
 
 
-        for ialert in par[bname+'_NORMAL_RANGE']:
+        for ialert in nrg:#par[bname+'_NORMAL_RANGE']:
             spans = Span(location= ialert , dimension='height', line_color='green',
                                 line_dash='dashed', line_width=2)
             p_hist_w.add_layout(spans)
             my_label = Label(x=ialert, y=yrangew[-1]/2.2, y_units='data', text='Normal Range', text_color='green', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
-        for ialert in par[bname+'_WARN_RANGE']:
+        for ialert in wrg:#par[bname+'_WARN_RANGE']:
             spans = Span(location= ialert , dimension='height', line_color='tomato',
                                 line_dash='dotdash', line_width=2)
             p_hist_w.add_layout(spans)
             my_label = Label(x=ialert, y=yrangew[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
-        dz = xwsigma['XWSIGMA_AMP'][0]
+
+        dz =  xw_amp[0] #xwsigma['XWSIGMA_AMP'][0]
         name = 'XSIGMA AMP'
         Reds = get_palette('Reds')
         mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
@@ -466,7 +471,7 @@ class Xwsigma:
         xamp.add_layout(color_bar, 'right')
 
 
-        dz = xwsigma['XWSIGMA_AMP'][1]
+        dz = xw_amp[1] #xwsigma['XWSIGMA_AMP'][1]
         name = 'WSIGMA AMP'
         Reds = get_palette('Reds')
         mapper = LinearColorMapper(palette= Reds, low=min(dz),high=max(dz) )
@@ -480,26 +485,58 @@ class Xwsigma:
                         formatter=formatter, title="", title_text_baseline="alphabetic" )
         wamp.height=400
         wamp.width =500
-
         wamp.add_layout(color_bar, 'right')
 
 
 
         # -------------------------------------------------------------------------
-        from bokeh.models import Spacer
-
         info_col=Div(text=write_description('xwsigma'))
         pxh = column(px, xhist, p_hist_x, xamp )
         pwh = column(pw, whist, p_hist_w, wamp )
 
-        nrg= tests['xwsigma']['XWSIGMA_NORMAL_RANGE']
-        wrg= tests['xwsigma']['XWSIGMA_WARN_RANGE']
-        tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma['XWSIGMA'], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb)
 
-        layout = column(widgetbox(info_col, css_classes=["header-xwsigma"]),
-                widgetbox(tbinfo, css_classes=["table-ranges-xwsigma"]),
-                column(px, xhist, p_hist_x, xamp, css_classes=["xwsigma"]),
-                column(pw, whist, p_hist_w, wamp, css_classes=["xwsigma"]),
+        #tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma, nrng=nrg, wrng=wrg  )
+        #tbinfo=Div(text=tb)
+        width_tb, height_tb = 400, 220
+
+        curexp, refexp = '%3.2f'%xwsigma[0], '%3.2f'%xw_ref[0]#'xx..xx'
+        info = metric_table('X sigma', ' comments xxxxx'*2, 'xsigma', curexp, refexp)
+        tb_x =Div(text=info, width=width_tb, height=height_tb)
+
+        curexp, refexp = '%3.2f'%xwsigma[1], '%3.2f'%xw_ref[1]
+        info = metric_table('W sigma', ' comments xxxxx'*2, 'wsigma', curexp, refexp)
+        tb_w =Div(text=info, width=width_tb, height=height_tb)
+
+        width_tb, height_tb = 400, 140
+
+        alert_x = alert_table(nrg, wrg)
+        alert_w = alert_table(nrg, wrg)
+        tb_alert_x = Div(text=alert_x, width=width_tb, height=height_tb)
+        tb_alert_w = Div(text=alert_w, width=width_tb, height=height_tb)
+
+        # # Old tables:
+        # metricname='x sigma'
+        # comments= 'textextextext '*4
+        # keyname='XSIGMA'
+        # delta = '{:.3f}'.format( xwsigma[0]  )
+        # info = info_table(metricname, comments, keyname, delta)
+        # tb_xsig=Div(text=info, width=width_tb, height=height_tb)
+
+        # metricname='w sigma'
+        # comments= 'textextextext '*4
+        # keyname='WSIGMA'
+        # delta = '{:.3f}'.format( xwsigma[1]  )
+        # info = info_table(metricname, comments, keyname, delta)
+        # tb_wsig=Div(text=info, width=width_tb, height=height_tb)
+
+
+
+        layout = column(
+                widgetbox(info_col, css_classes=["header-xwsigma"]),
+                widgetbox(Div(), css_classes=["table-ranges-xwsigma"]),
+                widgetbox(tb_x, css_classes=["table-comments-xwsigma"]),        
+                widgetbox(tb_w, css_classes=["table-comments-xwsigma"]),
+                column( widgetbox(tb_alert_x), px, xhist, p_hist_x, xamp, css_classes=["xwsigma"]),
+                column( widgetbox(tb_alert_w), pw, whist, p_hist_w, wamp, css_classes=["xwsigma"]),
                 css_classes=["display-grid-xwsigma"])
         return file_html(layout, CDN, "XWSIGMA")
