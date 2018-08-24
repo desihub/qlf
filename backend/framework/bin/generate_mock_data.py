@@ -3,27 +3,30 @@ import random
 from datetime import datetime
 
 class MockData():
-    def __init__(self, base):
-        self.base_process = Process.objects.get(pk=base)
-        self.new_expid = 9999
-
     def generate_exposure(self):
         last_exposure = Exposure.objects.last()
-        last_exposure.exposure_id = last_exposure.pk + 1
-        last_exposure.save()
-        last_exposure.telra = random.randint(1, 10000)/100
-        last_exposure.teldec = random.randint(1, 10000)/100
-        last_exposure.save()
-        return last_exposure.exposure_id
+        new_exposure = Exposure(
+            exposure_id=last_exposure.pk+1,
+            telra=random.randint(1, 10000)/100,
+            teldec=random.randint(1, 10000)/100,
+            tile=last_exposure.tile,
+            dateobs=last_exposure.dateobs,
+            flavor=last_exposure.flavor,
+            night=last_exposure.night,
+            airmass=last_exposure.airmass,
+            program=last_exposure.program,
+            exptime=last_exposure.exptime
+        )
+        new_exposure.save()
+        return new_exposure.exposure_id
 
-    def generate_process(self, exposure_id):
-        self.new_expid = exposure_id
-        exposure = Exposure.objects.get(exposure_id=exposure_id)
+    def generate_process(self, base):
+        self.base_process = Process.objects.get(pk=base)
         new_process = Process(
             start=datetime.now().replace(microsecond=0),
             end=datetime.now().replace(microsecond=0),
             status=self.base_process.status,
-            exposure=exposure,
+            exposure=self.base_process.exposure,
             qa_tests=self.base_process.qa_tests
         )
         new_process.save()
@@ -40,19 +43,20 @@ class MockData():
                 version=job.version
             )
             new_job.save()
-            self.generate_qas(job)
+            self.generate_qas(new_job)
 
     def generate_qas(self, job):
-        for qa in self.base_process.process_jobs.all()[0].job_qas.all():
+        for qa in self.base_process.process_jobs.get(camera=job.camera).job_qas.all():
             new_qa = QA(
-                name=qa.name.replace(str(self.base_process.exposure_id), str(self.new_expid)),
+                name=qa.name,
                 metrics=qa.metrics,
                 params=qa.params,
-                job=job,
+                job_id=job.pk,
                 paname=qa.paname
             )
             new_qa.save()
 
 
-# MockData(1).generate_exposure()
-MockData(20).generate_process(3905)
+# MockData().generate_exposure()
+for i in range(100):
+    MockData().generate_process(3)
