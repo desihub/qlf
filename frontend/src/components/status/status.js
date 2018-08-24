@@ -19,6 +19,11 @@ export default class Status extends Component {
     processId: PropTypes.string,
   };
 
+  formatDate = () => {
+    if (!this.props.date) return '';
+    return this.props.date.replace(/-/g, '');
+  };
+
   render() {
     const mjd = parseFloat(this.props.mjd)
       ? parseFloat(this.props.mjd).toFixed(3)
@@ -36,7 +41,7 @@ export default class Status extends Component {
         {processId ? <Card title={`Process Id: ${processId}`} /> : null}
         <Card title={`Exposure: ${this.props.exposureId}`} />
         <Card title={`MJD: ${mjd}`} />
-        <Card title={`Date: ${this.props.date}`} />
+        <Card title={`Date: ${this.formatDate()}`} />
       </div>
     );
   }

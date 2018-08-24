@@ -243,6 +243,5 @@ class LoadMetrics:
 
 
 if __name__ == "__main__":
-    lm = LoadMetrics(None, 'z6', '00000062', '20180523')
-    lm.update_status('countpix')
-    print(lm.status)
+    metrics, tests = LoadMetrics(21, 'b0', '00003905', '20191017').Load_metrics_n_tests()
+    print(tests)

@@ -56,7 +56,7 @@ export default class HistoryData extends React.Component {
     const date = new Date(dateString);
     const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
     const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
-    return month + '/' + day + '/' + date.getFullYear();
+    return date.getFullYear() + month + day;
   };
 
   formatTime = dateString => {
