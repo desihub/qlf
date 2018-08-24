@@ -128,6 +128,12 @@ const styles = {
     color: 'red',
     paddingLeft: 8,
   },
+  footerContainer: {
+    width: '100%',
+    position: 'fixed',
+    bottom: '0',
+    left: '0',
+  },
 };
 
 class App extends React.Component {
@@ -163,14 +169,12 @@ class App extends React.Component {
         return '- Camera Log';
       case '/camera-log-realtime':
         return '- Camera Log';
-      case '/ccd-viewer':
-        return '- CCD Viewer';
+      case '/png-viewer':
+        return '- PNG Viewer';
       case '/log-viewer':
         return '- Log Viewer';
       case '/fiber-viewer':
         return '- Fiber Viewer';
-      case '/focus-viewer':
-        return '- Focus Viewer';
       default:
         return '';
     }
@@ -336,7 +340,7 @@ class App extends React.Component {
                 ) : null}
                 <OfflineContainer toggleHeader={this.toggleHeader} />
               </div>
-              {this.renderBottomBar()}
+              <div style={styles.footerContainer}>{this.renderBottomBar()}</div>
             </div>
           </MuiThemeProvider>
         </ConnectedRouter>
