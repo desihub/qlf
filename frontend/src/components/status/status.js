@@ -21,10 +21,7 @@ export default class Status extends Component {
 
   formatDate = () => {
     if (!this.props.date) return '';
-    const date = new Date(this.props.date);
-    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
-    const day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
-    return date.getFullYear() + month + day;
+    return this.props.date.replace(/-/g, '');
   };
 
   render() {
