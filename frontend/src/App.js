@@ -156,12 +156,14 @@ class App extends React.Component {
         return '- Camera Log';
       case '/camera-log-realtime':
         return '- Camera Log';
-      case '/png-viewer':
-        return '- PNG Viewer';
+      case '/ccd-viewer':
+        return '- CCD Viewer';
       case '/log-viewer':
         return '- Log Viewer';
       case '/fiber-viewer':
         return '- Fiber Viewer';
+      case '/focus-viewer':
+        return '- Focus Viewer';
       default:
         return '';
     }

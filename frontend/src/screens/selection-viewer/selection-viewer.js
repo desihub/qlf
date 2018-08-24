@@ -227,7 +227,7 @@ class SelectionViewer extends React.Component {
 
   renderViewer = () => {
     switch (window.location.pathname) {
-      case '/png-viewer':
+      case '/ccd-viewer':
         return (
           <PNGViewer
             processing={this.state.processing}
@@ -250,6 +250,14 @@ class SelectionViewer extends React.Component {
         return (
           <GlobalViewer
             screen={'globalfiber'}
+            loadEnd={this.loadEnd}
+            loadStart={this.loadStart}
+          />
+        );
+      case '/focus-viewer':
+        return (
+          <GlobalViewer
+            screen={'globalfocus'}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
           />
