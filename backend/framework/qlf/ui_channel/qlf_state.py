@@ -165,26 +165,30 @@ class QLFState:
         return cams
 
     def tail_file(self, filename, number_lines):
-        with io.open(filename) as logfile:
-            logfile.seek(0, os.SEEK_END)
-            endf = position = logfile.tell()
-            linecnt = 0
+        log_lines = []
+        try:
+            with io.open(filename) as logfile:
+                logfile.seek(0, os.SEEK_END)
+                endf = position = logfile.tell()
+                linecnt = 0
 
-            while position >= 0:
-                logfile.seek(position)
-                next_char = logfile.read(1)
+                while position >= 0:
+                    logfile.seek(position)
+                    next_char = logfile.read(1)
 
-                if next_char == "\n" and position != endf-1:
-                    linecnt += 1
+                    if next_char == "\n" and position != endf-1:
+                        linecnt += 1
 
-                if linecnt == number_lines:
-                    break
-                position -= 1
+                    if linecnt == number_lines:
+                        break
+                    position -= 1
 
-            if position < 0:
-                logfile.seek(0)
+                if position < 0:
+                    logfile.seek(0)
 
-            log_lines = logfile.readlines()
+                log_lines = logfile.readlines()
+        except Exception as err:
+            logger.error(err)
 
         return log_lines
 
