@@ -222,6 +222,7 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             'flavor',
             'program',
             'last_process_comments_count',
+            'night',
         )
 
     def get_datemjd(self, obj):
@@ -260,6 +261,12 @@ class ExposureFlavorSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Exposure
         fields = ('flavor',)
+
+
+class ExposureNightSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Exposure
+        fields = ('night',)
 
 
 class ProcessCommentSerializer(DynamicFieldsModelSerializer):

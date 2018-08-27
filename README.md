@@ -25,6 +25,8 @@ _Everything you need is contained in this repository. Even `desimodel`, `desisim
 
 Get into `qlf` directory and configure it. 
 
+_Make sure you have [svn](https://subversion.apache.org/packages.html) installed_
+
     cd qlf
     ./configure.sh
 

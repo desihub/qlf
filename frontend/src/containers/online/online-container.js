@@ -63,8 +63,8 @@ class OnlineContainer extends Component {
     this.setState({ socket });
   };
 
-  componentWillReceiveProps() {
-    if (window.location.pathname === '/camera-log') {
+  componentWillMount() {
+    if (window.location.pathname === '/camera-log-realtime') {
       if (
         window.location.search.includes('arm=') &&
         window.location.search.includes('cam=')
@@ -107,10 +107,23 @@ class OnlineContainer extends Component {
 
   navigateToCamera = (arm, cameraIndex) => {
     window.open(
-      `camera-log?cam=${cameraIndex}&arm=${arm}`,
-      'camera-log',
+      `camera-log-realtime?cam=${cameraIndex}&arm=${arm}`,
+      'camera-log-realtime',
       'width=850, height=550'
     );
+  };
+
+  getLogLines = () => {
+    if (
+      this.props.online &&
+      this.state.cameraLogArm &&
+      this.state.cameraLogSpectrograph &&
+      this.state.socket
+    ) {
+      this.state.socket.state.ws.send(
+        `camera:${this.state.cameraLogArm}${this.state.cameraLogSpectrograph}`
+      );
+    }
   };
 
   render() {
@@ -118,15 +131,14 @@ class OnlineContainer extends Component {
       <div>
         {this.startWebsocket()}
         <Route
-          path="/camera-log"
+          path="/camera-log-realtime"
           render={() => (
             <CameraLog
               cameraTerminal={this.props.cameraTerminal}
-              websocketRef={this.state.socket}
+              getLines={this.getLogLines}
               arm={this.state.cameraLogArm}
               cameraIndex={this.state.cameraLogSpectrograph}
               lines={this.props.cameraTerminal}
-              online={this.props.online}
             />
           )}
         />

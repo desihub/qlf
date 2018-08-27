@@ -14,7 +14,7 @@ const styles = {
     maxWidth: '70vw',
     flexDirection: 'column',
     maxHeight: '65vh',
-    overflowY: 'scroll',
+    overflowY: 'auto',
     margin: '16px',
     padding: '16px',
   },

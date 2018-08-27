@@ -2,14 +2,11 @@ import os
 import math
 import datetime
 import json
-from util import get_config
 from clients import get_ics_daemon
 from channels import Group
 
-cfg = get_config()
-
-disk_percent_warning = cfg.get('main', 'disk_percent_warning')
-disk_percent_alert = cfg.get('main', 'disk_percent_alert')
+disk_percent_warning = os.environ.get('DISK_SPACE_PERCENT_WARNING')
+disk_percent_alert = os.environ.get('DISK_SPACE_PERCENT_ALERT')
 
 
 class Alerts:

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import styles from './styles.css'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
 const styles = {
@@ -9,11 +8,8 @@ const styles = {
     margin: '0 auto',
     borderRadius: '3px',
     background: 'rgba(0, 0, 0, 1)',
-    overflowY: 'scroll',
-    overflowX: 'scroll',
+    overflow: 'auto',
     flexDirection: 'column',
-    height: 'calc(100vh - 150px)',
-    width: 'calc(100vw - 75px)',
   },
   terminalOutput: {
     padding: '10px',
@@ -28,6 +24,7 @@ export default class Terminal extends Component {
   static propTypes = {
     lines: PropTypes.array.isRequired,
     height: PropTypes.string,
+    width: PropTypes.string,
   };
 
   renderLines = () => {
@@ -39,8 +36,22 @@ export default class Terminal extends Component {
   };
 
   render() {
+    const terminalHeight = {
+      height: this.props.height ? this.props.height : '300px',
+    };
+
+    const terminalWidth = {
+      width: this.props.width ? this.props.width : '100%',
+    };
+
     return (
-      <div style={styles.terminal}>
+      <div
+        style={{
+          ...styles.terminal,
+          ...terminalHeight,
+          ...terminalWidth,
+        }}
+      >
         <div style={styles.terminalOutput}>{this.renderLines()}</div>
       </div>
     );

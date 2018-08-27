@@ -1,17 +1,17 @@
 import React from 'react';
-import CCDViewer from '../../../src/screens/ccd-viewer/ccd-viewer';
+import SelectNight from '../../../../../src/screens/history/widgets/select-night/select-night';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 configure({ adapter: new Adapter() });
 
-describe('CCDViewer', () => {
-  let ccdViewer;
+describe('SelectNight', () => {
+  let selectNight;
   beforeEach(() => {
-    ccdViewer = <CCDViewer />;
+    selectNight = <SelectNight />;
   });
 
   it('mounts', () => {
-    mount(ccdViewer);
+    mount(selectNight);
   });
 });

@@ -4,6 +4,9 @@ import { Card } from 'material-ui/Card';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import Status from '../../../../components/status/status';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
+import Icon from '@material-ui/core/Icon';
 
 const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
 const stepsQa = {
@@ -44,6 +47,9 @@ const styles = {
     alignItems: 'center',
     flexDirection: 'row',
   },
+  containerLegend: {
+    position: 'relative',
+  },
   arm: {
     fontWeight: 'bold',
     fontSize: '14px',
@@ -72,9 +78,70 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
   },
+  icon: {
+    position: 'absolute',
+    top: '1px',
+    left: '1px',
+    cursor: 'pointer',
+  },
+  green: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#008000',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  yellow: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#ffff00',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  red: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#ff0000',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  lightgray: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#d3d3d3',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  black: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#000000',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
 };
 
-export default class Steps extends Component {
+class Steps extends Component {
   static propTypes = {
     renderMetrics: PropTypes.func.isRequired,
     exposureId: PropTypes.string,
@@ -214,6 +281,30 @@ export default class Steps extends Component {
     );
   };
 
+  renderLegendColor = () => {
+    return (
+      <div>
+        <p>
+          <span style={styles.green}>Green</span> All tests passed
+        </p>
+        <p>
+          <span style={styles.yellow}>Yellow</span> Warning on one or more QA
+          test
+        </p>
+        <p>
+          <span style={styles.red}>Red</span> Error on one or more QA test
+        </p>
+        <p>
+          <span style={styles.lightgray}>Lightgray</span> QA test file not
+          generated
+        </p>
+        <p>
+          <span style={styles.black}>Black</span> Pipeline not completed
+        </p>
+      </div>
+    );
+  };
+
   render() {
     return (
       <div>
@@ -221,7 +312,11 @@ export default class Steps extends Component {
         {this.renderHistoryControls()}
         <Card style={styles.card}>
           <div style={styles.container}>
-            <div />
+            <div style={styles.containerLegend}>
+              <Tooltip title={this.renderLegendColor()} placement="bottom">
+                <Icon style={styles.icon}>info</Icon>
+              </Tooltip>
+            </div>
             <div style={styles.gridItem}>
               {this.renderStepName('Step 1', 'Pre Processing')}
             </div>
@@ -261,3 +356,5 @@ export default class Steps extends Component {
     );
   }
 }
+
+export default withStyles(styles)(Steps);

@@ -164,6 +164,19 @@ export default class QlfApi {
     }
   }
 
+  static async getNights() {
+    try {
+      const nights = await fetch(`${apiUrl}dashboard/api/distinct_nights/`, {
+        method: 'GET',
+        headers: headers,
+      });
+      const responseJson = await nights.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getProcessingHistory(start, end, order, offset, limit, filters) {
     if (!start && !end) return;
     try {
@@ -194,6 +207,25 @@ export default class QlfApi {
         }&offset=${offset}&ordering=${order}&datemin=${
           start.split('T')[0]
         }&datemax=${end.split('T')[0]}&${filters}`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await exposures.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static async getSurveyReport(night, order, filters) {
+    if (!night) return;
+    try {
+      const exposures = await fetch(
+        `${apiUrl}dashboard/api/observing_history/?format=json&night=${
+          night
+        }&ordering=${order}&${filters}`,
         {
           method: 'GET',
           headers: headers,
@@ -258,6 +290,19 @@ export default class QlfApi {
     return commentResponse.json();
   }
 
+  static async getCameraLog(processId, arm, spectrograph) {
+    const cameraLog = await fetch(
+      `${apiUrl}dashboard/get_camera_log/?process=${processId}&camera=${arm}${
+        spectrograph
+      }`,
+      {
+        method: 'GET',
+        headers: headers,
+      }
+    );
+    return cameraLog.json();
+  }
+
   static async sendTicketMail(email, message, subject, name) {
     const ticket = await fetch(
       `${apiUrl}send_ticket_email/?format=json&email=${email}&message=${
@@ -269,20 +314,6 @@ export default class QlfApi {
       }
     );
     const responseJson = await ticket.json();
-    return responseJson;
-  }
-
-  static async editConfiguration(keys, values) {
-    const body = {
-      keys,
-      values,
-    };
-    const config = await fetch(`${apiUrl}dashboard/api/edit_qlf_config/`, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(body),
-    });
-    const responseJson = await config.json();
     return responseJson;
   }
 }
