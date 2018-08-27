@@ -56,6 +56,11 @@ const styles = {
     gridTemplateColumns: 'auto',
     height: '100vh',
     width: '100vw',
+    position: 'relative',
+  },
+  headerContainer: {
+    position: 'relative',
+    height: '99px',
   },
   headerTop: {
     fontSize: '35px',
@@ -69,11 +74,17 @@ const styles = {
   },
   logo: {
     height: '90px',
-    paddingTop: '5px',
   },
   logoLinea: {
     verticalAlign: 'middle',
     cursor: 'pointer',
+  },
+  logoDesi: {
+    position: 'absolute',
+    top: '50%',
+    right: '100px',
+    zIndex: 1250,
+    marginTop: '-31px',
   },
   title: {
     display: 'flex',
@@ -100,6 +111,7 @@ const styles = {
   bottom: {
     display: 'flex',
     justifyContent: 'space-between',
+    fontSize: '0.9rem',
   },
   homeIcon: {
     fontSize: 20,
@@ -120,6 +132,12 @@ const styles = {
     fontSize: 16,
     color: 'red',
     paddingLeft: 8,
+  },
+  footerContainer: {
+    width: '100%',
+    position: 'fixed',
+    bottom: '0',
+    left: '0',
   },
 };
 
@@ -162,6 +180,8 @@ class App extends React.Component {
         return '- Log Viewer';
       case '/fiber-viewer':
         return '- Fiber Viewer';
+      case '/under-construction':
+        return '- Under Construction';
       case '/focus-viewer':
         return '- Focus Viewer';
       case '/snr-viewer':
@@ -184,11 +204,6 @@ class App extends React.Component {
       return (
         <div style={styles.title}>
           <span style={styles.spanTitle}>DESI Quick Look</span>
-          {window.innerWidth < 700 ? null : (
-            <div>
-              <img src={logo} alt={'logo'} style={styles.logo} />
-            </div>
-          )}
         </div>
       );
     } else {
@@ -270,11 +285,14 @@ class App extends React.Component {
     return (
       <div style={styles.bottom}>
         <span>
-          © Copyright 2018,{' '}
-          <a onClick={this.openLineaWebSite} title="LIneA">
+          © Copyright 2018, Powered by
+          <a
+            onClick={this.openLineaWebSite}
+            title="LIneA"
+            style={{ marginLeft: '8px' }}
+          >
             <img src={logoLinea} alt={'logo linea'} style={styles.logoLinea} />
           </a>
-          /DESI
         </span>
         <div style={styles.footerRight}>
           <span>
@@ -308,7 +326,14 @@ class App extends React.Component {
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
             <div style={useGrid}>
-              {this.renderTopBar()}
+              <div style={styles.headerContainer}>
+                {this.renderRouteName() === '' ? (
+                  <div style={styles.logoDesi}>
+                    <img src={logo} alt={'logo'} style={styles.logo} />
+                  </div>
+                ) : null}
+                {this.renderTopBar()}
+              </div>
               <div style={containerStyle}>
                 {['/', '/about', '/help', '/tutorials', '/contact'].map(
                   path => (
@@ -328,7 +353,7 @@ class App extends React.Component {
                 ) : null}
                 <OfflineContainer toggleHeader={this.toggleHeader} />
               </div>
-              {this.renderBottomBar()}
+              <div style={styles.footerContainer}>{this.renderBottomBar()}</div>
             </div>
           </MuiThemeProvider>
         </ConnectedRouter>
