@@ -60,6 +60,12 @@ class CCDSelector extends React.Component {
           >
             Focus
           </Typography>
+          <Typography
+            className={classes.typography}
+            onClick={() => this.openViewer('snr')}
+          >
+            SNR
+          </Typography>
         </Popover>
       </div>
     );

@@ -164,6 +164,8 @@ class App extends React.Component {
         return '- Fiber Viewer';
       case '/focus-viewer':
         return '- Focus Viewer';
+      case '/snr-viewer':
+        return '- SNR Viewer';
       default:
         return '';
     }

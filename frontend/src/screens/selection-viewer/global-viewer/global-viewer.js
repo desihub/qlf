@@ -50,6 +50,9 @@ class GlobalViewer extends React.Component {
       case '/focus-viewer':
         document.title = 'Focus Viewer';
         break;
+      case '/snr-viewer':
+        document.title = 'SNR Viewer';
+        break;
       default:
         document.title = 'Global Viewer';
     }
