@@ -182,6 +182,10 @@ class App extends React.Component {
         return '- Fiber Viewer';
       case '/under-construction':
         return '- Under Construction';
+      case '/focus-viewer':
+        return '- Focus Viewer';
+      case '/snr-viewer':
+        return '- SNR Viewer';
       default:
         return '';
     }
