@@ -51,28 +51,24 @@ class SNR:
 
         nrg = check_spectra['PARAMS']['FIDSNR_TGT_NORMAL_RANGE']
         wrg = check_spectra['PARAMS']['FIDSNR_TGT_WARN_RANGE']
-        # f.write('snr load time {}'.format(time.time() - t0))
 
         obj_type= sort_obj(gen_info)#[""]*500
 
 
         try:
             exptime=gen_info['EXPTIME']
-            #exptime = tests['checkHDUs']['EXPTIME']
             name_warn=''
         except:
             exptime=1000
             name_warn = ' (exptime fixed)'
-            print('EXPTIME NOT FOUND, USING 1000')
 
 
         qlf_obj = ['ELG','LRG','QSO', 'STAR']
         keys_snr=list(snr.keys())
         keys_snr=list(gen_info.keys())
         objst={}
-        avobj = [] #available object   
+        avobj = [] 
         for obj in qlf_obj:
-            #if obj+'_FIBERID' in keys_snr:
             if gen_info[obj+'_FIBERID'] != None:
                 objst.update({obj:True})
                 avobj.append(obj)
@@ -85,7 +81,6 @@ class SNR:
         fiberlen = []
         snrlen = []
         for i, key in enumerate(avobj):
-        #2#for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
             if objst[key]:
                 fiberlen.append( len(gen_info[key+'_FIBERID'])) #fiberlen.append( len(snr[key+'_FIBERID']))
                 snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) ) #snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
@@ -94,9 +89,7 @@ class SNR:
 
         try:
             sort_idx=[ snrlen.index(fiberlen[i]) for i in range(len(avobj))]
-            #2#sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
         except:
-            #2#sort_idx=[0,1]
             logger.info('Inconsistence in FIBERID and SNR lenght')   
 
 
@@ -114,14 +107,6 @@ class SNR:
         if (objst['STAR']):  
             star_snr  = snr['SNR_MAG_TGT'][sort_idx[idx]] 
 
-
-        '''
-        elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
-        #2#star_snr = snr['SNR_MAG_TGT'][sort_idx[1]]
-        lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
-        qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
-        star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
-        '''
 
 
 
@@ -225,9 +210,6 @@ class SNR:
 
 
 
-        #2#'''
-
-        #2#'''
 
         # here we make the plots
         html_tooltip = """
@@ -348,7 +330,6 @@ class SNR:
         """
         snr_hover = HoverTool(tooltips=snr_tooltip)
 
-        #skycont=metrics['skycont']
 
         median = snr['MEDIAN_SNR']
         resid = snr['SNR_RESID']
@@ -408,8 +389,8 @@ class SNR:
             fill_color = {'field':'resid_snr', 'transform':mapper}
     
 
-        radius = 0.013#0.015
-        radius_hover = 0.015#0.0165
+        radius = 0.013
+        radius_hover = 0.015
 
         # axes limit
         xmin, xmax = [min(ra[:]), max(ra[:])]
@@ -516,9 +497,6 @@ class SNR:
         info = metric_table('Sky Residuals', 'comments', 'keyname') #, curexp=check_spectra['MED_RESID'], refexp=check_spectra['MED_RESID_REF'])
         tb_metric =Div(text=info, width=width_tb, height=height_tb)
 
-        f = open('dbg', 'w')
-        f.write('{}'.format(objst))
-
 
 
         pltxy_h = 350
@@ -547,11 +525,9 @@ class SNR:
 
 
 
-        layout = column(row(widgetbox(info_col)),# css_classes=["header"]),
+        layout = column(row(widgetbox(info_col)),
             row(widgetbox(tb_metric, tb_alert)),
-            #widgetbox(tbinfo, css_classes=["table-ranges"]),
-            row( column(Spacer(width=p_m.plot_width, height=140), p_m), p,  cbar), #,css_classes=["display-grid"] )
-            gridplot([plot_snr[0:2], plot_snr[2:4]]) #, css_classes=["display-grid"]), #Div(), elg_plot, lrg_plot , qso_plot, star_plot,
-            #css_classes=["display-grid"]
+            row( column(Spacer(width=p_m.plot_width, height=140), p_m), p,  cbar), 
+            gridplot([plot_snr[0:2], plot_snr[2:4]]) 
             )
         return file_html(layout, CDN, "MEDIAN SNR")

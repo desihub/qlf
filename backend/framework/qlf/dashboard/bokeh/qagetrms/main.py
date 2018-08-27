@@ -42,7 +42,7 @@ class RMS:
             mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
 
             check_ccds = mergedqa['TASKS']['CHECK_CCDs']
-            getrms    =  check_ccds['METRICS']# metrics['getrms']
+            getrms    =  check_ccds['METRICS']
 
             nrg = check_ccds['PARAMS']['NOISE_AMP_NORMAL_RANGE']
             wrg = check_ccds['PARAMS']['NOISE_AMP_WARN_RANGE']
@@ -91,9 +91,6 @@ class RMS:
         p2.add_layout(color_bar, 'right')
 
 
-        #infos
-        # nrg= tests['getrms']['NOISE_NORMAL_RANGE']
-        # wrg= tests['getrms']['NOISE_WARN_RANGE']
         tb = html_table( nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
@@ -111,5 +108,4 @@ class RMS:
             p2,
             css_classes=["display-grid"])
 
-        # End of Bokeh Block
         return file_html(layout, CDN, "GETRMS")

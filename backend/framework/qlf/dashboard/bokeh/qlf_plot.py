@@ -95,10 +95,8 @@ def alert_table(nrg,wrg):
 
     end="""</table> </div> """
 
-    # title="""<h2 style="text-align:center;">  {} </h2>""".format(metricname)
     
     nlines=1
-    # for i in list(range(2)):
     tblines="""<tr>
                 <td>{}</td> <td>{}</td> <td>{}</td> 
                 </tr>""".format('Normal',nrg[0],nrg[1])
@@ -256,11 +254,9 @@ def metric_table_OLD(metricname, comments, keyname, curexp='xxx', refexp='xxx'):
 
 
 def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0,0],  wrng=[0,0], nlines=None, align='center'):
-    ''' Usage:
-    nrg = tests['countbins']['NGOODFIB_WARN_RANGE']
-    wrg = tests['countbins']['NGOODFIB_NORMAL_RANGE']
-    tb = html_table( nrng=nrg, wrng=wrg  )
-    tbinfo=Div(text=tb, width=600, height=300)
+    ''' Usage Example:
+            table_txt = html_table( nrng=nrg, wrng=wrg  )
+            tbinfo = Div(text=table_txt, width=600, height=300)
     '''
     lines =""" """
     tblines=""" """
@@ -313,12 +309,6 @@ def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nr
 
 
 def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0,0],  wrng=[0,0], nlines=None, align='center'):
-    ''' Usage:
-    nrg = tests['countbins']['NGOODFIB_WARN_RANGE']
-    wrg = tests['countbins']['NGOODFIB_NORMAL_RANGE']
-    tb = html_table( nrng=nrg, wrng=wrg  )
-    tbinfo=Div(text=tb, width=600, height=300)
-    '''
     lines =""" """
     tblines=""" """
     nlines= len(names)
@@ -473,13 +463,12 @@ def plot_amp(dz, mapper, name=""):
     p.axis.clear
     p.axis.minor_tick_line_color=None
     
-    p.xaxis.major_label_text_font_size = '0pt'  # turn off x-axis tick labels
-    p.yaxis.major_label_text_font_size = '0pt'  # turn off y-axis tick labels
-    p.xaxis.major_tick_line_color = None  # turn off x-axis major ticks
-    p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
-    
-    p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
-    p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
+    p.xaxis.major_label_text_font_size = '0pt'  
+    p.yaxis.major_label_text_font_size = '0pt'  
+    p.xaxis.major_tick_line_color = None  
+    p.xaxis.minor_tick_line_color = None  
+    p.yaxis.major_tick_line_color = None  
+    p.yaxis.minor_tick_line_color = None  
 
     source = ColumnDataSource(
         data=dict(

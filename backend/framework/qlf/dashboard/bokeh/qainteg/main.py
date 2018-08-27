@@ -50,16 +50,12 @@ class Integ:
         gen_info = mergedqa['GENERAL_INFO']
 
 
-        #integ = metrics['integ']
-        #std_fiberid = integ['STD_FIBERID']
-
+        
         check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
         std_fiberid = check_spectra['METRICS']['STAR_FIBERID']
-        nrg = check_spectra['PARAMS']['DELTAMAG_TGT_NORMAL_RANGE']#tests['integ']['DELTAMAG_WARN_RANGE']
-        wrg = check_spectra['PARAMS']['DELTAMAG_TGT_WARN_RANGE'] #tests['integ']['DELTAMAG_NORMAL_RANGE']
+        nrg = check_spectra['PARAMS']['DELTAMAG_TGT_NORMAL_RANGE']
+        wrg = check_spectra['PARAMS']['DELTAMAG_TGT_WARN_RANGE'] 
         fiber_mag=check_spectra['METRICS']['FIBER_MAG']
-
-        #std_mag = np.where()
 
 
         hist_tooltip=""" 
@@ -78,9 +74,6 @@ class Integ:
         hist_source = ColumnDataSource(
                         data={'integ': fiber_mag,
                             'x': np.arange(len(fiber_mag)),
-                            #'left': np.arange(len(skyresid['SKYFIBERID'])) -0.4,
-                            #'right':np.arange(len(skyresid['SKYFIBERID']))+0.4,
-                            #'bottom':[0]*len(skyresid['SKYFIBERID']),
                             })
 
         yrange=[0, 1.1*max(fiber_mag)]
@@ -106,5 +99,5 @@ class Integ:
                         widgetbox(tbinfo, css_classes=["table-ranges"]),
                         fiber_hist,
                         css_classes=["display-grid"])
-        # End of Bokeh Block
+
         return file_html(layout, CDN, "INTEG")
