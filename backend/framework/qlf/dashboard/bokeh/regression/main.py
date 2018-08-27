@@ -30,7 +30,7 @@ class Regression():
     def render(self):
         try:
             data_json = json.load(
-                open('/app/framework/qlf/dashboard/bokeh/timeseries/QLFmock_trend_data-b0.json'))
+                open('/app/spectro/mock_files/QLFmock_trend_data-b0.json'))
         except Exception as err:
             print(err)
         noise = data_json['noise']
