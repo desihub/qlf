@@ -47,7 +47,6 @@ class Skyresid:
         #     metrics, tests = lm['metrics'], lm['tests']
         # except:
         #     sys.exit('Could not load metrics')
-        f = open('dbg', 'w')
         try:
             mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
             check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
@@ -67,13 +66,10 @@ class Skyresid:
 
             file = "fibermap-{:08d}.fits".format(process.exposure_id)
             fmap = fits.open('{}/{}'.format(folder, file))            
-            f = open('dbg', 'w')
-            f.write('{}/{}'.format(folder, file))
-
+            
         except Exception as err:
-            f.write('{}'.format(err))
             #logger.info(err)
-            #sys.exit('Could not load data')
+            sys.exit('Could not load data')
 
         #check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
 
@@ -289,8 +285,7 @@ class Skyresid:
                 p_spec.line('wlength', 'spec', source = spec_source)
                 p_s.append(p_spec)
             except Exception as err:
-                #sys.exit(err)
-                f.write('{}'.format(err))
+                sys.exit(err)
 
 
         width_tb, height_tb = 400, 140
@@ -317,9 +312,7 @@ class Skyresid:
                         + [p2]
                         + p_s,css_classes=['display-grid-skyresid'])
         except Exception as err:
-            #sys.exit(err)
-            f2=open('dbg2', 'w')
-            f2.write('{}'.format(err))
-        
+            sys.exit(err)
+            
 
         return file_html(layout, CDN, "SKYRESID")
