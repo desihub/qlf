@@ -17,7 +17,7 @@ from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics,\
-                            eval_histpar, get_palette
+            get_merged_qa_scalar_metrics, eval_histpar, get_palette,  
 
 import numpy as np
 import logging
@@ -35,6 +35,8 @@ class Bias:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+
             lm = get_scalar_metrics(self.selected_process_id, cam)
             metrics, tests  = lm['metrics'], lm['tests']
         except:

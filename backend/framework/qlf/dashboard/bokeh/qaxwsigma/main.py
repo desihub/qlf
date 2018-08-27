@@ -10,7 +10,8 @@ from bokeh.models import Span, Label
 from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
-from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
+from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics,  get_merged_qa_scalar_metrics
+
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import plot_hist
 from dashboard.bokeh.qlf_plot import html_table
@@ -38,6 +39,8 @@ class Xwsigma:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+
             lm = get_scalar_metrics(self.selected_process_id, cam)
             metrics, tests  = lm['metrics'], lm['tests']
 

@@ -20,7 +20,7 @@ from dashboard.bokeh.qlf_plot import html_table
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description
+from dashboard.bokeh.helper import get_url_args, write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist
 
 from bokeh.models import PrintfTickFormatter
@@ -41,6 +41,8 @@ class Integ:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+
             lm = get_scalar_metrics(self.selected_process_id, cam)
             metrics, tests  = lm['metrics'], lm['tests']
         except:

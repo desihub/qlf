@@ -13,7 +13,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics
+from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import html_table
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -39,6 +39,8 @@ class Skypeak:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+
             lm = get_scalar_metrics(self.selected_process_id, cam)
             metrics, tests = lm['metrics'], lm['tests']
         except:

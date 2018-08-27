@@ -13,7 +13,9 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 import numpy as np
 
 
-from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics
+from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics, \
+            get_merged_qa_scalar_metrics
+
 from dashboard.bokeh.helper import get_palette
 
 import numpy as np
@@ -33,6 +35,8 @@ class Countpix:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
+            megedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+
             lm = get_scalar_metrics(self.selected_process_id, cam)
             metrics, tests  = lm['metrics'], lm['tests']
         except:

@@ -16,7 +16,7 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics
+from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics, get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 
@@ -37,6 +37,8 @@ class RMS:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+
             lm = get_scalar_metrics(self.selected_process_id, cam)
             metrics, tests  = lm['metrics'], lm['tests']
         except:

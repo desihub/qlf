@@ -11,7 +11,8 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
+from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics,\
+    get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist, html_table
 
 import numpy as np
@@ -34,6 +35,7 @@ class Countbins:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
+            megedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             lm = get_scalar_metrics(self.selected_process_id, cam)
             metrics, tests  = lm['metrics'], lm['tests']
         except:
