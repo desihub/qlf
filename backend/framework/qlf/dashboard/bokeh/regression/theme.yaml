@@ -1,0 +1,11 @@
+attrs:
+  Plot:
+    outline_line_color: null
+    background_fill_color: 'white'
+    plot_width: 700
+    plot_height: 250
+  Axis:
+    visible: False
+  Grid:
+    grid_line_alpha: 0.5
+    grid_line_color: 'white'
