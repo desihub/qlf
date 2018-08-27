@@ -39,13 +39,6 @@ class Xwsigma:
     def load_qa(self):
 
         cam = self.selected_arm+str(self.selected_spectrograph)
-        # try:
-        #     lm = get_scalar_metrics(self.selected_process_id, cam)
-        #     metrics, tests  = lm['metrics'], lm['tests']
-
-        #     #print(metrics.keys())
-        # except:
-        #     sys.exit('Could not load metrics')
         
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.INFO)
