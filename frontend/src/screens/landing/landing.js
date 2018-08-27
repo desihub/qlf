@@ -13,7 +13,7 @@ const styles = {
     height: '32px',
   },
   currentScreen: {
-    height: 'calc(100vh - 169px)',
+    minHeight: 'calc(100vh - 185px)',
   },
 };
 
