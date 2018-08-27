@@ -25,13 +25,9 @@ from bokeh.resources import CDN
 from bokeh.embed import file_html
 from astropy.io import fits
 import os
-#from util import get_config
 
-#cfg = get_config()
 
 spectro_data = os.environ.get('DESI_SPECTRO_DATA')
-#cfg.get("namespace", "desi_spectro_data")
-#logger = logging.getLogger(__name__)
 
 
 class Skyresid:
@@ -42,11 +38,7 @@ class Skyresid:
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
-        # try:
-        #     lm = get_scalar_metrics(self.selected_process_id, cam)
-        #     metrics, tests = lm['metrics'], lm['tests']
-        # except:
-        #     sys.exit('Could not load metrics')
+
         try:
             mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
             check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
@@ -135,13 +127,6 @@ class Skyresid:
         p2.line('wl', 'wavg_resid', source=skyres_source)
 
 
-        '''p1.circle('wl', 'med_resid', source=skyres_source, alpha = 0, size=1,
-                hover_alpha=1,
-                hover_fill_color='orange', hover_line_color='red') '''
-
-        '''p2.circle('wl', 'wavg_resid', source=skyres_source, alpha=0, size=1,
-                hover_alpha=1,
-                hover_fill_color='orange', hover_line_color='red')''' 
 
         p1.x_range = p2.x_range
 
@@ -171,7 +156,6 @@ class Skyresid:
                             'bottom':[0]*len(skyresid['SKYCONT_FIBER']),
                             })
 
-        #yrange=[0, max(skyresid['MED_RESID_FIBER']) *1.1]
         fiber_hist = plot_hist(hist_hover,None, ph=300, pw=450)
 
         fiber_hist.vbar(top='median_resid', x='x', width=0.8,
@@ -236,7 +220,6 @@ class Skyresid:
         from dashboard.bokeh.helper import load_fits
 
 
-        #hdul=fits.open('/app/spectro/redux/exposures/20180701/00000005/sframe-b0-00000005.fits')
         try:
             hdul = load_fits(self.selected_process_id, cam)
             wlength = hdul['WAVELENGTH'].data
@@ -293,20 +276,11 @@ class Skyresid:
         alert = alert_table(nrg, wrg)
         tb_alert = Div(text=alert, width=width_tb, height=height_tb)
 
-        info = metric_table('Sky Residuals', 'comments', 'keyname') #, curexp=check_spectra['MED_RESID'], refexp=check_spectra['MED_RESID_REF'])
+        info = metric_table('Sky Residuals', 'comments', 'keyname') 
         tb_metric =Div(text=info, width=width_tb, height=height_tb)
 
 
-        # p2txt = column(widgetbox(info_col), row(column(p1, p2), tbinfo), fiber_hist  )
         try:
-            # layout = column(widgetbox(info_col, css_classes=["header"]),
-            #           widgetbox(tbinfo, css_classes=["table-ranges"]),
-            #           #p1,
-            #           #iber_hist,
-            #           p2,
-            #           p_s[0], p_s[1], p_s[2], p_s[3], p_s[4],
-            #           css_classes=["display-grid-skyresid"], 
-            #           )
             layout = column([widgetbox(info_col, css_classes=["header"]),
                         widgetbox(tb_metric, tb_alert, css_classes=["table-ranges"])]
                         + [p2]

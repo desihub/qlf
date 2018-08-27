@@ -39,17 +39,11 @@ class Skycont:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         
-        # try:
-        #     lm = get_scalar_metrics(self.selected_process_id, cam)
-        #     metrics, tests  = lm['metrics'], lm['tests']
-        # except:
-        #     sys.exit('Could not load metrics')
+        
         
         try:
             mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
         except Exception as err:
-            f = open('error','w')
-            f.write('{}'.format(err))
             logger.info(err)
             sys.exit('Could not load data')
 
@@ -59,8 +53,6 @@ class Skycont:
             dec = gen_info['DEC']
             check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
             skycont = check_spectra['METRICS']
-            #skycont = metrics['skycont']
-            #snr = metrics['snr']
             sky = skycont['SKYCONT_FIBER']
             skyfibers = gen_info['SKY_FIBERID']
             nrg = check_spectra['PARAMS']['SKYCONT_NORMAL_RANGE']
@@ -69,9 +61,7 @@ class Skycont:
             ra_sky  = [ ra[i] for i in skyfibers]
             dec_sky = [ dec[i] for i in skyfibers]
         except Exception as err:
-            f = open('error','w')
-            f.write('{}'.format(err))
-            sys.exit()
+            sys.exit(err)
 
 
         my_palette = get_palette("viridis")
@@ -94,7 +84,6 @@ class Skycont:
         """
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
-        #c1,c2 = 0,500#int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
         qlf_fiberid = np.arange(0,500)
 
 

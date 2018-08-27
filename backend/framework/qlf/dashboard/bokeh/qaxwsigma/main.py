@@ -21,13 +21,10 @@ from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
 import logging
-#--------------------------------------------------------------------------
-#AMP Plots
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 from bokeh.models import PrintfTickFormatter
 
-#logger = logging.getLogger(__name__)
 
 
 class Xwsigma:
@@ -73,19 +70,15 @@ class Xwsigma:
         wrg = check_fibers['PARAMS']['XWSIGMA_WARN_RANGE']
         xw_ref = check_fibers['PARAMS']['XWSIGMA_REF']
 
-        #xwsigma = metrics['xwsigma']
-        #par     = tests['xwsigma']
-        #snr     = metrics['snr'] #RA and DEC info
-        #skycont = metrics['skycont']
 
 
-        xsigma = xw_fib[0]#xwsigma['XWSIGMA_FIB'][0]
-        wsigma = xw_fib[1]#xwsigma['XWSIGMA_FIB'][1]       
+        xsigma = xw_fib[0]
+        wsigma = xw_fib[1]
 
         delta_rg = wrg[1]- wrg[0]
         hist_rg = (wrg[0] -0.1*delta_rg, wrg[1]+0.1*delta_rg)
 
-        my_palette = get_palette("viridis") #"seismic")#"RdYlBu_r")#"viridis")
+        my_palette = get_palette("viridis") 
 
 
         xsigma_tooltip = """
@@ -172,15 +165,6 @@ class Xwsigma:
             'bottom': [0]*500
         })
 
-        '''
-        source_comp = ColumnDataSource(
-            data = {
-            'x1': xwsigma['RA'][:c1] + xwsigma['RA'][c2:],
-            'y1': xwsigma['DEC'][:c1] + xwsigma['DEC'][c2:],
-            'xsigma': ['']*4500,
-            'wsigma': ['']*4500
-        })
-        '''
 
         # axes limit
         xmin, xmax = [min(ra[:]), max(ra[:])]
@@ -221,10 +205,7 @@ class Xwsigma:
                 , fill_color=None, line_color=None
                 , line_width=3, hover_line_color='red')
 
-        '''
-        px.circle('x1','y1', source = source_comp, radius = radius_hover,
-                fill_color = 'lightgray', line_color='black', line_width=0.3)
-        '''
+
         taptool = px.select(type=TapTool)
         taptool.callback = OpenURL(url=url)
 
@@ -270,15 +251,11 @@ class Xwsigma:
                 , hover_fill_color={'field': 'wsigma', 'transform': wmapper}
                 , fill_color=None, line_color=None
                 , line_width=3, hover_line_color='red')
-        '''
-        pw.circle('x1','y1', source = source_comp, radius = 0.015,
-                fill_color = 'lightgray', line_color='black', line_width=0.3)
-        '''
+
         taptool = pw.select(type=TapTool)
         taptool.callback = OpenURL(url=url)
 
 
-        # bokeh.pydata.org/en/latest/docs/reference/models/annotations.html
         wcolor_bar = ColorBar(color_mapper= wmapper, label_standoff=-13,
                             major_label_text_font_style="bold", padding = 26,
                             major_label_text_align='right',
@@ -335,7 +312,7 @@ class Xwsigma:
         """
 
 
-        hist, edges = np.histogram(xsigma,'sqrt') #auto: max('sturges', 'fd') estimators
+        hist, edges = np.histogram(xsigma,'sqrt') 
 
         source_hist = ColumnDataSource(data={
             'hist': hist,
@@ -355,7 +332,7 @@ class Xwsigma:
                 , plot_width=500, plot_height=300
                 , x_axis_type="auto", y_axis_type=yscale
                 , y_range=yrange, x_range= hist_rg
-                )#, y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
+                )
 
         p_hist_x.quad(top=histval, bottom=bottomval, left='left', right='right',
             source=source_hist, 
@@ -425,11 +402,6 @@ class Xwsigma:
             my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data', text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
 
-        #medianline = Span(location= residmed, dimension='height', line_color='black', line_dash='solid', line_width=2)
-        #p_hist.add_layout(medianline)
-        #my_label = Label(x=residmed, y=0.94*yrange[-1], y_units='data', text='Median', text_color='black', angle=0.
-        #                ,background_fill_color='white', text_align="center",background_fill_alpha=.8)
-        #p_hist.add_layout(my_label)
 
 
         for ialert in nrg:#par[bname+'_NORMAL_RANGE']:
@@ -488,8 +460,6 @@ class Xwsigma:
         pwh = column(pw, whist, p_hist_w, wamp )
 
 
-        #tb = html_table( names=['Xsigma','Wsigma'], vals=xwsigma, nrng=nrg, wrng=wrg  )
-        #tbinfo=Div(text=tb)
         width_tb, height_tb = 400, 220
 
         curexp, refexp = '%3.2f'%xwsigma[0], '%3.2f'%xw_ref[0]#'xx..xx'
@@ -506,22 +476,6 @@ class Xwsigma:
         alert_w = alert_table(nrg, wrg)
         tb_alert_x = Div(text=alert_x, width=width_tb, height=height_tb)
         tb_alert_w = Div(text=alert_w, width=width_tb, height=height_tb)
-
-        # # Old tables:
-        # metricname='x sigma'
-        # comments= 'textextextext '*4
-        # keyname='XSIGMA'
-        # delta = '{:.3f}'.format( xwsigma[0]  )
-        # info = info_table(metricname, comments, keyname, delta)
-        # tb_xsig=Div(text=info, width=width_tb, height=height_tb)
-
-        # metricname='w sigma'
-        # comments= 'textextextext '*4
-        # keyname='WSIGMA'
-        # delta = '{:.3f}'.format( xwsigma[1]  )
-        # info = info_table(metricname, comments, keyname, delta)
-        # tb_wsig=Div(text=info, width=width_tb, height=height_tb)
-
 
 
         layout = column(

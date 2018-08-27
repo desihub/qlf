@@ -52,13 +52,8 @@ class Bias:
 
         except Exception as err:
             logger.info(err)
-            f = open('error','w')
-            f.write('{}'.format(err))
-            sys.exit('Could not load data')
-
-
-        #getbias   = metrics['getbias']
-
+            sys.exit
+ 
         # ============================================
         # THIS: Given the set up in the block above, 
         #       we have the bokeh plots
@@ -173,9 +168,6 @@ class Bias:
         from dashboard.bokeh.qlf_plot import html_table
 
         
-        # nrg= tests['getbias']['BIAS_NORMAL_RANGE']
-        # wrg= tests['getbias']['BIAS_WARN_RANGE']
-        # #names=['BIAS'], vals=[ getbias['BIAS_AMP']],
         tb = html_table( nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
