@@ -81,9 +81,10 @@ const styles = {
   },
   logoDesi: {
     position: 'absolute',
-    top: '5px',
+    top: '50%',
     right: '100px',
     zIndex: 1250,
+    marginTop: '-31px',
   },
   title: {
     display: 'flex',
@@ -179,6 +180,8 @@ class App extends React.Component {
         return '- Log Viewer';
       case '/fiber-viewer':
         return '- Fiber Viewer';
+      case '/under-construction':
+        return '- Under Construction';
       default:
         return '';
     }
