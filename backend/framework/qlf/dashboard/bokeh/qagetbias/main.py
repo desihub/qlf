@@ -17,7 +17,7 @@ from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics,\
-            get_merged_qa_scalar_metrics, eval_histpar, get_palette,  
+            get_merged_qa_scalar_metrics, eval_histpar, get_palette  
 
 import numpy as np
 import logging
