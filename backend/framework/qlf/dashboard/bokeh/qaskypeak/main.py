@@ -40,17 +40,6 @@ class Skypeak:
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
             mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
-
-        skypeak = metrics['skypeak']
-        par = tests['skypeak']
-
-        try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')
