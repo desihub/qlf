@@ -42,10 +42,6 @@ class Skycont:
         
         try:
             mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-            logger.info(err)
-            sys.exit('Could not load data')
-
-        try:
             gen_info = mergedqa['GENERAL_INFO']
             ra = gen_info['RA']
             dec = gen_info['DEC']
@@ -59,7 +55,9 @@ class Skycont:
             ra_sky  = [ ra[i] for i in skyfibers]
             dec_sky = [ dec[i] for i in skyfibers]
         except Exception as err:
-            sys.exit(err)
+            logger.info(err)
+            sys.exit('Could not load data')
+            
 
 
         my_palette = get_palette("viridis")
