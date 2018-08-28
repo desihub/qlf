@@ -16,7 +16,7 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics, get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 
@@ -36,18 +36,21 @@ class RMS:
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
+
         try:
             mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+            check_ccds = mergedqa['TASKS']['CHECK_CCDs']
+            getrms    =  check_ccds['METRICS']
 
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests  = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
+            nrg = check_ccds['PARAMS']['NOISE_AMP_NORMAL_RANGE']
+            wrg = check_ccds['PARAMS']['NOISE_AMP_WARN_RANGE']
 
-        getrms    = metrics['getrms']
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
+
 
         Reds = get_palette('Reds')
-
 
         # amp 1
         dz = getrms['NOISE_AMP']
@@ -84,14 +87,12 @@ class RMS:
                         formatter=formatter, title="", title_text_baseline="alphabetic" )
         p2.add_layout(color_bar, 'right')
 
-        #infos
-        nrg= tests['getrms']['NOISE_AMP_NORMAL_RANGE']
-        wrg= tests['getrms']['NOISE_AMP_WARN_RANGE']
+
         tb = html_table( nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
 
-        info, nlines = write_info('getrms', tests['getrms'])
+        info, nlines = write_info('getrms', check_ccds['PARAMS'])
         info= """<div> 
         <body><p  style="text-align:left; color:#262626; font-size:20px;">
                     <b>Get RMS</b> <br>Used to calculate RMS of region of 2D image, including overscan.</body></div>"""
@@ -104,5 +105,4 @@ class RMS:
             p2,
             css_classes=["display-grid"])
 
-        # End of Bokeh Block
         return file_html(layout, CDN, "GETRMS")
