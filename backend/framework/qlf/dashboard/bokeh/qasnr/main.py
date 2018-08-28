@@ -9,12 +9,14 @@ from bokeh.layouts import row, column, widgetbox, gridplot, layout
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter, Spacer
-from dashboard.bokeh.helper import write_description, write_info, \
-    get_scalar_metrics
+from dashboard.bokeh.helper import write_description, write_info
+from dashboard.bokeh.helper import  get_scalar_metrics, get_scalar_metrics_aux
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import html_table
-from dashboard.bokeh.helper import get_exposure_ids, \
-    init_xy_plot, get_url_args, get_arms_and_spectrographs
+from dashboard.bokeh.qlf_plot import html_table, sort_obj
+from dashboard.bokeh.qlf_plot import alert_table, metric_table
+
+from dashboard.bokeh.helper import get_exposure_ids
+from dashboard.bokeh.helper import init_xy_plot, get_url_args, get_arms_and_spectrographs
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 
@@ -30,32 +32,44 @@ class SNR:
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
-        try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
 
-
-        if not metrics.get('snr', None):
-            sys.exit('Could not load SNR')
-        else:
-            snr=metrics['snr']
 
         try:
-            exptime = tests['checkHDUs']['EXPTIME']
-            name_warn=[]
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
+
+
+        gen_info = mergedqa['GENERAL_INFO']
+
+        ra = gen_info['RA']
+        dec = gen_info['DEC']
+       
+        check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
+        snr = check_spectra['METRICS']
+
+        nrg = check_spectra['PARAMS']['FIDSNR_TGT_NORMAL_RANGE']
+        wrg = check_spectra['PARAMS']['FIDSNR_TGT_WARN_RANGE']
+
+        obj_type= sort_obj(gen_info)#[""]*500
+
+
+        try:
+            exptime=gen_info['EXPTIME']
+            name_warn=''
         except:
             exptime=1000
             name_warn = ' (exptime fixed)'
-            print('EXPTIME NOT FOUND, USING 1000')
+
 
         qlf_obj = ['ELG','LRG','QSO', 'STAR']
         keys_snr=list(snr.keys())
+        keys_snr=list(gen_info.keys())
         objst={}
-        avobj = [] #available object   
+        avobj = [] 
         for obj in qlf_obj:
-            if obj+'_FIBERID' in keys_snr:
+            if gen_info[obj+'_FIBERID'] != None:
                 objst.update({obj:True})
                 avobj.append(obj)
             else:
@@ -67,18 +81,15 @@ class SNR:
         fiberlen = []
         snrlen = []
         for i, key in enumerate(avobj):
-        #2#for i, key in enumerate(['ELG_FIBERID', 'STAR_FIBERID']):
             if objst[key]:
-                fiberlen.append( len(snr[key+'_FIBERID']))
-                snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
+                fiberlen.append( len(gen_info[key+'_FIBERID'])) #fiberlen.append( len(snr[key+'_FIBERID']))
+                snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) ) #snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
 
 
 
         try:
             sort_idx=[ snrlen.index(fiberlen[i]) for i in range(len(avobj))]
-            #2#sort_idx=[ snrlen.index(fiberlen[i]) for i in range(2)]
         except:
-            #2#sort_idx=[0,1]
             logger.info('Inconsistence in FIBERID and SNR lenght')   
 
 
@@ -96,14 +107,6 @@ class SNR:
         if (objst['STAR']):  
             star_snr  = snr['SNR_MAG_TGT'][sort_idx[idx]] 
 
-
-        '''
-        elg_snr  = snr['SNR_MAG_TGT'][sort_idx[0]] #[2]
-        #2#star_snr = snr['SNR_MAG_TGT'][sort_idx[1]]
-        lrg_snr  = snr['SNR_MAG_TGT'][sort_idx[1]] #[0]
-        qso_snr  = snr['SNR_MAG_TGT'][sort_idx[2]] #[1]
-        star_snr = snr['SNR_MAG_TGT'][sort_idx[3]] #[3]
-        '''
 
 
 
@@ -149,9 +152,9 @@ class SNR:
         if objst['ELG']:
             elg.data['x'] = elg_snr[1] 
             elg.data['y'] = np.array( elg_snr[0])**2 
-            elg.data['fiber_id'] = snr['ELG_FIBERID']
-            elg.data['ra'] = [snr['RA'][i] for i in snr['ELG_FIBERID'] ]
-            elg.data['dec'] = [snr['DEC'][i] for i in snr['ELG_FIBERID'] ]
+            elg.data['fiber_id'] = gen_info['ELG_FIBERID']
+            elg.data['ra'] = [ra[i] for i in gen_info['ELG_FIBERID'] ]
+            elg.data['dec'] = [dec[i] for i in gen_info['ELG_FIBERID'] ]
 
             xfit, yfit  = fit_func(elg_snr[1], 	snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx+=1
@@ -164,9 +167,9 @@ class SNR:
         if objst['LRG']:
             lrg.data['x'] = lrg_snr[1] 
             lrg.data['y'] = np.array(lrg_snr[0] )**2
-            lrg.data['fiber_id'] = snr['LRG_FIBERID']
-            lrg.data['ra'] = [snr['RA'][i] for i in snr['LRG_FIBERID'] ]
-            lrg.data['dec'] = [snr['DEC'][i] for i in snr['LRG_FIBERID'] ]
+            lrg.data['fiber_id'] = gen_info['LRG_FIBERID']
+            lrg.data['ra'] = [ra[i] for i in gen_info['LRG_FIBERID'] ]
+            lrg.data['dec'] = [dec[i] for i in gen_info['LRG_FIBERID'] ]
 
             xfit, yfit = fit_func(lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx+=1
@@ -179,9 +182,9 @@ class SNR:
         if objst['QSO']:
             qso.data['x'] = qso_snr[1] 
             qso.data['y'] = np.array(qso_snr[0] )**2    
-            qso.data['fiber_id'] = snr['QSO_FIBERID']
-            qso.data['ra'] = [snr['RA'][i] for i in snr['QSO_FIBERID'] ]
-            qso.data['dec'] = [snr['DEC'][i] for i in snr['QSO_FIBERID'] ]
+            qso.data['fiber_id'] = gen_info['QSO_FIBERID']
+            qso.data['ra'] = [ra[i] for i in gen_info['QSO_FIBERID'] ]
+            qso.data['dec'] = [dec[i] for i in gen_info['QSO_FIBERID'] ]
             
             xfit, yfit = fit_func(qso_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx+=1
@@ -194,9 +197,9 @@ class SNR:
         if objst['STAR']:
             star.data['x'] = star_snr[1] 
             star.data['y'] = np.array(star_snr[0] )**2
-            star.data['fiber_id'] = snr['STAR_FIBERID']
-            star.data['ra'] = [snr['RA'][i] for i in snr['STAR_FIBERID'] ]
-            star.data['dec'] = [snr['DEC'][i] for i in snr['STAR_FIBERID'] ]
+            star.data['fiber_id'] = gen_info['STAR_FIBERID']
+            star.data['ra'] = [ra[i] for i in gen_info['STAR_FIBERID'] ]
+            star.data['dec'] = [dec[i] for i in gen_info['STAR_FIBERID'] ]
 
             xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             #2#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
@@ -207,9 +210,6 @@ class SNR:
 
 
 
-        #2#'''
-
-        #2#'''
 
         # here we make the plots
         html_tooltip = """
@@ -292,26 +292,16 @@ class SNR:
         star_plot.yaxis.axis_label = "MEDIAN SNR^2"
         star_plot.title.text = "STAR"
 
-        #taptool = star_plot.select(type=TapTool)
-        #taptool.callback = OpenURL(url=url)
-
-
-        #r1=row(children=[elg_plot, lrg_plot], sizing_mode='fixed') 
-        #r2=row( children=[qso_plot, star_plot], sizing_mode='fixed')
-        #plot = column([r1,r2], sizing_mode='fixed')
-        plot = row(elg_plot,star_plot)#column(row(elg_plot,star_plot), sizing_mode='fixed')
 
         # infos
         key_name = 'snr'
-        info, nlines = write_info(key_name, tests[key_name])
+        # ['FIDMAG', 'FIDSNR_TGT_REF', 'FIDSNR_WARN_RANGE', 'FIDSNR_NORMAL_RANGE']
+        info, nlines = write_info(key_name, check_spectra['PARAMS'] ) #tests[key_name])
         txt = PreText(text=info, height=nlines*20)
         info_col = Div(text=write_description('snr'))#*star_plot.plot_width)
 
 
-        #---------------
-        #wedges
-
-
+        # --- wedges --------
         snr_tooltip = """
             <div>
                 <div>
@@ -340,88 +330,101 @@ class SNR:
         """
         snr_hover = HoverTool(tooltips=snr_tooltip)
 
-        skycont=metrics['skycont']
+
         median = snr['MEDIAN_SNR']
         resid = snr['SNR_RESID']
+
         qlf_fiberid = range(0,500)
         my_palette = get_palette('bwr')
 
-
+        fibersnr_tgt=[]
+        obj_type= sort_obj(gen_info)
+        for i in avobj:
+            fibersnr_tgt.append(gen_info[i+'_FIBERID'])
 
         fibersnr=[]
-        obj_type=['']*500
-        for i in avobj:
-            fibersnr.append(snr[i+'_FIBERID'])
-            for j in snr[i+'_FIBERID']:
-                obj_type[j] =  i
-        for j in skycont['SKYFIBERID']:
-            obj_type[j] =  'SKY'
-
-        fibersnr=fibersnr[0]
-        fibersnr.sort()
+        for i in list(range(len(fibersnr_tgt))):
+            fibersnr = fibersnr + fibersnr_tgt[i]
 
 
-        try:
-            for i in qlf_fiberid:
-                if i in snr['ELG_FIBERID']:
-                    obj_type.append('ELG')
-                    fibersnr.append(i) 
-                #2#'''
-                elif i in snr['QSO_FIBERID']:
-                    obj_type.append('QSO')
-                    fibersnr.append(i)
-                elif i in snr['LRG_FIBERID']:
-                    obj_type.append('LRG')
-                    fibersnr.append(i)
-                #2#'''
-                elif i in snr['STAR_FIBERID']:
-                    obj_type.append('STAR')
-                    fibersnr.append(i)
-                elif i in skycont['SKYFIBERID']:
-                    obj_type.append('SKY')
-                else:
-                    obj_type.append('UNKNOWN')
-        except:
-            pass#obj_type = ['']*500
+        obj_type = sort_obj(gen_info)
 
         source = ColumnDataSource(data={
-            'x1': [snr['RA'][i] for i in fibersnr ],
-            'y1': [snr['DEC'][i] for i in fibersnr ],
-            'resid_snr': snr['SNR_RESID'],
+            'x1': [ra[i] for i in fibersnr ],
+            'y1': [dec[i] for i in fibersnr ],
+            'resid_snr': resid,
             'QLF_FIBERID': fibersnr,
             'OBJ_TYPE': [obj_type[i] for i in fibersnr],
-
+            'median': median
         })
 
+        ra_not = []
+        dec_not = []
+        obj_not = []
+        fiber_not = []
 
-        dy = (np.max(resid) - np.min(resid))*0.02
-        mapper = LinearColorMapper(palette=my_palette,
-                                low=np.min(resid)- dy, high= np.max(resid)+dy)
-        radius = 0.013#0.015
-        radius_hover = 0.015#0.0165
+        for i in range(500):
+            if i not in fibersnr:
+                ra_not.append( ra[i])
+                dec_not.append( dec[i])
+                fiber_not.append(i) 
+                obj_not.append( obj_type[i])
+
+        source_not = ColumnDataSource(data={
+            'x1': ra_not, 
+            'y1': dec_not,
+            'resid_snr': ['']*len(dec_not),           
+            'QLF_FIBERID': fiber_not,
+            'OBJ_TYPE': obj_not
+        })
+
+        rmax, rmin = np.nanmax(resid), np.nanmin(resid)
+
+        if np.isnan(rmax) or np.isnan(rmin):
+            fill_color = 'lightgray'
+        else:
+            dy = (rmax - rmin)*0.1
+            mapper = LinearColorMapper(palette=my_palette, nan_color='lightgray',
+                        low= rmin- dy, high= rmax+dy)
+            fill_color = {'field':'resid_snr', 'transform':mapper}
+    
+
+        radius = 0.013
+        radius_hover = 0.015
 
         # axes limit
-
-        xmin, xmax = [min(snr['RA'][:]), max(snr['RA'][:])]
-        ymin, ymax = [min(snr['DEC'][:]), max(snr['DEC'][:])]
+        xmin, xmax = [min(ra[:]), max(ra[:])]
+        ymin, ymax = [min(dec[:]), max(dec[:])]
         xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
         left, right = xmin -xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
         p = Figure(title='Residual SNR'+name_warn
                 , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=500, plot_height=400
+                , plot_width=380, plot_height=380
                 , tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"]
-                ,x_range=(left,right), y_range=(bottom, top) )
+                ) #,x_range=(left,right), y_range=(bottom, top) )
+
         # Color Map
         p.circle('x1', 'y1', source=source, name="data", radius=radius,
-                fill_color={'field': 'resid_snr', 'transform': mapper},
+                fill_color= fill_color, #{'field': 'resid_snr', 'transform': mapper},
                 line_color='black', line_width=0.4,
                 hover_line_color='red')
 
         # marking the Hover point
-        p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-                'field': 'resid_snr', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+        p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, 
+            hover_fill_color= fill_color, #{'field': 'resid_snr', 'transform': mapper}, 
+            fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+
+        p.circle('x1', 'y1', source= source_not, radius= radius, 
+                    fill_color = 'lightgray', line_color=None, line_width=0.3)
+
+        cbar = Figure(height=p.plot_height, 
+                width=120, 
+                toolbar_location=None, 
+                min_border=0, 
+                outline_line_color=None,
+                )
 
         xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
                             title="",
@@ -429,19 +432,72 @@ class SNR:
                             major_label_text_align='right',
                             major_label_text_font_size="10pt",
                             location=(0, 0))
+        cbar.title.align = 'center'
+        cbar.title.text_font_size = '10pt'
+        cbar.add_layout(xcolor_bar, 'right')
 
-        p.add_layout(xcolor_bar, 'right')
         taptool = p.select(type=TapTool)
         taptool.callback = OpenURL(url=url)
 
-        #plot= gridplot([[elg_plot, lrg_plot], [qso_plot, star_plot]])
+        # Median plot
 
-        nrg= tests['snr']['FIDSNR_TGT_NORMAL_RANGE']
-        wrg= tests['snr']['FIDSNR_TGT_WARN_RANGE']
-        names = ['FIDSNR %s'%i for i in avobj] #, 'FIDSNR LRG', 'FIDSNR QSO', 'FIDSNR STAR']
+        median_tooltip = """
+            <div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">MEDIAN: </span>
+                    <span style="font-size: 13px; color: #515151">@median</span>
+                </div>
+       <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Resid: </span>
+                    <span style="font-size: 13px; color: #515151">@resid_snr</span>
+                </div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                </div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                </div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                </div>
+
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 13px; color: #515151;">@QLF_FIBERID</span>
+                </div>
+
+            </div>
+        """
+        median_hover = HoverTool(tooltips=median_tooltip, mode='vline')
+
+        p_m =  Figure(title= '', 
+                    x_axis_label='Fiber ', y_axis_label = 'Median S/N',
+                    plot_width = 500, plot_height = 240,
+                    tools=[median_hover, "pan,box_zoom,reset,crosshair" ],
+                    toolbar_location='above')
+
+        p_m.vbar('QLF_FIBERID', width=1, top='median', source = source,
+            hover_color='red')
+        
+
+
+        names = ['FIDSNR %s'%i for i in avobj] 
         vals = [ 'NaN' if  isnr == -9999 else '{:.3f}'.format(isnr) for isnr in  snr['FIDSNR_TGT'] ]
         tb = html_table( names=names, vals=vals ,  nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb)
+
+        width_tb, height_tb = 500, 140
+
+        alert = alert_table(nrg, wrg)
+        tb_alert = Div(text=alert, width=width_tb, height=height_tb)
+
+        info = metric_table('Sky Residuals', 'comments', 'keyname') #, curexp=check_spectra['MED_RESID'], refexp=check_spectra['MED_RESID_REF'])
+        tb_metric =Div(text=info, width=width_tb, height=height_tb)
+
+
 
         pltxy_h = 350
         pltxy_w = 500
@@ -453,10 +509,25 @@ class SNR:
         qso_plot.plot_width = pltxy_w
         star_plot.plot_height = pltxy_h
         star_plot.plot_width = pltxy_w
-        #layout = column(widgetbox(info_col), tbinfo, p,  elg_plot, star_plot )# row(plot))# Spacer(width=800-p.plot_width, height=p.plot_height) ,, Spacer(width=700, height=500)), sizing_mode='fixed')
-        #2#layout=layout( [[info_col], [tbinfo], [p], [elg_plot , star_plot]    ])
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-            widgetbox(tbinfo, css_classes=["table-ranges"]),
-            p, Div(), elg_plot, lrg_plot , qso_plot, star_plot,
-            css_classes=["display-grid"])
+
+        # Prepare for bokeh.layout:
+        plot_snr = []
+        if objst['ELG']:
+            plot_snr.append(elg_plot)
+        if objst['LRG']:
+            plot_snr.append(lrg_plot)            
+        if objst['QSO']:
+            plot_snr.append(qso_plot)            
+        if objst['STAR']:
+            plot_snr.append(star_plot)   
+        for i in list(range(4-len(plot_snr))):
+            plot_snr.append(Spacer(width=pltxy_w, height=pltxy_h))
+
+
+
+        layout = column(row(widgetbox(info_col)),
+            row(widgetbox(tb_metric, tb_alert)),
+            row( column(Spacer(width=p_m.plot_width, height=140), p_m), p,  cbar), 
+            gridplot([plot_snr[0:2], plot_snr[2:4]]) 
+            )
         return file_html(layout, CDN, "MEDIAN SNR")

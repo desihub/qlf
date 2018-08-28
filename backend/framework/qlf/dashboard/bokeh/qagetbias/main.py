@@ -17,7 +17,7 @@ from bokeh.io import output_notebook
 import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics,\
-                            eval_histpar, get_palette
+                            eval_histpar, get_palette, get_scalar_metrics_aux
 
 import numpy as np
 import logging
@@ -40,8 +40,20 @@ class Bias:
         except:
             sys.exit('Could not load metrics')
 
-        getbias   = metrics['getbias']
 
+        try:
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+
+            check_ccds = mergedqa['TASKS']['CHECK_CCDs']
+            getbias =  check_ccds['METRICS']# metrics['getrms']
+
+            nrg = check_ccds['PARAMS']['BIAS_AMP_NORMAL_RANGE']
+            wrg = check_ccds['PARAMS']['BIAS_AMP_WARN_RANGE']
+
+        except Exception as err:
+            logger.info(err)
+            sys.exit
+ 
         # ============================================
         # THIS: Given the set up in the block above, 
         #       we have the bokeh plots
@@ -155,10 +167,7 @@ class Bias:
 
         from dashboard.bokeh.qlf_plot import html_table
 
-        print(tests['getbias']['BIAS_AMP_REF'])
-        nrg= tests['getbias']['BIAS_AMP_NORMAL_RANGE']
-        wrg= tests['getbias']['BIAS_AMP_WARN_RANGE']
-        #names=['BIAS'], vals=[ getbias['BIAS_AMP']],
+        
         tb = html_table( nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 

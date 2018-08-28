@@ -20,7 +20,7 @@ from dashboard.bokeh.qlf_plot import html_table
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description
+from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics_aux
 from dashboard.bokeh.qlf_plot import plot_hist
 
 from bokeh.models import PrintfTickFormatter
@@ -40,16 +40,22 @@ class Integ:
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
+        
         try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests  = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
+
+        gen_info = mergedqa['GENERAL_INFO']
 
 
-        integ=metrics['integ']
-        std_fiberid = integ['STD_FIBERID']
-        #std_mag = np.where()
+        
+        check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
+        std_fiberid = check_spectra['METRICS']['STAR_FIBERID']
+        nrg = check_spectra['PARAMS']['DELTAMAG_TGT_NORMAL_RANGE']
+        wrg = check_spectra['PARAMS']['DELTAMAG_TGT_WARN_RANGE'] 
+        fiber_mag=check_spectra['METRICS']['FIBER_MAG']
 
 
         hist_tooltip=""" 
@@ -66,14 +72,11 @@ class Integ:
                 """
         hist_hover = HoverTool(tooltips=hist_tooltip)
         hist_source = ColumnDataSource(
-                        data={'integ': integ['FIBER_MAG'],
-                            'x': np.arange(len(integ['FIBER_MAG'])),
-                            #'left': np.arange(len(skyresid['SKYFIBERID'])) -0.4,
-                            #'right':np.arange(len(skyresid['SKYFIBERID']))+0.4,
-                            #'bottom':[0]*len(skyresid['SKYFIBERID']),
+                        data={'integ': fiber_mag,
+                            'x': np.arange(len(fiber_mag)),
                             })
 
-        yrange=[0, 1.1*max(integ['FIBER_MAG'])]
+        yrange=[0, 1.1*max(fiber_mag)]
         fiber_hist = plot_hist(hist_hover, yrange, ph=300)
 
         fiber_hist.vbar(top='integ', x='x', width=0.8,
@@ -85,16 +88,16 @@ class Integ:
 
         info_col=Div(text=write_description('integ'), width=fiber_hist.plot_width)
 
-        nrg= tests['integ']['DELTAMAG_TGT_WARN_RANGE']
-        wrg= tests['integ']['DELTAMAG_TGT_NORMAL_RANGE']
+   
 
         #List of mag diff b/w the fibermag and the imaging mag from the fibermap
-        tb = html_table(names=['DELTAMAG (Mean)'], vals=[ '{:.3f}'.format(np.mean(integ['DELTAMAG']) )], nrng=nrg, wrng=wrg  )
+        tb = html_table(names=['DELTAMAG (Mean)'], vals=[ '{:.3f}'.format(np.mean(fiber_mag) )]
+            , nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
         layout = column(widgetbox(info_col, css_classes=["header"]),
                         widgetbox(tbinfo, css_classes=["table-ranges"]),
                         fiber_hist,
                         css_classes=["display-grid"])
-        # End of Bokeh Block
+
         return file_html(layout, CDN, "INTEG")

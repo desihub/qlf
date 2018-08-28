@@ -5,6 +5,7 @@ from furl import furl
 from bokeh.plotting import Figure
 from dashboard.models import Process, QA, Job
 from scalar_metrics import LoadMetrics
+import sys
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
@@ -175,6 +176,7 @@ def load_fits(process_id, cam):
     '''Load reduced fits '''
     from astropy.io import fits
 
+
     try:
         process = Process.objects.get(pk=process_id)
         exposure = process.exposure
@@ -255,7 +257,8 @@ def write_info(qa_name, params):
         getbias=['BIAS_AMP_NORMAL_RANGE',  'BIAS_AMP_WARN_RANGE'],#, 'PERCENTILES'],
         countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'CUTPIX'],#, 'LITFRAC_AMP_REF'
         integ=['DELTAMAG_WARN_RANGE', 'DELTAMAG_NORMAL_RANGE'],
-        snr=['FIDSNR_NORMAL_RANGE', 'FIDSNR_WARN_RANGE', 'FIDMAG'])
+        snr=['FIDSNR_TGT_NORMAL_RANGE', 'FIDSNR_TGT_WARN_RANGE', 'FIDMAG'])
+
 
     keys = dict_test_keys[qa_name]
     for ii in keys:
@@ -293,7 +296,7 @@ def eval_histpar(yscale, hist):
         histval = 'histplusone'
     else:
         ylabel = "Frequency"
-        yrange = (0, 1.1*max(hist))
+        yrange = (-0.1*max(hist), 1.1*max(hist))
         bottomval = 'bottom'
         histval = 'hist'
     return [ylabel,yrange,bottomval,histval]
@@ -313,3 +316,4 @@ def get_palette(name_of_mpl_palette):
 
 if __name__ == '__main__':
     logger.info('Standalone execution...')
+    
