@@ -57,7 +57,7 @@ def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
     # Generate Footprint
-    footprint = Footprint().get_footprint()
+    footprint = Footprint().render()
     context = {'image': footprint}
     response = HttpResponse(template.render(context, request))
 

@@ -38,6 +38,7 @@ services:
       - QLF_CFG=/app/framework/config/qlf.cfg
       - DISK_SPACE_PERCENT_WARNING=40
       - DISK_SPACE_PERCENT_ALERT=20
+      - POINTINGS_FILE=/app/spectro/noconstraints.dat
       # Database
       - POSTGRES_PASSWORD=qlfuser
       - POSTGRES_USER=userqlf
