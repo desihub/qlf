@@ -59,6 +59,7 @@ const styles = {
     width: 100,
     fontSize: '12px',
     textAlign: 'center',
+    cursor: 'pointer',
   },
   space: {
     width: '1vw',
