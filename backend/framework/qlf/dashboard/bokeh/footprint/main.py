@@ -9,6 +9,7 @@ from bokeh.layouts import widgetbox, row, column
 from bokeh.models import Div, Panel, Tabs
 from bokeh.resources import CDN
 from bokeh.embed import file_html
+import os
 
 class Footprint():
     def select_exposures(self, coords, observing_time, observing_location, altcut=85*u.deg):
@@ -42,7 +43,8 @@ class Footprint():
         return plot
 
     def render(self):
-        pointings_file = '/app/spectro/noconstraints.dat'
+        pointings_file = os.environ.get(
+            'POINTINGS_FILE', '/app/spectro/noconstraints.dat')
 
         # you need to edit the original file to comment the header and join hourangle
         pointings = Table.read(pointings_file, format='ascii.commented_header')
