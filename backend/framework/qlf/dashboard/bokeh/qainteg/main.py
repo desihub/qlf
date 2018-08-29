@@ -15,7 +15,7 @@ from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 
 from bokeh.io import output_notebook
 import numpy as np
@@ -95,8 +95,16 @@ class Integ:
             , nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
+       # Prepare tables
+        comments='List of the average fiber mag for each of N target types in this camera'
+        metric_txt=mtable('integ', mergedqa, comments)# objtype=['ELG','STAR'] )
+        metric_tb=Div(text=metric_txt, width=450)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=450)
+
+
         layout = column(widgetbox(info_col, css_classes=["header"]),
-                        widgetbox(tbinfo, css_classes=["table-ranges"]),
+                    column(widgetbox(metric_tb),widgetbox(alert_tb), css_classes=["table-ranges"]),
                         fiber_hist,
                         css_classes=["display-grid"])
 

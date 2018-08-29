@@ -10,7 +10,7 @@ from bokeh.models.widgets import PreText, Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
 from bokeh.io import output_notebook
@@ -99,8 +99,22 @@ class RMS:
         nlines=2
         txt = Div(text=info, width=p.plot_width)
         info_col=Div(text=write_description('getrms'))
+
+
+        # Prepare tables
+        comments='value of RMS for each amplifier read directly from the header of the pre processed image'
+        metricname='BIAS_AMP'
+        keyname='getbias'
+        curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
+        refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
+        metric_txt=mtable('getbias', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=500)
+
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=500)
+
         layout = column(widgetbox(info_col, css_classes=["header"]),
-            widgetbox(tbinfo, css_classes=["table-ranges"]),
+            column(widgetbox(metric_tb),widgetbox(alert_tb), css_classes=["table-ranges"]),
             p,
             p2,
             css_classes=["display-grid"])
