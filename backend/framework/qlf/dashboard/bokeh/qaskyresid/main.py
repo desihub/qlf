@@ -60,7 +60,6 @@ class Skyresid:
             fmap = fits.open('{}/{}'.format(folder, file))            
             
         except Exception as err:
-            #logger.info(err)
             sys.exit('Could not load data')
 
 
@@ -223,7 +222,7 @@ class Skyresid:
             hdul = load_fits(self.selected_process_id, cam)
             wlength = hdul['WAVELENGTH'].data
         except Exception as err:
-            logger.info('{}'.format(err))   
+            sys.exit('Spectra sample could not be loaded')   
 
 
         p_s = []
