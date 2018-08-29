@@ -60,7 +60,7 @@ class Skyresid:
             fmap = fits.open('{}/{}'.format(folder, file))            
             
         except Exception as err:
-            logger.info(err)
+            #logger.info(err)
             sys.exit('Could not load data')
 
 
@@ -253,7 +253,12 @@ class Skyresid:
                 else:
                     obj_name = obj
                 arg = np.random.choice(gen_info[obj_name+'_FIBERID'],1)
-                spec = hdul['FLUX'].data[arg][0]
+
+                if not ( hdul['FLUX'].data[arg] is None):
+                    spec = hdul['FLUX'].data[arg][0]
+                else:
+                    spec=[np.nan]*len(wlength)
+
 
                 spec_source = ColumnDataSource(data={
                 'wlength': wlength,
@@ -285,7 +290,7 @@ class Skyresid:
                         + [p2]
                         + p_s,css_classes=['display-grid-skyresid'])
         except Exception as err:
-            sys.exit(err)
+            sys.exit(str(err))
             
 
         return file_html(layout, CDN, "SKYRESID")
