@@ -13,7 +13,7 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description,\
     get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import plot_hist, html_table
+from dashboard.bokeh.qlf_plot import plot_hist, html_table, sort_obj
 
 import numpy as np
 import logging
@@ -36,9 +36,7 @@ class Countbins:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         try:
-            megedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests  = lm['metrics'], lm['tests']
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
             gen_info = mergedqa['GENERAL_INFO']
 

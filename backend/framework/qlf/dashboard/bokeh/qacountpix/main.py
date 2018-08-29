@@ -36,10 +36,10 @@ class Countpix:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         try:
-            megedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
         except Exception as err:
-            logger.info(err)
+            logger.critical(err)
             sys.exit('Could not load data')
 
         countpix = mergedqa['TASKS']['CHECK_CCDs']['METRICS']

@@ -12,8 +12,8 @@ from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import plot_hist
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
+from dashboard.bokeh.qlf_plot import html_table, metric_table, alert_table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 from bokeh.resources import CDN

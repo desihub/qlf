@@ -41,6 +41,8 @@ class Bias:
 
             nrg = check_ccds['PARAMS']['BIAS_AMP_NORMAL_RANGE']
             wrg = check_ccds['PARAMS']['BIAS_AMP_WARN_RANGE']
+            tests =  mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
+
 
         except Exception as err:
             logger.info(err)
@@ -148,7 +150,7 @@ class Bias:
         p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
         p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
-        info, nlines = write_info('getbias', tests['getbias'])
+        info, nlines = write_info('getbias', tests)
         try:
             info_hist ="""
             <p style="font-size:18px;"> BIAS: {} </p>
