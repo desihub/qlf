@@ -261,6 +261,16 @@ class QLFModels(object):
 
         return qa
 
+    def get_merged_qa(self, process_id, cam):
+        """ Gets QA """
+        try:
+            qa = Process.objects.get(pk=process_id).process_jobs.get(
+                camera_id=cam).output
+        except QA.DoesNotExist:
+            qa = None
+
+        return qa
+
     def get_output(self, process_id, cam):
         """ Gets QA """
         try:
