@@ -216,10 +216,6 @@ class Steps extends Component {
 
   hideQaAlarms = () => {};
 
-  showStepName = name => {
-    this.setState({ message: name + '\n' });
-  };
-
   renderPieChart = (arm, step) => {
     return (
       <PieChart
@@ -235,19 +231,6 @@ class Steps extends Component {
     );
   };
 
-  renderStepName = (title, name) => {
-    return (
-      <span
-        data-tip="true"
-        data-for="tooltip"
-        onMouseOver={() => this.showStepName(name)}
-        style={styles.step}
-      >
-        {this.props.navigateToProcessingHistory ? name : title}
-      </span>
-    );
-  };
-
   renderTooltipContent = () => {
     const message = this.state.message.split('\n').map((msg, i) => {
       return <p key={i}>{msg}</p>;
@@ -259,7 +242,7 @@ class Steps extends Component {
     return (
       <ReactTooltip
         id="tooltip"
-        type="info"
+        type="dark"
         getContent={this.renderTooltipContent}
       />
     );
@@ -318,16 +301,24 @@ class Steps extends Component {
               </Tooltip>
             </div>
             <div style={styles.gridItem}>
-              {this.renderStepName('Step 1', 'Pre Processing')}
+              <Tooltip title={'Pre Processing'} placement="top">
+                <span style={styles.step}>Step 1</span>
+              </Tooltip>
             </div>
             <div style={styles.gridItem}>
-              {this.renderStepName('Step 2', 'Spectral Extraction')}
+              <Tooltip title={'Spectral Extraction'} placement="top">
+                <span style={styles.step}>Step 2</span>
+              </Tooltip>
             </div>
             <div style={styles.gridItem}>
-              {this.renderStepName('Step 3', 'Fiber Flattening')}
+              <Tooltip title={'Fiber Flattening'} placement="top">
+                <span style={styles.step}>Step 3</span>
+              </Tooltip>
             </div>
             <div style={styles.gridItem}>
-              {this.renderStepName('Step 4', 'Sky Subtraction')}
+              <Tooltip title={'Sky Subtraction'} placement="top">
+                <span style={styles.step}>Step 4</span>
+              </Tooltip>
             </div>
             <div style={styles.gridArm}>
               <span style={styles.arm}>b</span>
