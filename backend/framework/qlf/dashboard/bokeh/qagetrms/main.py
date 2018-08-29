@@ -16,8 +16,7 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics,\
-    get_scalar_metrics_aux
+from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 
@@ -39,8 +38,7 @@ class RMS:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
-
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             check_ccds = mergedqa['TASKS']['CHECK_CCDs']
             getrms    =  check_ccds['METRICS']
 
@@ -53,7 +51,6 @@ class RMS:
 
 
         Reds = get_palette('Reds')
-
 
         # amp 1
         dz = getrms['NOISE_AMP']

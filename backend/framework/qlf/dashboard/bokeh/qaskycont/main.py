@@ -12,8 +12,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_palette, \
-     get_scalar_metrics_aux
+from dashboard.bokeh.helper import write_info, get_palette, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import html_table
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
@@ -42,12 +41,7 @@ class Skycont:
         
         
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
-        try:
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             gen_info = mergedqa['GENERAL_INFO']
             ra = gen_info['RA']
             dec = gen_info['DEC']
@@ -61,7 +55,9 @@ class Skycont:
             ra_sky  = [ ra[i] for i in skyfibers]
             dec_sky = [ dec[i] for i in skyfibers]
         except Exception as err:
-            sys.exit(err)
+            logger.info(err)
+            sys.exit('Could not load data')
+            
 
 
         my_palette = get_palette("viridis")

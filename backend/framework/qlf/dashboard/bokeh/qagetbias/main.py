@@ -16,8 +16,8 @@ from bokeh.palettes import ( Colorblind, Viridis256)
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics,\
-                            eval_histpar, get_palette, get_scalar_metrics_aux
+from dashboard.bokeh.helper import get_url_args, write_description, write_info,\
+            get_merged_qa_scalar_metrics, eval_histpar, get_palette  
 
 import numpy as np
 import logging
@@ -35,20 +35,14 @@ class Bias:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests  = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
-
-
-        try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
-
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             check_ccds = mergedqa['TASKS']['CHECK_CCDs']
             getbias =  check_ccds['METRICS']# metrics['getrms']
 
             nrg = check_ccds['PARAMS']['BIAS_AMP_NORMAL_RANGE']
             wrg = check_ccds['PARAMS']['BIAS_AMP_WARN_RANGE']
+            tests =  mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
+
 
         except Exception as err:
             logger.info(err)
@@ -156,7 +150,7 @@ class Bias:
         p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
         p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
-        info, nlines = write_info('getbias', tests['getbias'])
+        info, nlines = write_info('getbias', tests)
         try:
             info_hist ="""
             <p style="font-size:18px;"> BIAS: {} </p>

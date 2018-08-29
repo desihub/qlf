@@ -13,8 +13,10 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 import numpy as np
 
 
-from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics
-from dashboard.bokeh.helper import get_palette, get_scalar_metrics_aux
+from dashboard.bokeh.helper import get_url_args, write_description, write_info, \
+            get_merged_qa_scalar_metrics
+
+from dashboard.bokeh.helper import get_palette
 
 import numpy as np
 import logging
@@ -34,11 +36,11 @@ class Countpix:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
+        except Exception as err:
+            logger.critical(err)
+            sys.exit('Could not load data')
 
         countpix = mergedqa['TASKS']['CHECK_CCDs']['METRICS']
         tests =  mergedqa['TASKS']['CHECK_CCDs']['PARAMS']

@@ -9,7 +9,7 @@ from bokeh.io import output_notebook, show, output_file
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 
-from dashboard.bokeh.helper import write_info, get_scalar_metrics
+from dashboard.bokeh.helper import write_info
 
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
@@ -20,7 +20,7 @@ from dashboard.bokeh.qlf_plot import html_table
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics_aux
+from dashboard.bokeh.helper import get_url_args, write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist
 
 from bokeh.models import PrintfTickFormatter
@@ -42,7 +42,7 @@ class Integ:
         cam = self.selected_arm+str(self.selected_spectrograph)
         
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')
