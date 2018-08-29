@@ -16,6 +16,8 @@ from dashboard.bokeh.globalsnr.main import GlobalSnr
 from dashboard.bokeh.timeseries.main import TimeSeries
 from dashboard.bokeh.regression.main import Regression
 
+from .models import Process
+
 from django.template import loader
 from django.http import HttpResponse
 
@@ -55,7 +57,7 @@ def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
     # Generate Footprint
-    footprint = Footprint().get_footprint()
+    footprint = Footprint().render()
     context = {'image': footprint}
     response = HttpResponse(template.render(context, request))
 
