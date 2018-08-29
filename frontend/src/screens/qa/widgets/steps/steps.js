@@ -38,7 +38,6 @@ const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
     flex: '1',
-    height: '90%',
   },
   containerSteps: {
     display: 'flex',
