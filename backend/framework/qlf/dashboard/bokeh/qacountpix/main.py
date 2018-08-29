@@ -14,7 +14,7 @@ import numpy as np
 
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info, get_scalar_metrics
-from dashboard.bokeh.helper import get_palette
+from dashboard.bokeh.helper import get_palette, get_scalar_metrics_aux
 
 import numpy as np
 import logging
@@ -32,13 +32,18 @@ class Countpix:
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
-        try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests  = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
 
-        countpix  = metrics['countpix']
+        try:
+            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
+
+
+        countpix = mergedqa['TASKS']['CHECK_CCDs']['METRICS']
+        tests =  mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
+        nrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_NORMAL_RANGE']
+        wrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_WARN_RANGE']
 
         # ============================================
         # THIS: Given the set up in the block above, 
@@ -142,16 +147,11 @@ class Countpix:
         p.yaxis.minor_tick_line_color = None  
 
         #infos
-        info, nlines = write_info('countpix', tests['countpix'])
+        info, nlines = write_info('countpix', tests)
         txt = PreText(text=info, height=nlines*20, width= 2*p.plot_width)
-        #txt_descr="Fraction over {} sigma read noise (per amp)".format(tests['countpix']['CUTPIX']) #write_description('countpix')
-        #txt = """<body><p  style="text-align:left; color:#262626; font-size:20px;">
-        #            <b>{}</b> <br>{}</body>""".format('countpix', txt_descr)
-        #info_col=Div(text=txt, width= 2*p.plot_width)
 
         from dashboard.bokeh.qlf_plot import html_table
-        nrg= tests['countpix']['LITFRAC_NORMAL_RANGE']
-        wrg= tests['countpix']['LITFRAC_WARN_RANGE']
+
         tb = html_table(nrng=nrg, wrng=wrg)
         tbinfo = Div(text=tb, width=400)
 
