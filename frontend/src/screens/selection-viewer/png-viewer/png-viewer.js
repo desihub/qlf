@@ -47,8 +47,8 @@ class PNGViewer extends React.Component {
   };
 
   componentDidMount() {
-    document.title = 'PNG Viewer';
-    if (window.location.pathname === '/png-viewer') {
+    document.title = 'CCD Viewer';
+    if (window.location.pathname === '/ccd-viewer') {
       if (window.location.search.includes('process=')) {
         this.setState({
           processId: window.location.search.split('process=')[1],

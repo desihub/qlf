@@ -216,13 +216,13 @@ class GlobalFiber:
             pb = self.wedge_plot('b', fmap, common_source=src)#, common_source=source)
             pr = self.wedge_plot('r', fmap, common_source=src)
             pz = self.wedge_plot('z', fmap, common_source=src)
-            layout = row( column( pb, css_classes=["display-grid-countbins"]), 
-                        column(pr, css_classes=["display-grid-countbins"]),
-                        column(pz, css_classes=["display-grid-countbins"])) #, pz, 
+            layout = row( column( pb), 
+                        column(pr),
+                        column(pz)) #, pz, 
         except Exception as err:
             sys.exit(err)
 
-        return file_html(layout, CDN, "COUNTBINS")
+        return file_html(layout, CDN, "Global Fiber")
 
 
 

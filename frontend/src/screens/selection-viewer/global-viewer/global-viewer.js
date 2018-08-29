@@ -43,7 +43,20 @@ class GlobalViewer extends React.Component {
   };
 
   componentWillMount() {
-    document.title = 'Fiber Viewer';
+    switch (window.location.pathname) {
+      case '/fiber-viewer':
+        document.title = 'Fiber Viewer';
+        break;
+      case '/focus-viewer':
+        document.title = 'Focus Viewer';
+        break;
+      case '/snr-viewer':
+        document.title = 'SNR Viewer';
+        break;
+      default:
+        document.title = 'Global Viewer';
+    }
+
     if (window.location.search.includes('process=')) {
       this.setState(
         {
