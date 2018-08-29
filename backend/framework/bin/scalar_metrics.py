@@ -64,12 +64,18 @@ class LoadMetrics:
             'snr': 'FIDSNR_STATUS',
             'skycont': 'SKYCONT_STATUS',
             'skypeak': 'PEAKCOUNT_STATUS',
-            'skyresid': 'RESID_STATUS',
+            'skyresid': 'SKYRBAND_STATUS',
+        }
+
+        self.checks = {
+            'CHECK_CCDs': ['getbias', 'countpix', 'getrms'],
+            'CHECK_FIBERS': ['countbins', 'xwsigma'],
+            'CHECK_SPECTRA': ['integ', 'snr', 'skypeak', 'skycont', 'skyresid']
         }
 
         self.status = {
-            'extract': {'steps_status': ['None']},
             'preproc': {'steps_status': ['None', 'None', 'None', 'None']},
+            'extract': {'steps_status': ['None']},
             'fiberfl': {'steps_status': ['None', 'None']},
             'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
@@ -219,6 +225,25 @@ class LoadMetrics:
         except:
             logger.error('Camera not found %s' % (self.cam))
 
+    def load_merged_qa(self):
+        cam, exp, night, process_id = self.cam, \
+                                      self.exp, \
+                                      self.night, \
+                                      self.process_id
+
+        data = None
+
+        if process_id is not None:
+            data = self.models.get_merged_qa(process_id, cam)
+
+        return data
+
+    def find_qa_check(self, qa):
+        for check in self.checks:
+            if qa in self.checks[check]:
+                return check
+        return None
+
     def update_status(self, qa):
         index = -1
         current_step = None
@@ -231,17 +256,27 @@ class LoadMetrics:
             except ValueError:
                 continue
 
-        data = self.Load_qa(qa)
-
+        data = self.load_merged_qa()
         try:
-            qa_status = data['METRICS'][self.alert_keys[qa]]
+            alert_key = self.alert_keys[qa]
+            check = self.find_qa_check(qa)
+            qa_status = data["TASKS"][check]["METRICS"][alert_key]
 
             if current_step:
                 self.status[current_step]['steps_status'][index] = qa_status
         except Exception as err:
             logger.warning('Failed to update camera status: {}'.format(err))
 
+    def get_merged_qa_status(self):
+        for qa in self.alert_keys.keys():
+            self.update_status(qa)
+
 
 if __name__ == "__main__":
-    metrics, tests = LoadMetrics(21, 'b0', '00003905', '20191017').Load_metrics_n_tests()
-    print(tests)
+    lm = LoadMetrics(39, 'b0', '3905', '20191017')
+    # lm.update_status('countpix')
+    # lm.update_status('getrms')
+    # lm.update_status('xwsigma')
+    # lm.update_status('snr')
+    lm.get_merged_qa_status()
+    print(lm.status)
