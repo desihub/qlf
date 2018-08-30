@@ -134,7 +134,7 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
         <div  style="text-align:center;padding-left:20px;padding-top:10px;">
         <table>
               <col width="200">
-              <col width="120">
+              <col width="100">
               <col width="90">
               <col width="90">
         <tr>
@@ -171,8 +171,8 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
             except: curtb[i] = '???'#curexp[i]
                 
     else:
-        key_tb = metricname
-        try: curtb = '%3.2f'%(curexp)
+        key_tb = ['xwsigma' if  'igma' in  metricname else metricname][0]
+        try: curtb = curexp#'%3.2f'%(curexp)
         except: curtb='???'
     
     
