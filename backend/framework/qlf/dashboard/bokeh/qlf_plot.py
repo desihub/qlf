@@ -368,56 +368,6 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
 
 
 
-
-def metric_table_OLD(metricname, comments, keyname, curexp='xxx', refexp='xxx'):
-    """ Create alert tables
-    """
-    style = """    <style>        table {
-            font-family: arial, sans-serif;
-            font-size: 16px;
-            border-collapse: collapse;
-            width: 100%;
-            }
-
-        td, th {
-            border: 1px solid #dddddd;
-            text-align: center;
-            padding: 8px;
-            }
-        tr:nth-child(even) {
-        background-color: #dcdcdc;
-                text-align:center;
-        }
-        tr:{text-align:center;}        </style>"""
-
-    header= """
-        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
-        <table>
-        <tr>
-        <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
-        </tr>"""
-
-    end="""</table> </div> """
-
-    title="""<h2 style="text-align:center;">  {} </h2>""".format(metricname)
-    
-    
-    if isinstance(curexp, list):
-        tblines=""
-        for i in list(range(len(curexp))):
-            tblines=tblines+"""<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>""".format(comments, keyname, curexp[i], refexp)
-    else:
-        tblines = """<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>""".format(comments, keyname, curexp, refexp)
-        
-
-    return style + title + header + tblines + end
-
-
-
 def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0,0],  wrng=[0,0], nlines=None, align='center'):
     ''' Usage Example:
             table_txt = html_table( nrng=nrg, wrng=wrg  )
