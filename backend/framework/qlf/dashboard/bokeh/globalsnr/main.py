@@ -39,6 +39,7 @@ class GlobalSnr:
         """
         data_model = {
             'resids':[],
+            'hover': [],
             'OBJ_TYPE': [],
             'ra':  [],
             'dec': [],
@@ -137,8 +138,9 @@ class GlobalSnr:
         data_model['ra'] = ra_snr #ra_tile
         data_model['dec'] = dec_snr #dec_tile
         data_model['resids'] = resids_snr
-        data_model['OBJ_TYPE'] = ot_snr #np.zeros(len(resids_snr))        
-        data_model['cam'] = cam_snr#np.zeros(len(resids_snr))  
+        data_model['hover'] =  ['%4.3f'%(ires) for ires in  resids_snr]
+        data_model['OBJ_TYPE'] = ot_snr         
+        data_model['cam'] = cam_snr
 
         source = ColumnDataSource(data=data_model)
         return source
@@ -301,7 +303,7 @@ class GlobalSnr:
                     <span style="font-size: 13px; color: #515151;">@cam_</span>
                 </div>
         """
-        fiber_tooltip = fiber_tooltip.replace('@y', '@resids')
+        fiber_tooltip = fiber_tooltip.replace('@y', '@hover')
         fiber_tooltip = fiber_tooltip.replace('@cam_','@cam')
 
 
@@ -318,7 +320,7 @@ class GlobalSnr:
             if np.isnan(rng_min) or np.isnan(rng_max):
                 fill_color = 'lightgray'
             else:
-                mapper = LinearColorMapper(palette= my_palette,  nan_color='lightgray',
+                mapper = LinearColorMapper(palette= my_palette,  nan_color='darkgrey',
                                  low= -0.2 ,
                                  high= 0.2 )
 
