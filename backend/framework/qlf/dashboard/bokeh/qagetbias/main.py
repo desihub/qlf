@@ -18,6 +18,7 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info,\
             get_merged_qa_scalar_metrics, eval_histpar, get_palette  
+from dashboard.bokeh.qlf_plot import alert_table, metric_table, mtable
 
 import numpy as np
 import logging
@@ -166,8 +167,22 @@ class Bias:
         tbinfo=Div(text=tb, width=400)
 
         info_col=Div(text=write_description('getbias'), width=2*p.plot_width)
+
+        # Prepare tables
+        comments='Value of bias averaged over each amplifier'
+        metricname='BIAS_AMP'
+        keyname='getbias'
+        curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
+        refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
+        metric_txt=metric_table(metricname, comments, keyname,  curexp=curexp, refexp=refexp )
+        metric_txt=mtable('getbias', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=500)
+
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=500)
+
         ptxt = column(widgetbox(info_col, css_classes=["header"]),
-                        widgetbox(tbinfo, css_classes=["table-ranges"]),
+                        column(widgetbox(metric_tb),widgetbox(alert_tb), css_classes=["table-ranges"]),
                         p,
                         css_classes=["display-grid"])  # ,p_hist)
 

@@ -134,7 +134,7 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
         <div  style="text-align:center;padding-left:20px;padding-top:10px;">
         <table>
               <col width="200">
-              <col width="120">
+              <col width="100">
               <col width="90">
               <col width="90">
         <tr>
@@ -143,7 +143,7 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
 
     end="""</table> </div> """
 
-    title="""<h2 align=center style="text-align:center;">  {} </h2>""".format(metricname)
+    title="""<h2 align=center style="text-align:center;">  {} </h2>""".format(keyname)
     
     
     key_tb=[]
@@ -152,27 +152,27 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
     if keyname in ['snr', 'integ']:
         # per_TGT
         for i in list(range(len(curexp))):
-            key_tb.append(keyname +'  ( %s)'%objtype[i])
+            key_tb.append(metricname +'  ( %s)'%objtype[i])
             try: curtb[i] = '{:4.3f}'.format(curexp[i])
             except: curtb[i] = '???'
         
     elif keyname in [ 'countpix','getbias','getrms']:
         #per AMP
         for i in list(range(len(curexp))):
-            key_tb.append(keyname + ' (AMP %d)'%(i+1))
+            key_tb.append(metricname + ' (AMP %d)'%(i+1))
             try: curtb[i] = '{:4.3f}'.format(curexp[i])
             except: curtb[i] = '???'#curexp[i]
         
     elif keyname in ['xwsigma']:
         # per axis x or w
         for i in list(range(len(curexp))):
-            key_tb.append( keyname + [' (x)',' (w)'][i])
+            key_tb.append(metricname + [' (x)',' (w)'][i])
             try: curtb[i] = '{:4.3f}'.format(curexp[i])
             except: curtb[i] = '???'#curexp[i]
                 
     else:
-        key_tb = keyname
-        try: curtb = '%3.2f'%(curexp)
+        key_tb = ['xwsigma' if  'igma' in  metricname else metricname][0]
+        try: curtb = curexp#'%3.2f'%(curexp)
         except: curtb='???'
     
     
@@ -204,9 +204,42 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
 
 
 
-def metric_table_OLD(metricname, comments, keyname, curexp='xxx', refexp='xxx'):
-    """ Create alert tables
-    """
+def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
+    import numpy as np
+    # DEFINE qa_step
+    # qa_metrics
+    #     style, title, header, end='','','',''
+
+    #comments='xxasdas '*4
+    
+    qa_metrics={}
+    qa_metrics['countpix']= 'LITFRAC_AMP'
+    qa_metrics['getbias']= 'BIAS_AMP'
+    qa_metrics['getrms']= 'NOISE_AMP'
+    qa_metrics['xwsigma']= 'XWSIGMA'
+    qa_metrics['countbins']= 'NGOODFIB'
+    qa_metrics['skycont']= 'SKYCONT'
+    qa_metrics['skypeak']= 'PEAKCOUNT'
+    qa_metrics['integ']= 'DELTAMAG_TGT'
+    qa_metrics['skyresid']= 'MED_RESID'
+    qa_metrics['snr']= 'FIDSNR_TGT'
+
+    qa_step={
+        'countpix': 'CHECK_CCDs',
+        'getbias': 'CHECK_CCDs',
+        'getrms': 'CHECK_CCDs',
+        'xwsigma': 'CHECK_FIBERS',
+        'countbins': 'CHECK_FIBERS',
+        'skycont': 'CHECK_SPECTRA',
+        'skypeak': 'CHECK_SPECTRA',
+        'integ': 'CHECK_SPECTRA',
+        'skyresid': 'CHECK_SPECTRA',
+        'snr': 'CHECK_SPECTRA'}
+    
+    met=data['TASKS'][qa_step[qa]]['METRICS']
+    par=data['TASKS'][qa_step[qa]]['PARAMS']
+    key=qa_metrics[qa]
+ 
     style = """    <style>        table {
             font-family: arial, sans-serif;
             font-size: 16px;
@@ -223,32 +256,114 @@ def metric_table_OLD(metricname, comments, keyname, curexp='xxx', refexp='xxx'):
         background-color: #dcdcdc;
                 text-align:center;
         }
-        tr:{text-align:center;}        </style>"""
+        tr:{text-align:center;}
+        </style>"""
 
     header= """
         <div  style="text-align:center;padding-left:20px;padding-top:10px;">
         <table>
+              <col width="200">
+              <col width="120">
+              <col width="90">
+              <col width="90">
         <tr>
         <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
         </tr>"""
 
     end="""</table> </div> """
 
-    title="""<h2 style="text-align:center;">  {} </h2>""".format(metricname)
-    
-    
-    if isinstance(curexp, list):
-        tblines=""
-        for i in list(range(len(curexp))):
-            tblines=tblines+"""<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>""".format(comments, keyname, curexp[i], refexp)
-    else:
-        tblines = """<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>""".format(comments, keyname, curexp, refexp)
-        
+    title="""<h2 align=center style="text-align:center;">  {} </h2>""".format(qa)
 
+
+    if qa=='countpix':
+        ref=['N/A']*4
+        nrows=4
+    else:
+        ref=par[key+'_REF']
+        if isinstance(ref,list):
+            nrows=len(ref)
+        else:
+            nrows=1
+    
+    try:
+        curexp=met[key]
+    except Exception as err:
+        print('ERR {}'.format(err))
+        
+        tblines="""<tr>
+                <td colspan="4">Error in key:{}</td>
+                </tr>
+                """.format(err)
+
+        return style + title + header +tblines+ end
+    
+    if nrows > 1:
+        cur_tb, ref_tb=[],[]
+        for i in list(range(nrows)):
+            x = curexp[i]
+            ref_tb.append(ref[i])
+            
+            if isinstance(x, float) and x > -999:
+                xstr='%4.3f'%(x)
+            elif isinstance(x, float) and (x <=-999 or x == np.nan):
+                xstr='NaN'
+            elif isinstance(x, int):
+                xstr='%d'%x
+            else:
+                xstr='???'
+                
+            cur_tb.append(xstr)
+    elif nrows==1:
+        if isinstance(curexp, float):
+            cur_tb='%4.3f'%curexp
+            ref_tb='%2.1f'%ref
+        elif isinstance(curexp, int):
+            cur_tb='%d'%curexp
+            ref_tb=ref
+        else:
+            cur_tb=curexp
+            ref_tb=ref
+            
+
+    if qa in ['snr', 'integ']:
+        # per_TGT
+        key_tb= [qa_metrics[qa] + ' ( %s)'%objtype[i] for i in list(range(nrows))]
+       
+    elif qa in [ 'countpix','getbias','getrms']:
+        #per AMP
+        key_tb= [qa_metrics[qa] + ' (AMP %d)'%(i+1) for i in list(range(nrows))]
+        
+    elif qa in ['xwsigma']:
+        # per axis x or w
+        key_tb = [ qa_metrics[qa] + [' (x)',' (w)'][i] for i in list(range(nrows))]
+    else:
+        key_tb=key
+        #cur_tb=curexp
+        #ref_tb=ref
+                
+    
+    tblines=""
+    for i in  list(range(nrows)):
+        if nrows==1:
+            tblines=tblines+\
+                """<tr>
+                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>
+                """.format(nrows, comments, key, cur_tb, ref_tb)
+        elif i ==0:
+            tblines=tblines+\
+                """<tr>
+                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>
+                """.format(nrows, comments, key_tb[i], cur_tb[i], ref_tb[i])
+        else:
+            tblines=tblines+\
+                """<tr>
+                <td>{}</td> <td>{}</td> <td>{}</td>
+                </tr>
+                """.format( key_tb[i], cur_tb[i], ref_tb[i])
+
+    print(cur_tb, ref_tb)
     return style + title + header + tblines + end
 
 

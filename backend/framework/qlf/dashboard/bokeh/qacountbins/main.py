@@ -13,7 +13,8 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description,\
     get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import plot_hist, html_table, sort_obj
+from dashboard.bokeh.qlf_plot import plot_hist, html_table, sort_obj,\
+    mtable, alert_table
 
 import numpy as np
 import logging
@@ -174,8 +175,15 @@ class Countbins:
 
         info_col = Div(text=write_description('countbins'))
 
+       # Prepare tables
+        comments='Number of fibers with a nonzero number of bins above highest threshold'
+        metric_txt=mtable('countbins', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=500)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=500)
+
         layout = column(widgetbox(info_col, css_classes=["header"]),
-                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+                    column(widgetbox(metric_tb),widgetbox(alert_tb), css_classes=["table-ranges"]),
                       p,
                       p2,
                       css_classes=["display-grid-countbins"])

@@ -17,7 +17,7 @@ from dashboard.bokeh.helper import get_url_args, write_description, write_info, 
             get_merged_qa_scalar_metrics
 
 from dashboard.bokeh.helper import get_palette
-
+from dashboard.bokeh.qlf_plot import alert_table, metric_table, mtable
 import numpy as np
 import logging
 from bokeh.resources import CDN
@@ -159,9 +159,25 @@ class Countpix:
 
         info_col = Div(text=write_description('countpix'),
                        width=450)
-        ptxt = column(widgetbox(info_col, css_classes=["header"]),
-                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+
+        # Prepare tables
+        comments='Fraction of the pixels per amp that are above CUTPIX = 5sigmas '
+        metricname='LITFRAC_AMP'
+        keyname='countpix'
+        curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
+        refexp='N/A'#mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_REF']
+        metric_txt=metric_table(metricname, comments, keyname,  curexp=curexp, refexp=refexp )
+        metric_txt=mtable('countpix', mergedqa, comments )
+
+        metric_tb=Div(text=metric_txt, width=500)
+
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=500)
+
+
+        layout = column(widgetbox(info_col, css_classes=["header"]),
+                      column(widgetbox(metric_tb), widgetbox(alert_tb), css_classes=["table-ranges"]),
                         p,
                         css_classes=["display-grid"])
 
-        return file_html(ptxt, CDN, "Countpix")
+        return file_html(layout, CDN, "Countpix")

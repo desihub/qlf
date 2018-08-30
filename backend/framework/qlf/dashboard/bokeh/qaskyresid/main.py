@@ -7,7 +7,7 @@ from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_scalar_metrics_aux
 
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
@@ -282,10 +282,17 @@ class Skyresid:
         info = metric_table('Sky Residuals', 'comments', 'keyname') 
         tb_metric =Div(text=info, width=width_tb, height=height_tb)
 
+       # Prepare tables
+        comments='Median of residuals over all sky fibers'
+        metric_txt=mtable('skyresid', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=450)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=450)
+
 
         try:
             layout = column([widgetbox(info_col, css_classes=["header"]),
-                        widgetbox(tb_metric, tb_alert, css_classes=["table-ranges"])]
+                        widgetbox(metric_tb, alert_tb, css_classes=["table-ranges"])]
                         + [p2]
                         + p_s,css_classes=['display-grid-skyresid'])
         except Exception as err:

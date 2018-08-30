@@ -12,7 +12,7 @@ from bokeh.models import PrintfTickFormatter, Spacer
 from dashboard.bokeh.helper import write_description, write_info
 from dashboard.bokeh.helper import  get_scalar_metrics_aux
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import html_table, sort_obj
+from dashboard.bokeh.qlf_plot import html_table, sort_obj, mtable, alert_table
 from dashboard.bokeh.helper import get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import alert_table, metric_table
@@ -544,10 +544,16 @@ class SNR:
         for i in list(range(4-len(plot_snr))):
             plot_snr.append(Spacer(width=pltxy_w, height=pltxy_h))
 
+       # Prepare tables
+        comments='List of average SNR for the N target type'#, N is number of target types'
+        metric_txt=mtable('snr', mergedqa, comments)# objtype=['ELG','STAR'] )
+        metric_tb=Div(text=metric_txt, width=500)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=500)
 
 
         layout = column(row(widgetbox(info_col)),
-            row(widgetbox(tb_metric, tb_alert)),
+            row(widgetbox(metric_tb, alert_tb)),
             row( column(Spacer(width=p_m.plot_width, height=140), p_m), p,  cbar), 
             gridplot([plot_snr[0:2], plot_snr[2:4]]) 
             )

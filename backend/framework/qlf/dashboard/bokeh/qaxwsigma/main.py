@@ -459,11 +459,14 @@ class Xwsigma:
         width_tb, height_tb = 400, 220
 
         curexp, refexp = '%3.2f'%xwsigma[0], '%3.2f'%xw_ref[0]#'xx..xx'
-        info = metric_table('X sigma', ' comments xxxxx'*2, 'xsigma', curexp, refexp)
+        comments='fitted X SIGMA averaged over isolated bright sky wavelengths'
+        info = metric_table('X sigma', comments, 'xsigma', curexp, refexp)
         tb_x =Div(text=info, width=width_tb, height=height_tb)
 
+        comments='fitted W SIGMA averaged over isolated bright sky wavelengths'
+
         curexp, refexp = '%3.2f'%xwsigma[1], '%3.2f'%xw_ref[1]
-        info = metric_table('W sigma', ' comments xxxxx'*2, 'wsigma', curexp, refexp)
+        info = metric_table('W sigma', comments, 'wsigma', curexp, refexp)
         tb_w =Div(text=info, width=width_tb, height=height_tb)
 
         width_tb, height_tb = 400, 140
