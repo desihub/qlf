@@ -104,14 +104,14 @@ class RMS:
         # Prepare tables
         comments='value of RMS for each amplifier read directly from the header of the pre processed image'
         refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
-        metric_txt=mtable('getrms', mergedqa, comments )
-        metric_tb=Div(text=metric_txt, width=500)
+        metric_txt=mtable('getbias', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=350)
 
         alert_txt = alert_table(nrg,wrg)
-        alert_tb = Div(text=alert_txt, width=500)
+        alert_tb = Div(text=alert_txt, width=350)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-            column(widgetbox(metric_tb),widgetbox(alert_tb), css_classes=["table-ranges"]),
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+            widgetbox(metric_tb),widgetbox(alert_tb),
             p,
             p2,
             css_classes=["display-grid"])

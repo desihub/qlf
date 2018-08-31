@@ -169,14 +169,14 @@ class Countpix:
         metric_txt=metric_table(metricname, comments, keyname,  curexp=curexp, refexp=refexp )
         metric_txt=mtable('countpix', mergedqa, comments )
 
-        metric_tb=Div(text=metric_txt, width=500)
+        metric_tb=Div(text=metric_txt, width=300)
 
         alert_txt = alert_table(nrg,wrg)
-        alert_tb = Div(text=alert_txt, width=500)
+        alert_tb = Div(text=alert_txt, width=300)
 
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                      column(widgetbox(metric_tb), widgetbox(alert_tb), css_classes=["table-ranges"]),
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                        widgetbox(metric_tb), widgetbox(alert_tb),
                         p,
                         css_classes=["display-grid"])
 

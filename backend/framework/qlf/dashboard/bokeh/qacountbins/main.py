@@ -178,12 +178,12 @@ class Countbins:
        # Prepare tables
         comments='Number of fibers with a nonzero number of bins above highest threshold'
         metric_txt=mtable('countbins', mergedqa, comments )
-        metric_tb=Div(text=metric_txt, width=500)
+        metric_tb=Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg,wrg)
-        alert_tb = Div(text=alert_txt, width=500)
+        alert_tb = Div(text=alert_txt, width=350)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                    column(widgetbox(metric_tb),widgetbox(alert_tb), css_classes=["table-ranges"]),
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                      widgetbox(metric_tb),widgetbox(alert_tb),
                       p,
                       p2,
                       css_classes=["display-grid-countbins"])
