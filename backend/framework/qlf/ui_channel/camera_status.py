@@ -24,7 +24,7 @@ class CameraStatus:
         self.cams_stages_r = list()
         for i in range(4):
             self.cams_stages_r.append(
-                    dict(camera=[i for i in range(10)])
+                dict(camera=[i for i in range(10)])
             )
 
             self.cams_stages_b = copy.deepcopy(self.cams_stages_r)
@@ -42,100 +42,110 @@ class CameraStatus:
                 )[1][1:-1]
 
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['preproc']['steps_status'][1] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'BIAS', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['preproc']['steps_status'][1] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'BIAS', status, self.qlf_state.exposure_id)
                 camera[cam]['preproc']['steps_status'][1] = status
             elif 'XWSIGMA_STATUS' in line:
                 status = line.split(
                     'XWSIGMA_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['preproc']['steps_status'][3] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'XWSIGMA', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['preproc']['steps_status'][3] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'XWSIGMA', status, self.qlf_state.exposure_id)
                 camera[cam]['preproc']['steps_status'][3] = status
             elif 'LITFRAC_STATUS' in line:
                 status = line.split(
                     'LITFRAC_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['preproc']['steps_status'][0] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'COUNTPIX', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['preproc']['steps_status'][0] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'COUNTPIX', status, self.qlf_state.exposure_id)
                 camera[cam]['preproc']['steps_status'][0] = status
             elif 'NOISE_STATUS' in line:
                 status = line.split(
                     'NOISE_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['preproc']['steps_status'][2] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'GETRMS', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['preproc']['steps_status'][2] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'GETRMS', status, self.qlf_state.exposure_id)
                 camera[cam]['preproc']['steps_status'][2] = status
             elif 'NGOODFIB_STATUS' in line:
                 status = line.split(
                     'NGOODFIB_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['extract']['steps_status'][0] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'COUNTBINS', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['extract']['steps_status'][0] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'COUNTBINS', status, self.qlf_state.exposure_id)
                 camera[cam]['extract']['steps_status'][0] = status
             elif 'SKYCONT_STATUS' in line:
                 status = line.split(
                     'SKYCONT_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][0] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'SKYCONT', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][0] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'SKYCONT', status, self.qlf_state.exposure_id)
                 camera[cam]['fiberfl']['steps_status'][0] = status
             elif 'PEAKCOUNT_STATUS' in line:
                 status = line.split(
                     'PEAKCOUNT_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][1] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'SKYPEAK', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['fiberfl']['steps_status'][1] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'SKYPEAK', status, self.qlf_state.exposure_id)
                 camera[cam]['fiberfl']['steps_status'][1] = status
             elif 'FIDSNR_STATUS' in line:
                 status = line.split(
                     'FIDSNR_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['skysubs']['steps_status'][2] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'SNR', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['skysubs']['steps_status'][2] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'SNR', status, self.qlf_state.exposure_id)
                 camera[cam]['skysubs']['steps_status'][2] = status
             elif 'DELTAMAG_STATUS' in line:
                 status = line.split(
                     'DELTAMAG_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['skysubs']['steps_status'][0] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'INTEG', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['skysubs']['steps_status'][0] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'INTEG', status, self.qlf_state.exposure_id)
                 camera[cam]['skysubs']['steps_status'][0] = status
             elif 'RESID_STATUS' in line:
                 status = line.split(
                     'RESID_STATUS:'
                 )[1][1:-1]
                 if len(self.qa_petals) > 0 and \
-                    cam_index is not None and \
-                    self.qa_petals[cam_index][cam]['skysubs']['steps_status'][1] is 'None' and \
-                    status != 'NORMAL':
-                    self.alerts.qa_alert(cam, 'SKYRESID', status, self.qlf_state.exposure_id)
+                        cam_index is not None and \
+                        self.qa_petals[cam_index][cam]['skysubs']['steps_status'][1] is 'None' and \
+                        status != 'NORMAL':
+                    self.alerts.qa_alert(
+                        cam, 'SKYRESID', status, self.qlf_state.exposure_id)
                 camera[cam]['skysubs']['steps_status'][1] = status
 
         if not contains_status:
@@ -181,59 +191,84 @@ class CameraStatus:
 
     def update_camera_status(self):
         for cam in self.qlf_state.camera_logs.keys():
-            log = self.qlf_state.camera_logs[cam]
-            camera = self.update_petals(cam, log)
+            try:
+                log = self.qlf_state.camera_logs[cam]
+                camera = self.update_petals(cam, log)
 
-            if "Pipeline completed. Final result" in str(log):
-                self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
-                self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
-                self.update_stage(cam[:1], 3, int(cam[1:]), 'success_stage')
-            elif "Starting to run step SkySub_QL" in str(log):
-                self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
-                self.update_stage(cam[:1], 2, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
-                    camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail']
-                    self.update_stage(cam[:1], 3, int(cam[1:]), 'error_stage')
-                else:
-                    self.update_stage(cam[:1], 3, int(cam[1:]), 'processing_stage')
-                next
+                if "Pipeline completed. Final result" in str(log):
+                    self.update_stage(cam[:1], 0, int(
+                        cam[1:]), 'success_stage')
+                    self.update_stage(cam[:1], 1, int(
+                        cam[1:]), 'success_stage')
+                    self.update_stage(cam[:1], 2, int(
+                        cam[1:]), 'success_stage')
+                    self.update_stage(cam[:1], 3, int(
+                        cam[1:]), 'success_stage')
+                elif "Starting to run step SkySub_QL" in str(log):
+                    self.update_stage(cam[:1], 0, int(
+                        cam[1:]), 'success_stage')
+                    self.update_stage(cam[:1], 1, int(
+                        cam[1:]), 'success_stage')
+                    self.update_stage(cam[:1], 2, int(
+                        cam[1:]), 'success_stage')
+                    if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                        camera[cam]['preproc']['steps_status'] = [
+                            'Fail', 'Fail', 'Fail']
+                        self.update_stage(
+                            cam[:1], 3, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 3, int(
+                            cam[1:]), 'processing_stage')
+                    next
 
-            elif "Starting to run step ApplyFiberFlat_QL" in str(log):
-                self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                self.update_stage(cam[:1], 1, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
-                    camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail']
-                    self.update_stage(cam[:1], 2, int(cam[1:]), 'error_stage')
-                else:
-                    self.update_stage(cam[:1], 2, int(cam[1:]), 'processing_stage')
-                next
+                elif "Starting to run step ApplyFiberFlat_QL" in str(log):
+                    self.update_stage(cam[:1], 0, int(
+                        cam[1:]), 'success_stage')
+                    self.update_stage(cam[:1], 1, int(
+                        cam[1:]), 'success_stage')
+                    if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                        camera[cam]['preproc']['steps_status'] = [
+                            'Fail', 'Fail']
+                        self.update_stage(
+                            cam[:1], 2, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 2, int(
+                            cam[1:]), 'processing_stage')
+                    next
 
-            elif "Starting to run step BoxcarExtract" in str(log):
-                self.update_stage(cam[:1], 0, int(cam[1:]), 'success_stage')
-                if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
-                    camera[cam]['extract']['steps_status'] = ['Fail']
-                    self.update_stage(cam[:1], 1, int(cam[1:]), 'error_stage')
-                else:
-                    self.update_stage(cam[:1], 1, int(cam[1:]), 'processing_stage')
-                next
+                elif "Starting to run step BoxcarExtract" in str(log):
+                    self.update_stage(cam[:1], 0, int(
+                        cam[1:]), 'success_stage')
+                    if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                        camera[cam]['extract']['steps_status'] = ['Fail']
+                        self.update_stage(
+                            cam[:1], 1, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 1, int(
+                            cam[1:]), 'processing_stage')
+                    next
 
-            elif "Starting to run step Initialize" in str(log):
-                if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
-                    camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail', 'Fail']
+                elif "Starting to run step Initialize" in str(log):
+                    if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                        camera[cam]['preproc']['steps_status'] = [
+                            'Fail', 'Fail', 'Fail', 'Fail']
+                        self.update_stage(
+                            cam[:1], 0, int(cam[1:]), 'error_stage')
+                    else:
+                        self.update_stage(cam[:1], 0, int(
+                            cam[1:]), 'processing_stage')
+                    next
+                elif "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                    camera[cam]['preproc']['steps_status'] = [
+                        'Fail', 'Fail', 'Fail', 'Fail']
                     self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
                 else:
-                    self.update_stage(cam[:1], 0, int(cam[1:]), 'processing_stage')
-                next
-            elif "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
-                camera[cam]['preproc']['steps_status'] = ['Fail', 'Fail', 'Fail', 'Fail']
-                self.update_stage(cam[:1], 0, int(cam[1:]), 'error_stage')
-            else:
-                self.update_stage(cam[:1], 0, int(cam[1:]), 'none')
-                self.update_stage(cam[:1], 1, int(cam[1:]), 'none')
-                self.update_stage(cam[:1], 2, int(cam[1:]), 'none')
-                self.update_stage(cam[:1], 3, int(cam[1:]), 'none')
+                    self.update_stage(cam[:1], 0, int(cam[1:]), 'none')
+                    self.update_stage(cam[:1], 1, int(cam[1:]), 'none')
+                    self.update_stage(cam[:1], 2, int(cam[1:]), 'none')
+                    self.update_stage(cam[:1], 3, int(cam[1:]), 'none')
+            except Exception as err:
+                logger.warn(err)
 
     def update_stage(self, band, stage, camera, status):
         if band == 'r':
