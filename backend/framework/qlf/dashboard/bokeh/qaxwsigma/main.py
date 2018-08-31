@@ -10,11 +10,10 @@ from bokeh.models import Span, Label
 from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper , ColorBar
 from bokeh.models.widgets import Select, Slider
-from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics
-from dashboard.bokeh.helper import get_palette, get_scalar_metrics_aux
+from dashboard.bokeh.helper import get_url_args, write_description, get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
-from dashboard.bokeh.qlf_plot import html_table, info_table 
-from dashboard.bokeh.qlf_plot import alert_table, metric_table
+from dashboard.bokeh.qlf_plot import html_table, metric_table, alert_table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 from bokeh.resources import CDN
@@ -45,13 +44,11 @@ class Xwsigma:
         logger.addHandler(handler)
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')
 
-        logger.info(mergedqa.keys())
-        logger.info(mergedqa['TASKS'].keys())
 
         gen_info = mergedqa['GENERAL_INFO']
 
@@ -69,7 +66,6 @@ class Xwsigma:
         nrg = check_fibers['PARAMS']['XWSIGMA_NORMAL_RANGE']
         wrg = check_fibers['PARAMS']['XWSIGMA_WARN_RANGE']
         xw_ref = check_fibers['PARAMS']['XWSIGMA_REF']
-
 
 
         xsigma = xw_fib[0]
@@ -463,11 +459,14 @@ class Xwsigma:
         width_tb, height_tb = 400, 220
 
         curexp, refexp = '%3.2f'%xwsigma[0], '%3.2f'%xw_ref[0]#'xx..xx'
-        info = metric_table('X sigma', ' comments xxxxx'*2, 'xsigma', curexp, refexp)
+        comments='fitted X SIGMA averaged over isolated bright sky wavelengths'
+        info = metric_table('X sigma', comments, 'xsigma', curexp, refexp)
         tb_x =Div(text=info, width=width_tb, height=height_tb)
 
+        comments='fitted W SIGMA averaged over isolated bright sky wavelengths'
+
         curexp, refexp = '%3.2f'%xwsigma[1], '%3.2f'%xw_ref[1]
-        info = metric_table('W sigma', ' comments xxxxx'*2, 'wsigma', curexp, refexp)
+        info = metric_table('W sigma', comments, 'wsigma', curexp, refexp)
         tb_w =Div(text=info, width=width_tb, height=height_tb)
 
         width_tb, height_tb = 400, 140

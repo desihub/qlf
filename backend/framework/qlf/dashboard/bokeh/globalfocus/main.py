@@ -159,6 +159,22 @@ class GlobalFocus:
         my_palette = get_palette("bwr") #"seismic")#"RdYlBu_r")#"viridis")
         source = common_source
 
+
+
+
+        process_id = self.selected_process_id
+        process = Process.objects.get(pk=process_id)
+        joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+        if len(joblist) >0:
+            cam=joblist[0]
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+            warn_range = mergedqa['TASKS']['CHECK_FIBERS']['PARAMS']['XWSIGMA_WARN_RANGE']
+            arg_kind={'x':0, 'w':1}
+            refvalue = mergedqa['TASKS']['CHECK_FIBERS']['PARAMS']['XWSIGMA_REF'][arg_kind[sigma_kind]]
+            rng_warn_min, rng_warn_max = warn_range[0]+refvalue, warn_range[1] + refvalue
+
+
+
         try:
             sigma = source.data['{}_'.format(sigma_kind) +wedge_arm]
             rng_min, rng_max = np.nanmin(sigma), np.nanmax(sigma)
@@ -168,8 +184,8 @@ class GlobalFocus:
                 fill_color = 'lightgray'
             else:
                 mapper = LinearColorMapper(palette= my_palette,  nan_color='lightgray',
-                                 low= rng_min - 0.1*rng ,
-                                 high=rng_max + 0.1*rng )
+                                 low= rng_warn_min ,
+                                 high=rng_warn_max )
 
                 fill_color = {'field':'%s_'%(sigma_kind) +  wedge_arm, 'transform':mapper}
 
@@ -180,12 +196,13 @@ class GlobalFocus:
             xrange = Range1d(start=ra_center +2, end=ra_center-2) 
             yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8) 
 
-            p = Figure( title='FOCUS %s'%sigma_kind.upper()
+            p = Figure( title='FOCUS %s (ARM %s)'%(sigma_kind.upper(), wedge_arm)
                     , x_axis_label='RA', y_axis_label='DEC'
                     , plot_width=600, plot_height=600
                     , tools=[hover, "pan,wheel_zoom,reset,lasso_select,crosshair"]
                     , x_range = xrange, y_range=yrange
                     )
+            p.title.align='center'
 
             p.circle('ra', 'dec', source=source, name="data", radius=radius,
                    fill_color= fill_color, 

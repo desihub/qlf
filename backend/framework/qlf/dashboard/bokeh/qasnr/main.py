@@ -10,18 +10,19 @@ from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter, Spacer
 from dashboard.bokeh.helper import write_description, write_info
-from dashboard.bokeh.helper import  get_scalar_metrics, get_scalar_metrics_aux
+from dashboard.bokeh.helper import  get_scalar_metrics_aux
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import html_table, sort_obj
+from dashboard.bokeh.qlf_plot import html_table, sort_obj, mtable, alert_table
+from dashboard.bokeh.helper import get_exposure_ids, \
+    init_xy_plot, get_url_args, get_arms_and_spectrographs, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import alert_table, metric_table
-
-from dashboard.bokeh.helper import get_exposure_ids
-from dashboard.bokeh.helper import init_xy_plot, get_url_args, get_arms_and_spectrographs
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-
+from astropy.io import fits
 import numpy as np
 logger = logging.getLogger(__name__)
+
+spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
 
 class SNR:
@@ -35,7 +36,27 @@ class SNR:
 
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+
+            from dashboard.models import Job, Process
+
+
+            process_id = self.selected_process_id
+            process = Process.objects.get(pk=process_id)
+            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+            exposure = process.exposure
+            folder = "{}/{}/{:08d}".format(
+                spectro_data, exposure.night, process.exposure_id)
+            file = "fibermap-{:08d}.fits".format(process.exposure_id)
+
+            fmap = fits.open('{}/{}'.format(folder, file))
+ 
+            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
+
+            objlist = sorted(set(otype_tile))
+            if 'SKY' in objlist:
+                objlist.remove('SKY')
+
         except Exception as err:
             logger.info(err)
             sys.exit('Could not load data')
@@ -86,7 +107,7 @@ class SNR:
                 snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) ) #snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
 
 
-
+        # to be deprecated
         try:
             sort_idx=[ snrlen.index(fiberlen[i]) for i in range(len(avobj))]
         except:
@@ -475,7 +496,7 @@ class SNR:
 
         p_m =  Figure(title= '', 
                     x_axis_label='Fiber ', y_axis_label = 'Median S/N',
-                    plot_width = 500, plot_height = 240,
+                    plot_width = 400, plot_height = 240,
                     tools=[median_hover, "pan,box_zoom,reset,crosshair" ],
                     toolbar_location='above')
 
@@ -500,7 +521,7 @@ class SNR:
 
 
         pltxy_h = 350
-        pltxy_w = 500
+        pltxy_w = 450
         elg_plot.plot_height = pltxy_h
         elg_plot.plot_width = pltxy_w
         lrg_plot.plot_height = pltxy_h
@@ -523,11 +544,16 @@ class SNR:
         for i in list(range(4-len(plot_snr))):
             plot_snr.append(Spacer(width=pltxy_w, height=pltxy_h))
 
+       # Prepare tables
+        comments='List of average SNR for the N target type'#, N is number of target types'
+        metric_txt=mtable('snr', mergedqa, comments, objtype=objlist)
+        metric_tb=Div(text=metric_txt, width=350)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=350)
 
-
-        layout = column(row(widgetbox(info_col)),
-            row(widgetbox(tb_metric, tb_alert)),
-            row( column(Spacer(width=p_m.plot_width, height=140), p_m), p,  cbar), 
-            gridplot([plot_snr[0:2], plot_snr[2:4]]) 
-            )
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                        widgetbox(metric_tb), widgetbox(alert_tb),
+                        elg_plot, star_plot,
+                        p_m, p,
+                        css_classes=["display-grid"])
         return file_html(layout, CDN, "MEDIAN SNR")

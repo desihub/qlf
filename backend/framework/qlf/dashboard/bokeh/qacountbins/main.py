@@ -11,9 +11,10 @@ from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description, get_scalar_metrics, \
-        get_scalar_metrics_aux
-from dashboard.bokeh.qlf_plot import plot_hist, html_table, sort_obj
+from dashboard.bokeh.helper import get_url_args, write_description,\
+    get_merged_qa_scalar_metrics
+from dashboard.bokeh.qlf_plot import plot_hist, html_table, sort_obj,\
+    mtable, alert_table
 
 import numpy as np
 import logging
@@ -36,7 +37,7 @@ class Countbins:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
             gen_info = mergedqa['GENERAL_INFO']
 
@@ -174,8 +175,15 @@ class Countbins:
 
         info_col = Div(text=write_description('countbins'))
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+       # Prepare tables
+        comments='Number of fibers with a nonzero number of bins above highest threshold'
+        metric_txt=mtable('countbins', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=350)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=350)
+
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                      widgetbox(metric_tb),widgetbox(alert_tb),
                       p,
                       p2,
                       css_classes=["display-grid-countbins"])

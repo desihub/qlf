@@ -12,9 +12,8 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_palette, \
-     get_scalar_metrics_aux
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.helper import write_info, get_palette, get_merged_qa_scalar_metrics
+from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
@@ -42,12 +41,7 @@ class Skycont:
         
         
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
-        try:
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             gen_info = mergedqa['GENERAL_INFO']
             ra = gen_info['RA']
             dec = gen_info['DEC']
@@ -61,7 +55,9 @@ class Skycont:
             ra_sky  = [ ra[i] for i in skyfibers]
             dec_sky = [ dec[i] for i in skyfibers]
         except Exception as err:
-            sys.exit(err)
+            logger.info(err)
+            sys.exit('Could not load data')
+            
 
 
         my_palette = get_palette("viridis")
@@ -166,10 +162,18 @@ class Skycont:
              '{:.3f}'.format(skycont['SKYCONT']) ], nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+       # Prepare tables
+        comments='Sky continuum in all configured continuum areas averaged over all sky fibers'
+        metric_txt=mtable('skycont', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=350)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=350)
+
+
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                      widgetbox(metric_tb), widgetbox(alert_tb), 
                       p2,
-                      css_classes=["display-grid-skycont"])
+                      css_classes=["display-grid"])
 
         # End of Bokeh Block
         return file_html(layout, CDN, "SKYCONT")

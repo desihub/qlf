@@ -7,7 +7,7 @@ from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_scalar_metrics_aux
 
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 from bokeh.io import curdoc
 from bokeh.io import output_notebook, show, output_file
 
@@ -16,7 +16,7 @@ from bokeh.models import ColumnDataSource, HoverTool, TapTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, \
-    get_scalar_metrics
+       get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import alert_table, metric_table
 
 import numpy as np
@@ -40,7 +40,7 @@ class Skyresid:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         try:
-            mergedqa = get_scalar_metrics_aux(self.selected_process_id, cam)
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
             check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
             gen_info = mergedqa['GENERAL_INFO']
             nrg = check_spectra['PARAMS']['MED_RESID_NORMAL_RANGE']
@@ -60,10 +60,8 @@ class Skyresid:
             fmap = fits.open('{}/{}'.format(folder, file))            
             
         except Exception as err:
-            #logger.info(err)
             sys.exit('Could not load data')
 
-        #check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
 
 
         skyresid  = check_spectra['METRICS']#metrics['skyresid']
@@ -224,7 +222,7 @@ class Skyresid:
             hdul = load_fits(self.selected_process_id, cam)
             wlength = hdul['WAVELENGTH'].data
         except Exception as err:
-            logger.info('{}'.format(err))   
+            sys.exit('Spectra sample could not be loaded')   
 
 
         p_s = []
@@ -254,7 +252,12 @@ class Skyresid:
                 else:
                     obj_name = obj
                 arg = np.random.choice(gen_info[obj_name+'_FIBERID'],1)
-                spec = hdul['FLUX'].data[arg][0]
+
+                if not ( hdul['FLUX'].data[arg] is None):
+                    spec = hdul['FLUX'].data[arg][0]
+                else:
+                    spec=[np.nan]*len(wlength)
+
 
                 spec_source = ColumnDataSource(data={
                 'wlength': wlength,
@@ -279,14 +282,21 @@ class Skyresid:
         info = metric_table('Sky Residuals', 'comments', 'keyname') 
         tb_metric =Div(text=info, width=width_tb, height=height_tb)
 
+       # Prepare tables
+        comments='Median of residuals over all sky fibers'
+        metric_txt=mtable('skyresid', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=350)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=350)
+
 
         try:
-            layout = column([widgetbox(info_col, css_classes=["header"]),
-                        widgetbox(tb_metric, tb_alert, css_classes=["table-ranges"])]
+            layout = column([widgetbox(info_col, css_classes=["header"]), Div(),
+                             widgetbox(metric_tb), widgetbox(alert_tb)]
                         + [p2]
                         + p_s,css_classes=['display-grid-skyresid'])
         except Exception as err:
-            sys.exit(err)
+            sys.exit(str(err))
             
 
         return file_html(layout, CDN, "SKYRESID")

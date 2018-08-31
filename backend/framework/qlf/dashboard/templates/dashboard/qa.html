@@ -23,6 +23,7 @@
 }
 
 .display-grid {
+  align-items: center;
   display: grid !important;
   grid-gap: 1rem;
   grid-template-columns: auto;
@@ -47,20 +48,6 @@
     "table-ranges"
     "main";
   }
-
-.display-grid-skypeak {
-  display: grid !important;
-  grid-gap: 1rem;
-  grid-template-columns: auto;
-  width: auto !important;
-  height: auto !important;
-  justify-content: center;
-  justify-items: center;
-  grid-template-areas:
-  "header"
-  "table-ranges"
-  "main";
-}
 
 .display-grid-countbins {
   display: grid !important;
@@ -90,20 +77,6 @@
   "main";
 }
 
-.display-grid-skycont {
-  display: grid !important;
-  grid-gap: 1rem;
-  grid-template-columns: auto;
-  width: auto !important;
-  height: auto !important;
-  justify-content: center;
-  justify-items: center;
-  grid-template-areas:
-  "header"
-  "table-ranges"
-  "main";
-}
-
 @media screen and (min-width: 1500px) {
   .display-grid-xwsigma {
       display: grid !important;
@@ -117,35 +90,7 @@
 }
 
 @media screen and (min-width: 1100px) {
-  .display-grid-skypeak {
-    display: grid !important;
-    grid-gap: 4em;
-    width: auto !important;
-    grid-template-columns: auto auto;
-    height: auto !important;
-    justify-content: center;
-    justify-items: center;
-    align-items: baseline;
-    grid-template-areas:
-    "header table-ranges"
-    "main main";
-  }
-
   .display-grid-countbins {
-    display: grid !important;
-    grid-gap: 4em;
-    width: auto !important;
-    grid-template-columns: auto auto;
-    height: auto !important;
-    justify-content: center;
-    justify-items: center;
-    align-items: center;
-    grid-template-areas:
-    "header table-ranges"
-    "main main";
-  }
-
-  .display-grid-skycont {
     display: grid !important;
     grid-gap: 4em;
     width: auto !important;
