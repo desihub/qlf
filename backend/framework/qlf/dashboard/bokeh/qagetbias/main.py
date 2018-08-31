@@ -176,13 +176,13 @@ class Bias:
         refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
         metric_txt=metric_table(metricname, comments, keyname,  curexp=curexp, refexp=refexp )
         metric_txt=mtable('getbias', mergedqa, comments )
-        metric_tb=Div(text=metric_txt, width=500)
+        metric_tb=Div(text=metric_txt, width=350)
 
         alert_txt = alert_table(nrg,wrg)
-        alert_tb = Div(text=alert_txt, width=500)
+        alert_tb = Div(text=alert_txt, width=350)
 
-        ptxt = column(widgetbox(info_col, css_classes=["header"]),
-                        column(widgetbox(metric_tb),widgetbox(alert_tb), css_classes=["table-ranges"]),
+        ptxt = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                        widgetbox(metric_tb),widgetbox(alert_tb),
                         p,
                         css_classes=["display-grid"])  # ,p_hist)
 

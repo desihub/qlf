@@ -124,13 +124,13 @@ class Integ:
         # Prepare tables
         comments='List of the average fiber mag for each of N target types in this camera'
         metric_txt=mtable('integ', mergedqa, comments, objtype=objlist) # objtype=['ELG','STAR'] )
-        metric_tb=Div(text=metric_txt, width=450)
+        metric_tb=Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg,wrg)
-        alert_tb = Div(text=alert_txt, width=450)
+        alert_tb = Div(text=alert_txt, width=350)
 
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                    column(widgetbox(metric_tb),widgetbox(alert_tb), css_classes=["table-ranges"]),
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                        widgetbox(metric_tb),widgetbox(alert_tb),
                         fiber_hist,
                         css_classes=["display-grid"])
 

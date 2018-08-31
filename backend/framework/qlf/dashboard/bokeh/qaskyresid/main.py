@@ -285,14 +285,14 @@ class Skyresid:
        # Prepare tables
         comments='Median of residuals over all sky fibers'
         metric_txt=mtable('skyresid', mergedqa, comments )
-        metric_tb=Div(text=metric_txt, width=450)
+        metric_tb=Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg,wrg)
-        alert_tb = Div(text=alert_txt, width=450)
+        alert_tb = Div(text=alert_txt, width=350)
 
 
         try:
-            layout = column([widgetbox(info_col, css_classes=["header"]),
-                        widgetbox(metric_tb, alert_tb, css_classes=["table-ranges"])]
+            layout = column([widgetbox(info_col, css_classes=["header"]), Div(),
+                             widgetbox(metric_tb), widgetbox(alert_tb)]
                         + [p2]
                         + p_s,css_classes=['display-grid-skyresid'])
         except Exception as err:

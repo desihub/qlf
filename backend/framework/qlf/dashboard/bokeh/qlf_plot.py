@@ -366,7 +366,7 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
                 """.format( key_tb[i], cur_tb[i], ref_tb[i])
 
     print(cur_tb, ref_tb)
-    return style + title + header + tblines + end
+    return style + header + tblines + end
 
 
 
