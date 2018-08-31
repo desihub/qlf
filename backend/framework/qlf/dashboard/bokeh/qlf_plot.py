@@ -288,14 +288,11 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
     try:
         curexp=met[key]
     except Exception as err:
-        print('ERR {}'.format(err))
-        
-        tblines="""<tr>
-                <td colspan="4">Error in key:{}</td>
-                </tr>
-                """.format(err)
+        if nrows==1: 
+            curexp= 'key N/A'
+        else:
+            curexp = ['key N/A']*nrows
 
-        return style + title + header +tblines+ end
     
     if nrows > 1:
         cur_tb, ref_tb=[],[]
@@ -327,7 +324,12 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
 
     if qa in ['snr', 'integ']:
         # per_TGT
-        key_tb= [qa_metrics[qa] + ' ( %s)'%objtype[i] for i in list(range(nrows))]
+        if objtype is not None:
+            objtype_tb = ['STAR' if i=='STD' else i for i in objtype]
+            key_tb= [qa_metrics[qa] + ' ( %s)'%objtype_tb[i] for i in list(range(nrows))]
+        else:
+            key_tb= [qa_metrics[qa]] *nrows
+
        
     elif qa in [ 'countpix','getbias','getrms']:
         #per AMP

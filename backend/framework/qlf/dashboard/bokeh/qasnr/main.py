@@ -546,7 +546,7 @@ class SNR:
 
        # Prepare tables
         comments='List of average SNR for the N target type'#, N is number of target types'
-        metric_txt=mtable('snr', mergedqa, comments)# objtype=['ELG','STAR'] )
+        metric_txt=mtable('snr', mergedqa, comments, objtype=objlist)
         metric_tb=Div(text=metric_txt, width=500)
         alert_txt = alert_table(nrg,wrg)
         alert_tb = Div(text=alert_txt, width=500)

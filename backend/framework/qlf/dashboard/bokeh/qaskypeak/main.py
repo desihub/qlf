@@ -86,7 +86,7 @@ class Skypeak:
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
         c1, c2 = 0,500 # int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
-        qlf_fiberid = np.arange(0, 5000)[c1:c2]
+        qlf_fiberid = np.arange(0, 500)#[c1:c2]
 
 
 
@@ -110,8 +110,8 @@ class Skypeak:
                                 low=0.98*np.min(peakcount_fib),
                                 high=1.02*np.max(peakcount_fib))
 
-        radius = 0.013#0.015
-        radius_hover = 0.015#0.0165
+        radius = 0.013
+        radius_hover = 0.015
 
         # axes limit
         xmin, xmax = [min(gen_info['RA'][:]), max(gen_info['RA'][:])]
@@ -149,10 +149,10 @@ class Skypeak:
         p.add_layout(xcolor_bar, 'right')
 
         try:
-            info, nlines = write_info('skypeak', tests['skypeak'])
-            txt = PreText(text=info, height=nlines*20, width=int(1.5*p.plot_width))
             info_col = Div(text=write_description('skypeak'), width=p.plot_width)
         except Exception as err:
+            f = open('dbg','w')
+            f.write(str(err))
             info_col=Div(text="""""")
 
 
@@ -171,7 +171,6 @@ class Skypeak:
             </div>
         """
 
-        Nbins = 40
         hist, edges = np.histogram(peakcount_fib, bins="sqrt")
 
         source_hist = ColumnDataSource(data={
@@ -204,11 +203,6 @@ class Skypeak:
         p_hist.add_layout(spans)
 
 
-        """for i in par['PEAKCOUNT_WARN_RANGE']:
-            spans = Span(location= i, dimension='height', line_color='red',
-                                line_dash='dashed', line_width=3)
-            p_hist.add_layout(spans)
-        """
 
         nrg= par['PEAKCOUNT_NORMAL_RANGE']
         wrg= par['PEAKCOUNT_WARN_RANGE']
@@ -217,7 +211,7 @@ class Skypeak:
 
        # Prepare tables
         comments='Sky continuum in all configured continuum areas averaged over all sky fibers'
-        metric_txt=mtable('skycont', mergedqa, comments )
+        metric_txt=mtable('skypeak', mergedqa, comments )
         metric_tb=Div(text=metric_txt, width=450)
         alert_txt = alert_table(nrg,wrg)
         alert_tb = Div(text=alert_txt, width=450)

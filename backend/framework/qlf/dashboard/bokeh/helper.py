@@ -269,10 +269,25 @@ def write_info(qa_name, params):
 
 def write_description(qa_name):
     """Descriptions to be displayed in QA plots."""
+
+    info_dic2 ={ 'countbins': ["Count Spectral Bins", "Number of bins above a threshold per spectrum."],
+                'skycont': ["Sky Continuum", "Mean sky continuum after fiber flattening"],
+                'countpix': ["Count Pixels", "Fraction of pixels lit after pre processing"],
+                'skypeak': ["Sky Peaks", 
+                "This QA for QuickLook includes the calculation of the counts and RMS at peak sky wavelengths in a 1D spectrum."],#"Count for Sky Fiber after ApplyFiberFlat QL"],
+                'getbias': ["Bias From Overscan", "Bias from overscan region after pre processing"],
+                'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
+                'getrms': ["Get RMS"," NOISE image counts per amplifier"],
+                'snr': ["Calculate SNR", "Signal-to-Noise ratio after sky substraction"],
+                'integ': ["Integrate Spectrum", "Integral counts for standard stars"], #Total integrals of STD spectra SkySub QL"
+                'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
+                'checkHDUs': ['','']        }
+
+
     info_dic ={ 'countbins': ["Count Spectral Bins", "Number of bins above a threshold per spectrum."],
 	         	'skycont': ["Sky Continuum", "Mean sky continuum after fiber flattening"],
 	         	'countpix': ["Count Pixels", "Fraction of pixels lit after pre processing"],
-	        	'skypeak': ["Sky Peaks", "Sky level in regions of peak sky emission lines"],#"Count for Sky Fiber after ApplyFiberFlat QL"],
+	        	'skypeak': ["Sky Peaks", "Sky level at peak sky wavelengths in a 1D spectrum"],#"Count for Sky Fiber after ApplyFiberFlat QL"],
 	        	'getbias': ["Bias From Overscan", "Bias from overscan region after pre processing"],
 	        	'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
 	        	'getrms': ["Get RMS"," NOISE image counts per amplifier"],
