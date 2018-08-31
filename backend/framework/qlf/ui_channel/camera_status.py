@@ -268,7 +268,7 @@ class CameraStatus:
                     self.update_stage(cam[:1], 2, int(cam[1:]), 'none')
                     self.update_stage(cam[:1], 3, int(cam[1:]), 'none')
             except Exception as err:
-                logger.info(err)
+                logger.warn(err)
 
     def update_stage(self, band, stage, camera, status):
         if band == 'r':
