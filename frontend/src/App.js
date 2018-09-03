@@ -186,6 +186,8 @@ class App extends React.Component {
         return '- Focus Viewer';
       case '/snr-viewer':
         return '- SNR Viewer';
+      case '/trend-analysis':
+        return '- Trend Analysis';
       default:
         return '';
     }

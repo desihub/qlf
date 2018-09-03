@@ -21,6 +21,7 @@ import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
 import UnderConstruction from '../../screens/under-construction/under-construction';
 import SelectionViewer from '../../screens/selection-viewer/selection-viewer';
+import TrendAnalysis from '../../screens/trend-analysis/trend-analysis';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -139,6 +140,15 @@ class OfflineContainer extends Component {
         <Route path="/fiber-viewer" render={() => <SelectionViewer />} />
         <Route path="/focus-viewer" render={() => <SelectionViewer />} />
         <Route path="/snr-viewer" render={() => <SelectionViewer />} />
+        <Route
+          path="/trend-analysis"
+          render={() => (
+            <TrendAnalysis
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
+            />
+          )}
+        />
         <Route
           path="/log-viewer"
           render={() => <SelectionViewer spectrograph={true} arm={true} />}
