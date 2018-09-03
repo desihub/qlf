@@ -13,7 +13,7 @@ from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.helper import write_info, get_palette, get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 
 from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
 
@@ -162,10 +162,18 @@ class Skycont:
              '{:.3f}'.format(skycont['SKYCONT']) ], nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                      widgetbox(tbinfo, css_classes=["table-ranges"]),
+       # Prepare tables
+        comments='Sky continuum in all configured continuum areas averaged over all sky fibers'
+        metric_txt=mtable('skycont', mergedqa, comments )
+        metric_tb=Div(text=metric_txt, width=350)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=350)
+
+
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                      widgetbox(metric_tb), widgetbox(alert_tb), 
                       p2,
-                      css_classes=["display-grid-skycont"])
+                      css_classes=["display-grid"])
 
         # End of Bokeh Block
         return file_html(layout, CDN, "SKYCONT")

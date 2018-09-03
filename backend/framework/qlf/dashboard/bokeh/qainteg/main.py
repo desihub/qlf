@@ -15,7 +15,7 @@ from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 
 from bokeh.io import output_notebook
 import numpy as np
@@ -29,8 +29,12 @@ from bokeh.models import PrintfTickFormatter
 import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-logger = logging.getLogger(__name__)
 
+from astropy.io import fits
+import os
+spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+
+logger = logging.getLogger(__name__)
 
 class Integ:
     def __init__(self, process_id, arm, spectrograph):
@@ -95,8 +99,38 @@ class Integ:
             , nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                        widgetbox(tbinfo, css_classes=["table-ranges"]),
+        # Reading obj_type
+        try:
+            from dashboard.models import Job, Process
+
+            process_id = self.selected_process_id
+            process = Process.objects.get(pk=process_id)
+            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+            exposure = process.exposure
+            folder = "{}/{}/{:08d}".format(
+                spectro_data, exposure.night, process.exposure_id)
+
+            file = "fibermap-{:08d}.fits".format(process.exposure_id)
+            fmap = fits.open('{}/{}'.format(folder, file))
+            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
+
+            objlist = sorted(set(otype_tile))
+            if 'SKY' in objlist:
+                objlist.remove('SKY')
+
+        except Exception as err:
+            objlist=None
+
+        # Prepare tables
+        comments='List of the average fiber mag for each of N target types in this camera'
+        metric_txt=mtable('integ', mergedqa, comments, objtype=objlist) # objtype=['ELG','STAR'] )
+        metric_tb=Div(text=metric_txt, width=350)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=350)
+
+
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                        widgetbox(metric_tb),widgetbox(alert_tb),
                         fiber_hist,
                         css_classes=["display-grid"])
 
