@@ -15,11 +15,18 @@ from dashboard.bokeh.footprint.main import Footprint
 from dashboard.bokeh.globalsnr.main import GlobalSnr
 from dashboard.bokeh.timeseries.main import TimeSeries
 from dashboard.bokeh.regression.main import Regression
+import datetime
 
-from .models import Process
+from .models import Process, Exposure
 
 from django.template import loader
 from django.http import HttpResponse
+from django.http import JsonResponse
+from astropy.io import fits
+
+import os
+
+spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
 def embed_bokeh(request, bokeh_app):
     """Render the requested app from the bokeh server"""
@@ -27,6 +34,7 @@ def embed_bokeh(request, bokeh_app):
     # http://bokeh.pydata.org/en/0.12.5/docs/reference/embed.html
 
     # TODO: test if bokeh server is reachable
+    
     bokeh_script = server_document(arguments=request.GET, url="{}/{}".format(settings.QLF_BASE_URL,
                                                                              bokeh_app))
 
@@ -62,6 +70,44 @@ def get_footprint(request):
     response = HttpResponse(template.render(context, request))
 
     return response
+
+def footprint_object_type_count(request):
+    """Generates exposures object type count"""
+    start = request.GET.get('start')
+    end = request.GET.get('end')
+    program = request.GET.get('program')
+    start_date = datetime.datetime.strptime(start, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc)
+    end_date = datetime.datetime.strptime(end, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc) + datetime.timedelta(days=1)
+
+    exposures = Exposure.objects.filter(
+        program=program, dateobs__gte=start_date, dateobs__lte=end_date)
+
+    obj_stat_dict = {'ELG': '0', 'STAR': '0', 'SKY': '0'}
+    for exposure in exposures:
+        try:
+            folder = "{}/{}/{:08d}".format(
+                spectro_data, exposure.night, exposure.exposure_id)
+
+            file = "fibermap-{:08d}.fits".format(exposure.exposure_id)
+            fmap = fits.open('{}/{}'.format(folder, file))
+
+            objects = fmap['FIBERMAP'].data['OBJTYPE']
+
+            for o in set(objects):
+                count = objects.count(o)
+                if o == 'STD':
+                    key = 'STAR'
+                else:
+                    key = o
+                type_sum = sum(count) + int(obj_stat_dict[key])
+                obj_stat_dict.update({key: str(type_sum) })
+        except Exception as err:
+            # print(err)
+            next
+
+    return JsonResponse(obj_stat_dict)
 
 
 def fits_to_png(request):
