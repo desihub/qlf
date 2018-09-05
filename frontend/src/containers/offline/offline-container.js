@@ -208,25 +208,6 @@ class OfflineContainer extends Component {
             />
           )}
         />
-        {/* <Route
-          path="/survey-report"
-          render={() => (
-            <History
-              getHistory={this.props.getSurveyReport}
-              rows={this.props.rows}
-              startDate={this.props.startDate}
-              endDate={this.props.endDate}
-              navigateToQA={this.navigateToQA}
-              recentExposures={this.props.recentExposures}
-              type={'exposure'}
-              lastProcessedId={this.props.lastProcessedId}
-              rowsCount={this.props.rowsCount}
-              fetchLastProcess={this.props.fetchLastProcess}
-              openCCDViewer={this.navigateToCCD}
-              pipelineRunning={this.props.pipelineRunning}
-            />
-          )}
-        /> */}
         <Route
           path="/survey-report"
           render={() => (
