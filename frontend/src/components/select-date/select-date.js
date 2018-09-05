@@ -5,11 +5,11 @@ import TextField from '@material-ui/core/TextField';
 const styles = {
   container: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'left',
   },
-  spaceEnd: {
-    paddingLeft: '.5vw',
+  space: {
+    paddingBottom: '3vh',
   },
   label: {
     color: 'black',
@@ -87,7 +87,7 @@ export default class SelectDate extends React.Component {
   render() {
     return (
       <div style={styles.container}>
-        <div>
+        <div style={styles.space}>
           <TextField
             id="start"
             label="Start Date"
@@ -104,7 +104,7 @@ export default class SelectDate extends React.Component {
             }}
           />
         </div>
-        <div style={styles.spaceEnd}>
+        <div style={styles.space}>
           <TextField
             id="end"
             label="End Date"
