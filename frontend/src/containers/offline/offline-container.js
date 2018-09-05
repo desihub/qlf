@@ -21,6 +21,7 @@ import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
 import UnderConstruction from '../../screens/under-construction/under-construction';
 import SelectionViewer from '../../screens/selection-viewer/selection-viewer';
+import SurveyReport from '../../screens/survey-report/survey-report';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -207,7 +208,7 @@ class OfflineContainer extends Component {
             />
           )}
         />
-        <Route
+        {/* <Route
           path="/survey-report"
           render={() => (
             <History
@@ -223,6 +224,15 @@ class OfflineContainer extends Component {
               fetchLastProcess={this.props.fetchLastProcess}
               openCCDViewer={this.navigateToCCD}
               pipelineRunning={this.props.pipelineRunning}
+            />
+          )}
+        /> */}
+        <Route
+          path="/survey-report"
+          render={() => (
+            <SurveyReport
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
             />
           )}
         />
