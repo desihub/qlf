@@ -35,56 +35,73 @@ export default class SelectDate extends React.Component {
   static propTypes = {
     startDate: Proptypes.string.isRequired,
     endDate: Proptypes.string.isRequired,
+    selectedStartDate: Proptypes.string.isRequired,
+    selectedEndDate: Proptypes.string.isRequired,
     setHistoryRangeDate: Proptypes.func.isRequired,
   };
 
   componentWillMount() {
-    const startDate = new Date(this.props.startDate);
-    const endDate = new Date(this.props.endDate);
+    const { startDate, endDate } = this.props;
     if (
       this.state.rangeStartDate !== startDate &&
       this.state.rangeEndDate !== endDate
     ) {
       this.setState({
-        rangeStartDate: startDate,
-        rangeEndDate: endDate,
-        selectedStartDate: startDate,
-        selectedEndDate: endDate,
+        rangeStartDate: startDate.split('T')[0],
+        rangeEndDate: endDate.split('T')[0],
+        selectedStartDate: startDate.split('T')[0],
+        selectedEndDate: endDate.split('T')[0],
+      });
+    }
+    const { selectedStartDate, selectedEndDate } = this.props;
+    if (
+      selectedStartDate.toString() !== 'Invalid Date' &&
+      selectedEndDate.toString() !== 'Invalid Date' &&
+      this.state.selectedStartDate !== selectedStartDate &&
+      this.state.selectedEndDate !== selectedEndDate
+    ) {
+      this.setState({
+        selectedStartDate: selectedStartDate.split('T')[0],
+        selectedEndDate: selectedEndDate.split('T')[0],
       });
     }
   }
 
   changeStart = evt => {
-    const selectedStartDate = new Date(evt.target.value);
-    if (selectedStartDate.toString() !== 'Invalid Date')
-      this.setState({ selectedStartDate }, this.selectRange);
+    const selectedStartDate = evt.target.value;
+    this.setState({ selectedStartDate }, this.selectRange);
   };
 
   changeEnd = evt => {
-    const selectedEndDate = new Date(evt.target.value);
-    if (selectedEndDate.toString() !== 'Invalid Date')
-      this.setState({ selectedEndDate }, this.selectRange);
+    const selectedEndDate = evt.target.value;
+    this.setState({ selectedEndDate }, this.selectRange);
   };
 
   selectRange = () => {
     this.props.setHistoryRangeDate(
       this.formatFilterDate(this.state.selectedStartDate),
-      this.formatFilterDate(this.state.selectedEndDate, true)
+      this.formatFilterDate(this.state.selectedEndDate)
     );
   };
 
-  formatFilterDate = (date, addOneDay) => {
+  formatFilterDate = dateString => {
+    const date = new Date(dateString);
     const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
-    let day;
-    if (addOneDay) {
-      day = (date.getDate() + 1 < 10 ? '0' : '') + (date.getDate() + 1);
-    } else {
-      day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
-    }
+    const day = (date.getDate() + 1 < 10 ? '0' : '') + (date.getDate() + 1);
     return date.getFullYear() + '-' + month + '-' + day;
   };
 
   render() {
+    const {
+      selectedStartDate,
+      selectedEndDate,
+      rangeStartDate,
+      rangeEndDate,
+    } = this.state;
+    const selectedStart = selectedStartDate !== '';
+    const selectedEnd = selectedEndDate !== '';
+    const defaultStart = selectedStart ? selectedStartDate : rangeStartDate;
+    const defaultEnd = selectedEnd ? selectedEndDate : rangeEndDate;
     return (
       <div style={styles.container}>
         <div style={styles.space}>
@@ -92,15 +109,15 @@ export default class SelectDate extends React.Component {
             id="start"
             label="Start Date"
             type="date"
-            defaultValue={this.formatFilterDate(this.state.rangeStartDate)}
+            defaultValue={this.formatFilterDate(defaultStart)}
             onChange={this.changeStart}
             InputLabelProps={{
               shrink: true,
             }}
             inputProps={{
               style: styles.dateField,
-              min: this.formatFilterDate(this.state.rangeStartDate),
-              max: this.formatFilterDate(this.state.selectedEndDate),
+              min: this.formatFilterDate(rangeStartDate),
+              max: this.formatFilterDate(defaultEnd),
             }}
           />
         </div>
@@ -109,15 +126,15 @@ export default class SelectDate extends React.Component {
             id="end"
             label="End Date"
             type="date"
-            defaultValue={this.formatFilterDate(this.state.rangeEndDate)}
+            defaultValue={this.formatFilterDate(defaultEnd)}
             onChange={this.changeEnd}
             InputLabelProps={{
               shrink: true,
             }}
             inputProps={{
               style: styles.dateField,
-              min: this.formatFilterDate(this.state.selectedStartDate, true),
-              max: this.formatFilterDate(this.state.rangeEndDate),
+              min: this.formatFilterDate(defaultStart),
+              max: this.formatFilterDate(rangeEndDate),
             }}
           />
         </div>
