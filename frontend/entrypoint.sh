@@ -5,6 +5,5 @@ if [ $DEV = "true" ]; then
 else
   yarn
   yarn build
-  yarn serve
 fi
 
