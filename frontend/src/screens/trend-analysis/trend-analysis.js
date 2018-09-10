@@ -16,6 +16,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import TrendViewer from './trend-viewer/trend-viewer';
 import SelectDate from '../../components/select-date/select-date';
+import Petals from '../../components/petals/petals';
 
 const styles = {
   controlsContainer: {
@@ -84,6 +85,7 @@ class TrendAnalysis extends React.Component {
     super(props);
     this.state = {
       tab: 'Time Series',
+      spectrograph: [],
       arm: null,
       amp: '',
       loading: false,
@@ -166,6 +168,7 @@ class TrendAnalysis extends React.Component {
       xaxis: '',
       yaxis: '',
       loading: false,
+      spectrograph: [],
     });
   };
 
@@ -220,6 +223,7 @@ class TrendAnalysis extends React.Component {
             value={this.state.amp}
             onChange={this.handleChangeAmp}
           >
+            <FormControlLabel value="all" control={<Radio />} label="All" />
             <FormControlLabel value="1" control={<Radio />} label="1" />
             <FormControlLabel value="2" control={<Radio />} label="2" />
             <FormControlLabel value="3" control={<Radio />} label="3" />
@@ -230,24 +234,48 @@ class TrendAnalysis extends React.Component {
     );
   };
 
-  // renderArmSelection = () => {
-  //   return (
-  //     <div className={this.props.classes.selectionRadio}>
-  //       <FormControl className={this.props.classes.formControl}>
-  //         <InputLabel shrink>Arm</InputLabel>
-  //         <RadioGroup
-  //           className={this.props.classes.column}
-  //           value={this.state.arm}
-  //           onChange={this.handleChangeArm}
-  //         >
-  //           <FormControlLabel value="b" control={<Radio />} label="b" />
-  //           <FormControlLabel value="r" control={<Radio />} label="r" />
-  //           <FormControlLabel value="z" control={<Radio />} label="z" />
-  //         </RadioGroup>
-  //       </FormControl>
-  //     </div>
-  //   );
-  // };
+  renderArmSelection = () => {
+    return (
+      <div className={this.props.classes.selectionRadio}>
+        <FormControl className={this.props.classes.formControl}>
+          <InputLabel shrink>Arm</InputLabel>
+          <RadioGroup
+            className={this.props.classes.column}
+            value={this.state.arm}
+            onChange={this.handleChangeArm}
+          >
+            <FormControlLabel value="all" control={<Radio />} label="All" />
+            <FormControlLabel value="b" control={<Radio />} label="b" />
+            <FormControlLabel value="r" control={<Radio />} label="r" />
+            <FormControlLabel value="z" control={<Radio />} label="z" />
+          </RadioGroup>
+        </FormControl>
+      </div>
+    );
+  };
+
+  handleChangeSpectrograph = spectrograph => {
+    this.setState({ spectrograph: [spectrograph] });
+    this.loadStart();
+  };
+
+  renderSpectrographSelection = () => {
+    return (
+      <div>
+        <InputLabel
+          className={this.props.classes.spectrographLabel}
+          component="legend"
+        >
+          Spectrograph
+        </InputLabel>
+        <Petals
+          selected={this.state.spectrograph}
+          onClick={this.handleChangeSpectrograph}
+          size={100}
+        />
+      </div>
+    );
+  };
 
   renderClear = () => (
     <Button
@@ -287,9 +315,10 @@ class TrendAnalysis extends React.Component {
         {this.renderSelectDate()}
         {this.renderXaxisSelection()}
         {this.renderYaxisSelection()}
+        {this.renderSpectrographSelection()}
         <div className={classes.controlsContainerInner}>
           {this.renderAmpSelection()}
-          {/* {this.renderArmSelection()} */}
+          {this.renderArmSelection()}
         </div>
         {this.renderClear()}
       </div>
