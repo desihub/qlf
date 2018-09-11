@@ -41,7 +41,7 @@ if [ $DAEMON_TEST = "False" ]; then
 fi
 
 echo -e "\n\n\n----------------------------------------------------------------------"
-echo "QLF Backend is running at http://$QLF_HOSTNAME:$QLF_PORT/dashboard/api"
+echo "Initializing QLF Backend..."
 echo -e "----------------------------------------------------------------------\n\n\n"
 
 python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log

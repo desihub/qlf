@@ -34,7 +34,7 @@ services:
       - REDIS_NAME=redis
       - QLF_REDIS=True
       - WEBSOCKET_UPDATE_INTERVAL=3 # websocket update time (seconds)
-      # - UPDATE_DEPENDENCIES=True # run conda and pip install when starting container
+      - UPDATE_DEPENDENCIES=True # run conda and pip install when starting container
       - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
       - QLF_CFG=/app/framework/config/qlf.cfg
       - DISK_SPACE_PERCENT_WARNING=40
@@ -87,7 +87,7 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - 7000:8080
+      - 80:8080
     volumes:
       - ./nginx/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
       - ./frontend/build:/var/www/frontend
