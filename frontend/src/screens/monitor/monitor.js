@@ -14,7 +14,7 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: '50% 50%',
+    gridTemplateColumns: '50vw 50vw',
     gridTemplateRows: 'auto 32vh',
     height: 'calc(100vh - 160px)',
   },
