@@ -58,11 +58,11 @@ const styles = {
   },
   selection: {
     textAlign: 'center',
-    paddingBottom: '3vh',
+    paddingBottom: '2.5vh',
   },
   selectionRadio: {
     width: '50%',
-    paddingBottom: '3vh',
+    paddingBottom: '2.5vh',
   },
   formControl: {
     width: '100%',
@@ -70,8 +70,13 @@ const styles = {
   button: {
     float: 'right',
   },
+  SpectroGraph: {
+    paddingBottom: '2.5vh',
+    textAlign: 'center',
+  },
   spectrographLabel: {
     paddingBottom: 10,
+    textAlign: 'left',
   },
   main: {
     margin: '16px',
@@ -261,8 +266,9 @@ class TrendAnalysis extends React.Component {
 
   renderSpectrographSelection = () => {
     return (
-      <div>
+      <div className={this.props.classes.SpectroGraph}>
         <InputLabel
+          shrink
           className={this.props.classes.spectrographLabel}
           component="legend"
         >

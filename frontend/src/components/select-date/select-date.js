@@ -9,7 +9,7 @@ const styles = {
     justifyContent: 'left',
   },
   space: {
-    paddingBottom: '3vh',
+    paddingBottom: '2.5vh',
   },
   label: {
     color: 'black',
