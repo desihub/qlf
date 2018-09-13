@@ -72,3 +72,5 @@ frontend/coverage/*
 frontend/dist/*
 
 docker-compose.yml
+
+build

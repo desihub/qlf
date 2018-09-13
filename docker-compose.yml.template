@@ -32,7 +32,7 @@ services:
       - EMAIL_PORT=25
       - EMAIL_HELPDESK=LIneA Science Server <helpdesk@linea.gov.br>
       - REDIS_NAME=redis
-      - QLF_REDIS=True
+      - QLF_REDIS=True # comment out for offline mode
       - WEBSOCKET_UPDATE_INTERVAL=3 # websocket update time (seconds)
       - UPDATE_DEPENDENCIES=True # run conda and pip install when starting container
       - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
@@ -84,13 +84,14 @@ services:
     working_dir: /home/node
     volumes:
       - ./frontend/:/home/node
+      - ./nginx/build:/home/node/build
   nginx:
     build: ./nginx
     ports:
       - 80:8080
     volumes:
       - ./nginx/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./frontend/build:/var/www/frontend
+      - ./nginx/build:/var/www/frontend
     cap_drop:
       - ALL
     depends_on:
