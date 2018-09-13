@@ -42,6 +42,7 @@ services:
       - POINTINGS_FILE=/app/spectro/noconstraints.dat
       # Database
       - POSTGRES_PASSWORD=qlfuser
+      # - POSTGRES_PASSWORD_FILE=/run/secrets/pw # nersc
       - POSTGRES_USER=userqlf
       - POSTGRES_DB=dbqlf
       - POSTGRES_PORT=

@@ -29,6 +29,11 @@ if [ $START_ICS = "True" ]; then
   python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &> $QLF_ROOT/logs/ics_interface.log &
 fi
 
+if [ ! -z $POSTGRES_PASSWORD_FILE ]; then
+  # Set db password nersc
+  export POSTGRES_PASSWORD=$(cat $POSTGRES_PASSWORD_FILE)
+fi
+
 if [ $RUN_DB_MIGRATIONS = "True" ]; then
   python -Wi framework/qlf/manage.py migrate
   echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass') if not User.objects.all() else None" | python framework/qlf/manage.py shell
