@@ -66,7 +66,6 @@ def embed_bokeh(request, bokeh_app):
 def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
-    logger.info('uhuls')
     exposures = Exposure.objects.all()
     exposures_ra = list()
     exposures_dec = list()
