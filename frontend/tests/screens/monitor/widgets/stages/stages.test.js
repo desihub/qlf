@@ -9,64 +9,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 configure({ adapter: new Adapter() });
 
-const camera_stage = [
-  {
-    camera: [
-      'processing_stage',
-      'success_stage',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-    ],
-  },
-  {
-    camera: [
-      'none',
-      'success_stage',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-    ],
-  },
-  {
-    camera: [
-      'none',
-      'success_stage',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-    ],
-  },
-  {
-    camera: [
-      'none',
-      'success_stage',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-    ],
-  },
-];
+const camera_stage = [{ '0': ['none', 'none', 'none', 'none'] }];
 
 describe('stages', () => {
   it('renders', () => {
