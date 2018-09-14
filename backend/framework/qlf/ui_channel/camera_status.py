@@ -68,47 +68,42 @@ class CameraStatus:
 
                     camera.set_step_status('skysubs', 'success_stage')
 
-                    next
-
-                elif "Starting to run step SkySub_QL" in str(log) \
+                if "Starting to run step SkySub_QL" in str(log) \
                         and camera.get_step_status('skysubs') is 'none':
 
                     camera.set_step_status('skysubs', 'processing_stage')
 
-                    if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                    if "CRITICAL" in str(log) or "Error" in str(log):
                         camera.set_step_status('fiberfl', 'error_stage')
                     else:
                         camera.set_step_status('fiberfl', 'success_stage')
-                    next
 
-                elif "Starting to run step ApplyFiberFlat_QL" in str(log) \
+                if "Starting to run step ApplyFiberFlat_QL" in str(log) \
                         and camera.get_step_status('fiberfl') is 'none':
 
                     camera.set_step_status('fiberfl', 'processing_stage')
 
-                    if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                    if "CRITICAL" in str(log) or "Error" in str(log):
                         camera.set_step_status('extract', 'error_stage')
                     else:
                         camera.set_step_status('extract', 'success_stage')
-                    next
 
-                elif "Starting to run step BoxcarExtract" in str(log) \
+                if "Starting to run step BoxcarExtract" in str(log) \
                         and camera.get_step_status('extract') is 'none':
 
                     camera.set_step_status('extract', 'processing_stage')
 
-                    if "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                    if "CRITICAL" in str(log) or "Error" in str(log):
                         camera.set_step_status('preproc', 'error_stage')
                     else:
                         camera.set_step_status('preproc', 'success_stage')
-                    next
 
-                elif "Starting to run step Initialize" in str(log) \
+                if "Starting to run step Initialize" in str(log) \
                         and camera.get_step_status('preproc') is 'none':
                     camera.set_step_status('preproc', 'processing_stage')
-                    next
 
-                elif "CRITICAL" in str(log) or "Error" in str(log) and camera is not None:
+                if "CRITICAL" in str(log) or "Error" in str(log) \
+                        and camera.get_step_status('preproc') is 'none':
                     camera.set_step_status('preproc', 'error_stage')
 
             except Exception as err:
