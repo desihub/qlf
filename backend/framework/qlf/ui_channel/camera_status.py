@@ -67,6 +67,9 @@ class CameraStatus:
                         and camera.get_step_status('skysubs') is 'processing_stage':
 
                     camera.set_step_status('skysubs', 'success_stage')
+                    camera.set_step_status('fiberfl', 'success_stage')
+                    camera.set_step_status('extract', 'success_stage')
+                    camera.set_step_status('preproc', 'success_stage')
 
                 if "Starting to run step SkySub_QL" in str(log) \
                         and camera.get_step_status('skysubs') is 'none':
@@ -76,6 +79,7 @@ class CameraStatus:
                     if "CRITICAL" in str(log) or "Error" in str(log):
                         camera.set_step_status('fiberfl', 'error_stage')
                     else:
+                        camera.set_step_status('extract', 'success_stage')
                         camera.set_step_status('fiberfl', 'success_stage')
 
                 if "Starting to run step ApplyFiberFlat_QL" in str(log) \
