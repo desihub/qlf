@@ -33,10 +33,6 @@ def get_logger(name, log_file, level=logging.INFO, formatter=pattern):
         log.setLevel(logging.INFO)
         return log
     else:
-        if os.path.exists(log_file):
-            with open(log_file, 'w+') as f:
-                f.write('')
-
         handler = logging.FileHandler(log_file)
         handler.setFormatter(formatter)
 
