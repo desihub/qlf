@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 pattern = logging.Formatter("%(asctime)s %(message)s",
                             "%Y-%m-%d %H:%M:%S")
@@ -23,19 +24,28 @@ def get_logger(name, log_file, level=logging.INFO, formatter=pattern):
     Returns:
         [logging.Logger] -- logging.Logger class
     """
+    if os.environ.get('LOGS_DIRECTORY') == 'False':
+        log = logging.getLogger(__name__)
+        out_hdlr = logging.StreamHandler(sys.stdout)
+        out_hdlr.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+        out_hdlr.setLevel(logging.INFO)
+        log.addHandler(out_hdlr)
+        log.setLevel(logging.INFO)
+        return log
+    else:
+        if os.path.exists(log_file):
+            with open(log_file, 'w+') as f:
+                f.write('')
 
-    if os.path.exists(log_file):
-        with open(log_file, 'w+') as f:
-            f.write('')
+        handler = logging.FileHandler(log_file)
+        handler.setFormatter(formatter)
 
-    handler = logging.FileHandler(log_file)
-    handler.setFormatter(formatter)
+        log = logging.getLogger(name)
+        log.setLevel(level)
+        log.addHandler(handler)
 
-    log = logging.getLogger(name)
-    log.setLevel(level)
-    log.addHandler(handler)
+        return log
 
-    return log
 
 
 if __name__ == "__main__":

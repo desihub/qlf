@@ -9,10 +9,10 @@ services:
       - POSTGRES_DB=dbqlf
   redis:
     image: redis
-  backend:
+  app:
     build: ./backend
-    user: ${CURRENT_UID}
     environment:
+      - LOGS_DIRECTORY=True
       # QL
       - DESI_SPECTRO_DATA=/app/spectro/data # input directory for qlf
       - DESI_SPECTRO_REDUX=/app/spectro/redux # output directory for qlf

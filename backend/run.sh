@@ -26,7 +26,11 @@ export DESIMODEL=$QLF_ROOT/desimodel
 if [ $START_ICS = "True" ]; then
   # Staring ics interface
   sh $QLF_ROOT/ics.sh
-  python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &> $QLF_ROOT/logs/ics_interface.log &
+  if [ $LOGS_DIRECTORY = "True" ]; then
+    python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &> $QLF_ROOT/logs/ics_interface.log &
+  else
+    python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &
+  fi 
 fi
 
 if [ ! -z $POSTGRES_PASSWORD_FILE ]; then
@@ -42,11 +46,19 @@ fi
 # Start QLF daemon
 if [ $DAEMON_TEST = "False" ]; then
   echo "Initializing QLF Daemon..."
-  ./startDaemon.sh &> $QLF_ROOT/logs/qlf_daemon.log &
+  if [ $LOGS_DIRECTORY = "True" ]; then
+    ./startDaemon.sh &> $QLF_ROOT/logs/qlf_daemon.log &
+  else
+    ./startDaemon.sh &
+  fi 
 fi
 
 echo -e "\n\n\n----------------------------------------------------------------------"
 echo "Initializing QLF Backend..."
 echo -e "----------------------------------------------------------------------\n\n\n"
 
-python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
+if [ $LOGS_DIRECTORY = "True" ]; then
+  python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
+else
+  python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT
+fi 
