@@ -187,14 +187,6 @@ class SurveyReport extends React.Component {
     </Button>
   );
 
-  // renderChangeDate = () => {
-  //   this.setState({
-  //     startDate: '',
-  //     endDate: '',
-  //     loading: false,
-  //   });
-  // };
-
   renderDatePeriodSelection = () => {
     return (
       <div className={this.props.classes.selection}>
@@ -219,17 +211,12 @@ class SurveyReport extends React.Component {
   };
 
   renderSelectDate = () => {
-    // console.log(this.state.startDate);
     if (this.state.startDate !== '' && this.state.endDate !== '')
-      // console.log(this.state.startDate);
-      //const now = moment(startDate);
-      //const dt = now.fromNow();
       return (
         <SelectDate
           startDate={this.state.startDate}
           endDate={this.state.endDate}
           setHistoryRangeDate={this.setHistoryRangeDate}
-          //onChange={this.handleChangeDate}
         />
       );
   };
