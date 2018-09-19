@@ -1,0 +1,89 @@
+{
+  "flavor": "science",
+  "step_list": [
+    {
+      "display_name": "CHECK CCDS",
+      "name": "checkccds",
+      "start": "Running Check_HDUs",
+      "end": "Starting to run step Preproc",
+      "qa_list": [
+        {
+          "display_name": "Check HDUs",
+          "key": "HDU_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "Noise AMP",
+          "key": "NOISE_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "Bias AMP",
+          "key": "BIAS_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "LIFTFRAC AMP",
+          "key": "LIFTFRAC_STATUS",
+          "bands": ["b", "r", "z"]
+        }
+      ]
+    },
+    {
+      "display_name": "CHECK FIBERS",
+      "name": "checkfibers",
+      "start": "Starting to run step Preproc",
+      "end": "Starting to run step BoxcarExtract",
+      "qa_list": [
+        {
+          "display_name": "NGOODFIB",
+          "key": "NGOODFIB_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "XWSIGMA",
+          "key": "XWSIGMA_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "XWSHIFTS",
+          "key": "XWSHIFTS_STATUS",
+          "bands": ["b", "r", "z"]
+        }
+      ]
+    },
+    {
+      "display_name": "CHECK SPECTRA",
+      "name": "checkspectra",
+      "start": "Starting to run step BoxcarExtract",
+      "end": "Pipeline completed",
+      "qa_list": [
+        {
+          "display_name": "PEAKCOUNT",
+          "key": "PEAKCOUNT_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "SKYCONT",
+          "key": "SKYCONT_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "DELTAMAG TGT",
+          "key": "DELTAMAG_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "FIDSNR TGT",
+          "key": "FIDSNR_STATUS",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "SKYRBAND TGT",
+          "key": "SKYRBAND_STATUS",
+          "bands": ["r"]
+        }
+      ]
+    }
+  ]
+}
