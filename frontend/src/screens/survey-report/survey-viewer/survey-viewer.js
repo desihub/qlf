@@ -108,7 +108,6 @@ const rows = [
 
 class SurveyViewer extends React.Component {
   static propTypes = {
-    series: PropTypes.string,
     program: PropTypes.string,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
@@ -124,7 +123,11 @@ class SurveyViewer extends React.Component {
     const { classes } = this.props;
     let url = '';
 
-    if (this.props.series !== '' && this.props.program !== '')
+    if (
+      this.props.startDate !== '' &&
+      this.props.endDate !== '' &&
+      this.props.program !== ''
+    )
       url = `${apiUrl}dashboard/get_footprint/`;
 
     if (url !== '')

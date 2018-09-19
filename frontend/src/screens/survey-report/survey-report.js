@@ -11,6 +11,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import SurveyViewer from './survey-viewer/survey-viewer';
 import SelectDate from '../../components/select-date/select-date';
+import moment from 'moment';
 
 const styles = {
   controlsContainer: {
@@ -66,7 +67,7 @@ class SurveyReport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      series: '',
+      datePeriod: '',
       startDate: '',
       endDate: '',
       program: '',
@@ -85,14 +86,57 @@ class SurveyReport extends React.Component {
     document.title = 'Survey Report';
   }
 
-  handleChangeSeries = evt => {
-    this.setState({ series: evt.target.value });
-    this.loadStart();
-  };
+  componentWillReceiveProps(nextProps) {
+    if (this.state.startDate === '' && this.state.endDate === '')
+      this.setState({
+        startDate: nextProps.startDate,
+        endDate: nextProps.endDate,
+      });
+  }
 
   handleChangeProgram = evt => {
     this.setState({ program: evt.target.value });
     this.loadStart();
+  };
+
+  handleChangeDatePeriod = evt => {
+    this.setState({ datePeriod: evt.target.value, endDate: moment().format() });
+    this.loadStart();
+    switch (evt.target.value) {
+      case 'night':
+        this.setState({ startDate: moment().format() });
+        break;
+      case 'week':
+        this.setState({
+          startDate: moment()
+            .subtract(7, 'days')
+            .format(),
+        });
+        break;
+      case 'month':
+        this.setState({
+          startDate: moment()
+            .subtract(1, 'month')
+            .format(),
+        });
+        break;
+      case 'semester':
+        this.setState({
+          startDate: moment()
+            .subtract(6, 'month')
+            .format(),
+        });
+        break;
+      case 'year':
+        this.setState({
+          startDate: moment()
+            .subtract(1, 'year')
+            .format(),
+        });
+        break;
+      default:
+        return;
+    }
   };
 
   loadStart = () => {
@@ -105,12 +149,12 @@ class SurveyReport extends React.Component {
 
   renderLoading = () => {
     if (!this.state.loading) return null;
-    const showControls = this.state.series || this.state.program;
+    const showControls = this.state.datePeriod || this.state.program;
     const classLoading = showControls
       ? styles.fadeLoader
       : styles.fadeLoaderFull;
 
-    if (this.state.series !== '' && this.state.program !== '') {
+    if (this.state.datePeriod !== '' && this.state.program !== '') {
       return (
         <div className={this.props.classes.loading}>
           <FadeLoader
@@ -126,7 +170,7 @@ class SurveyReport extends React.Component {
 
   clearSelection = () => {
     this.setState({
-      series: '',
+      datePeriod: '',
       program: '',
       loading: false,
     });
@@ -143,18 +187,27 @@ class SurveyReport extends React.Component {
     </Button>
   );
 
-  renderSeriesSelection = () => {
+  // renderChangeDate = () => {
+  //   this.setState({
+  //     startDate: '',
+  //     endDate: '',
+  //     loading: false,
+  //   });
+  // };
+
+  renderDatePeriodSelection = () => {
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Series</InputLabel>
+          <InputLabel shrink>Date Period</InputLabel>
           <Select
-            value={this.state.series}
-            onChange={this.handleChangeSeries}
+            value={this.state.datePeriod}
+            onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
+            <MenuItem value={'night'}>Night</MenuItem>
             <MenuItem value={'week'}>Week</MenuItem>
             <MenuItem value={'month'}>Month</MenuItem>
             <MenuItem value={'semester'}>Semester</MenuItem>
@@ -166,12 +219,17 @@ class SurveyReport extends React.Component {
   };
 
   renderSelectDate = () => {
-    if (this.props.startDate !== '' && this.props.endDate !== '')
+    // console.log(this.state.startDate);
+    if (this.state.startDate !== '' && this.state.endDate !== '')
+      // console.log(this.state.startDate);
+      //const now = moment(startDate);
+      //const dt = now.fromNow();
       return (
         <SelectDate
-          startDate={this.props.startDate}
-          endDate={this.props.endDate}
+          startDate={this.state.startDate}
+          endDate={this.state.endDate}
           setHistoryRangeDate={this.setHistoryRangeDate}
+          //onChange={this.handleChangeDate}
         />
       );
   };
@@ -195,6 +253,7 @@ class SurveyReport extends React.Component {
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
+            <MenuItem value={'all'}>All</MenuItem>
             <MenuItem value={'bright'}>Bright</MenuItem>
             <MenuItem value={'dark'}>Dark</MenuItem>
             <MenuItem value={'gray'}>Gray</MenuItem>
@@ -208,7 +267,7 @@ class SurveyReport extends React.Component {
     const { classes } = this.props;
     return (
       <div className={classes.controlsContainer}>
-        {this.renderSeriesSelection()}
+        {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
         {this.renderProgramSelection()}
         {this.renderClear()}
@@ -219,7 +278,7 @@ class SurveyReport extends React.Component {
   renderViewer = () => {
     return (
       <SurveyViewer
-        series={this.state.series}
+        datePeriod={this.state.datePeriod}
         startDate={this.state.startDate}
         endDate={this.state.endDate}
         program={this.state.program}

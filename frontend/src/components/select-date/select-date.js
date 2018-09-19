@@ -54,6 +54,20 @@ export default class SelectDate extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    const startDate = new Date(nextProps.startDate);
+    const endDate = new Date(nextProps.endDate);
+    if (
+      this.state.selectedStartDate !== startDate &&
+      this.state.selectedEndDate !== endDate
+    ) {
+      this.setState({
+        selectedStartDate: startDate,
+        selectedEndDate: endDate,
+      });
+    }
+  }
+
   changeStart = evt => {
     const selectedStartDate = new Date(evt.target.value);
     if (selectedStartDate.toString() !== 'Invalid Date')
@@ -92,15 +106,15 @@ export default class SelectDate extends React.Component {
             id="start"
             label="Start Date"
             type="date"
-            defaultValue={this.formatFilterDate(this.state.rangeStartDate)}
+            value={this.formatFilterDate(this.state.selectedStartDate)}
             onChange={this.changeStart}
             InputLabelProps={{
               shrink: true,
             }}
             inputProps={{
               style: styles.dateField,
-              min: this.formatFilterDate(this.state.rangeStartDate),
-              max: this.formatFilterDate(this.state.selectedEndDate),
+              // min: this.formatFilterDate(this.state.rangeStartDate),
+              // max: this.formatFilterDate(this.state.selectedEndDate),
             }}
           />
         </div>
@@ -109,15 +123,15 @@ export default class SelectDate extends React.Component {
             id="end"
             label="End Date"
             type="date"
-            defaultValue={this.formatFilterDate(this.state.rangeEndDate)}
+            value={this.formatFilterDate(this.state.selectedEndDate)}
             onChange={this.changeEnd}
             InputLabelProps={{
               shrink: true,
             }}
             inputProps={{
               style: styles.dateField,
-              min: this.formatFilterDate(this.state.selectedStartDate, true),
-              max: this.formatFilterDate(this.state.rangeEndDate),
+              // min: this.formatFilterDate(this.state.selectedStartDate, true),
+              // max: this.formatFilterDate(this.state.rangeEndDate),
             }}
           />
         </div>
