@@ -95,4 +95,4 @@ services:
     cap_drop:
       - ALL
     depends_on:
-      - backend
+      - app
