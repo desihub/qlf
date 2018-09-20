@@ -28,13 +28,14 @@ import os
 
 spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
+
 def embed_bokeh(request, bokeh_app):
     """Render the requested app from the bokeh server"""
 
     # http://bokeh.pydata.org/en/0.12.5/docs/reference/embed.html
 
     # TODO: test if bokeh server is reachable
-    
+
     bokeh_script = server_document(arguments=request.GET, url="{}/{}".format(settings.QLF_BASE_URL,
                                                                              bokeh_app))
 
@@ -71,6 +72,7 @@ def get_footprint(request):
 
     return response
 
+
 def footprint_object_type_count(request):
     """Generates exposures object type count"""
     start = request.GET.get('start')
@@ -102,7 +104,7 @@ def footprint_object_type_count(request):
                 else:
                     key = o
                 type_sum = sum(count) + int(obj_stat_dict[key])
-                obj_stat_dict.update({key: str(type_sum) })
+                obj_stat_dict.update({key: str(type_sum)})
         except Exception as err:
             # print(err)
             next
