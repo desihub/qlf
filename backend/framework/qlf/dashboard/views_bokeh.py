@@ -72,19 +72,44 @@ def embed_bokeh(request, bokeh_app):
     return response
 
 
+def filter_processed_exposures(start, end, program):
+    start_date = datetime.datetime.strptime(start, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc)
+    end_date = datetime.datetime.strptime(end, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc) + datetime.timedelta(days=1)
+
+    if not program:
+        exposures = Exposure.objects.filter(
+            dateobs__gte=start_date, dateobs__lte=end_date)
+    else:
+        exposures = Exposure.objects.filter(
+            program=program, dateobs__gte=start_date, dateobs__lte=end_date)
+
+    processed_exposures = list()
+    for exposure in exposures:
+        if list(Process.objects.filter(exposure_id=exposure.pk)) != []:
+            processed_exposures.append(exposure)
+
+    return processed_exposures
+
+
 def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
-    exposures = Exposure.objects.all()
+    start = request.GET.get('start')
+    end = request.GET.get('end')
+    program = request.GET.get('program')
+    processed_exposures = filter_processed_exposures(start, end, program)
+
     exposures_ra = list()
     exposures_dec = list()
-    for exposure in exposures:
+    for exposure in processed_exposures:
         exposures_ra.append(exposure.telra)
         exposures_dec.append(exposure.teldec)
-    logger.info(exposures_ra)
-    logger.info(exposures_dec)
+
+    exposures_radec = {"ra": exposures_ra, "dec": exposures_dec}
     # Generate Footprint
-    footprint = Footprint().render([])
+    footprint = Footprint().render(exposures_radec)
     context = {'image': footprint}
     response = HttpResponse(template.render(context, request))
 
@@ -96,16 +121,10 @@ def footprint_object_type_count(request):
     start = request.GET.get('start')
     end = request.GET.get('end')
     program = request.GET.get('program')
-    start_date = datetime.datetime.strptime(start, "%Y%m%d").replace(
-        tzinfo=datetime.timezone.utc)
-    end_date = datetime.datetime.strptime(end, "%Y%m%d").replace(
-        tzinfo=datetime.timezone.utc) + datetime.timedelta(days=1)
-
-    exposures = Exposure.objects.filter(
-        program=program, dateobs__gte=start_date, dateobs__lte=end_date)
+    processed_exposures = filter_processed_exposures(start, end, program)
 
     obj_stat_dict = {'ELG': '0', 'STAR': '0', 'SKY': '0'}
-    for exposure in exposures:
+    for exposure in processed_exposures:
         try:
             folder = "{}/{}/{:08d}".format(
                 spectro_data, exposure.night, exposure.exposure_id)
