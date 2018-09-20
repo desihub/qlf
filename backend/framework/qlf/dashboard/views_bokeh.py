@@ -29,6 +29,16 @@ import os
 spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
 
+from log import get_logger
+import os
+
+qlf_root = os.environ.get('QLF_ROOT')
+
+logger = get_logger(
+    "qlf.bokeh",
+    os.path.join(qlf_root, "logs", "bokeh.log")
+)
+
 def embed_bokeh(request, bokeh_app):
     """Render the requested app from the bokeh server"""
 
@@ -65,8 +75,16 @@ def embed_bokeh(request, bokeh_app):
 def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
+    exposures = Exposure.objects.all()
+    exposures_ra = list()
+    exposures_dec = list()
+    for exposure in exposures:
+        exposures_ra.append(exposure.telra)
+        exposures_dec.append(exposure.teldec)
+    logger.info(exposures_ra)
+    logger.info(exposures_dec)
     # Generate Footprint
-    footprint = Footprint().render()
+    footprint = Footprint().render([])
     context = {'image': footprint}
     response = HttpResponse(template.render(context, request))
 
