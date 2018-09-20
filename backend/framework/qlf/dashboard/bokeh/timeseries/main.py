@@ -20,8 +20,8 @@ from bokeh.embed import file_html
 import json
 
 class TimeSeries():
-    def __init__(self, xaxis, start, end):
-        self.xaxis = xaxis
+    def __init__(self, yaxis, start, end):
+        self.yaxis = yaxis
         self.start = start
         self.end = end
 
@@ -48,7 +48,7 @@ class TimeSeries():
 
         source = ColumnDataSource(data=dict(
             x=data_model['time'],
-            y=data_model[self.xaxis]
+            y=data_model[self.yaxis]
         ))
 
         def style(p):

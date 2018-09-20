@@ -157,7 +157,7 @@ def load_series(request):
     end = request.GET.get('end')
     try:
         if plot == 'timeseries':
-            series_html = TimeSeries(xaxis, start, end).render()
+            series_html = TimeSeries(yaxis, start, end).render()
         elif plot == 'regression':
             series_html = Regression(xaxis, yaxis, start, end).render()
         else:
