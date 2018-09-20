@@ -7,7 +7,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'left',
-  }, 
+  },
   fieldDate: {
     paddingBottom: '2.5vh',
   },
