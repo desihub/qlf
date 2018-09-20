@@ -78,7 +78,7 @@ def filter_processed_exposures(start, end, program):
     end_date = datetime.datetime.strptime(end, "%Y%m%d").replace(
         tzinfo=datetime.timezone.utc) + datetime.timedelta(days=1)
 
-    if not program:
+    if not program or program == 'all':
         exposures = Exposure.objects.filter(
             dateobs__gte=start_date, dateobs__lte=end_date)
     else:
@@ -99,6 +99,11 @@ def get_footprint(request):
     start = request.GET.get('start')
     end = request.GET.get('end')
     program = request.GET.get('program')
+    if not start or not end:
+        context = {'image': "Select start and end date"}
+        response = HttpResponse(template.render(context, request))
+
+        return response
     processed_exposures = filter_processed_exposures(start, end, program)
 
     exposures_ra = list()
