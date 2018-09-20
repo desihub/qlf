@@ -22,6 +22,7 @@ import { FadeLoader } from 'halogenium';
 import UnderConstruction from '../../screens/under-construction/under-construction';
 import SelectionViewer from '../../screens/selection-viewer/selection-viewer';
 import TrendAnalysis from '../../screens/trend-analysis/trend-analysis';
+import SurveyReport from '../../screens/survey-report/survey-report';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -220,19 +221,9 @@ class OfflineContainer extends Component {
         <Route
           path="/survey-report"
           render={() => (
-            <History
-              getHistory={this.props.getSurveyReport}
-              rows={this.props.rows}
+            <SurveyReport
               startDate={this.props.startDate}
               endDate={this.props.endDate}
-              navigateToQA={this.navigateToQA}
-              recentExposures={this.props.recentExposures}
-              type={'exposure'}
-              lastProcessedId={this.props.lastProcessedId}
-              rowsCount={this.props.rowsCount}
-              fetchLastProcess={this.props.fetchLastProcess}
-              openCCDViewer={this.navigateToCCD}
-              pipelineRunning={this.props.pipelineRunning}
             />
           )}
         />
