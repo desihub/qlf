@@ -1,10 +1,17 @@
 {% block content %}
 <style>
-html {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-}
+        body {
+                position: relative;
+        }
+
+        .container {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translate(-50%, 0);
+                max-width: 100%;
+                max-height: 100%;
+        }
 </style>
 
 <div class="container">
