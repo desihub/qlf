@@ -17,6 +17,7 @@ import Select from '@material-ui/core/Select';
 import TrendViewer from './trend-viewer/trend-viewer';
 import SelectDate from '../../components/select-date/select-date';
 import Petals from '../../components/petals/petals';
+import moment from 'moment';
 
 const styles = {
   controlsContainer: {
@@ -99,6 +100,7 @@ class TrendAnalysis extends React.Component {
       yaxis: '',
       startDate: '',
       endDate: '',
+      datePeriod: '',
     };
   }
 
@@ -106,6 +108,54 @@ class TrendAnalysis extends React.Component {
     classes: PropTypes.object,
     startDate: PropTypes.string.isRequired,
     endDate: PropTypes.string.isRequired,
+  };
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.startDate === '' && this.state.endDate === '')
+      this.setState({
+        startDate: nextProps.startDate,
+        endDate: nextProps.endDate,
+      });
+  }
+
+  handleChangeDatePeriod = evt => {
+    this.setState({ datePeriod: evt.target.value, endDate: moment().format() });
+    this.loadStart();
+    switch (evt.target.value) {
+      case 'night':
+        this.setState({ startDate: moment().format() });
+        break;
+      case 'week':
+        this.setState({
+          startDate: moment()
+            .subtract(7, 'days')
+            .format(),
+        });
+        break;
+      case 'month':
+        this.setState({
+          startDate: moment()
+            .subtract(1, 'month')
+            .format(),
+        });
+        break;
+      case 'semester':
+        this.setState({
+          startDate: moment()
+            .subtract(6, 'month')
+            .format(),
+        });
+        break;
+      case 'year':
+        this.setState({
+          startDate: moment()
+            .subtract(1, 'year')
+            .format(),
+        });
+        break;
+      default:
+        return;
+    }
   };
 
   handleChangeArm = evt => {
@@ -139,16 +189,22 @@ class TrendAnalysis extends React.Component {
   renderLoading = () => {
     if (!this.state.loading) return null;
     const showControls =
-      this.state.arm || this.state.amp || this.state.xaxis || this.state.yaxis;
+      this.state.datePeriod ||
+      this.state.arm ||
+      this.state.amp ||
+      this.state.xaxis ||
+      this.state.yaxis;
     const classLoading = showControls
       ? styles.fadeLoader
       : styles.fadeLoaderFull;
 
     if (
       (this.state.tab === 'Time Series' &&
+        this.state.datePeriod !== '' &&
         this.state.amp !== '' &&
         this.state.yaxis !== '') ||
       (this.state.tab === 'Regression' &&
+        this.state.datePeriod !== '' &&
         this.state.amp !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '')
@@ -174,7 +230,28 @@ class TrendAnalysis extends React.Component {
       yaxis: '',
       loading: false,
       spectrograph: [],
+      datePeriod: '',
     });
+  };
+
+  renderDatePeriodSelection = () => {
+    <div className={this.props.classes.selection}>
+      <FormControl className={this.props.classes.formControl}>
+        <InputLabel shrink>Date Period</InputLabel>
+        <Select
+          value={this.state.datePeriod}
+          onChange={this.handleChangeDatePeriod}
+          input={<Input />}
+          displayEmpty
+          className={this.props.classes.selectEmpty}
+        >
+          <MenuItem value={'night'}>Night</MenuItem>
+          <MenuItem value={'week'}>Week</MenuItem>
+          <MenuItem value={'month'}>Month</MenuItem>
+          <MenuItem value={'semester'}>Semester</MenuItem>
+        </Select>
+      </FormControl>
+    </div>;
   };
 
   renderXaxisSelection = () => {
@@ -298,8 +375,8 @@ class TrendAnalysis extends React.Component {
     if (this.props.startDate !== '' && this.props.endDate !== '')
       return (
         <SelectDate
-          startDate={this.props.startDate}
-          endDate={this.props.endDate}
+          startDate={this.state.startDate}
+          endDate={this.state.endDate}
           selectedStartDate={this.state.startDate}
           selectedEndDate={this.state.endDate}
           setHistoryRangeDate={this.setHistoryRangeDate}
@@ -318,6 +395,7 @@ class TrendAnalysis extends React.Component {
     const { classes } = this.props;
     return (
       <div className={classes.controlsContainer}>
+        {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
         {this.renderXaxisSelection()}
         {this.renderYaxisSelection()}
@@ -342,6 +420,7 @@ class TrendAnalysis extends React.Component {
         endDate={this.state.endDate}
         xaxis={this.state.xaxis}
         yaxis={this.state.yaxis}
+        datePeriod={this.state.datePeriod}
       />
     );
   };

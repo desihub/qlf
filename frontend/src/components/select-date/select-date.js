@@ -8,8 +8,8 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'left',
   },
-  space: {
-    paddingBottom: '2.5vh',
+  spaceEnd: {
+    paddingTop: '3vw',
   },
   label: {
     color: 'black',
@@ -35,106 +35,103 @@ export default class SelectDate extends React.Component {
   static propTypes = {
     startDate: Proptypes.string.isRequired,
     endDate: Proptypes.string.isRequired,
-    selectedStartDate: Proptypes.string.isRequired,
-    selectedEndDate: Proptypes.string.isRequired,
     setHistoryRangeDate: Proptypes.func.isRequired,
   };
 
   componentWillMount() {
-    const { startDate, endDate } = this.props;
+    const startDate = new Date(this.props.startDate);
+    const endDate = new Date(this.props.endDate);
     if (
       this.state.rangeStartDate !== startDate &&
       this.state.rangeEndDate !== endDate
     ) {
       this.setState({
-        rangeStartDate: startDate.split('T')[0],
-        rangeEndDate: endDate.split('T')[0],
-        selectedStartDate: startDate.split('T')[0],
-        selectedEndDate: endDate.split('T')[0],
+        rangeStartDate: startDate,
+        rangeEndDate: endDate,
+        selectedStartDate: startDate,
+        selectedEndDate: endDate,
       });
     }
-    const { selectedStartDate, selectedEndDate } = this.props;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const startDate = new Date(nextProps.startDate);
+    const endDate = new Date(nextProps.endDate);
     if (
-      selectedStartDate.toString() !== 'Invalid Date' &&
-      selectedEndDate.toString() !== 'Invalid Date' &&
-      this.state.selectedStartDate !== selectedStartDate &&
-      this.state.selectedEndDate !== selectedEndDate
+      this.state.selectedStartDate !== startDate &&
+      this.state.selectedEndDate !== endDate
     ) {
       this.setState({
-        selectedStartDate: selectedStartDate.split('T')[0],
-        selectedEndDate: selectedEndDate.split('T')[0],
+        selectedStartDate: startDate,
+        selectedEndDate: endDate,
       });
     }
   }
 
   changeStart = evt => {
-    const selectedStartDate = evt.target.value;
-    this.setState({ selectedStartDate }, this.selectRange);
+    const selectedStartDate = new Date(evt.target.value);
+    if (selectedStartDate.toString() !== 'Invalid Date')
+      this.setState({ selectedStartDate }, this.selectRange);
   };
 
   changeEnd = evt => {
-    const selectedEndDate = evt.target.value;
-    this.setState({ selectedEndDate }, this.selectRange);
+    const selectedEndDate = new Date(evt.target.value);
+    if (selectedEndDate.toString() !== 'Invalid Date')
+      this.setState({ selectedEndDate }, this.selectRange);
   };
 
   selectRange = () => {
     this.props.setHistoryRangeDate(
       this.formatFilterDate(this.state.selectedStartDate),
-      this.formatFilterDate(this.state.selectedEndDate)
+      this.formatFilterDate(this.state.selectedEndDate, true)
     );
   };
 
-  formatFilterDate = dateString => {
-    const date = new Date(dateString);
+  formatFilterDate = (date, addOneDay) => {
     const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
-    const day = (date.getDate() + 1 < 10 ? '0' : '') + (date.getDate() + 1);
+    let day;
+    if (addOneDay) {
+      day = (date.getDate() + 1 < 10 ? '0' : '') + (date.getDate() + 1);
+    } else {
+      day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
+    }
     return date.getFullYear() + '-' + month + '-' + day;
   };
 
   render() {
-    const {
-      selectedStartDate,
-      selectedEndDate,
-      rangeStartDate,
-      rangeEndDate,
-    } = this.state;
-    const selectedStart = selectedStartDate !== '';
-    const selectedEnd = selectedEndDate !== '';
-    const defaultStart = selectedStart ? selectedStartDate : rangeStartDate;
-    const defaultEnd = selectedEnd ? selectedEndDate : rangeEndDate;
     return (
       <div style={styles.container}>
-        <div style={styles.space}>
+        <div>
           <TextField
             id="start"
             label="Start Date"
             type="date"
-            defaultValue={this.formatFilterDate(defaultStart)}
+            value={this.formatFilterDate(this.state.selectedStartDate)}
             onChange={this.changeStart}
             InputLabelProps={{
               shrink: true,
             }}
             inputProps={{
               style: styles.dateField,
-              min: this.formatFilterDate(rangeStartDate),
-              max: this.formatFilterDate(defaultEnd),
+              // min: this.formatFilterDate(this.state.rangeStartDate),
+              // max: this.formatFilterDate(this.state.selectedEndDate),
             }}
           />
         </div>
-        <div style={styles.space}>
+        <div style={styles.spaceEnd}>
           <TextField
             id="end"
             label="End Date"
             type="date"
-            defaultValue={this.formatFilterDate(defaultEnd)}
+            value={this.formatFilterDate(this.state.selectedEndDate)}
             onChange={this.changeEnd}
             InputLabelProps={{
               shrink: true,
             }}
             inputProps={{
               style: styles.dateField,
-              min: this.formatFilterDate(defaultStart),
-              max: this.formatFilterDate(rangeEndDate),
+              // min: this.formatFilterDate(this.state.selectedStartDate, true),
+              // max: this.formatFilterDate(this.state.rangeEndDate),
             }}
           />
         </div>

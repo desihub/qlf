@@ -59,7 +59,9 @@ class TrendViewer extends React.Component {
     if (
       this.props.plot === 'timeseries' &&
       this.props.yaxis !== '' &&
-      this.props.amp !== ''
+      this.props.amp !== '' &&
+      this.props.startDate !== '' &&
+      this.props.endDate !== ''
     )
       url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&xaxis=${
         this.props.yaxis
@@ -68,7 +70,9 @@ class TrendViewer extends React.Component {
       this.props.plot === 'regression' &&
       this.props.xaxis !== '' &&
       this.props.yaxis !== '' &&
-      this.props.amp !== ''
+      this.props.amp !== '' &&
+      this.props.startDate !== '' &&
+      this.props.endDate !== ''
     )
       url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&xaxis=${
         this.props.xaxis
