@@ -9,7 +9,10 @@ describe('SurveyViewer', () => {
   let surveyViewer;
   beforeEach(() => {
     surveyViewer = (
-      <SurveyViewer startDate={'20191017T00:00:00'} endDate={'20191017T00:00:00'} />
+      <SurveyViewer
+        startDate={'20191017T00:00:00'}
+        endDate={'20191017T00:00:00'}
+      />
     );
   });
 
