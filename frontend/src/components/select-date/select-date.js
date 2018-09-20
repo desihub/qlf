@@ -8,8 +8,8 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'left',
   },
-  spaceEnd: {
-    paddingTop: '3vw',
+  fieldDate: {
+    paddingBottom: '2.5vh',
   },
   label: {
     color: 'black',
@@ -101,7 +101,7 @@ export default class SelectDate extends React.Component {
   render() {
     return (
       <div style={styles.container}>
-        <div>
+        <div style={styles.fieldDate}>
           <TextField
             id="start"
             label="Start Date"
@@ -118,7 +118,7 @@ export default class SelectDate extends React.Component {
             }}
           />
         </div>
-        <div style={styles.spaceEnd}>
+        <div style={styles.fieldDate}>
           <TextField
             id="end"
             label="End Date"

@@ -91,7 +91,7 @@ export default class Home extends React.Component {
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
           <a
             style={styles.linkStyle}
-            onClick={() => this.navigateTo('/under-construction')}
+            onClick={() => this.navigateTo('/trend-analysis')}
           >
             <Card
               icon="TrendingUp"
