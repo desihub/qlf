@@ -107,8 +107,6 @@ export default class History extends Component {
         <SelectDate
           startDate={this.props.startDate}
           endDate={this.props.endDate}
-          selectedStartDate={this.state.startDate}
-          selectedEndDate={this.state.endDate}
           setHistoryRangeDate={this.setHistoryRangeDate}
         />
       );
