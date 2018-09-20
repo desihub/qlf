@@ -200,14 +200,14 @@ class TrendAnalysis extends React.Component {
 
     if (
       (this.state.tab === 'Time Series' &&
-        this.state.datePeriod !== '' &&
-        this.state.amp !== '' &&
-        this.state.yaxis !== '') ||
-      (this.state.tab === 'Regression' &&
-        this.state.datePeriod !== '' &&
         this.state.amp !== '' &&
         this.state.yaxis !== '' &&
-        this.state.xaxis !== '')
+        this.state.datePeriod !== '') ||
+      (this.state.tab === 'Regression' &&
+        this.state.amp !== '' &&
+        this.state.yaxis !== '' &&
+        this.state.xaxis !== '' &&
+        this.state.datePeriod !== '')
     ) {
       return (
         <div className={this.props.classes.loading}>
@@ -235,23 +235,26 @@ class TrendAnalysis extends React.Component {
   };
 
   renderDatePeriodSelection = () => {
-    <div className={this.props.classes.selection}>
-      <FormControl className={this.props.classes.formControl}>
-        <InputLabel shrink>Date Period</InputLabel>
-        <Select
-          value={this.state.datePeriod}
-          onChange={this.handleChangeDatePeriod}
-          input={<Input />}
-          displayEmpty
-          className={this.props.classes.selectEmpty}
-        >
-          <MenuItem value={'night'}>Night</MenuItem>
-          <MenuItem value={'week'}>Week</MenuItem>
-          <MenuItem value={'month'}>Month</MenuItem>
-          <MenuItem value={'semester'}>Semester</MenuItem>
-        </Select>
-      </FormControl>
-    </div>;
+    return (
+      <div className={this.props.classes.selection}>
+        <FormControl className={this.props.classes.formControl}>
+          <InputLabel shrink>Date Period</InputLabel>
+          <Select
+            value={this.state.datePeriod}
+            onChange={this.handleChangeDatePeriod}
+            input={<Input />}
+            displayEmpty
+            className={this.props.classes.selectEmpty}
+          >
+            <MenuItem value={'night'}>Night</MenuItem>
+            <MenuItem value={'week'}>Week</MenuItem>
+            <MenuItem value={'month'}>Month</MenuItem>
+            <MenuItem value={'semester'}>Semester</MenuItem>
+            <MenuItem value={'year'}>Year</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+    );
   };
 
   renderXaxisSelection = () => {
@@ -377,8 +380,8 @@ class TrendAnalysis extends React.Component {
         <SelectDate
           startDate={this.state.startDate}
           endDate={this.state.endDate}
-          selectedStartDate={this.state.startDate}
-          selectedEndDate={this.state.endDate}
+          //selectedStartDate={this.state.startDate}
+          //selectedEndDate={this.state.endDate}
           setHistoryRangeDate={this.setHistoryRangeDate}
         />
       );
