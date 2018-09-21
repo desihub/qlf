@@ -1,23 +1,24 @@
 import numpy as np
-
-from numpy.random import random
-
-from bokeh.io import curdoc
-from bokeh.layouts import column, row
+import pandas as pd
 from bokeh.plotting import ColumnDataSource, Figure
-from bokeh.models.widgets import Select, TextInput
 from bokeh.models import HoverTool
 
-from bokeh.io import curdoc
-from bokeh.layouts import row, column, widgetbox
-from bokeh.models import ColumnDataSource, Spacer
+from bokeh.layouts import column
 from bokeh.models.widgets import Div, Select, RangeSlider
-from bokeh.plotting import Figure
-from bokeh.io import output_notebook, show
-from scipy.stats import pearsonr
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import json
+from bokeh.models import DatetimeTickFormatter
+from log import get_logger
+import os
+
+qlf_root = os.environ.get('QLF_ROOT')
+
+logger = get_logger(
+    "qlf.bokeh",
+    os.path.join(qlf_root, "logs", "bokeh.log")
+)
+
 
 class TimeSeries():
     def __init__(self, yaxis, start, end):
@@ -26,30 +27,19 @@ class TimeSeries():
         self.end = end
 
     def render(self):
-        try:
-            data_json = json.load(
-                open('/app/spectro/mock_files/QLFmock_trend_data-b0.json'))
-        except Exception as err:
-            print(err)
-        noise = data_json['noise']
-        bias = data_json['bias']
-        fidsnr = data_json['fidsnr']
-        peakcount = data_json['peakcount']
-        time = data_json['time']
+        dic = {'2018-08-11': {'Yes': 157, 'Not sure': 2, 'No': 1}, '2017-08-22': {'Yes': 142, 'Not sure': 12}, '2017-08-01': {'Yes': 112, 'Others': 10, 'Not sure': 4, 'No': 9}, '2017-08-17': {'Yes': 117, 'No': 12, 'Not sure': 11, 'Others': 2}, '2017-08-25': {'Yes': 61, 'Not sure': 9}, '2017-08-23': {'Yes': 268, 'Not sure': 20, 'No': 1}, '2017-07-10': {'Yes': 123, 'Not sure': 4, 'No': 1}, '2017-08-10': {'Yes': 343, 'Not sure': 20}, '2017-07-13': {'Yes': 116, 'Others': 1, 'Not sure': 14, 'No': 2}, '2017-07-14': {'Yes': 255,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    'Not sure': 22, 'No': 6}, '2017-08-07': {'Yes': 73, 'Others': 3, 'Not sure': 4, 'No': 5}, '2017-08-04': {'Not sure': 11, 'Others': 8, 'Yes': 178, 'No': 10}, '2017-08-16': {'Not sure': 10, 'Yes': 219}, '2017-07-18': {'Yes': 1, 'No': 1}, '2017-08-15': {'Yes': 301, 'Others': 4, 'Not sure': 37, 'No': 31}, '2017-08-08': {'Yes': 38, 'No': 2, 'Others': 1}, '2017-08-09': {'Yes': 120, 'Not sure': 3}, '2017-08-28': {'Yes': 206, 'Others': 2, 'Not sure': 18, 'No': 24}, '2017-08-14': {'Yes': 46, 'No': 3, 'Not sure': 5, 'Others': 7}}
 
+        df = pd.DataFrame.from_dict(dic, orient="index")
+        df = df.fillna(0)
+        df.index = pd.to_datetime(df.index)
+        df.index.name = 'Date'
+        df.sort_index(inplace=True)
 
-        data_model = dict(
-            noise1=noise[0], noise2=noise[1], noise3=noise[2], noise4=noise[3],
-            bias1=bias[0], bias2=bias[1], bias3=bias[2], bias4=bias[3],
-            peak=peakcount, time=time)
+        df['Total'] = df.Yes + df['Not sure'] + df.No + df.Others
+        df['Precision'] = round(df.Yes/df.Total, 2)
 
-        for i in list(range(len(fidsnr))):
-            data_model['snr%s' % (i+1)] = fidsnr[i]
-
-        source = ColumnDataSource(data=dict(
-            x=data_model['time'],
-            y=data_model[self.yaxis]
-        ))
+        source = ColumnDataSource(df)
 
         def style(p):
             # Title
@@ -69,64 +59,34 @@ class TimeSeries():
 
             return p
 
-
         fiber_tooltip = """
                     <div>
                         <div>
                             <span style="font-size: 12px; font-weight: bold; color: #303030;">time (time_scale): </span>
-                            <span style="font-size: 13px; color: #515151">@x</span>
+                            <span style="font-size: 13px; color: #515151">@Date</span>
                         </div>
                         <div>
                             <span style="font-size: 12px; font-weight: bold; color: #303030;">y: </span>
-                            <span style="font-size: 13px; color: #515151;">@y</span>
+                            <span style="font-size: 13px; color: #515151;">@Precision</span>
                         </div>
                     </div>
                 """
 
         hover = HoverTool(tooltips=fiber_tooltip)
 
-
-        plot = Figure(title='', plot_width=900, plot_height=300,
-                    toolbar_location='above',
-                    x_axis_label='Time (time scale)', y_axis_label='Noise (AMP 1)',
-                    #x_axis_type = "datetime",
-                    tools=[hover, 'pan,wheel_zoom,box_select,reset'])
-
-        q = plot.line('x', 'y', source=source,  # size= 8,
-                    line_color='dodgerblue')
-        #hover_fill_color='blue', line_color='black')
-
-        qa_options = ["noise%s" % i for i in list(range(1, 5))]\
-            + ["bias%s" % i for i in list(range(1, 5))]\
-            + ["snr%s" % (i+1) for i in list(range(len(fidsnr)))]\
-            + ['peak']
-
-        label_dict = dict(zip(qa_options,
-                            ["Noise (AMP %s)" % i for i in list(range(1, 5))]
-                            + ["Bias (AMP %s)" % i for i in list(range(1, 5))]
-                            + ["SNR %s" % (i+1) for i in list(range(len(fidsnr)))]
-                            + ['Peak Count']
-                            ))
-
-        select_y = Select(title="", value="noise1", options=qa_options)
-
-        plot = style(plot)
-        plot.xaxis.major_label_overrides = {
-            date: "{} {}".format(str(date)[4:-6], str(date)[:-4]) for i, date in enumerate(data_model['time'])
-        }
+        p = Figure(toolbar_location='above',  x_axis_type="datetime",
+                   plot_width=800, plot_height=350, tools=[hover, 'pan,wheel_zoom,zoom_in, zoom_out,reset'])
 
 
-        hhist, hedges = np.histogram(source.data['x'], bins='sqrt')
-        hzeros = np.zeros(len(hedges)-1)
-        hmax = max(hhist)*1.1
+        p.xaxis.formatter = DatetimeTickFormatter(
+            hours=["%d %B %Y"],
+            days=["%d %B %Y"],
+            months=["%d %B %Y"],
+            years=["%d %B %Y"],
+        )
+        p.line('Date', 'Precision', source=source)
+        p.square('Date', 'Precision', source=source)
 
 
-        rng_st = int(self.start)
-        rng_end = int(self.end)
-        st = rng_st
-        end = rng_end
-        source.data['x'] = data_model['time'][st:end]
-        source.data['y'] = data_model[select_y.value][st:end]
-
-        layout = column(plot)
+        layout = column(p)
         return file_html(layout, CDN, "Time Series")
