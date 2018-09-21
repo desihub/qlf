@@ -28,12 +28,12 @@ class ObjectStatistics:
 
     def generate_statistics(self):
         try:
+
             # Load fibermap
             process_id = self.selected_process_id
-            print(process_id)
             process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(
-                process_id=process_id)]
+            joblist = [entry.camera.camera for entry in 
+                        Job.objects.filter(process_id=process_id)]
             exposure = process.exposure
             folder = "{}/{}/{:08d}".format(
                 spectro_data, exposure.night, process.exposure_id)
@@ -41,9 +41,10 @@ class ObjectStatistics:
             file = "fibermap-{:08d}.fits".format(process.exposure_id)
             fmap = fits.open('{}/{}'.format(folder, file))
 
-            # RA and DEC for the current tile:
+            # RA and DEC for footprint:
             ra_tile = fmap['FIBERMAP'].header['TELRA']
             dec_tile = fmap['FIBERMAP'].header['TELDEC']
+
 
             # Object Statistics from fmap:
             objects = fmap['FIBERMAP'].data['OBJTYPE']
@@ -51,17 +52,21 @@ class ObjectStatistics:
             obj_stat_dict = {}
             list_of_obj = ['ELG', 'LRG', 'STD', 'QSO']
 
+            speclist = set([int(x[-1]) for x in joblist])
+            obj_spec=[objects[i*500:(i+1)*500] for i in speclist]
+            obj_spec=[i for ob in obj_spec for i in ob]
+
             for o in list_of_obj:
-                if o not in set(objects):
-                    count = []
+                if o not in set(obj_spec):
+                    count = 0
                 else:
-                    count = objects.count(o)
+                    count = obj_spec.count(o)
                 if o == 'STD':
                     key = 'STAR'
                 else:
                     key = o
 
-                obj_stat_dict.update({key: sum(count)})
+                obj_stat_dict.update({key: count})
 
             #####################################################
             # Classification
@@ -207,11 +212,54 @@ class ObjectStatistics:
                     status_class.update({j: obj_class})
                 fiber_class_arm.update({arm: status_class})
 
+            # obj_stat= { k: sum([fiber_class[i][k] 
+            #         for i in ['GOOD', 'BAD']])  
+            #         for k in ['STAR', 'SKY', 'QSO', 'ELG', 'LRG']}
+
+
         except Exception as err:
             sys.exit()
 
-        return obj_stat_dict, snr_class_arm, fiber_class_arm
+        return obj_stat_dict, snr_class, fiber_class
 
 
 if __name__ == '__main__':
-    ObjectStatistics(2).generate_statistics()
+    import time
+    t1=time.time()
+
+    # Example: 
+    # let us say , for instance, we have the following selected exposures:
+    exposures_list = [2, 37, 38]
+
+    total_obj = [0]*4
+    snr_good  = [0]*4
+    fib_good  = [0]*4
+    snr_bad   = [0]*4
+    fib_bad   = [0]*4
+
+    number_of_exposures=len(exposures_list)
+
+    for iexp in exposures_list:
+        nobj, snr, fiber=ObjectStatistics(iexp).generate_statistics()
+
+        print('Nobj:', nobj)
+        for i, o in enumerate(['ELG','LRG','QSO','STAR']):
+            total_obj[i]+=nobj[o]
+            snr_good[i]+=snr['NORMAL'][o]+snr['WARN'][o]
+            snr_bad[i]+=snr['ALARM'][o]
+            fib_good[i]+=fiber['GOOD'][o]
+            fib_bad[i]+=fiber['BAD'][o]
+
+
+    print('\n\n Statistics:\n\n         [ELG, LRG, QSO, STAR]')
+    print('   total',total_obj)
+    print('SNR good', [100*snr_good[i]/(snr_good[i]+snr_bad[i]) if (snr_good[i]+snr_bad[i]) >0 
+                        else ' '  for i in range(4)] )
+    print('SNR bad ', [100*snr_bad[i]/(snr_good[i]+snr_bad[i])  if (snr_good[i]+snr_bad[i]) >0 
+                        else ' '  for i in range(4)] )
+    print('FIB good', [100*fib_good[i]/(fib_good[i]+fib_bad[i]) if (fib_good[i]+fib_bad[i]) >0 
+                        else ' '  for i in range(4)])
+    print('FIB bad ', [100*fib_bad[i]/(fib_good[i]+fib_bad[i])  if (fib_good[i]+fib_bad[i]) >0 
+                        else ' '  for i in range(4)])
+
+    print(time.time()-t1)
