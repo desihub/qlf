@@ -237,6 +237,9 @@ if __name__ == '__main__':
     snr_bad   = [0]*4
     fib_bad   = [0]*4
 
+    good = [0]*4
+    bad  = [0]*4
+
     number_of_exposures=len(exposures_list)
 
     for iexp in exposures_list:
@@ -245,21 +248,17 @@ if __name__ == '__main__':
         print('Nobj:', nobj)
         for i, o in enumerate(['ELG','LRG','QSO','STAR']):
             total_obj[i]+=nobj[o]
-            snr_good[i]+=snr['NORMAL'][o]+snr['WARN'][o]
-            snr_bad[i]+=snr['ALARM'][o]
-            fib_good[i]+=fiber['GOOD'][o]
-            fib_bad[i]+=fiber['BAD'][o]
+            good[i]+=snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
+            bad[i]+=snr['ALARM'][o] + fiber['BAD'][o]
 
 
-    print('\n\n Statistics:\n\n         [ELG, LRG, QSO, STAR]')
-    print('   total',total_obj)
-    print('SNR good', [100*snr_good[i]/(snr_good[i]+snr_bad[i]) if (snr_good[i]+snr_bad[i]) >0 
-                        else ' '  for i in range(4)] )
-    print('SNR bad ', [100*snr_bad[i]/(snr_good[i]+snr_bad[i])  if (snr_good[i]+snr_bad[i]) >0 
-                        else ' '  for i in range(4)] )
-    print('FIB good', [100*fib_good[i]/(fib_good[i]+fib_bad[i]) if (fib_good[i]+fib_bad[i]) >0 
-                        else ' '  for i in range(4)])
-    print('FIB bad ', [100*fib_bad[i]/(fib_good[i]+fib_bad[i])  if (fib_good[i]+fib_bad[i]) >0 
-                        else ' '  for i in range(4)])
 
-    print(time.time()-t1)
+    print('\n\n Statistics:\n\n')
+    print('         [ELG, LRG, QSO, STAR]')
+    print('Total  ', total_obj)
+    print(' Good  ', [100*good[i]/(good[i] + bad[i]) if (good[i]+bad[i]) >0 
+                        else 0  for i in range(4)] )
+    print('  Bad  ', [100*bad[i]/(good[i] + bad[i])  if (good[i]+bad[i]) >0 
+                        else 0  for i in range(4)] )
+ 
+    print(time.time()-t1, ' s')
