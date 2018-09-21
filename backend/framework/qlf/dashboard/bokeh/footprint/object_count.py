@@ -229,7 +229,7 @@ if __name__ == '__main__':
 
     # Example: 
     # let us say , for instance, we have the following selected exposures:
-    exposures_list = [2, 37, 38]
+    exposures_list = [2, 3]
 
     total_obj = [0]*4
     snr_good  = [0]*4
@@ -240,8 +240,6 @@ if __name__ == '__main__':
     good = [0]*4
     bad  = [0]*4
 
-    number_of_exposures=len(exposures_list)
-
     for iexp in exposures_list:
         nobj, snr, fiber=ObjectStatistics(iexp).generate_statistics()
 
@@ -251,14 +249,12 @@ if __name__ == '__main__':
             good[i]+=snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
             bad[i]+=snr['ALARM'][o] + fiber['BAD'][o]
 
-
-
     print('\n\n Statistics:\n\n')
-    print('         [ELG, LRG, QSO, STAR]')
+    print('       [ELG, LRG, QSO, STAR]')
     print('Total  ', total_obj)
     print(' Good  ', [100*good[i]/(good[i] + bad[i]) if (good[i]+bad[i]) >0 
                         else 0  for i in range(4)] )
     print('  Bad  ', [100*bad[i]/(good[i] + bad[i])  if (good[i]+bad[i]) >0 
                         else 0  for i in range(4)] )
- 
+
     print(time.time()-t1, ' s')

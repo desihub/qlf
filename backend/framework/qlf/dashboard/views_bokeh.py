@@ -12,6 +12,7 @@ from dashboard.bokeh.qasnr.main import SNR
 from dashboard.bokeh.globalfiber.main import GlobalFiber
 from dashboard.bokeh.globalfocus.main import GlobalFocus
 from dashboard.bokeh.footprint.main import Footprint
+from dashboard.bokeh.footprint.object_count import ObjectStatistics
 from dashboard.bokeh.globalsnr.main import GlobalSnr
 from dashboard.bokeh.timeseries.main import TimeSeries
 from dashboard.bokeh.regression.main import Regression
@@ -127,31 +128,34 @@ def footprint_object_type_count(request):
     end = request.GET.get('end')
     program = request.GET.get('program')
     processed_exposures = filter_processed_exposures(start, end, program)
-
-    obj_stat_dict = {'ELG': '0', 'STAR': '0', 'SKY': '0'}
+    process_ids = []
     for exposure in processed_exposures:
-        try:
-            folder = "{}/{}/{:08d}".format(
-                spectro_data, exposure.night, exposure.exposure_id)
+        if list(Process.objects.filter(exposure_id=exposure.pk)) != []:
+            process_ids.append(Process.objects.filter(exposure_id=exposure.pk).last().pk)
+            
+    total_obj = [0]*4
+    snr_good = [0]*4
+    fib_good = [0]*4
+    snr_bad = [0]*4
+    fib_bad = [0]*4
 
-            file = "fibermap-{:08d}.fits".format(exposure.exposure_id)
-            fmap = fits.open('{}/{}'.format(folder, file))
+    good = [0]*4
+    bad = [0]*4
 
-            objects = fmap['FIBERMAP'].data['OBJTYPE']
+    for ids in process_ids:
+        nobj, snr, fiber = ObjectStatistics(ids).generate_statistics()
 
-            for o in set(objects):
-                count = objects.count(o)
-                if o == 'STD':
-                    key = 'STAR'
-                else:
-                    key = o
-                type_sum = sum(count) + int(obj_stat_dict[key])
-                obj_stat_dict.update({key: str(type_sum)})
-        except Exception as err:
-            # print(err)
-            next
+        for i, o in enumerate(['ELG', 'LRG', 'QSO', 'STAR']):
+            total_obj[i] += nobj[o]
+            good[i] += snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
+            bad[i] += snr['ALARM'][o] + fiber['BAD'][o]
 
-    return JsonResponse(obj_stat_dict)
+    result = dict(objects=['ELG', 'LRG', 'QSO', 'STAR'],
+                  total=total_obj,
+                  good=[int(good[i]) for i in range(4)],
+                  bad=[int(bad[i]) for i in range(4)])
+
+    return JsonResponse(result)
 
 
 def fits_to_png(request):
