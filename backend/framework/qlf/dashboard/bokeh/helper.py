@@ -98,25 +98,6 @@ def get_cameras():
     return requests.get(api['camera'], params={'paginate': 'null'}).json()
 
 
-def get_scalar_metrics(process_id, cam):
-    """
-    Returns cam scalar metrics
-    """
-
-    scalar_metrics = dict()
-    try:
-        process = Process.objects.get(pk=process_id)
-        exposure = process.exposure
-        metrics, tests = LoadMetrics(process_id, cam, process.exposure_id,
-                                        exposure.night).Load_metrics_n_tests()
-        scalar_metrics['metrics'] = metrics
-        scalar_metrics['tests'] = tests
-    except Exception as err:
-        logger.error(err)
-        logger.error('load_scalar_metrics error')
-    return scalar_metrics
-
-
 def get_merged_qa_scalar_metrics(process_id, cam):
     """
     Returns cam scalar metrics
