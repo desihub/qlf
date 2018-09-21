@@ -80,43 +80,43 @@ class LoadMetrics:
             'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
 
-    def Load_qa(self, qa):
-        """loads a single json file ( rather slow!)
+    # def Load_qa(self, qa):
+    #     """loads a single json file ( rather slow!)
 
-        Arguments
-        ---------
-        qa --
-        cam --
-        exp --
-        night --
-        Return
-        ------
-        y2: list
-        """
+    #     Arguments
+    #     ---------
+    #     qa --
+    #     cam --
+    #     exp --
+    #     night --
+    #     Return
+    #     ------
+    #     y2: list
+    #     """
 
-        cam, exp, night, process_id = self.cam, self.exp, self.night, self.process_id
+    #     cam, exp, night, process_id = self.cam, self.exp, self.night, self.process_id
 
-        exp_zfill = str(exp).zfill(8)
-        qa_name = '{}{}-{}-{}.json'.format(self.prfx, qa, cam, exp_zfill)
-        data = None
-        if process_id is not None:
-            data = self.models.get_qa(process_id, cam, qa_name)
-        else:
-            qa_file_path = "{}/exposures/{}/{}/{}".format(desi_spectro_redux, night, exp_zfill, qa_name)
-            try:
-                if os.path.exists(qa_file_path):
-                    with open(qa_file_path) as f:
-                        data = json.load(f)
-            except Exception as e:
-                data = None
-                logger.error("Could not open {}".format(qa_name))
+    #     exp_zfill = str(exp).zfill(8)
+    #     qa_name = '{}{}-{}-{}.json'.format(self.prfx, qa, cam, exp_zfill)
+    #     data = None
+    #     if process_id is not None:
+    #         data = self.models.get_qa(process_id, cam, qa_name)
+    #     else:
+    #         qa_file_path = "{}/exposures/{}/{}/{}".format(desi_spectro_redux, night, exp_zfill, qa_name)
+    #         try:
+    #             if os.path.exists(qa_file_path):
+    #                 with open(qa_file_path) as f:
+    #                     data = json.load(f)
+    #         except Exception as e:
+    #             data = None
+    #             logger.error("Could not open {}".format(qa_name))
 
-        if data:
-            self.error.update({qa: False})
-        else:
-            self.error.update({qa: True})
+    #     if data:
+    #         self.error.update({qa: False})
+    #     else:
+    #         self.error.update({qa: True})
 
-        return data
+    #     return data
 
     def load_output(self):
         """ Returns a json with the camera output per job """
@@ -234,7 +234,7 @@ class LoadMetrics:
         data = None
 
         if process_id is not None:
-            data = self.models.get_merged_qa(process_id, cam)
+            data = self.models.get_output(process_id, cam)
 
         return data
 
