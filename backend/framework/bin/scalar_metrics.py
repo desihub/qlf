@@ -48,12 +48,10 @@ class LoadMetrics:
         # This is True if the pipeline didn't generate some json file
         self.error = dict(zip(self.qa_name, ['False']*len(self.qa_name)))
 
-        
-
         self.models = QLFModels()
-        #SE: a new step called 'flexure 'is added 
+
         self.steps_list = ['preproc', 'flexure', 'extract', 'fiberfl', 'skysubs']
-        #SE: for future reference: check out desispec/py/desispec/quicklook/qlconfig.py line 416 
+
          
         self.steps_dic = {
             'preproc': ['checkHDUs', 'countpix', 'getbias', 'getrms', 'xwsigma'],
@@ -78,10 +76,7 @@ class LoadMetrics:
             'snr': 'FIDSNR_TGT_STATUS',
         }
         
-            #SE: only if the exposure's flavor was *flat*, this key would exist and be one of the alert_keys: 'checkfibflat': 'CHECKFLAT_STATUS'
-            # AND only if the exposure's flavor was *arc*, this key would exist and be one of the alert_keys: 'checkres' : 'CHECKARC_STATUS'
-            # These keys would go to self.checks and self.status as well. Did not do it yet as it seems to damage the setting that runs based on science  
-            
+           
 
         self.checks = {
             'CHECK_CCDs': ['checkHDUs', 'getbias', 'countpix', 'getrms'],
@@ -96,7 +91,60 @@ class LoadMetrics:
             'fiberfl': {'steps_status': ['None', 'None']},
             'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
+        
+# SE:       A proposal in case QLF is flavour agnostic
 
+            
+      """
+        self.steps_list = ['preproc', 'flexure', 'extract', 'compute_fibflat', 'resfit', 'fiberfl', 'skysubs']
+         
+        self.steps_dic = {
+            'preproc': ['checkHDUs', 'countpix', 'getbias', 'getrms', 'xwsigma'],
+            'flexure': ['trace'],
+            'extract': ['countbins'],
+            'compute_fibflat' : ['checkfibflat']
+            'resfit': ['checkres']
+            'fiberfl': ['skycont', 'skypeak'],
+            'skysubs': ['skyRband','integ', 'snr'],
+        }
+        
+        self.alert_keys = {
+            'checkHDUs': 'CHECKHDUS_STATUS',
+            'getrms': 'NOISE_AMP_STATUS',
+            'countpix': 'LITFRAC_AMP_STATUS',
+            'getbias': 'BIAS_AMP_STATUS',
+            'countbins': 'NGOODFIB_STATUS',
+            'xwsigma': 'XWSIGMA_STATUS',
+            'trace': 'XYSHIFTS_STATUS',
+            'skycont': 'SKYCONT_STATUS',
+            'skypeak': 'PEAKCOUNT_STATUS',
+            'skyRband': 'SKYRBAND_STATUS',
+            'integ': 'DELTAMAG_TGT_STATUS',
+            'snr': 'FIDSNR_TGT_STATUS',
+            'checkfibflat': 'CHECKFLAT_STATUS',
+            'checkres' : 'CHECKARC_STATUS',
+        }
+        
+           
+
+        self.checks = {
+            'CHECK_CCDs': ['checkHDUs', 'getbias', 'countpix', 'getrms'],
+            'CHECK_FIBERS': ['countbins','trace', 'xwsigma','checkfibflat','checkres'],
+            'CHECK_SPECTRA': ['skypeak', 'skycont', 'skyRband', 'integ', 'snr']
+        }
+
+        self.status = {
+            'preproc': {'steps_status': ['None', 'None','None', 'None', 'None']},
+            'extract': {'steps_status': ['None']},
+            'flexure': {'steps_status': ['None']},
+            'compute_fibflat' : {'steps_status': ['None']},
+            'resfit': {'steps_status': ['None']},
+            'fiberfl': {'steps_status': ['None', 'None']},
+            'skysubs': {'steps_status': ['None', 'None', 'None']},
+        }
+
+
+      """
     def Load_qa(self, qa):
         """loads a single json file ( rather slow!)
 
@@ -235,6 +283,8 @@ class LoadMetrics:
             preproc = self.get_qa_step_color('preproc')
             flexure = self.get_qa_step_color('flexure')
             extract = self.get_qa_step_color('extract')
+            #compute_fibflat = self.get_qa_step_color('compute_fibflat')
+            #resfit =  self.get_qa_step_color('resfit')
             fiberfl = self.get_qa_step_color('fiberfl')
             skysubs = self.get_qa_step_color('skysubs')
             qa_tests = {'preproc': preproc, 'flexure': flexure, 'extract': extract,
