@@ -29,9 +29,17 @@ class LoadMetrics:
     """
     silent = 'False'  # Defining a silent mode
     prfx = 'ql-'
-    qa_name = ['countpix', 'getbias', 'getrms', 'xwsigma',
-               'countbins', 'integ', 'skycont', 'skypeak', 'skyresid', 'snr']
-
+    
+    #SE: this includes all the changes in qa_names for science processing 
+    qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
+               'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr']
+    
+    #SE: if there is no checkpoint for flavour(arc, flat, acience) and therefore all the json files are being searched via this "qa_name bank", then one sould add the two qa_names that only exist when arc and flat exposures are being processed (when flat and arc is being processed, these 6 QAs/jsons will not exist: 'xwsigma', 'skycont', 'skypeak', 'skyRband', 'integ', 'snr' do not exist )   
+    
+    #qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
+    #           'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr', 'checkfibflat', 'checkres']
+    
+    #SE : function below to take/check *self.flavor* to determine what set of qa_names and steps to use
     def __init__(self, process_id, cam, exp=None, night=None):
         self.cam = cam
         self.exp = exp
@@ -40,42 +48,51 @@ class LoadMetrics:
         # This is True if the pipeline didn't generate some json file
         self.error = dict(zip(self.qa_name, ['False']*len(self.qa_name)))
 
-        logger.info('check *rms_over *bias *SUMCOUNT_RMS shouldbe SUMCOUNT_MED_SKY'
-                    + 'Resigf  skyresid- residrms')
+        
 
         self.models = QLFModels()
-
-        self.steps_list = ['preproc', 'extract', 'fiberfl', 'skysubs']
-
+        #SE: a new step called 'flexure 'is added 
+        self.steps_list = ['preproc', 'flexure', 'extract', 'fiberfl', 'skysubs']
+        #SE: for future reference: check out desispec/py/desispec/quicklook/qlconfig.py line 416 
+        #SE: self.steps_dic  will become similar to self.checks 
         self.steps_dic = {
-            'preproc': ['countpix', 'getbias', 'getrms', 'xwsigma'],
+            'preproc': ['checkHDUs', 'countpix', 'getbias', 'getrms', 'xwsigma'],
+            'flexure': ['trace'],
             'extract': ['countbins'],
             'fiberfl': ['skycont', 'skypeak'],
-            'skysubs': ['skyresid', 'integ', 'snr'],
+            'skysubs': ['skyRband','integ', 'snr'],
         }
-
+        
         self.alert_keys = {
-            'getrms': 'NOISE_STATUS',
-            'countpix': 'LITFRAC_STATUS',
-            'getbias': 'BIAS_STATUS',
+            'checkHDUs': 'CHECKHDUS_STATUS',
+            'getrms': 'NOISE_AMP_STATUS',
+            'countpix': 'LITFRAC_AMP_STATUS',
+            'getbias': 'BIAS_AMP_STATUS',
             'countbins': 'NGOODFIB_STATUS',
-            'integ': 'DELTAMAG_STATUS',
             'xwsigma': 'XWSIGMA_STATUS',
-            'snr': 'FIDSNR_STATUS',
+            'trace': 'XYSHIFTS_STATUS',
             'skycont': 'SKYCONT_STATUS',
             'skypeak': 'PEAKCOUNT_STATUS',
-            'skyresid': 'SKYRBAND_STATUS',
+            'skyRband': 'SKYRBAND_STATUS',
+            'integ': 'DELTAMAG_TGT_STATUS',
+            'snr': 'FIDSNR_TGT_STATUS',
         }
+        
+            #SE: only if the exposure's flavor was *flat*, this key would exist and be one of the alert_keys: 'checkfibflat': 'CHECKFLAT_STATUS'
+            # AND only if the exposure's flavor was *arc*, this key would exist and be one of the alert_keys: 'checkres' : 'CHECKARC_STATUS'
+            # 
+            
 
         self.checks = {
-            'CHECK_CCDs': ['getbias', 'countpix', 'getrms'],
-            'CHECK_FIBERS': ['countbins', 'xwsigma'],
-            'CHECK_SPECTRA': ['integ', 'snr', 'skypeak', 'skycont', 'skyresid']
+            'CHECK_CCDs': ['checkHDUs', 'getbias', 'countpix', 'getrms'],
+            'CHECK_FIBERS': ['countbins','trace', 'xwsigma'],
+            'CHECK_SPECTRA': ['skypeak', 'skycont', 'skyRband', 'integ', 'snr']
         }
 
         self.status = {
-            'preproc': {'steps_status': ['None', 'None', 'None', 'None']},
+            'preproc': {'steps_status': ['None', 'None','None', 'None', 'None']},
             'extract': {'steps_status': ['None']},
+            'flexure': {'steps_status': ['None']},
             'fiberfl': {'steps_status': ['None', 'None']},
             'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
