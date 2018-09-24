@@ -34,12 +34,13 @@ class LoadMetrics:
     qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
                'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr']
     
-    #SE: if there is no checkpoint for flavor (i.e., arc, flat, science) and therefore all the json files are being searched via this "qa_name bank", then one sould add the two qa_names that only exist when arc and flat exposures are being processed [as done below].  (when flat and arc is being processed, these 6 QAs/jsons will not exist: 'xwsigma', 'skycont', 'skypeak', 'skyRband', 'integ', 'snr')   
+    #SE: replace qa_name with the one below if it is OK to add the qa_names that are specific to ARC and FLAT exposures
     
     #qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
     #           'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr', 'checkfibflat', 'checkres']
     
-     def __init__(self, process_id, cam, exp=None, night=None):
+     
+    def __init__(self, process_id, cam, exp=None, night=None):
         self.cam = cam
         self.exp = exp
         self.night = night
@@ -91,7 +92,7 @@ class LoadMetrics:
             'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
         
-        # SE:       A proposal in case QLF is flavour agnostic
+        # SE: A proposal in case QLF is flavour agnostic-  Replace this section with lines 53-93 if it is OK to add flavour-specific steps and scalar metrics to the list 
 
             
         """
