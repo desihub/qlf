@@ -34,12 +34,12 @@ class LoadMetrics:
     qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
                'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr']
     
-    #SE: if there is no checkpoint for flavour(arc, flat, acience) and therefore all the json files are being searched via this "qa_name bank", then one sould add the two qa_names that only exist when arc and flat exposures are being processed (when flat and arc is being processed, these 6 QAs/jsons will not exist: 'xwsigma', 'skycont', 'skypeak', 'skyRband', 'integ', 'snr' do not exist )   
+    #SE: if there is no checkpoint for flavor (i.e., arc, flat, science) and therefore all the json files are being searched via this "qa_name bank", then one sould add the two qa_names that only exist when arc and flat exposures are being processed [as done below].  (when flat and arc is being processed, these 6 QAs/jsons will not exist: 'xwsigma', 'skycont', 'skypeak', 'skyRband', 'integ', 'snr')   
     
     #qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
     #           'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr', 'checkfibflat', 'checkres']
     
-    #SE : function below to take/check *self.flavor* to determine what set of qa_names and steps to use
+    #SE : is it possible for the function below to take/check *self.flavor* to determine what set of qa_names and steps are applicable to the under process exposure? 
     def __init__(self, process_id, cam, exp=None, night=None):
         self.cam = cam
         self.exp = exp
@@ -54,7 +54,7 @@ class LoadMetrics:
         #SE: a new step called 'flexure 'is added 
         self.steps_list = ['preproc', 'flexure', 'extract', 'fiberfl', 'skysubs']
         #SE: for future reference: check out desispec/py/desispec/quicklook/qlconfig.py line 416 
-        #SE: self.steps_dic  will become similar to self.checks 
+         
         self.steps_dic = {
             'preproc': ['checkHDUs', 'countpix', 'getbias', 'getrms', 'xwsigma'],
             'flexure': ['trace'],
@@ -80,7 +80,7 @@ class LoadMetrics:
         
             #SE: only if the exposure's flavor was *flat*, this key would exist and be one of the alert_keys: 'checkfibflat': 'CHECKFLAT_STATUS'
             # AND only if the exposure's flavor was *arc*, this key would exist and be one of the alert_keys: 'checkres' : 'CHECKARC_STATUS'
-            # 
+            # These keys would go to self.checks and self.status as well. Did not do it yet as it seems to damage the setting that runs based on science  
             
 
         self.checks = {
@@ -233,10 +233,11 @@ class LoadMetrics:
         try:
             self.metrics, self.tests = self.Load_metrics_n_tests()
             preproc = self.get_qa_step_color('preproc')
+            flexure = self.get_qa_step_color('flexure')
             extract = self.get_qa_step_color('extract')
             fiberfl = self.get_qa_step_color('fiberfl')
             skysubs = self.get_qa_step_color('skysubs')
-            qa_tests = {'preproc': preproc, 'extract': extract,
+            qa_tests = {'preproc': preproc, 'flexure': flexure, 'extract': extract,
                         'fiberfl': fiberfl, 'skysubs': skysubs}
             return qa_tests
         except:
