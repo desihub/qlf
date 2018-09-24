@@ -39,8 +39,7 @@ class LoadMetrics:
     #qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
     #           'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr', 'checkfibflat', 'checkres']
     
-    #SE : is it possible for the function below to take/check *self.flavor* to determine what set of qa_names and steps are applicable to the under process exposure? 
-    def __init__(self, process_id, cam, exp=None, night=None):
+     def __init__(self, process_id, cam, exp=None, night=None):
         self.cam = cam
         self.exp = exp
         self.night = night
@@ -102,8 +101,8 @@ class LoadMetrics:
             'preproc': ['checkHDUs', 'countpix', 'getbias', 'getrms', 'xwsigma'],
             'flexure': ['trace'],
             'extract': ['countbins'],
-            'compute_fibflat' : ['checkfibflat']
-            'resfit': ['checkres']
+            'compute_fibflat' : ['checkfibflat'],
+            'resfit': ['checkres'],
             'fiberfl': ['skycont', 'skypeak'],
             'skysubs': ['skyRband','integ', 'snr'],
         }
@@ -283,12 +282,14 @@ class LoadMetrics:
             preproc = self.get_qa_step_color('preproc')
             flexure = self.get_qa_step_color('flexure')
             extract = self.get_qa_step_color('extract')
+            # SE: uncomment the next two lines if decided to uncommnet lines 99-144
             #compute_fibflat = self.get_qa_step_color('compute_fibflat')
             #resfit =  self.get_qa_step_color('resfit')
             fiberfl = self.get_qa_step_color('fiberfl')
             skysubs = self.get_qa_step_color('skysubs')
             qa_tests = {'preproc': preproc, 'flexure': flexure, 'extract': extract,
                         'fiberfl': fiberfl, 'skysubs': skysubs}
+            # SE: uncomment the next line if decided to uncommnet lines 99-144
             #qa_tests = {'preproc': preproc, 'flexure': flexure, 'extract': extract, 'compute_fibflat': compute_fibflat, 'resfit':resfit,
             #            'fiberfl': fiberfl, 'skysubs': skysubs}
             
