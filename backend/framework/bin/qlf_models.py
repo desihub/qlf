@@ -21,6 +21,7 @@ django.setup()
 from dashboard.models import (
     QA, Camera, Configuration, Exposure, Job, Process
 )
+from django.db.models import Q
 
 logger = logging.getLogger()
 
@@ -321,7 +322,7 @@ class QLFModels(object):
         return exposure
 
     def get_job(self, job_id):
-        """ gets last processed exposures """
+        """ Gets last processed exposures """
 
         try:
             exposure = Job.objects.filter(id=job_id)
@@ -329,6 +330,51 @@ class QLFModels(object):
             exposure = None
 
         return exposure
+
+    def get_outputs_json_chunk(self, path_keys, begin_date=None, end_date=None,
+        filters=list(), spacer='->'):
+        """ Obtains specific chunk of QA outputs from the database.
+        
+        Arguments:
+            path_keys {str} -- Path to specific QA outputs
+                e.g.: "output->GENERAL_INFO->B_PEAKS"
+        
+        Keyword Arguments:
+            begin_date {str} -- obtains entries beginning this date (default: None)
+            end_date {str} -- obtains entries until this date (default: None)
+            filters {list} -- list of dict containing the keys:
+                'path_keys': path to specific QA outputs to be filtered
+                'value': value to be filtered
+                e.g.: [{
+                    'path_keys': "output->GENERAL_INFO->B_PEAKS"
+                    'value': [3914.4, 5199.3, 5201.8]
+                }, ... ]
+            spacer {str} -- spacer between keys
+        """
+
+        seq_keys = path_keys.split(spacer)
+
+        dict_filters = dict()
+
+        filters_q = list()
+
+        if begin_date:
+            filters_q.append(Q())
+
+
+        for item in filters:
+            filter_path = item.get('path_keys').replace(spacer, '__')
+            filters_q.append()
+
+        j = Job.objects.filter(output__GENERAL_INFO__B_PEAKS=[3914.4, 5199.3, 5201.8])
+        jj = j.extra(select={"bpeaks": "output->'GENERAL_INFO'->'B_PEAKS'"})
+        jj.values("bpeaks", "camera")
+
+
+
+
+
+
 
     def delete_all_processes(self):
         """ Delete all processes """
