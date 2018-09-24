@@ -92,10 +92,10 @@ class LoadMetrics:
             'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
         
-# SE:       A proposal in case QLF is flavour agnostic
+        # SE:       A proposal in case QLF is flavour agnostic
 
             
-      """
+        """
         self.steps_list = ['preproc', 'flexure', 'extract', 'compute_fibflat', 'resfit', 'fiberfl', 'skysubs']
          
         self.steps_dic = {
@@ -144,7 +144,7 @@ class LoadMetrics:
         }
 
 
-      """
+        """
     def Load_qa(self, qa):
         """loads a single json file ( rather slow!)
 
@@ -289,6 +289,9 @@ class LoadMetrics:
             skysubs = self.get_qa_step_color('skysubs')
             qa_tests = {'preproc': preproc, 'flexure': flexure, 'extract': extract,
                         'fiberfl': fiberfl, 'skysubs': skysubs}
+            #qa_tests = {'preproc': preproc, 'flexure': flexure, 'extract': extract, 'compute_fibflat': compute_fibflat, 'resfit':resfit,
+            #            'fiberfl': fiberfl, 'skysubs': skysubs}
+            
             return qa_tests
         except:
             logger.error('Camera not found %s' % (self.cam))
