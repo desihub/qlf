@@ -29,9 +29,17 @@ class LoadMetrics:
     """
     silent = 'False'  # Defining a silent mode
     prfx = 'ql-'
-    qa_name = ['countpix', 'getbias', 'getrms', 'xwsigma',
-               'countbins', 'integ', 'skycont', 'skypeak', 'skyresid', 'snr']
-
+    
+    #SE: this includes all the changes in qa_names for science processing 
+    qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
+               'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr']
+    
+    #SE: replace qa_name with the one below if it is OK to add the qa_names that are specific to ARC and FLAT exposures
+    
+    #qa_name = ['checkHDUs','countpix', 'getbias', 'getrms', 'trace', 'xwsigma',
+    #           'countbins', 'integ', 'skycont', 'skypeak', 'skyRband', 'snr', 'checkfibflat', 'checkres']
+    
+     
     def __init__(self, process_id, cam, exp=None, night=None):
         self.cam = cam
         self.exp = exp
@@ -40,46 +48,103 @@ class LoadMetrics:
         # This is True if the pipeline didn't generate some json file
         self.error = dict(zip(self.qa_name, ['False']*len(self.qa_name)))
 
-        logger.info('check *rms_over *bias *SUMCOUNT_RMS shouldbe SUMCOUNT_MED_SKY'
-                    + 'Resigf  skyresid- residrms')
-
         self.models = QLFModels()
 
-        self.steps_list = ['preproc', 'extract', 'fiberfl', 'skysubs']
+        self.steps_list = ['preproc', 'flexure', 'extract', 'fiberfl', 'skysubs']
 
+         
         self.steps_dic = {
-            'preproc': ['countpix', 'getbias', 'getrms', 'xwsigma'],
+            'preproc': ['checkHDUs', 'countpix', 'getbias', 'getrms', 'xwsigma'],
+            'flexure': ['trace'],
             'extract': ['countbins'],
             'fiberfl': ['skycont', 'skypeak'],
-            'skysubs': ['skyresid', 'integ', 'snr'],
+            'skysubs': ['skyRband','integ', 'snr'],
         }
-
+        
         self.alert_keys = {
-            'getrms': 'NOISE_STATUS',
-            'countpix': 'LITFRAC_STATUS',
-            'getbias': 'BIAS_STATUS',
+            'checkHDUs': 'CHECKHDUS_STATUS',
+            'getrms': 'NOISE_AMP_STATUS',
+            'countpix': 'LITFRAC_AMP_STATUS',
+            'getbias': 'BIAS_AMP_STATUS',
             'countbins': 'NGOODFIB_STATUS',
-            'integ': 'DELTAMAG_STATUS',
             'xwsigma': 'XWSIGMA_STATUS',
-            'snr': 'FIDSNR_STATUS',
+            'trace': 'XYSHIFTS_STATUS',
             'skycont': 'SKYCONT_STATUS',
             'skypeak': 'PEAKCOUNT_STATUS',
-            'skyresid': 'SKYRBAND_STATUS',
+            'skyRband': 'SKYRBAND_STATUS',
+            'integ': 'DELTAMAG_TGT_STATUS',
+            'snr': 'FIDSNR_TGT_STATUS',
         }
+        
+           
 
         self.checks = {
-            'CHECK_CCDs': ['getbias', 'countpix', 'getrms'],
-            'CHECK_FIBERS': ['countbins', 'xwsigma'],
-            'CHECK_SPECTRA': ['integ', 'snr', 'skypeak', 'skycont', 'skyresid']
+            'CHECK_CCDs': ['checkHDUs', 'getbias', 'countpix', 'getrms'],
+            'CHECK_FIBERS': ['countbins','trace', 'xwsigma'],
+            'CHECK_SPECTRA': ['skypeak', 'skycont', 'skyRband', 'integ', 'snr']
         }
 
         self.status = {
-            'preproc': {'steps_status': ['None', 'None', 'None', 'None']},
+            'preproc': {'steps_status': ['None', 'None','None', 'None', 'None']},
             'extract': {'steps_status': ['None']},
+            'flexure': {'steps_status': ['None']},
+            'fiberfl': {'steps_status': ['None', 'None']},
+            'skysubs': {'steps_status': ['None', 'None', 'None']},
+        }
+        
+        # SE: A proposal in case QLF is flavour agnostic-  Replace this section with lines 53-93 if it is OK to add flavour-specific steps and scalar metrics to the list 
+
+            
+        """
+        self.steps_list = ['preproc', 'flexure', 'extract', 'compute_fibflat', 'resfit', 'fiberfl', 'skysubs']
+         
+        self.steps_dic = {
+            'preproc': ['checkHDUs', 'countpix', 'getbias', 'getrms', 'xwsigma'],
+            'flexure': ['trace'],
+            'extract': ['countbins'],
+            'compute_fibflat' : ['checkfibflat'],
+            'resfit': ['checkres'],
+            'fiberfl': ['skycont', 'skypeak'],
+            'skysubs': ['skyRband','integ', 'snr'],
+        }
+        
+        self.alert_keys = {
+            'checkHDUs': 'CHECKHDUS_STATUS',
+            'getrms': 'NOISE_AMP_STATUS',
+            'countpix': 'LITFRAC_AMP_STATUS',
+            'getbias': 'BIAS_AMP_STATUS',
+            'countbins': 'NGOODFIB_STATUS',
+            'xwsigma': 'XWSIGMA_STATUS',
+            'trace': 'XYSHIFTS_STATUS',
+            'skycont': 'SKYCONT_STATUS',
+            'skypeak': 'PEAKCOUNT_STATUS',
+            'skyRband': 'SKYRBAND_STATUS',
+            'integ': 'DELTAMAG_TGT_STATUS',
+            'snr': 'FIDSNR_TGT_STATUS',
+            'checkfibflat': 'CHECKFLAT_STATUS',
+            'checkres' : 'CHECKARC_STATUS',
+        }
+        
+           
+
+        self.checks = {
+            'CHECK_CCDs': ['checkHDUs', 'getbias', 'countpix', 'getrms'],
+            'CHECK_FIBERS': ['countbins','trace', 'xwsigma','checkfibflat','checkres'],
+            'CHECK_SPECTRA': ['skypeak', 'skycont', 'skyRband', 'integ', 'snr']
+        }
+
+        self.status = {
+            'preproc': {'steps_status': ['None', 'None','None', 'None', 'None']},
+            'extract': {'steps_status': ['None']},
+            'flexure': {'steps_status': ['None']},
+            'compute_fibflat' : {'steps_status': ['None']},
+            'resfit': {'steps_status': ['None']},
             'fiberfl': {'steps_status': ['None', 'None']},
             'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
 
+
+        """
     def Load_qa(self, qa):
         """loads a single json file ( rather slow!)
 
@@ -216,11 +281,19 @@ class LoadMetrics:
         try:
             self.metrics, self.tests = self.Load_metrics_n_tests()
             preproc = self.get_qa_step_color('preproc')
+            flexure = self.get_qa_step_color('flexure')
             extract = self.get_qa_step_color('extract')
+            # SE: uncomment the next two lines if decided to uncommnet lines 99-144
+            #compute_fibflat = self.get_qa_step_color('compute_fibflat')
+            #resfit =  self.get_qa_step_color('resfit')
             fiberfl = self.get_qa_step_color('fiberfl')
             skysubs = self.get_qa_step_color('skysubs')
-            qa_tests = {'preproc': preproc, 'extract': extract,
+            qa_tests = {'preproc': preproc, 'flexure': flexure, 'extract': extract,
                         'fiberfl': fiberfl, 'skysubs': skysubs}
+            # SE: uncomment the next line if decided to uncommnet lines 99-144
+            #qa_tests = {'preproc': preproc, 'flexure': flexure, 'extract': extract, 'compute_fibflat': compute_fibflat, 'resfit':resfit,
+            #            'fiberfl': fiberfl, 'skysubs': skysubs}
+            
             return qa_tests
         except:
             logger.error('Camera not found %s' % (self.cam))
