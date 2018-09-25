@@ -80,7 +80,6 @@ services:
     build: ./frontend
     environment:
       - QLF_UI_PORT=3000
-    user: ${CURRENT_UID}
     entrypoint: sh entrypoint.sh
     working_dir: /home/node
     volumes:
