@@ -74,3 +74,5 @@ frontend/dist/*
 docker-compose.yml
 
 build
+
+nginx/nginx-proxy.conf

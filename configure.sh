@@ -10,6 +10,9 @@ cd ../..
 echo 'Copying default docker-compose.yml'
 cp docker-compose.yml.template docker-compose.yml
 
+echo 'Copying default nginx-proxy'
+cp nginx-proxy.conf.template nginx-proxy.conf
+
 echo 'Copying default frontend .env'
 cd frontend
 cp .env.template .env
