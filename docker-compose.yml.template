@@ -77,9 +77,7 @@ services:
       - redis
       - db
   frontend:
-    build: ./frontend
-    environment:
-      - QLF_UI_PORT=3000
+    image: node:8.9
     entrypoint: sh entrypoint.sh
     working_dir: /home/node
     volumes:
