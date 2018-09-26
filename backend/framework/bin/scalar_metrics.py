@@ -85,7 +85,7 @@ class LoadMetrics:
 
     def load_merged_qa(self):
         data = None
-        if process_id is not None:
+        if self.process_id is not None:
             data = self.models.get_output(self.process_id, self.cam)
         return data
 
