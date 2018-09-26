@@ -84,6 +84,43 @@ def extract_exposure_data(exposure_id, night):
         'time': datetime.datetime.utcnow()
     }
 
+def extract_fibermap_data(exposure_id, night):
+    """ Extracts fibermap data from fits file.
+
+    Arguments:
+        exposure_id {int} -- exposure ID
+        night {str} -- night (format: YYYYMMDD)
+
+    Returns:
+        dict -- fibermap data from fits file.
+    """
+
+    desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+
+    exposure_zfill = str(exposure_id).zfill(8)
+    fiber_name = "fibermap-{}.fits".format(exposure_zfill)
+
+    file_path = os.path.join(desi_spectro_data, night,
+                             exposure_zfill, fiber_name)
+
+    try:
+        fmap = astropy.io.fits.open(file_path)
+    except Exception as err:
+        logger.error("Error to load fits file: %s" % err)
+        return {}
+
+    ra_obs = fmap['FIBERMAP'].data['RA_OBS']
+    dec_obs = fmap['FIBERMAP'].data['DEC_OBS']
+    fiber = fmap['FIBERMAP'].data['FIBER']
+    objtype = fmap['FIBERMAP'].data['OBJTYPE']
+
+    return {
+        "ra_obs": ra_obs.tolist(),
+        "dec_obs": dec_obs.tolist(),
+        "fiber": fiber.tolist(),
+        "objtype": objtype.tolist()
+    }
+
 
 def ensure_dir(path):
     """ Ensures that the directory exists.

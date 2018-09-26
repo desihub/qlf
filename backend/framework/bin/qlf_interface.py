@@ -1,6 +1,7 @@
 from util import (
     format_night,
-    extract_exposure_data
+    extract_exposure_data,
+    extract_fibermap_data
 )
 import os
 import datetime
@@ -59,4 +60,5 @@ class QLFInterface(object):
             log.error("Not found exposures: {}".format(exposure_path))
             return dict()
 
-        return extract_exposure_data(int(exp_dir), night)
+        return dict(exposure=extract_exposure_data(int(exp_dir), night),
+                    fibermap=extract_fibermap_data(int(exp_dir), night))
