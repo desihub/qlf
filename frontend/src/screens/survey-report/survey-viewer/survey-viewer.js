@@ -119,16 +119,27 @@ class SurveyViewer extends React.Component {
     document.title = 'Survey Report';
   }
 
+  formatDate = date => {
+    if (date.includes('T') && date.includes('-')) {
+      return date.split('T')[0].replace(/-/g, '');
+    }
+    return '';
+  };
+
   renderImage = () => {
     const { classes } = this.props;
     let url = '';
 
     if (
-      this.props.startDate !== '' &&
-      this.props.endDate !== '' &&
+      this.formatDate(this.props.startDate) !== '' &&
+      this.formatDate(this.props.endDate) !== '' &&
       this.props.program !== ''
     )
-      url = `${apiUrl}dashboard/get_footprint/`;
+      url = `${apiUrl}dashboard/get_footprint/?start=${this.formatDate(
+        this.props.startDate
+      )}&end=${this.formatDate(this.props.endDate)}&program=${
+        this.props.program
+      }`;
 
     if (url !== '')
       return (
