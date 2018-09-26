@@ -42,19 +42,18 @@ class Footprint():
 
         return plot
 
-    def render(self, exposures):
+    def render(self, exposures_radec):
         pointings_file = os.environ.get(
             'POINTINGS_FILE', '/app/spectro/noconstraints.dat')
 
         # you need to edit the original file to comment the header and join hourangle
         pointings = Table.read(pointings_file, format='ascii.commented_header')
-        exp = Exposure.objects.last()
         coords = SkyCoord(ra=pointings['RA']*u.hour,
                           dec=pointings['DEC']*u.deg, frame='icrs')
-        if not exposures:
+        if not exposures_radec['ra']:
             empty = SkyCoord(ra=[]*u.hour, dec=[]*u.deg, frame='icrs')
             return file_html(self.footprint(coords, empty), CDN, "DESI Footprint")
-        visibles = SkyCoord(ra=exposures.values_list('telra')*u.hour,
-                            dec=exposures.values_list('teldec')*u.deg, frame='icrs')
+        visibles = SkyCoord(ra=exposures_radec['ra']*u.hour,
+                            dec=exposures_radec['dec']*u.deg, frame='icrs')
 
         return file_html(self.footprint(coords, visibles), CDN, "DESI Footprint")

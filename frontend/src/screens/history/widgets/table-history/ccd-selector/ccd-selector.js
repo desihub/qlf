@@ -28,46 +28,44 @@ class CCDSelector extends React.Component {
     const { classes, anchorEl } = this.props;
 
     return (
-      <div>
-        <Popover
-          open={Boolean(anchorEl)}
-          anchorEl={anchorEl}
-          onClose={this.props.handleClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={this.props.handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Typography
+          className={classes.typography}
+          onClick={() => this.openViewer('ccd')}
         >
-          <Typography
-            className={classes.typography}
-            onClick={() => this.openViewer('ccd')}
-          >
-            CCD
-          </Typography>
-          <Typography
-            className={classes.typography}
-            onClick={() => this.openViewer('fiber')}
-          >
-            Fibers
-          </Typography>
-          <Typography
-            className={classes.typography}
-            onClick={() => this.openViewer('focus')}
-          >
-            Focus
-          </Typography>
-          <Typography
-            className={classes.typography}
-            onClick={() => this.openViewer('snr')}
-          >
-            SNR
-          </Typography>
-        </Popover>
-      </div>
+          CCD
+        </Typography>
+        <Typography
+          className={classes.typography}
+          onClick={() => this.openViewer('fiber')}
+        >
+          Fibers
+        </Typography>
+        <Typography
+          className={classes.typography}
+          onClick={() => this.openViewer('focus')}
+        >
+          Focus
+        </Typography>
+        <Typography
+          className={classes.typography}
+          onClick={() => this.openViewer('snr')}
+        >
+          SNR
+        </Typography>
+      </Popover>
     );
   }
 }

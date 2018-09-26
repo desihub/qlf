@@ -199,11 +199,11 @@ class SurveyReport extends React.Component {
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'semester'}>Semester</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'night'}>Last Night</MenuItem>
+            <MenuItem value={'week'}>Past Week</MenuItem>
+            <MenuItem value={'month'}>Past Month</MenuItem>
+            <MenuItem value={'semester'}>Past Semester</MenuItem>
+            <MenuItem value={'year'}>Past Year</MenuItem>
           </Select>
         </FormControl>
       </div>
