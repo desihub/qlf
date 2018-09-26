@@ -43,7 +43,9 @@ class ExposureMonitoring(Process):
             if not self.process or not self.process.running():
                 self.running.clear()
 
-            exposure = self.ics.last_exposure()
+            last_exposure = self.ics.last_exposure()
+            exposure = last_exposure['exposure']
+            fibermap = last_exposure['fibermap']
 
             if not exposure:
                 logger.debug('No exposure available')
@@ -62,7 +64,10 @@ class ExposureMonitoring(Process):
                 exposure.get('exposure_id')))
 
             # records exposure in database
-            QLFModels().insert_exposure(**exposure)
+            exposure_obj = QLFModels().insert_exposure(**exposure)
+            if exposure_obj:
+                fibermap['exposure'] = exposure_obj
+                QLFModels().insert_fibermap(**fibermap)
 
             if self.process and self.process.running():
                 logger.debug('Process {} is running.'.format(

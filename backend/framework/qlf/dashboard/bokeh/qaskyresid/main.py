@@ -5,7 +5,7 @@ from bokeh.layouts import row, column, widgetbox, gridplot
 
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_scalar_metrics, get_scalar_metrics_aux
+from dashboard.bokeh.helper import write_info
 
 from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 from bokeh.io import curdoc

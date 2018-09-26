@@ -10,7 +10,6 @@ from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter, Spacer
 from dashboard.bokeh.helper import write_description, write_info
-from dashboard.bokeh.helper import  get_scalar_metrics_aux
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import html_table, sort_obj, mtable, alert_table
 from dashboard.bokeh.helper import get_exposure_ids, \

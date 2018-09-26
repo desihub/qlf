@@ -19,7 +19,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 django.setup()
 
 from dashboard.models import (
-    QA, Camera, Configuration, Exposure, Job, Process
+    Camera, Configuration, Exposure, Job, Process, Fibermap
 )
 
 logger = logging.getLogger()
@@ -59,6 +59,23 @@ class QLFModels(object):
 
         # Save Process for this exposure
         return Exposure.objects.get(exposure_id=exposure_id)
+
+    def insert_fibermap(self, **kwargs):
+        exposure = kwargs.get('exposure')
+
+        # Check if fibermap is already registered
+        if not Fibermap.objects.filter(exposure=exposure):
+            fibermap = Fibermap(
+                exposure=exposure,
+                ra_obs=kwargs.get('ra_obs'),
+                dec_obs=kwargs.get('dec_obs'),
+                fiber=kwargs.get('fiber'),
+                objtype=kwargs.get('objtype')
+            )
+            fibermap.save()
+
+        # Save Process for this exposure
+        return Fibermap.objects.get(exposure=exposure)
 
     def insert_process(self, data, pipeline_name):
         """ Inserts initial data in process table. """
@@ -185,98 +202,22 @@ class QLFModels(object):
                 )
             )
 
-            for product in glob.glob(output_path):
-                qa = self.create_qa_bulk(product, job_id)
-                if not qa:
-                    logger.warning('Error to create QA: {}'.format(product))
-                    continue
-
-                qas.append(qa)
-
-            QA.objects.bulk_create(qas)
-
             logger.info('Job {} updated.'.format(job_id))
         except Exception as err:
             logger.error('Job {} failed.'.format(job_id))
             logger.error(err)
 
-    def create_qa_bulk(self, product, job_id):
-        """ Creates QAs in bulk """
-
-        with open(product, 'r') as product_file:
-            qa = json.load(product_file)
-            product_file.close()
-
-        name = os.path.basename(product)
-
-        for item in ('PANAME', 'METRICS', 'PARAMS'):
-            if item not in qa:
-                logger.warning('{} not found.'.format(item))
-                return None
-
-        paname = qa['PANAME']
-        metrics = jsonify(qa['METRICS'])
-        params = jsonify(qa['PARAMS'])
-
-        return QA(
-            name=name,
-            description='',
-            paname=paname,
-            metrics=metrics,
-            params=params,
-            job_id=job_id
-        )
-
-    def update_qa_tests(self, name, qa_tests):
-        """ Update QA tests """
-
-        Camera.objects.filter(camera=name).update(
-            qa_tests=qa_tests
-        )
-
-    def insert_qa(self, name, paname, metrics, params, job_id, force=False):
-        """ Inserts table """
-
-        # Register for QA results for the first time
-        qa = QA(
-            name=name,
-            description='',
-            paname=paname,
-            metrics=metrics,
-            params=params,
-            job_id=job_id
-        )
-        qa.save()
 
     def get_last_configuration(self):
         return Configuration.objects.latest('pk')
 
-    def get_qa(self, process_id, cam, qa_name):
-        """ Gets QA """
-        try:
-            qa = Process.objects.get(pk=process_id).process_jobs.get(
-                camera_id=cam).job_qas.get(name=qa_name)
-        except QA.DoesNotExist:
-            qa = None
-
-        return qa
-
-    def get_merged_qa(self, process_id, cam):
-        """ Gets QA """
-        try:
-            qa = Process.objects.get(pk=process_id).process_jobs.get(
-                camera_id=cam).output
-        except QA.DoesNotExist:
-            qa = None
-
-        return qa
 
     def get_output(self, process_id, cam):
         """ Gets QA """
         try:
             obj = Job.objects.filter(process_id=process_id).get(camera=cam)
             qa = obj.output
-        except QA.DoesNotExist:
+        except Job.DoesNotExist:
             qa = None
 
         return qa

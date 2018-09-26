@@ -12,7 +12,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 
 django.setup()
 
-from dashboard.models import Job, Process, QA, Exposure
+from dashboard.models import Job, Process, Exposure
 import random
 from datetime import datetime
 
@@ -57,19 +57,6 @@ class MockData():
                 version=job.version
             )
             new_job.save()
-            self.generate_qas(new_job)
-
-    def generate_qas(self, job):
-        for qa in self.base_process.process_jobs.get(camera=job.camera).job_qas.all():
-            new_qa = QA(
-                name=qa.name,
-                metrics=qa.metrics,
-                params=qa.params,
-                job_id=job.pk,
-                paname=qa.paname
-            )
-            new_qa.save()
-
 
 MockData().generate_exposure()
 # for i in range(100):

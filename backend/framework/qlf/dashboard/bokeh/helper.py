@@ -3,8 +3,9 @@ import logging
 import requests
 from furl import furl
 from bokeh.plotting import Figure
-from dashboard.models import Process, QA, Job
+from dashboard.models import Process, Job
 from scalar_metrics import LoadMetrics
+from qlf_models import QLFModels
 import sys
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
@@ -97,80 +98,20 @@ def get_cameras():
     return requests.get(api['camera'], params={'paginate': 'null'}).json()
 
 
-def get_scalar_metrics(process_id, cam):
-    """
-    Returns cam scalar metrics
-    """
-
-    scalar_metrics = dict()
-    try:
-        process = Process.objects.get(pk=process_id)
-        exposure = process.exposure
-        metrics, tests = LoadMetrics(process_id, cam, process.exposure_id,
-                                        exposure.night).Load_metrics_n_tests()
-        scalar_metrics['metrics'] = metrics
-        scalar_metrics['tests'] = tests
-    except Exception as err:
-        logger.error(err)
-        logger.error('load_scalar_metrics error')
-    return scalar_metrics
-
-
 def get_merged_qa_scalar_metrics(process_id, cam):
     """
     Returns cam scalar metrics
     """
 
-    scalar_metrics = dict()
-    try:
-        obj = Job.objects.filter(process_id=process_id).get(camera=cam)
-        scalar_metrics = obj.output
-    except QA.DoesNotExist:
-        scalar_metrics = None
-    return scalar_metrics
-
-
-def get_scalar_metrics_aux(process_id, cam):
-    """
-    Returns cam scalar metrics from the json
-    files obtained by Singulani.
-    Just a test for desispec 0.21.0
-    """  
-    #qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
-    #!folder = "/home/foliveira/qlf-root/dataql/ql-021-e/20180701/{:08d}".format(5)
-    #!met = {} 
-    #!par = {}
-    #import time
-    #f = open('timer','w')
-    
-    # t1 = time.time()
+    # scalar_metrics = dict()
     # try:
-    #     process = Process.objects.get(pk=process_id)
-    #     exposure = process.exposure
-    #     mergedqa = LoadMetrics(process_id, cam, process.exposure_id
-    #                 ,exposure.night).load_output()
-    # except Exception as err:
-    #     logger.info(err)
-    #     sys.exit('Could not load merged QA')
-    # f.write('db:    {}\n'.format(time.time()-t1))
+    #     obj = Job.objects.filter(process_id=process_id).get(camera=cam)
+    #     scalar_metrics = obj.output
+    # except Job.DoesNotExist:
+    #     scalar_metrics = None
+    # return scalar_metrics
+    return QLFModels().get_output(process_id, cam)
 
-    #t0 = time.time()
-    try:
-        import json
-        process = Process.objects.get(pk=process_id)
-        exposure = process.exposure
-        folder = "/app/spectro/redux/exposures/{}/{:08d}".format(
-            exposure.night, process.exposure_id)#process_id)
-
-        file = "ql-mergedQA-{}-{:08d}.json".format(cam, process.exposure_id)
-        mergedqa = json.load(open('{}/{}'.format(folder, file)))
-    except Exception as err:
-        sys.exit(err)
-        #f.write('Json error:{}'.format(err))
-    #f.write('json: {}\n'.format(time.time()-t0))
-
-    #f.close()   
-    return mergedqa
 
 def load_fits(process_id, cam):
     '''Load reduced fits '''

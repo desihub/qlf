@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from .models import Job, Exposure, Camera, QA, Process, Configuration, ProcessComment
+from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap
 from .utils import get_date
 from clients import get_exposure_monitoring
 
@@ -29,25 +29,6 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
-
-
-class QASerializer(DynamicFieldsModelSerializer):
-
-    links = serializers.SerializerMethodField()
-
-    class Meta:
-        model = QA
-        fields = (
-            'pk', 'name', 'description', 'paname',
-            'metrics', 'params', 'job', 'links'
-        )
-
-    def get_links(self, obj):
-        request = self.context['request']
-        return {
-            'self': reverse('qa-detail', kwargs={'pk': obj.pk},
-                            request=request),
-         }
 
 
 class JobSerializer(DynamicFieldsModelSerializer):
@@ -106,6 +87,22 @@ class ExposureSerializer(DynamicFieldsModelSerializer):
         return {
             'self': reverse('exposure-detail', kwargs={'pk': obj.pk}),
          }
+
+
+class FibermapSerializer(DynamicFieldsModelSerializer):
+
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Fibermap
+        fields = (
+            'ra_obs', 'dec_obs', 'fiber', 'objtype', 'links'
+        )
+
+    def get_links(self, obj):
+        return {
+            'self': reverse('fibermap-detail', kwargs={'pk': obj.pk}),
+        }
 
 
 class CameraSerializer(DynamicFieldsModelSerializer):

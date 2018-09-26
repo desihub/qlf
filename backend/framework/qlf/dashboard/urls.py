@@ -11,9 +11,9 @@ api_router = DefaultRouter()
 api_router.register(r'job', views.JobViewSet)
 api_router.register(r'process', views.ProcessViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
+api_router.register(r'fibermap', views.FibermapViewSet)
 api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'process_comment', views.ProcessCommentViewSet)
-api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'last_process', views.LastProcessViewSet, 'monitor')
 api_router.register(r'distinct_nights',
                     views.DistinctNightsViewSet, 'distinct_nights')
@@ -29,7 +29,6 @@ api_router.register(r'current_configuration',
 api_router.register(r'set_configuration',
                     views.SetConfigurationViewSet,
                     'set_configuration')
-api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
 api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'exposures_date_range',
