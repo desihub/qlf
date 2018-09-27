@@ -10,6 +10,9 @@ import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import flavors from '../../../../flavors';
+
+console.log(flavors);
 
 const headerSize = '11px';
 
@@ -48,6 +51,7 @@ class Stages extends Component {
     renderHeader: PropTypes.bool.isRequired,
     classes: PropTypes.object,
     pipelineRunning: PropTypes.string,
+    flavor: PropTypes.string,
   };
 
   state = {
@@ -82,22 +86,21 @@ class Stages extends Component {
     }
   };
 
-  renderTableHeader = () => {
+  renderTableHeader = flavor => {
     return (
       <TableHead>
         <TableRow style={{ height: this.state.columnHeight }}>
-          <Tooltip title={'Pre Processing'} placement="bottom">
-            <TableCell style={styles.header}>Step 1</TableCell>
-          </Tooltip>
-          <Tooltip title={'Spectral Extraction'} placement="bottom">
-            <TableCell style={styles.header}>Step 2</TableCell>
-          </Tooltip>
-          <Tooltip title={'Fiber Flattening'} placement="bottom">
-            <TableCell style={styles.header}>Step 3</TableCell>
-          </Tooltip>
-          <Tooltip title={'Sky Subtraction'} placement="bottom">
-            <TableCell style={styles.header}>Step 4</TableCell>
-          </Tooltip>
+          {flavors[flavor].step_list.map((step, idx) => {
+            return (
+              <Tooltip
+                key={`stageHeader${idx}`}
+                title={step.display_name}
+                placement="bottom"
+              >
+                <TableCell style={styles.header}>Step {idx + 1}</TableCell>
+              </Tooltip>
+            );
+          })}
         </TableRow>
       </TableHead>
     );
@@ -125,6 +128,7 @@ class Stages extends Component {
   };
 
   render() {
+    const flavor = this.props.flavor ? this.props.flavor : 'science';
     const stage_status = _.map(_.range(10), function() {
       return { pre: '', spec: '', fib: '', sky: '' };
     });
@@ -151,7 +155,7 @@ class Stages extends Component {
             <div style={styles.rightCol}>
               <div style={styles.flex}>
                 <Table id="stages" height={this.state.height} width={'10px'}>
-                  {this.renderTableHeader()}
+                  {this.renderTableHeader(flavor)}
                   <TableBody>
                     {stage_status.map((row, index) => (
                       <Tooltip

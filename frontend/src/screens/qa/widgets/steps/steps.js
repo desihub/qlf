@@ -7,8 +7,10 @@ import Status from '../../../../components/status/status';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
+import flavors from '../../../../flavors';
 
 const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
+
 const stepsQa = {
   preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
   extract: ['countbins'],
@@ -22,7 +24,7 @@ const styles = {
   container: {
     flex: 1,
     display: 'grid',
-    gridTemplateColumns: 'auto auto auto auto auto',
+    gridTemplateColumns: 'auto auto auto auto',
   },
   gridItem: {
     textAlign: 'center',
@@ -288,7 +290,19 @@ class Steps extends Component {
     );
   };
 
+  renderTitles = (step, index) => {
+    return (
+      <div key={`ì${index}`} style={styles.gridItem}>
+        <Tooltip title={step.display_name} placement="top">
+          <span style={styles.step}>Step {index + 1}</span>
+        </Tooltip>
+      </div>
+    );
+  };
+
   render() {
+    const flavor = this.props.flavor ? this.props.flavor : 'science';
+    const chosen = flavors[flavor];
     return (
       <div>
         {this.renderTooltip()}
@@ -300,47 +314,24 @@ class Steps extends Component {
                 <Icon style={styles.icon}>info</Icon>
               </Tooltip>
             </div>
-            <div style={styles.gridItem}>
-              <Tooltip title={'Pre Processing'} placement="top">
-                <span style={styles.step}>Step 1</span>
-              </Tooltip>
-            </div>
-            <div style={styles.gridItem}>
-              <Tooltip title={'Spectral Extraction'} placement="top">
-                <span style={styles.step}>Step 2</span>
-              </Tooltip>
-            </div>
-            <div style={styles.gridItem}>
-              <Tooltip title={'Fiber Flattening'} placement="top">
-                <span style={styles.step}>Step 3</span>
-              </Tooltip>
-            </div>
-            <div style={styles.gridItem}>
-              <Tooltip title={'Sky Subtraction'} placement="top">
-                <span style={styles.step}>Step 4</span>
-              </Tooltip>
-            </div>
-            <div style={styles.gridArm}>
-              <span style={styles.arm}>b</span>
-            </div>
-            <div style={styles.gridItem}>{this.renderPieChart(0, 0)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(0, 1)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(0, 2)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(0, 3)}</div>
-            <div style={styles.gridArm}>
-              <span style={styles.arm}>r</span>
-            </div>
-            <div style={styles.gridItem}>{this.renderPieChart(1, 0)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(1, 1)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(1, 2)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(1, 3)}</div>
-            <div style={styles.gridArm}>
-              <span style={styles.arm}>z</span>
-            </div>
-            <div style={styles.gridItem}>{this.renderPieChart(2, 0)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(2, 1)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(2, 2)}</div>
-            <div style={styles.gridItem}>{this.renderPieChart(2, 3)}</div>
+            {chosen.step_list.map((step, i) => {
+              return this.renderTitles(step, i);
+            })}
+            {arms.map((arm, armIdx) => {
+              const pies = chosen.step_list.map((_step, stepIdx) => {
+                return (
+                  <div key={`s${stepIdx}`} style={styles.gridItem}>
+                    {this.renderPieChart(armIdx, stepIdx)}
+                  </div>
+                );
+              });
+              return [
+                <div key={`a${armIdx}`} style={styles.gridArm}>
+                  <span style={styles.arm}>{arm}</span>
+                </div>,
+                pies,
+              ];
+            })}
           </div>
         </Card>
       </div>

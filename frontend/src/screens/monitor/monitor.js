@@ -187,6 +187,7 @@ export default class Monitor extends Component {
               openDialog={this.openDialog}
               renderHeader={true}
               pipelineRunning={this.props.pipelineRunning}
+              flavor={this.props.flavor}
             />
             <Stages
               status={this.state.camerasStages.r}
@@ -194,6 +195,7 @@ export default class Monitor extends Component {
               openDialog={this.openDialog}
               renderHeader={false}
               pipelineRunning={this.props.pipelineRunning}
+              flavor={this.props.flavor}
             />
             <Stages
               status={this.state.camerasStages.z}
@@ -201,6 +203,7 @@ export default class Monitor extends Component {
               openDialog={this.openDialog}
               renderHeader={false}
               pipelineRunning={this.props.pipelineRunning}
+              flavor={this.props.flavor}
             />
           </div>
           <div style={styles.gridItem}>
