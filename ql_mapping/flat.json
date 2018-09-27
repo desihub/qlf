@@ -9,22 +9,22 @@
       "qa_list": [
         {
           "display_name": "Check HDUs",
-          "key": "HDU_STATUS",
+          "status_key": "CHECKHDUS_STATUS",
           "bands": ["b", "r", "z"]
         },
         {
           "display_name": "Noise AMP",
-          "key": "NOISE_STATUS",
+          "status_key": "NOISE_AMP_STATUS",
           "bands": ["b", "r", "z"]
         },
         {
           "display_name": "Bias AMP",
-          "key": "BIAS_STATUS",
+          "status_key": "BIAS_AMP_STATUS",
           "bands": ["b", "r", "z"]
         },
         {
-          "display_name": "LIFTFRAC AMP",
-          "key": "LIFTFRAC_STATUS",
+          "display_name": "LITFRAC AMP",
+          "status_key": "LITFRAC_AMP_STATUS",
           "bands": ["b", "r", "z"]
         }
       ]
@@ -37,12 +37,12 @@
       "qa_list": [
         {
           "display_name": "NGOODFIB",
-          "key": "NGOODFIB_STATUS",
+          "status_key": "NGOODFIB_STATUS",
           "bands": ["b", "r", "z"]
         },
         {
-          "display_name": "XWSHIFTS",
-          "key": "XWSHIFTS_STATUS",
+          "display_name": "XYSHIFTS",
+          "status_key": "XYSHIFTS_STATUS",
           "bands": ["b", "r", "z"]
         }
       ]
@@ -55,28 +55,8 @@
       "qa_list": [
         {
           "display_name": "CHECKFLAT",
-          "key": "PEAKCOUNT_STATUS",
+          "status_key": "CHECKFLAT_STATUS",
           "bands": ["b", "r", "z"]
-        },
-        {
-          "display_name": "SKYCONT",
-          "key": "SKYCONT_STATUS",
-          "bands": ["b", "r", "z"]
-        },
-        {
-          "display_name": "DELTAMAG TGT",
-          "key": "DELTAMAG_STATUS",
-          "bands": ["b", "r", "z"]
-        },
-        {
-          "display_name": "FIDSNR TGT",
-          "key": "FIDSNR_STATUS",
-          "bands": ["b", "r", "z"]
-        },
-        {
-          "display_name": "SKYRBAND TGT",
-          "key": "SKYRBAND_STATUS",
-          "bands": ["r"]
         }
       ]
     }
