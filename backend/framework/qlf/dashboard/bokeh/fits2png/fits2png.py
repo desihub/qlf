@@ -7,6 +7,12 @@ from bokeh.embed import file_html
 from bokeh.models import LogColorMapper, ColorMapper
 import numpy as np
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+
+
 desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
 
@@ -19,7 +25,7 @@ class Fits2png:
         self.exposure = exposure
 
     def convert_fits2png(self):
-        f0 = open('dbg2','w'); import time; t0=time.time()
+        # f0 = open('dbg2','w'); import time; t0=time.time()
         exp_zfill = str(self.exposure).zfill(8)
 
         if self.processing == 'raw':
@@ -59,32 +65,44 @@ class Fits2png:
             # p.image(image=[img_data.data], x=0, y=0, dw=img_data.data.shape[0] -
             #         1, dh=img_data.data.shape[1]-1, palette="Greys256")
 
-            import matplotlib
-            matplotlib.use("Agg")
-            import matplotlib.pyplot as plt
-            from matplotlib.colors import LogNorm
+
             img_data = img[1].data
+
             if np.amin(img_data)==0: min=np.amax(img_data)/1.e4
             else: min=np.amin(img_data)
-            f0.write(str(np.amin(img_data)) + ' vmax= ' +str(np.amax(img_data)))
+
+            # f0.write(str(np.amin(img_data)) + ' vmax= ' +str(np.amax(img_data)))
             plt.figure(figsize=(15,5))
 
             plt.imshow(img_data, cmap='gray', 
                  norm=LogNorm(vmin= min, vmax=np.amax(img_data)))
             plt.tight_layout()
-            plt.savefig("/app/framework/spec.png")
-            import os
-            f0.write('\n\n\n\n CWR:'+str(os.listdir()) +str(os.getcwd()))
+            ofn='{}/exposures/{}/{}/spec.png'.format(
+                desi_spectro_redux, self.night, exp_zfill)
+            plt.savefig(ofn)
 
-            p = Figure(x_range=(0,10), y_range=(0,10))
-            url= "file:///app/framework/spec.png"
-            # url="https://tpc.googlesyndication.com/simgad/10268872695196585037" #non-local for test
-            p.image_url(url=[url], x=0, y=0, w=10, h=10,
-                anchor="bottom_left")
+            # Try the options:
+            url= ["""<img src="%s">"""%ofn,
+                 ofn, 
+                 "spec.png"][1]
 
+            p = Figure(x_range=(0,200), y_range=(0,200))
+            
+            p.image_url( url= [ofn],
+             x=100, y=100, w=180, h=100, anchor="center")
+            p.plot_height=p.plot_width//2
 
+            p.xaxis.major_tick_line_color = None  
+            p.xaxis.minor_tick_line_color = None  
+            p.yaxis.major_tick_line_color = None  
+            p.yaxis.minor_tick_line_color = None 
+            p.xaxis.major_label_text_font_size = '0pt'  # preferred method for removing tick labels
+            p.yaxis.major_label_text_font_size = '0pt'
+            p.xgrid.grid_line_color = None
+            p.ygrid.grid_line_color = None
+        #     f0.write("""<img src="%s">"""%ofn)
 
-        f0.write( "Execution time: "+ str( time.time()-t0 ))
+        # f0.write( "Execution time: "+ str( time.time()-t0 ))
 
         return file_html(p, CDN, "png")
 
