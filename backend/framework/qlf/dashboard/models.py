@@ -1,4 +1,4 @@
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
@@ -183,21 +183,13 @@ class Job(models.Model):
         return str(self.name)
 
 
-class QA(models.Model):
-    """QA information"""
-
-    name = models.CharField(max_length=45, help_text='QA name')
-    description = models.TextField(help_text='QA Description')
-    paname = models.CharField(
-        max_length=45,
-        help_text='Associate PA name'
-    )
-    metrics = JSONField(help_text='JSON structure with the QA result')
-    params = JSONField(help_text='JSON structure with the QA tests')
-    job = models.ForeignKey(Job, related_name='job_qas')
-
-    def __str__(self):
-        return str(self.name)
+class Fibermap(models.Model):
+    """Fibermap information"""
+    ra_obs = ArrayField(models.FloatField())
+    dec_obs = ArrayField(models.FloatField())
+    fiber = ArrayField(models.FloatField())
+    objtype = ArrayField(models.CharField(max_length=15))
+    exposure = models.ForeignKey(Exposure, related_name='fibermap_exposure')
 
 
 class ProcessComment(models.Model):

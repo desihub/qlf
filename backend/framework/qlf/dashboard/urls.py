@@ -11,9 +11,9 @@ api_router = DefaultRouter()
 api_router.register(r'job', views.JobViewSet)
 api_router.register(r'process', views.ProcessViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
+api_router.register(r'fibermap', views.FibermapViewSet)
 api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'process_comment', views.ProcessCommentViewSet)
-api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'last_process', views.LastProcessViewSet, 'monitor')
 api_router.register(r'distinct_nights',
                     views.DistinctNightsViewSet, 'distinct_nights')
@@ -29,7 +29,6 @@ api_router.register(r'current_configuration',
 api_router.register(r'set_configuration',
                     views.SetConfigurationViewSet,
                     'set_configuration')
-api_router.register(r'qa', views.QAViewSet)
 api_router.register(r'exposure', views.ExposureViewSet)
 api_router.register(r'camera', views.CameraViewSet)
 api_router.register(r'exposures_date_range',
@@ -54,6 +53,7 @@ urlpatterns = [
         views_bokeh.get_footprint, name='get_footprint'),
     url(r'^dashboard/fits_to_png', views_bokeh.fits_to_png, name='fits_to_png'),
     url(r'^dashboard/load_series', views_bokeh.load_series, name='load_series'),
+    url(r'^dashboard/footprint_object_type_count', views_bokeh.footprint_object_type_count, name='footprint_object_type_count'),
     url(r'^dashboard/load_qa', views_bokeh.load_qa, name='load_qa'),
     url(r'^dashboard/get_camera_log', views.get_camera_log, name='get_camera_log'),
     url(r'^dashboard/(?P<bokeh_app>\w+)/$',
