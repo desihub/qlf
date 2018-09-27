@@ -230,13 +230,13 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             return time.mjd
 
     def get_last_exposure_process_id(self, obj):
-        process = Process.objects.all().filter(exposure=obj.pk)
+        process = Process.objects.filter(exposure=obj.pk)
         if not process:
             return None
         return process.last().pk
 
     def get_last_exposure_process_qa_tests(self, obj):
-        process = Process.objects.all().filter(exposure=obj.pk)
+        process = Process.objects.filter(exposure=obj.pk)
         if not process:
             return None
         return process.last().qa_tests

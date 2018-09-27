@@ -83,6 +83,12 @@ class LoadMetrics:
                 return check
         return None
 
+    def load_merged_qa(self):
+        data = None
+        if self.process_id is not None:
+            data = self.models.get_output(self.process_id, self.cam)
+        return data
+
     def update_status(self, qa):
         index = -1
         current_step = None

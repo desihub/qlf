@@ -322,13 +322,15 @@ class App extends React.Component {
 
   render() {
     const containerStyle = this.state.displayHeaders ? styles.container : null;
+    const headerStyle =
+      this.renderRouteName() === '' ? styles.headerContainer : null;
     const useGrid = this.renderRouteName() === '' ? null : styles.grid;
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
             <div style={useGrid}>
-              <div style={styles.headerContainer}>
+              <div style={headerStyle}>
                 {this.renderRouteName() === '' ? (
                   <div style={styles.logoDesi}>
                     <img src={logo} alt={'logo'} style={styles.logo} />

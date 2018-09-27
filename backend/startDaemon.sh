@@ -13,4 +13,4 @@ done
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
 export DESIMODEL=$QLF_ROOT/desimodel
 
-python -Wi framework/bin/servers.py &> $QLF_ROOT/logs/servers.log
+python -Wi framework/bin/servers.py

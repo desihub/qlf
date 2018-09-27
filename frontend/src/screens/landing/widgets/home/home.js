@@ -47,6 +47,10 @@ export default class Home extends React.Component {
       process.env.REACT_APP_OFFLINE === 'true'
         ? null
         : () => this.navigateTo('/monitor-realtime');
+    const navigateToConfiguration =
+      process.env.REACT_APP_OFFLINE === 'true'
+        ? null
+        : () => this.navigateTo('/configuration');
     return (
       <div>
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
@@ -119,10 +123,7 @@ export default class Home extends React.Component {
               subtitle="Show the overall progress and performance of survey"
             />
           </a>
-          <a
-            style={styles.linkStyle}
-            onClick={() => this.navigateTo('/configuration')}
-          >
+          <a style={styles.linkStyle} onClick={navigateToConfiguration}>
             <Card
               icon="ViewModule"
               title="Configuration"
