@@ -4,6 +4,7 @@ import logging
 import math
 import os
 import sys
+from datetime import datetime, timedelta
 
 import django
 import numpy
@@ -21,7 +22,7 @@ django.setup()
 from dashboard.models import (
     QA, Camera, Configuration, Exposure, Job, Process
 )
-from django.db.models import Q
+from django.db.models import F
 
 logger = logging.getLogger()
 
@@ -331,50 +332,42 @@ class QLFModels(object):
 
         return exposure
 
-    def get_outputs_json_chunk(self, path_keys, begin_date=None, end_date=None,
-        filters=list(), spacer='->'):
-        """ Obtains specific chunk of QA outputs from the database.
+    def get_outputs_json_chunk_by_camera(self, path_keys, camera, begin_date=None, end_date=None):
+        """ Obtains specific chunk of QA outputs by camera from the database.
         
         Arguments:
-            path_keys {str} -- Path to specific QA outputs
-                e.g.: "output->GENERAL_INFO->B_PEAKS"
+            path_keys {str} -- path to specific QA outputs
+                e.g.: "GENERAL_INFO->B_PEAKS"
+            camera {str} -- selected camera
         
         Keyword Arguments:
             begin_date {str} -- obtains entries beginning this date (default: None)
             end_date {str} -- obtains entries until this date (default: None)
-            filters {list} -- list of dict containing the keys:
-                'path_keys': path to specific QA outputs to be filtered
-                'value': value to be filtered
-                e.g.: [{
-                    'path_keys': "output->GENERAL_INFO->B_PEAKS"
-                    'value': [3914.4, 5199.3, 5201.8]
-                }, ... ]
-            spacer {str} -- spacer between keys
         """
 
-        seq_keys = path_keys.split(spacer)
-
-        dict_filters = dict()
-
-        filters_q = list()
+        jobs_obj = Job.objects.filter(camera=camera)
 
         if begin_date:
-            filters_q.append(Q())
+            begin_date = datetime.strptime(begin_date, "%Y-%m-%d")
+            jobs_obj = jobs_obj.filter(process__exposure__dateobs__gte=begin_date)
+            
+        if end_date:
+            end_date = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
+            jobs_obj = jobs_obj.filter(process__exposure__dateobs__lte=end_date)
 
+        output_path = 'output'
 
-        for item in filters:
-            filter_path = item.get('path_keys').replace(spacer, '__')
-            filters_q.append()
+        for key in path_keys.split('->'):
+            output_path += "->'{}'".format(key)
 
-        j = Job.objects.filter(output__GENERAL_INFO__B_PEAKS=[3914.4, 5199.3, 5201.8])
-        jj = j.extra(select={"bpeaks": "output->'GENERAL_INFO'->'B_PEAKS'"})
-        jj.values("bpeaks", "camera")
-
-
-
-
-
-
+        return jobs_obj.extra(
+            select={"value": output_path}
+        ).annotate(
+            exposure_id=F("process__exposure__exposure_id"),
+            dateobs=F("process__exposure__dateobs")
+        ).values(
+            "value", "camera", "exposure_id", "dateobs"
+        ).distinct()
 
     def delete_all_processes(self):
         """ Delete all processes """
@@ -416,7 +409,3 @@ def jsonify(data):
         if math.isnan(data) or math.isinf(data):
             data = -9999
     return data
-
-
-if __name__ == '__main__':
-    qlf = QLFModels()
