@@ -63,6 +63,26 @@ def embed_bokeh(request, bokeh_app):
     return response
 
 
+def filter_processed_exposures(start, end, program):
+    start_date = datetime.datetime.strptime(start, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc)
+    end_date = datetime.datetime.strptime(end, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc) + datetime.timedelta(days=1)
+
+    if not program or program == 'all':
+        exposures = Exposure.objects.filter(
+            dateobs__gte=start_date, dateobs__lte=end_date)
+    else:
+        exposures = Exposure.objects.filter(
+            program=program, dateobs__gte=start_date, dateobs__lte=end_date)
+
+    processed_exposures = list()
+    for exposure in exposures:
+        if list(Process.objects.filter(exposure_id=exposure.pk)) != []:
+            processed_exposures.append(exposure)
+
+    return processed_exposures
+
 def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
@@ -155,11 +175,14 @@ def load_series(request):
     yaxis = request.GET.get('yaxis')
     start = request.GET.get('start')
     end = request.GET.get('end')
+
+    exposures = filter_processed_exposures(start, end)
+
     try:
         if plot == 'timeseries':
-            series_html = TimeSeries(yaxis, start, end).render()
+            series_html = TimeSeries(yaxis, start, end, exposures).render()
         elif plot == 'regression':
-            series_html = Regression(xaxis, yaxis, start, end).render()
+            series_html = Regression(xaxis, yaxis, start, end, exposures).render()
         else:
             series_html = "Couldn't load plot"
     except Exception as err:

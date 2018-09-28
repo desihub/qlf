@@ -21,10 +21,11 @@ logger = get_logger(
 
 
 class TimeSeries():
-    def __init__(self, yaxis, start, end):
+    def __init__(self, yaxis, start, end, exposures):
         self.yaxis = yaxis
         self.start = start
         self.end = end
+        self.exposures = exposures
 
     def render(self):
         dic = {'2018-08-11': {'Yes': 157, 'Not sure': 2, 'No': 1}, '2017-08-22': {'Yes': 142, 'Not sure': 12}, '2017-08-01': {'Yes': 112, 'Others': 10, 'Not sure': 4, 'No': 9}, '2017-08-17': {'Yes': 117, 'No': 12, 'Not sure': 11, 'Others': 2}, '2017-08-25': {'Yes': 61, 'Not sure': 9}, '2017-08-23': {'Yes': 268, 'Not sure': 20, 'No': 1}, '2017-07-10': {'Yes': 123, 'Not sure': 4, 'No': 1}, '2017-08-10': {'Yes': 343, 'Not sure': 20}, '2017-07-13': {'Yes': 116, 'Others': 1, 'Not sure': 14, 'No': 2}, '2017-07-14': {'Yes': 255,
