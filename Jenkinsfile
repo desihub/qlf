@@ -15,9 +15,7 @@ pipeline {
         }
         stage('Test Backend') {
             steps {
-                dir('backend'){
-                    sh 'docker-compose run -u $(id -u jenkins) qlf ./test.sh'
-                }
+                sh 'docker-compose run -u $(id -u jenkins) app ./test.sh'
             }
         }
         stage('Test Frontend') {
