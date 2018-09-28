@@ -105,7 +105,7 @@ export default class Home extends React.Component {
           </a>
           <a
             style={styles.linkStyle}
-            onClick={() => this.navigateTo('/under-construction')}
+            onClick={() => this.navigateTo('/observing-conditions')}
           >
             <Card
               icon="Cloud"

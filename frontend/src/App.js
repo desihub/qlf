@@ -188,6 +188,8 @@ class App extends React.Component {
         return '- SNR Viewer';
       case '/trend-analysis':
         return '- Trend Analysis';
+      case '/observing-conditions':
+        return '- Observing Conditions';
       default:
         return '';
     }

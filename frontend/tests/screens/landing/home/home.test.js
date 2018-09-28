@@ -143,7 +143,7 @@ describe('Landing Home', () => {
       .find('a')
       .at(5)
       .simulate('click');
-    expect(updateUrl).toBeCalledWith('/under-construction');
+    expect(updateUrl).toBeCalledWith('/observing-conditions');
     updateUrl.mockReset();
     wrapper
       .find('a')

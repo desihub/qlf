@@ -12,8 +12,9 @@ const apiUrl = process.env.REACT_APP_API;
 
 const styles = {
   iframe: {
-    width: '45vw', //'calc(100vw - 710px)',
+    width: '45vw',
     height: 'calc(100vh - 151px)',
+    margin: '0 auto',
   },
   preview: {
     display: 'flex',
@@ -25,6 +26,7 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'auto auto',
     height: 'calc(100vh - 151px)',
+    width: '100%',
   },
   tableViewer: {
     //width: '400px',

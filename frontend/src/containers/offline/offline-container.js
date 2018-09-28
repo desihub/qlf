@@ -23,6 +23,7 @@ import UnderConstruction from '../../screens/under-construction/under-constructi
 import SelectionViewer from '../../screens/selection-viewer/selection-viewer';
 import TrendAnalysis from '../../screens/trend-analysis/trend-analysis';
 import SurveyReport from '../../screens/survey-report/survey-report';
+import ObservingConditions from '../../screens/observing-conditions/observing-conditions';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -141,6 +142,15 @@ class OfflineContainer extends Component {
         <Route path="/fiber-viewer" render={() => <SelectionViewer />} />
         <Route path="/focus-viewer" render={() => <SelectionViewer />} />
         <Route path="/snr-viewer" render={() => <SelectionViewer />} />
+        <Route
+          path="/observing-conditions"
+          render={() => (
+            <ObservingConditions
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
+            />
+          )}
+        />
         <Route
           path="/trend-analysis"
           render={() => (
