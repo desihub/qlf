@@ -20,6 +20,7 @@ logger = get_logger(
 
 class QLFState:
     def __init__(self):
+        self.load_flavors()
         self.camera_status_generator = CameraStatus(self)
         self.reset_state()
         self.update_pipeline_status()
@@ -27,6 +28,17 @@ class QLFState:
             self.daemon_running = False
         else:
             self.daemon_running = True
+
+    def load_flavors(self):
+        flavors = ['science', 'arc', 'flat']
+        self.flavor_stages = dict()
+        for flavor in flavors:
+            flavor_path = os.path.join(qlf_root, "framework", "ql_mapping", "{}.json".format(flavor))
+            try:
+                stages_json = open(flavor_path).read()
+                self.flavor_stages[flavor] = json.loads(stages_json)
+            except Exception as err:
+                logger.error("flavor file not found {}".format(err))
 
     def update_pipeline_log(self):
         self.pipelinelog = self.get_pipeline_log()
@@ -110,6 +122,7 @@ class QLFState:
             )
             self.exposure_id = self.current_process.exposure_id
             self.flavor = self.current_process.exposure.flavor
+            self.stages = self.flavor_stages[self.flavor]
             self.current_process_id = self.current_process.id
             date = get_date(self.exposure_id)
             self.date_time = date.value if date else ''

@@ -9,14 +9,14 @@ import { withStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
 import flavors from '../../../../flavors';
 
-const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
+// const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
 
-const stepsQa = {
-  preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
-  extract: ['countbins'],
-  fiberfl: ['skycont', 'skypeak'],
-  skysubs: ['integ', 'skyresid', 'snr'],
-};
+// const stepsQa = {
+//   preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
+//   extract: ['countbins'],
+//   fiberfl: ['skycont', 'skypeak'],
+//   skysubs: ['integ', 'skyresid', 'snr'],
+// };
 
 const arms = ['b', 'r', 'z'];
 
@@ -204,10 +204,22 @@ class Steps extends Component {
       if (Object.keys(test)[0] === camera) return test[camera];
       return null;
     });
+
+    const steps = [];
+    const stepsQa = {};
+
+    flavors[this.props.flavor].step_list.map(step => {
+      steps.push(step.name);
+      stepsQa[step.name] = step.qa_list.map(qa => {
+        return qa.display_name;
+      });
+      return null;
+    });
+
     let message = '';
     if (cameraQa) {
       if (cameraQa[camera][steps[step]]) {
-        cameraQa[camera][steps[step]].steps_status.forEach((val, idx) => {
+        cameraQa[camera][steps[step]].forEach((val, idx) => {
           message +=
             stepsQa[steps[step]][idx] + ': ' + val.toLowerCase() + ' \n';
         });

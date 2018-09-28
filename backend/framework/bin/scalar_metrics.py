@@ -42,6 +42,19 @@ class LoadMetrics:
 
         self.models = QLFModels()
 
+        # stages = self.load_flavors()
+
+        # self.steps_dic = dict()
+        # self.qas_status = dict()
+        # self.alert_keys = dict()
+        # for step in stages['step_list']:
+        #     self.steps_dic[step['name']] = list()
+        #     self.qas_status[step['name']] = list()
+        #     for qa in step['qa_list']:
+        #         self.steps_dic[step['name']].append(qa['name'])
+        #         self.qas_status[step['name']].append('None')
+        #         self.alert_keys[qa['name']] = qa['status_key']
+
         self.steps_list = ['preproc', 'extract', 'fiberfl', 'skysubs']
 
         self.steps_dic = {
@@ -77,6 +90,17 @@ class LoadMetrics:
             'skysubs': {'steps_status': ['None', 'None', 'None']},
         }
 
+    # def load_flavors(self):
+    #     flavors = ['science', 'arc', 'flat']
+    #     self.flavor_stages = dict()
+    #     for flavor in flavors:
+    #         flavor_path = os.path.join(qlf_root, "framework", "ql_mapping", "{}.json".format(flavor))
+    #         try:
+    #             stages_json = open(flavor_path).read()
+    #             self.flavor_stages[flavor] = json.loads(stages_json)
+    #         except Exception as err:
+    #             logger.error("flavor file not found {}".format(err))
+
     def find_qa_check(self, qa):
         for check in self.checks:
             if qa in self.checks[check]:
@@ -108,7 +132,7 @@ class LoadMetrics:
             qa_status = data["TASKS"][check]["METRICS"][alert_key]
 
             if current_step:
-                self.status[current_step]['steps_status'][index] = qa_status
+                self.qas_status[current_step][index] = qa_status
         except Exception as err:
             logger.warning('Failed to update camera status: {}'.format(err))
 

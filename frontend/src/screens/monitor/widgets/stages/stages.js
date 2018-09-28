@@ -12,8 +12,6 @@ import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import flavors from '../../../../flavors';
 
-console.log(flavors);
-
 const headerSize = '11px';
 
 const styles = {
@@ -129,16 +127,24 @@ class Stages extends Component {
 
   render() {
     const flavor = this.props.flavor ? this.props.flavor : 'science';
+    const flavorStages = flavors[flavor].step_list.map(step => step.name);
+
     const stage_status = _.map(_.range(10), function() {
-      return { pre: '', spec: '', fib: '', sky: '' };
+      const stage = {};
+      flavorStages.map(stg => {
+        stage[stg] = '';
+        return null;
+      });
+      return stage;
     });
+
     if (this.props.status.length > 0) {
       this.props.status.map(row => {
         const index = Object.keys(row)[0];
-        stage_status[index].pre = row[index][0];
-        stage_status[index].spec = row[index][1];
-        stage_status[index].fib = row[index][2];
-        stage_status[index].sky = row[index][3];
+        flavorStages.map((stg, idx) => {
+          stage_status[index][stg] = row[index][idx];
+          return null;
+        });
         return null;
       });
     }
@@ -173,70 +179,27 @@ class Stages extends Component {
                             this.props.openDialog(index, this.props.arm)
                           }
                         >
-                          <TableCell
-                            style={{
-                              fontSize: this.state.columnHeight,
-                              height: this.state.columnHeight,
-                              padding: 4,
-                              ...this.getColor(row.pre),
-                            }}
-                          >
-                            {row.pre === 'processing_stage' ? (
-                              <LinearProgress
-                                style={styles.loading}
-                                variant="determinate"
-                                value={this.state.completed}
-                              />
-                            ) : null}
-                          </TableCell>
-                          <TableCell
-                            style={{
-                              fontSize: this.state.columnHeight,
-                              height: this.state.columnHeight,
-                              padding: 4,
-                              ...this.getColor(row.spec),
-                            }}
-                          >
-                            {row.spec === 'processing_stage' ? (
-                              <LinearProgress
-                                style={styles.loading}
-                                variant="determinate"
-                                value={this.state.completed}
-                              />
-                            ) : null}
-                          </TableCell>
-                          <TableCell
-                            style={{
-                              fontSize: this.state.columnHeight,
-                              height: this.state.columnHeight,
-                              padding: 4,
-                              ...this.getColor(row.fib),
-                            }}
-                          >
-                            {row.fib === 'processing_stage' ? (
-                              <LinearProgress
-                                style={styles.loading}
-                                variant="determinate"
-                                value={this.state.completed}
-                              />
-                            ) : null}
-                          </TableCell>
-                          <TableCell
-                            style={{
-                              fontSize: this.state.columnHeight,
-                              height: this.state.columnHeight,
-                              padding: 4,
-                              ...this.getColor(row.sky),
-                            }}
-                          >
-                            {row.sky === 'processing_stage' ? (
-                              <LinearProgress
-                                style={styles.loading}
-                                variant="determinate"
-                                value={this.state.completed}
-                              />
-                            ) : null}
-                          </TableCell>
+                          {flavorStages.map(stg => {
+                            return (
+                              <TableCell
+                                key={stg}
+                                style={{
+                                  fontSize: this.state.columnHeight,
+                                  height: this.state.columnHeight,
+                                  padding: 4,
+                                  ...this.getColor(row[stg]),
+                                }}
+                              >
+                                {row[stg] === 'processing_stage' ? (
+                                  <LinearProgress
+                                    style={styles.loading}
+                                    variant="determinate"
+                                    value={this.state.completed}
+                                  />
+                                ) : null}
+                              </TableCell>
+                            );
+                          })}
                         </TableRow>
                       </Tooltip>
                     ))}

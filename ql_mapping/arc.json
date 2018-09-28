@@ -10,21 +10,25 @@
         {
           "display_name": "Check HDUs",
           "status_key": "CHECKHDUS_STATUS",
+          "name": "hdu",
           "bands": ["b", "r", "z"]
         },
         {
           "display_name": "Noise AMP",
           "status_key": "NOISE_AMP_STATUS",
+          "name": "noise",
           "bands": ["b", "r", "z"]
         },
         {
           "display_name": "Bias AMP",
           "status_key": "BIAS_AMP_STATUS",
+          "name": "bias",
           "bands": ["b", "r", "z"]
         },
         {
           "display_name": "LITFRAC AMP",
           "status_key": "LITFRAC_AMP_STATUS",
+          "name": "litfrac",
           "bands": ["b", "r", "z"]
         }
       ]
@@ -38,11 +42,13 @@
         {
           "display_name": "NGOODFIB",
           "status_key": "NGOODFIB_STATUS",
+          "name": "ngoodfib",
           "bands": ["b", "r", "z"]
         },
         {
           "display_name": "XYSHIFTS",
           "status_key": "XYSHIFTS_STATUS",
+          "name": "xyshifts",
           "bands": ["b", "r", "z"]
         }
       ]
@@ -56,6 +62,7 @@
         {
           "display_name": "CHECKARC",
           "status_key": "CHECKARC_STATUS",
+          "name": "checkarc",
           "bands": ["b", "r", "z"]
         }
       ]

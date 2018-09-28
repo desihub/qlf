@@ -15,7 +15,7 @@ if not qlf_root:
 # TODO: flat program can also use flat_preproc.
 program_mapping = {
     'flat': 'flat',  # flat_preproc
-    'arc': 'arcs',
+    'arc': 'arc',
     'dark': 'darksurvey',
     'gray': 'graysurvey',
     'bright': 'brightsurvey'
