@@ -4,6 +4,9 @@ import { Card } from 'material-ui/Card';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import Status from '../../../../components/status/status';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
+import Icon from '@material-ui/core/Icon';
 
 const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
 const stepsQa = {
@@ -35,7 +38,6 @@ const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
     flex: '1',
-    height: '90%',
   },
   containerSteps: {
     display: 'flex',
@@ -43,6 +45,9 @@ const styles = {
     paddingTop: '1em',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  containerLegend: {
+    position: 'relative',
   },
   arm: {
     fontWeight: 'bold',
@@ -54,6 +59,7 @@ const styles = {
     width: 100,
     fontSize: '12px',
     textAlign: 'center',
+    cursor: 'pointer',
   },
   space: {
     width: '1vw',
@@ -72,9 +78,70 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
   },
+  icon: {
+    position: 'absolute',
+    top: '1px',
+    left: '1px',
+    cursor: 'pointer',
+  },
+  green: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#008000',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  yellow: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#ffff00',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  red: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#ff0000',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  lightgray: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#d3d3d3',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
+  black: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: '#000000',
+    fontSize: 0,
+    textIndent: '-9999em',
+  },
 };
 
-export default class Steps extends Component {
+class Steps extends Component {
   static propTypes = {
     renderMetrics: PropTypes.func.isRequired,
     exposureId: PropTypes.string,
@@ -149,10 +216,6 @@ export default class Steps extends Component {
 
   hideQaAlarms = () => {};
 
-  showStepName = name => {
-    this.setState({ message: name + '\n' });
-  };
-
   renderPieChart = (arm, step) => {
     return (
       <PieChart
@@ -168,19 +231,6 @@ export default class Steps extends Component {
     );
   };
 
-  renderStepName = (title, name) => {
-    return (
-      <span
-        data-tip="true"
-        data-for="tooltip"
-        onMouseOver={() => this.showStepName(name)}
-        style={styles.step}
-      >
-        {this.props.navigateToProcessingHistory ? name : title}
-      </span>
-    );
-  };
-
   renderTooltipContent = () => {
     const message = this.state.message.split('\n').map((msg, i) => {
       return <p key={i}>{msg}</p>;
@@ -192,7 +242,7 @@ export default class Steps extends Component {
     return (
       <ReactTooltip
         id="tooltip"
-        type="info"
+        type="dark"
         getContent={this.renderTooltipContent}
       />
     );
@@ -214,6 +264,30 @@ export default class Steps extends Component {
     );
   };
 
+  renderLegendColor = () => {
+    return (
+      <div>
+        <p>
+          <span style={styles.green}>Green</span> All tests passed
+        </p>
+        <p>
+          <span style={styles.yellow}>Yellow</span> Warning on one or more QA
+          test
+        </p>
+        <p>
+          <span style={styles.red}>Red</span> Error on one or more QA test
+        </p>
+        <p>
+          <span style={styles.lightgray}>Lightgray</span> QA test file not
+          generated
+        </p>
+        <p>
+          <span style={styles.black}>Black</span> Pipeline not completed
+        </p>
+      </div>
+    );
+  };
+
   render() {
     return (
       <div>
@@ -221,18 +295,30 @@ export default class Steps extends Component {
         {this.renderHistoryControls()}
         <Card style={styles.card}>
           <div style={styles.container}>
-            <div />
-            <div style={styles.gridItem}>
-              {this.renderStepName('Step 1', 'Pre Processing')}
+            <div style={styles.containerLegend}>
+              <Tooltip title={this.renderLegendColor()} placement="bottom">
+                <Icon style={styles.icon}>info</Icon>
+              </Tooltip>
             </div>
             <div style={styles.gridItem}>
-              {this.renderStepName('Step 2', 'Spectral Extraction')}
+              <Tooltip title={'Pre Processing'} placement="top">
+                <span style={styles.step}>Step 1</span>
+              </Tooltip>
             </div>
             <div style={styles.gridItem}>
-              {this.renderStepName('Step 3', 'Fiber Flattening')}
+              <Tooltip title={'Spectral Extraction'} placement="top">
+                <span style={styles.step}>Step 2</span>
+              </Tooltip>
             </div>
             <div style={styles.gridItem}>
-              {this.renderStepName('Step 4', 'Sky Subtraction')}
+              <Tooltip title={'Fiber Flattening'} placement="top">
+                <span style={styles.step}>Step 3</span>
+              </Tooltip>
+            </div>
+            <div style={styles.gridItem}>
+              <Tooltip title={'Sky Subtraction'} placement="top">
+                <span style={styles.step}>Step 4</span>
+              </Tooltip>
             </div>
             <div style={styles.gridArm}>
               <span style={styles.arm}>b</span>
@@ -261,3 +347,5 @@ export default class Steps extends Component {
     );
   }
 }
+
+export default withStyles(styles)(Steps);

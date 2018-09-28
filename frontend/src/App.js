@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { store, history } from './store';
 import { ConnectedRouter } from 'react-router-redux';
 import logo from './assets/DESILogo.png';
+import logoLinea from './assets/linea-logo-mini.png';
 import OnlineContainer from './containers/online/online-container';
 import OfflineContainer from './containers/offline/offline-container';
 import Icon from '@material-ui/core/Icon';
@@ -55,6 +56,11 @@ const styles = {
     gridTemplateColumns: 'auto',
     height: '100vh',
     width: '100vw',
+    position: 'relative',
+  },
+  headerContainer: {
+    position: 'relative',
+    height: '99px',
   },
   headerTop: {
     fontSize: '35px',
@@ -68,7 +74,17 @@ const styles = {
   },
   logo: {
     height: '90px',
-    paddingTop: '5px',
+  },
+  logoLinea: {
+    verticalAlign: 'middle',
+    cursor: 'pointer',
+  },
+  logoDesi: {
+    position: 'absolute',
+    top: '50%',
+    right: '100px',
+    zIndex: 1250,
+    marginTop: '-31px',
   },
   title: {
     display: 'flex',
@@ -95,6 +111,7 @@ const styles = {
   bottom: {
     display: 'flex',
     justifyContent: 'space-between',
+    fontSize: '0.9rem',
   },
   homeIcon: {
     fontSize: 20,
@@ -115,6 +132,12 @@ const styles = {
     fontSize: 16,
     color: 'red',
     paddingLeft: 8,
+  },
+  footerContainer: {
+    width: '100%',
+    position: 'fixed',
+    bottom: '0',
+    left: '0',
   },
 };
 
@@ -145,10 +168,26 @@ class App extends React.Component {
         return '- Observing History';
       case '/afternoon-planning':
         return '- Afternoon Planning';
+      case '/survey-report':
+        return '- Survey Report';
       case '/camera-log':
+        return '- Camera Log';
+      case '/camera-log-realtime':
         return '- Camera Log';
       case '/ccd-viewer':
         return '- CCD Viewer';
+      case '/log-viewer':
+        return '- Log Viewer';
+      case '/fiber-viewer':
+        return '- Fiber Viewer';
+      case '/under-construction':
+        return '- Under Construction';
+      case '/focus-viewer':
+        return '- Focus Viewer';
+      case '/snr-viewer':
+        return '- SNR Viewer';
+      case '/trend-analysis':
+        return '- Trend Analysis';
       default:
         return '';
     }
@@ -167,11 +206,6 @@ class App extends React.Component {
       return (
         <div style={styles.title}>
           <span style={styles.spanTitle}>DESI Quick Look</span>
-          {window.innerWidth < 700 ? null : (
-            <div>
-              <img src={logo} alt={'logo'} style={styles.logo} />
-            </div>
-          )}
         </div>
       );
     } else {
@@ -245,10 +279,23 @@ class App extends React.Component {
     );
   };
 
+  openLineaWebSite = () => {
+    window.open('http://www.linea.gov.br/', 'linea');
+  };
+
   renderBottomBarTitle = () => {
     return (
       <div style={styles.bottom}>
-        <span>© Copyright 2018, LIneA/DESI</span>
+        <span>
+          © Copyright 2018, Powered by
+          <a
+            onClick={this.openLineaWebSite}
+            title="LIneA"
+            style={{ marginLeft: '8px' }}
+          >
+            <img src={logoLinea} alt={'logo linea'} style={styles.logoLinea} />
+          </a>
+        </span>
         <div style={styles.footerRight}>
           <span>
             {process.env.REACT_APP_VERSION ? process.env.REACT_APP_VERSION : ''}
@@ -275,13 +322,22 @@ class App extends React.Component {
 
   render() {
     const containerStyle = this.state.displayHeaders ? styles.container : null;
+    const headerStyle =
+      this.renderRouteName() === '' ? styles.headerContainer : null;
     const useGrid = this.renderRouteName() === '' ? null : styles.grid;
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
             <div style={useGrid}>
-              {this.renderTopBar()}
+              <div style={headerStyle}>
+                {this.renderRouteName() === '' ? (
+                  <div style={styles.logoDesi}>
+                    <img src={logo} alt={'logo'} style={styles.logo} />
+                  </div>
+                ) : null}
+                {this.renderTopBar()}
+              </div>
               <div style={containerStyle}>
                 {['/', '/about', '/help', '/tutorials', '/contact'].map(
                   path => (
@@ -301,7 +357,7 @@ class App extends React.Component {
                 ) : null}
                 <OfflineContainer toggleHeader={this.toggleHeader} />
               </div>
-              {this.renderBottomBar()}
+              <div style={styles.footerContainer}>{this.renderBottomBar()}</div>
             </div>
           </MuiThemeProvider>
         </ConnectedRouter>

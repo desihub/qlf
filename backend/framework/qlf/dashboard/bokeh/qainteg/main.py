@@ -9,18 +9,18 @@ from bokeh.io import output_notebook, show, output_file
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import PrintfTickFormatter
 
-from dashboard.bokeh.helper import write_info, get_scalar_metrics
+from dashboard.bokeh.helper import write_info
 
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import (LinearColorMapper ,    ColorBar)
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
-from dashboard.bokeh.qlf_plot import html_table
+from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
 
 from bokeh.io import output_notebook
 import numpy as np
 
-from dashboard.bokeh.helper import get_url_args, write_description
+from dashboard.bokeh.helper import get_url_args, write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist
 
 from bokeh.models import PrintfTickFormatter
@@ -29,8 +29,12 @@ from bokeh.models import PrintfTickFormatter
 import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-logger = logging.getLogger(__name__)
 
+from astropy.io import fits
+import os
+spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+
+logger = logging.getLogger(__name__)
 
 class Integ:
     def __init__(self, process_id, arm, spectrograph):
@@ -40,16 +44,22 @@ class Integ:
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
+        
         try:
-            lm = get_scalar_metrics(self.selected_process_id, cam)
-            metrics, tests  = lm['metrics'], lm['tests']
-        except:
-            sys.exit('Could not load metrics')
+            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        except Exception as err:
+            logger.info(err)
+            sys.exit('Could not load data')
+
+        gen_info = mergedqa['GENERAL_INFO']
 
 
-        integ=metrics['integ']
-        std_fiberid = integ['STD_FIBERID']
-        #std_mag = np.where()
+        
+        check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
+        std_fiberid = check_spectra['METRICS']['STAR_FIBERID']
+        nrg = check_spectra['PARAMS']['DELTAMAG_TGT_NORMAL_RANGE']
+        wrg = check_spectra['PARAMS']['DELTAMAG_TGT_WARN_RANGE'] 
+        fiber_mag=check_spectra['METRICS']['FIBER_MAG']
 
 
         hist_tooltip=""" 
@@ -66,14 +76,11 @@ class Integ:
                 """
         hist_hover = HoverTool(tooltips=hist_tooltip)
         hist_source = ColumnDataSource(
-                        data={'integ': integ['FIBER_MAG'],
-                            'x': np.arange(len(integ['FIBER_MAG'])),
-                            #'left': np.arange(len(skyresid['SKYFIBERID'])) -0.4,
-                            #'right':np.arange(len(skyresid['SKYFIBERID']))+0.4,
-                            #'bottom':[0]*len(skyresid['SKYFIBERID']),
+                        data={'integ': fiber_mag,
+                            'x': np.arange(len(fiber_mag)),
                             })
 
-        yrange=[0, 1.1*max(integ['FIBER_MAG'])]
+        yrange=[0, 1.1*max(fiber_mag)]
         fiber_hist = plot_hist(hist_hover, yrange, ph=300)
 
         fiber_hist.vbar(top='integ', x='x', width=0.8,
@@ -85,16 +92,46 @@ class Integ:
 
         info_col=Div(text=write_description('integ'), width=fiber_hist.plot_width)
 
-        nrg= tests['integ']['DELTAMAG_TGT_WARN_RANGE']
-        wrg= tests['integ']['DELTAMAG_TGT_NORMAL_RANGE']
+   
 
         #List of mag diff b/w the fibermag and the imaging mag from the fibermap
-        tb = html_table(names=['DELTAMAG (Mean)'], vals=[ '{:.3f}'.format(np.mean(integ['DELTAMAG']) )], nrng=nrg, wrng=wrg  )
+        tb = html_table(names=['DELTAMAG (Mean)'], vals=[ '{:.3f}'.format(np.mean(fiber_mag) )]
+            , nrng=nrg, wrng=wrg  )
         tbinfo=Div(text=tb, width=400)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]),
-                        widgetbox(tbinfo, css_classes=["table-ranges"]),
+        # Reading obj_type
+        try:
+            from dashboard.models import Job, Process
+
+            process_id = self.selected_process_id
+            process = Process.objects.get(pk=process_id)
+            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+            exposure = process.exposure
+            folder = "{}/{}/{:08d}".format(
+                spectro_data, exposure.night, process.exposure_id)
+
+            file = "fibermap-{:08d}.fits".format(process.exposure_id)
+            fmap = fits.open('{}/{}'.format(folder, file))
+            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
+
+            objlist = sorted(set(otype_tile))
+            if 'SKY' in objlist:
+                objlist.remove('SKY')
+
+        except Exception as err:
+            objlist=None
+
+        # Prepare tables
+        comments='List of the average fiber mag for each of N target types in this camera'
+        metric_txt=mtable('integ', mergedqa, comments, objtype=objlist) # objtype=['ELG','STAR'] )
+        metric_tb=Div(text=metric_txt, width=350)
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=350)
+
+
+        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+                        widgetbox(metric_tb),widgetbox(alert_tb),
                         fiber_hist,
                         css_classes=["display-grid"])
-        # End of Bokeh Block
+
         return file_html(layout, CDN, "INTEG")

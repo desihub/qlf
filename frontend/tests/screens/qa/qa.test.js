@@ -99,7 +99,7 @@ describe('QA', () => {
     expect(
       wrapper
         .find('path')
-        .at(0)
+        .at(1)
         .props().style.fill
     ).toBe('lightgray');
     expect(

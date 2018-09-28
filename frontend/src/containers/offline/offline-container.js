@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import {
   getProcessingHistory,
   getObservingHistory,
+  getSurveyReport,
   getQA,
   navigateToProcessingHistory,
   navigateToOfflineMetrics,
@@ -19,7 +20,9 @@ import QA from '../../screens/qa/qa';
 import _ from 'lodash';
 import { FadeLoader } from 'halogenium';
 import UnderConstruction from '../../screens/under-construction/under-construction';
-import CCDViewer from '../../screens/ccd-viewer/ccd-viewer';
+import SelectionViewer from '../../screens/selection-viewer/selection-viewer';
+import TrendAnalysis from '../../screens/trend-analysis/trend-analysis';
+import SurveyReport from '../../screens/survey-report/survey-report';
 
 const arms = ['b', 'r', 'z'];
 const spectrographs = _.range(0, 10);
@@ -39,6 +42,7 @@ class OfflineContainer extends Component {
   static propTypes = {
     getProcessingHistory: PropTypes.func.isRequired,
     getObservingHistory: PropTypes.func.isRequired,
+    getSurveyReport: PropTypes.func.isRequired,
     rows: PropTypes.array.isRequired,
     getQA: PropTypes.func.isRequired,
     pathname: PropTypes.string,
@@ -70,6 +74,7 @@ class OfflineContainer extends Component {
 
   state = {
     loading: false,
+    cameraLogProcessId: undefined,
   };
 
   navigateToQA = async processId => {
@@ -113,11 +118,19 @@ class OfflineContainer extends Component {
     );
   };
 
-  navigateToCCD = (night, exposureId) => {
+  navigateToCCD = (viewer, processId) => {
     window.open(
-      `ccd-viewer?exposure=${exposureId}&night=${night}`,
-      'ccd-viewer',
+      `${viewer}-viewer?process=${processId}`,
+      `${viewer}-viewer`,
       'width=1050, height=850'
+    );
+  };
+
+  navigateToLogViewer = processId => {
+    window.open(
+      `log-viewer?process=${processId}`,
+      'log-viewer',
+      'width=1050, height=650'
     );
   };
 
@@ -125,7 +138,28 @@ class OfflineContainer extends Component {
     return (
       <div>
         {this.renderLoading()}
-        <Route path="/ccd-viewer" render={() => <CCDViewer />} />
+        <Route path="/fiber-viewer" render={() => <SelectionViewer />} />
+        <Route path="/focus-viewer" render={() => <SelectionViewer />} />
+        <Route path="/snr-viewer" render={() => <SelectionViewer />} />
+        <Route
+          path="/trend-analysis"
+          render={() => (
+            <TrendAnalysis
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
+            />
+          )}
+        />
+        <Route
+          path="/log-viewer"
+          render={() => <SelectionViewer spectrograph={true} arm={true} />}
+        />
+        <Route
+          path="/ccd-viewer"
+          render={() => (
+            <SelectionViewer spectrograph={true} arm={true} processing={true} />
+          )}
+        />
         <Route
           path="/afternoon-planning"
           render={() => (
@@ -141,6 +175,7 @@ class OfflineContainer extends Component {
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
               openCCDViewer={this.navigateToCCD}
+              openLogViewer={this.navigateToLogViewer}
             />
           )}
         />
@@ -160,6 +195,7 @@ class OfflineContainer extends Component {
               fetchLastProcess={this.props.fetchLastProcess}
               pipelineRunning={this.props.pipelineRunning}
               openCCDViewer={this.navigateToCCD}
+              openLogViewer={this.navigateToLogViewer}
             />
           )}
         />
@@ -178,6 +214,16 @@ class OfflineContainer extends Component {
               rowsCount={this.props.rowsCount}
               fetchLastProcess={this.props.fetchLastProcess}
               openCCDViewer={this.navigateToCCD}
+              pipelineRunning={this.props.pipelineRunning}
+            />
+          )}
+        />
+        <Route
+          path="/survey-report"
+          render={() => (
+            <SurveyReport
+              startDate={this.props.startDate}
+              endDate={this.props.endDate}
             />
           )}
         />
@@ -276,5 +322,7 @@ export default connect(
       dispatch(getObservingHistory(start, end, order, offset, limit, filters)),
     fetchLastProcess: () => dispatch(fetchLastProcess()),
     getHistoryDateRange: () => dispatch(getHistoryDateRange()),
+    getSurveyReport: (_start, _end, order, _offset, _limit, filters, night) =>
+      dispatch(getSurveyReport(order, filters, night)),
   })
 )(OfflineContainer);

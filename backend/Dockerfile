@@ -2,6 +2,9 @@ FROM ubuntu
 RUN mkdir /app
 WORKDIR /app
 ADD . /app/
+RUN useradd -d /home/quicklook -m quicklook
+RUN chgrp -R quicklook /app
+RUN chmod -R g+w /app
 ENV QLF_ROOT /app
 
 # BEGIN INSTALL: anaconda3
@@ -42,6 +45,5 @@ RUN /bin/bash -c "conda install -y --file requirements.txt && \
 
 # END INSTALL: dependencies
 EXPOSE 8000
-RUN useradd -d /home/quicklook -m quicklook
 USER quicklook
 CMD [ "/bin/bash" ]

@@ -4,25 +4,21 @@ import gc
 from multiprocessing import Event, Process, Value
 from concurrent import futures
 from threading import Thread
+import os
 
-from clients import get_exposure_generator, get_qlf_interface
+from clients import get_qlf_interface
 from log import get_logger
-from qlf_configuration import QLFConfiguration
 from qlf_models import QLFModels
 from qlf_pipeline import QLFProcess
-from util import get_config
 
-cfg = get_config()
+loglevel = os.environ.get("PIPELINE_LOGLEVEL")
+allowed_delay = float(os.environ.get("PIPELINE_DELAY"))
+qlf_root = os.environ.get('QLF_ROOT')
 
-emulate = cfg.getboolean('main', 'emulate_dos')
-logfile = cfg.get("main", "logfile")
-loglevel = cfg.get("main", "loglevel")
-allowed_delay = cfg.getfloat("main", "allowed_delay")
-
-logger = get_logger("monitoring", logfile, loglevel)
-
-configuration = QLFConfiguration()
-
+logger = get_logger(
+    "qlf.monitoring",
+    os.path.join(qlf_root, "logs", "monitoring.log")
+)
 
 class ExposureMonitoring(Process):
 
@@ -36,7 +32,7 @@ class ExposureMonitoring(Process):
         self.running = Event()
 
         self.ics_last_exposure = {}
-        self.ics = get_exposure_generator() if emulate else get_qlf_interface()
+        self.ics = get_qlf_interface()
         self.process_id = Value('i', 0)
 
     def run(self):
@@ -47,7 +43,9 @@ class ExposureMonitoring(Process):
             if not self.process or not self.process.running():
                 self.running.clear()
 
-            exposure = self.ics.last_exposure()
+            last_exposure = self.ics.last_exposure()
+            exposure = last_exposure['exposure']
+            fibermap = last_exposure['fibermap']
 
             if not exposure:
                 logger.debug('No exposure available')
@@ -66,7 +64,10 @@ class ExposureMonitoring(Process):
                 exposure.get('exposure_id')))
 
             # records exposure in database
-            QLFModels().insert_exposure(**exposure)
+            exposure_obj = QLFModels().insert_exposure(**exposure)
+            if exposure_obj:
+                fibermap['exposure'] = exposure_obj
+                QLFModels().insert_fibermap(**fibermap)
 
             if self.process and self.process.running():
                 logger.debug('Process {} is running.'.format(
@@ -118,8 +119,8 @@ class ExposureMonitoring(Process):
 def process_run(exposure, process_id):
     """ """
 
-    arms = cfg.get('data', 'arms').split(',')
-    spectrographs = cfg.get('data', 'spectrographs').split(',')
+    arms = os.environ.get('PIPELINE_ARMS').split(',')
+    spectrographs = os.environ.get('PIPELINE_SPECTROGRAPHS').split(',')
 
     cameras = list()
 
@@ -129,8 +130,7 @@ def process_run(exposure, process_id):
 
     exposure['cameras'] = cameras
 
-    qlf_process = QLFProcess(
-        exposure, configuration.get_current_configuration())
+    qlf_process = QLFProcess(exposure)
     process_id.value = qlf_process.start_process()
     qlf_process.start_jobs()
     qlf_process.finish_process()

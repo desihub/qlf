@@ -1,14 +1,14 @@
 from util import (
-    get_config, format_night,
-    extract_exposure_data
+    format_night,
+    extract_exposure_data,
+    extract_fibermap_data
 )
 import os
 import datetime
 import re
 from log import get_logger
 
-cfg = get_config()
-qlf_root = cfg.get("environment", "qlf_root")
+qlf_root = os.environ.get('QLF_ROOT')
 
 log = get_logger(
     "qlf.interface",
@@ -20,7 +20,7 @@ class QLFInterface(object):
 
     def last_exposure(self):
 
-        spectro_data = cfg.get("namespace", "desi_spectro_data")
+        spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
         night = re.findall(
             r"(\d{8})",
@@ -60,4 +60,5 @@ class QLFInterface(object):
             log.error("Not found exposures: {}".format(exposure_path))
             return dict()
 
-        return extract_exposure_data(int(exp_dir), night)
+        return dict(exposure=extract_exposure_data(int(exp_dir), night),
+                    fibermap=extract_fibermap_data(int(exp_dir), night))

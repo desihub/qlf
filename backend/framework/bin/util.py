@@ -1,5 +1,4 @@
 import logging
-import configparser
 import os
 import astropy.io.fits
 import datetime
@@ -23,30 +22,8 @@ program_mapping = {
 }
 
 
-def get_config(config_path=None):
-    """ Gets config """
-
-    if not config_path:
-        config_path = os.path.join(
-            qlf_root,
-            "framework/config/qlf.cfg"
-        )
-
-    cfg = configparser.ConfigParser()
-    cfg.read(config_path)
-
-    section = 'environment'
-
-    if not cfg.has_section(section):
-        cfg.add_section(section)
-
-    cfg.set(section, 'qlf_root', qlf_root)
-
-    return cfg
-
-
 def get_ql_config_file(program):
-    """ Gets configuration file from directory defined in qlf.cfg.
+    """ Gets configuration file from directory defined in env QL_CONFIG_DIR
 
     Arguments:
         program {str} -- program
@@ -55,10 +32,9 @@ def get_ql_config_file(program):
         str -- config file path that will be used
     """
 
-    cfg = get_config()
     program_file = program_mapping.get(program, 'darksurvey')
 
-    return cfg.get('main', 'qlconfig').format(program_file)
+    return '{}/qlconfig_{}.yaml'.format(os.environ.get('QL_CONFIG_DIR'), program_file)
 
 
 def extract_exposure_data(exposure_id, night):
@@ -72,9 +48,8 @@ def extract_exposure_data(exposure_id, night):
         dict -- exposure data from fits file.
     """
 
-    cfg = get_config()
-    desi_spectro_data = cfg.get('namespace', 'desi_spectro_data')
-    desi_spectro_redux = cfg.get('namespace', 'desi_spectro_redux')
+    desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+    desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
 
     exposure_zfill = str(exposure_id).zfill(8)
     expo_name = "desi-{}.fits.fz".format(exposure_zfill)
@@ -90,8 +65,6 @@ def extract_exposure_data(exposure_id, night):
     # TODO: improve after understanding the QL pipeline cycle.
     program = hdr.get('program')
     current_config = get_ql_config_file(program)
-
-    define_calibration_files(night)
 
     return {
         "exposure_id": exposure_id,
@@ -111,35 +84,42 @@ def extract_exposure_data(exposure_id, night):
         'time': datetime.datetime.utcnow()
     }
 
-
-def define_calibration_files(night):
-    """ Sets the night calibration files
+def extract_fibermap_data(exposure_id, night):
+    """ Extracts fibermap data from fits file.
 
     Arguments:
-        night {str} -- night
+        exposure_id {int} -- exposure ID
+        night {str} -- night (format: YYYYMMDD)
+
+    Returns:
+        dict -- fibermap data from fits file.
     """
 
-    cfg = get_config()
-    spectro_redux = cfg.get("namespace", "desi_spectro_redux")
-    calib_path = cfg.get("namespace", "calibration_path")
-    dest = os.path.join(spectro_redux, "exposures", night)
+    desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
-    psf_exp_id = cfg.get("pipeline", "psf_exp_id")
-    fiberflat_exp_id = cfg.get("pipeline", "fiberflat_exp_id")
+    exposure_zfill = str(exposure_id).zfill(8)
+    fiber_name = "fibermap-{}.fits".format(exposure_zfill)
 
-    ensure_dir(dest)
+    file_path = os.path.join(desi_spectro_data, night,
+                             exposure_zfill, fiber_name)
 
-    links = [
-        ('psf', psf_exp_id.zfill(8)),
-        ('fiberflat', fiberflat_exp_id.zfill(8))
-    ]
+    try:
+        fmap = astropy.io.fits.open(file_path)
+    except Exception as err:
+        logger.error("Error to load fits file: %s" % err)
+        return {}
 
-    for item in links:
-        item_path = os.path.join(calib_path, item[0])
-        dest_item = os.path.join(dest, item[1])
+    ra_obs = fmap['FIBERMAP'].data['RA_OBS']
+    dec_obs = fmap['FIBERMAP'].data['DEC_OBS']
+    fiber = fmap['FIBERMAP'].data['FIBER']
+    objtype = fmap['FIBERMAP'].data['OBJTYPE']
 
-        if not os.path.islink(dest_item):
-            os.symlink(item_path, dest_item)
+    return {
+        "ra_obs": ra_obs.tolist(),
+        "dec_obs": dec_obs.tolist(),
+        "fiber": fiber.tolist(),
+        "objtype": objtype.tolist()
+    }
 
 
 def ensure_dir(path):
@@ -153,4 +133,13 @@ def ensure_dir(path):
 
 
 def format_night(new_date):
+    """ Gets date formated
+    
+    Arguments:
+        new_date {object} -- datetime object 
+    
+    Returns:
+        str -- date formated
+    """
+
     return new_date.strftime("%Y%m%d")

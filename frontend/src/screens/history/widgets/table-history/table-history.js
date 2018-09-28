@@ -16,6 +16,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import CommentModal from '../comment-modal/comment-modal';
+import CCDSelector from './ccd-selector/ccd-selector';
 
 class TableHistory extends Component {
   static propTypes = {
@@ -38,6 +39,9 @@ class TableHistory extends Component {
     fetchLastProcess: PropTypes.func.isRequired,
     pipelineRunning: PropTypes.string,
     openCCDViewer: PropTypes.func.isRequired,
+    openLogViewer: PropTypes.func,
+    handleHistoryStateChange: PropTypes.func,
+    night: PropTypes.string,
   };
 
   constructor(props) {
@@ -53,8 +57,16 @@ class TableHistory extends Component {
       tableColumnsHidden: [],
       openColumnsModal: false,
       openCommentModal: false,
-      commentProcessId: 1,
+      currentProcessId: 1,
     };
+  }
+
+  componentDidMount() {
+    if (this.props.handleHistoryStateChange) {
+      this.props.handleHistoryStateChange('order', this.state.order);
+      this.props.handleHistoryStateChange('offset', this.state.offset);
+      this.props.handleHistoryStateChange('filters', this.state.filters);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -72,13 +84,27 @@ class TableHistory extends Component {
         order,
         this.state.offset,
         this.props.limit,
-        this.state.filters
+        this.state.filters,
+        this.props.night
       );
     }
   }
 
   selectProcessQA = pk => {
     this.props.navigateToQA(pk);
+  };
+
+  setAnchorEl = (event, processId) => {
+    if (!event) {
+      this.setState({
+        anchorEl: null,
+      });
+    } else {
+      this.setState({
+        anchorEl: event.currentTarget,
+        currentProcessId: processId,
+      });
+    }
   };
 
   renderBody = () => {
@@ -106,6 +132,8 @@ class TableHistory extends Component {
               openCCDViewer={this.openCCDViewer}
               handleCommentModalOpen={this.handleCommentModalOpen}
               pipelineRunning={this.props.pipelineRunning}
+              openLogViewer={this.props.openLogViewer}
+              setAnchorEl={this.setAnchorEl}
             />
           );
         })}
@@ -121,7 +149,8 @@ class TableHistory extends Component {
       order,
       this.state.offset,
       this.props.limit,
-      this.state.filters
+      this.state.filters,
+      this.props.night
     );
     this.setState({
       asc,
@@ -129,6 +158,7 @@ class TableHistory extends Component {
       order,
       offset: 0,
     });
+    this.props.handleHistoryStateChange('order', order);
   };
 
   addStatusFilter = filter => {
@@ -150,30 +180,35 @@ class TableHistory extends Component {
     }
     const filters = `${this.state.flavorFilter}&${statusFilter}`;
     this.setState({ statusFilter, filters });
+    this.props.handleHistoryStateChange('filters', filters);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
       this.state.order,
       this.state.offset,
       this.props.limit,
-      filters
+      filters,
+      this.props.night
     );
   };
 
   addFlavorFilter = flavorFilter => {
     const filters = `${flavorFilter}&${this.state.statusFilter}`;
     this.setState({ flavorFilter, filters });
+    this.props.handleHistoryStateChange('filters', filters);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
       this.state.order,
       this.state.offset,
       this.props.limit,
-      filters
+      filters,
+      this.props.night
     );
   };
 
   handleChangePage = (evt, offset) => {
+    this.props.handleHistoryStateChange('offset', offset);
     this.props.getHistory(
       this.props.startDate,
       this.props.endDate,
@@ -325,7 +360,7 @@ class TableHistory extends Component {
   renderCommentModal = () => {
     return this.state.openCommentModal ? (
       <CommentModal
-        processId={this.state.commentProcessId}
+        processId={this.state.currentProcessId}
         handleClose={this.handleCommentModalClose}
         readOnly={this.props.type !== 'process'}
         fetchLastProcess={this.props.fetchLastProcess}
@@ -333,9 +368,9 @@ class TableHistory extends Component {
     ) : null;
   };
 
-  handleCommentModalOpen = commentProcessId => {
+  handleCommentModalOpen = currentProcessId => {
     this.setState({
-      commentProcessId,
+      currentProcessId,
       openCommentModal: true,
     });
   };
@@ -352,6 +387,13 @@ class TableHistory extends Component {
         {this.renderCommentModal()}
         {this.renderColumnsModal()}
         <Table style={styles.table}>
+          <CCDSelector
+            anchorEl={this.state.anchorEl}
+            handleClose={() => this.setAnchorEl(null)}
+            openCCDViewer={viewer =>
+              this.props.openCCDViewer(viewer, this.state.currentProcessId)
+            }
+          />
           <HistoryHeader
             addOrder={this.addOrder}
             addFlavorFilter={this.addFlavorFilter}
@@ -367,7 +409,7 @@ class TableHistory extends Component {
           />
           {this.renderBody()}
         </Table>
-        {this.renderPagination()}
+        {this.props.night ? null : this.renderPagination()}
       </div>
     );
   }

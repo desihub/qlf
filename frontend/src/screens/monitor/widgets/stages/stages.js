@@ -125,16 +125,17 @@ class Stages extends Component {
   };
 
   render() {
-    let stage_status = _.map(_.range(10), function() {
+    const stage_status = _.map(_.range(10), function() {
       return { pre: '', spec: '', fib: '', sky: '' };
     });
     if (this.props.status.length > 0) {
-      stage_status = stage_status.map((row, index) => {
-        row.pre = this.props.status[0].camera[index];
-        row.spec = this.props.status[1].camera[index];
-        row.fib = this.props.status[2].camera[index];
-        row.sky = this.props.status[3].camera[index];
-        return row;
+      this.props.status.map(row => {
+        const index = Object.keys(row)[0];
+        stage_status[index].pre = row[index][0];
+        stage_status[index].spec = row[index][1];
+        stage_status[index].fib = row[index][2];
+        stage_status[index].sky = row[index][3];
+        return null;
       });
     }
 

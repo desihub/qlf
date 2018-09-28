@@ -53,7 +53,7 @@ export default class Petals extends Component {
                   return [
                     {
                       mutation: props => {
-                        this.props.onClick(9 - props.index);
+                        this.props.onClick((9 - props.index + 5) % 10);
                         return { style: { fill: 'green', cursor: 'pointer' } };
                       },
                     },
@@ -65,7 +65,7 @@ export default class Petals extends Component {
                       target: 'data',
                       mutation: props => {
                         const color = this.props.selected.includes(
-                          9 - props.index
+                          (9 - props.index + 5) % 10
                         )
                           ? 'green'
                           : 'gray';

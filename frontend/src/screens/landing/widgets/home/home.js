@@ -47,6 +47,10 @@ export default class Home extends React.Component {
       process.env.REACT_APP_OFFLINE === 'true'
         ? null
         : () => this.navigateTo('/monitor-realtime');
+    const navigateToConfiguration =
+      process.env.REACT_APP_OFFLINE === 'true'
+        ? null
+        : () => this.navigateTo('/configuration');
     return (
       <div>
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
@@ -91,7 +95,7 @@ export default class Home extends React.Component {
         <div style={{ ...styles.singleCol, ...this.state.layout }}>
           <a
             style={styles.linkStyle}
-            onClick={() => this.navigateTo('/under-construction')}
+            onClick={() => this.navigateTo('/trend-analysis')}
           >
             <Card
               icon="TrendingUp"
@@ -105,13 +109,13 @@ export default class Home extends React.Component {
           >
             <Card
               icon="Cloud"
-              title="Sky Conditions"
-              subtitle="Display sky conditions such as atmospheric transparency, seeing, and sky background from the GFA camera"
+              title="Observing Conditions"
+              subtitle="Display observing conditions such as atmospheric transparency, seeing, and observing background from the GFA camera"
             />
           </a>
           <a
             style={styles.linkStyle}
-            onClick={() => this.navigateTo('/under-construction')}
+            onClick={() => this.navigateTo('/survey-report')}
           >
             <Card
               icon="Assignment"
@@ -119,10 +123,7 @@ export default class Home extends React.Component {
               subtitle="Show the overall progress and performance of survey"
             />
           </a>
-          <a
-            style={styles.linkStyle}
-            onClick={() => this.navigateTo('/configuration')}
-          >
+          <a style={styles.linkStyle} onClick={navigateToConfiguration}>
             <Card
               icon="ViewModule"
               title="Configuration"

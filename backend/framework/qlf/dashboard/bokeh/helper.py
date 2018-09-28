@@ -3,8 +3,10 @@ import logging
 import requests
 from furl import furl
 from bokeh.plotting import Figure
-from dashboard.models import Process
+from dashboard.models import Process, Job
 from scalar_metrics import LoadMetrics
+from qlf_models import QLFModels
+import sys
 
 QLF_API_URL = os.environ.get('QLF_API_URL',
                              'http://localhost:8000/dashboard/api')
@@ -96,51 +98,40 @@ def get_cameras():
     return requests.get(api['camera'], params={'paginate': 'null'}).json()
 
 
-def get_scalar_metrics(process_id, cam):
+def get_merged_qa_scalar_metrics(process_id, cam):
     """
     Returns cam scalar metrics
     """
 
-    scalar_metrics = dict()
+    # scalar_metrics = dict()
+    # try:
+    #     obj = Job.objects.filter(process_id=process_id).get(camera=cam)
+    #     scalar_metrics = obj.output
+    # except Job.DoesNotExist:
+    #     scalar_metrics = None
+    # return scalar_metrics
+    return QLFModels().get_output(process_id, cam)
+
+
+def load_fits(process_id, cam):
+    '''Load reduced fits '''
+    from astropy.io import fits
+
+
     try:
         process = Process.objects.get(pk=process_id)
         exposure = process.exposure
-        metrics, tests = LoadMetrics(process_id, cam, process.exposure_id,
-                                        exposure.night).Load_metrics_n_tests()
-        scalar_metrics['metrics'] = metrics
-        scalar_metrics['tests'] = tests
+        folder = "/app/spectro/redux/exposures/{}/{:08d}".format(
+            exposure.night, process.exposure_id)
+
+        file = "sframe-{}-{:08d}.fits".format(cam, process.exposure_id)
+        fitsfile = fits.open('{}/{}'.format(folder, file))
+        return fitsfile
+
     except Exception as err:
-        logger.error(err)
-        logger.error('load_scalar_metrics error')
-    return scalar_metrics
+        logger.info('{}'.format(err))
+        return None
 
-
-def get_scalar_metrics_aux(process_id, cam):
-    """
-    Returns cam scalar metrics from the json
-    files obtained by Singulani.
-    Just a test for desispec 0.21.0
-    """
-    import json
-
-    qanames = ["countbins", "skycont", "countpix", "skypeak", "getbias" , "skyresid", "getrms" , "snr", "integ" ,"xwsigma", "checkHDUs"]
-    folder = "/home/foliveira/qlf-root/dataql/ql-021/00003900/"
-    folder = "ql-021/00003900/"
-    cam = 'z2'
-    met = {} 
-    par = {}
-    for iqa in qanames:
-        file = "ql-{}-{}-00003900.json".format(iqa, cam)
-
-        try:
-            f = json.load(open(folder+file))
-            met.update({iqa: f['METRICS']})
-            par.update({iqa: f['PARAMS']})
-        except:
-            print('%s not found'%file)
-
-    lm={'results':{'metrics':met, 'tests':par}}
-    return lm
 
 
 def init_xy_plot(hover, yscale):
@@ -204,11 +195,11 @@ def write_info(qa_name, params):
                    'NGOODFIB_WARN_RANGE', 'NGOODFIB_NORMAL_RANGE'],
         skypeak=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
                  'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
-        # , 'PERCENTILES'],
-        getbias=['BIAS_AMP_NORMAL_RANGE',  'BIAS_AMP_WARN_RANGE'],
-        countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'CUTPIX'],
-        integ=['DELTAMAG_TGT_WARN_RANGE', 'DELTAMAG_TGT_NORMAL_RANGE'],
+        getbias=['BIAS_AMP_NORMAL_RANGE',  'BIAS_AMP_WARN_RANGE'],#, 'PERCENTILES'],
+        countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'CUTPIX'],#, 'LITFRAC_AMP_REF'
+        integ=['DELTAMAG_WARN_RANGE', 'DELTAMAG_NORMAL_RANGE'],
         snr=['FIDSNR_TGT_NORMAL_RANGE', 'FIDSNR_TGT_WARN_RANGE', 'FIDMAG'])
+
 
     keys = dict_test_keys[qa_name]
     for ii in keys:
@@ -219,10 +210,25 @@ def write_info(qa_name, params):
 
 def write_description(qa_name):
     """Descriptions to be displayed in QA plots."""
+
+    info_dic2 ={ 'countbins': ["Count Spectral Bins", "Number of bins above a threshold per spectrum."],
+                'skycont': ["Sky Continuum", "Mean sky continuum after fiber flattening"],
+                'countpix': ["Count Pixels", "Fraction of pixels lit after pre processing"],
+                'skypeak': ["Sky Peaks", 
+                "This QA for QuickLook includes the calculation of the counts and RMS at peak sky wavelengths in a 1D spectrum."],#"Count for Sky Fiber after ApplyFiberFlat QL"],
+                'getbias': ["Bias From Overscan", "Bias from overscan region after pre processing"],
+                'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
+                'getrms': ["Get RMS"," NOISE image counts per amplifier"],
+                'snr': ["Calculate SNR", "Signal-to-Noise ratio after sky substraction"],
+                'integ': ["Integrate Spectrum", "Integral counts for standard stars"], #Total integrals of STD spectra SkySub QL"
+                'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
+                'checkHDUs': ['','']        }
+
+
     info_dic ={ 'countbins': ["Count Spectral Bins", "Number of bins above a threshold per spectrum."],
 	         	'skycont': ["Sky Continuum", "Mean sky continuum after fiber flattening"],
 	         	'countpix': ["Count Pixels", "Fraction of pixels lit after pre processing"],
-	        	'skypeak': ["Sky Peaks", "Sky level in regions of peak sky emission lines"],#"Count for Sky Fiber after ApplyFiberFlat QL"],
+	        	'skypeak': ["Sky Peaks", "Sky level at peak sky wavelengths in a 1D spectrum"],#"Count for Sky Fiber after ApplyFiberFlat QL"],
 	        	'getbias': ["Bias From Overscan", "Bias from overscan region after pre processing"],
 	        	'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
 	        	'getrms': ["Get RMS"," NOISE image counts per amplifier"],
@@ -246,7 +252,7 @@ def eval_histpar(yscale, hist):
         histval = 'histplusone'
     else:
         ylabel = "Frequency"
-        yrange = (0, 1.1*max(hist))
+        yrange = (-0.1*max(hist), 1.1*max(hist))
         bottomval = 'bottom'
         histval = 'hist'
     return [ylabel,yrange,bottomval,histval]
@@ -266,3 +272,4 @@ def get_palette(name_of_mpl_palette):
 
 if __name__ == '__main__':
     logger.info('Standalone execution...')
+    

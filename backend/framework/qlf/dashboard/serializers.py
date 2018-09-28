@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from .models import Job, Exposure, Camera, QA, Process, Configuration, ProcessComment
+from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap
 from .utils import get_date
 from clients import get_exposure_monitoring
 
@@ -29,25 +29,6 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
-
-
-class QASerializer(DynamicFieldsModelSerializer):
-
-    links = serializers.SerializerMethodField()
-
-    class Meta:
-        model = QA
-        fields = (
-            'pk', 'name', 'description', 'paname',
-            'metrics', 'params', 'job', 'links'
-        )
-
-    def get_links(self, obj):
-        request = self.context['request']
-        return {
-            'self': reverse('qa-detail', kwargs={'pk': obj.pk},
-                            request=request),
-         }
 
 
 class JobSerializer(DynamicFieldsModelSerializer):
@@ -106,6 +87,22 @@ class ExposureSerializer(DynamicFieldsModelSerializer):
         return {
             'self': reverse('exposure-detail', kwargs={'pk': obj.pk}),
          }
+
+
+class FibermapSerializer(DynamicFieldsModelSerializer):
+
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Fibermap
+        fields = (
+            'ra_obs', 'dec_obs', 'fiber', 'objtype', 'links'
+        )
+
+    def get_links(self, obj):
+        return {
+            'self': reverse('fibermap-detail', kwargs={'pk': obj.pk}),
+        }
 
 
 class CameraSerializer(DynamicFieldsModelSerializer):
@@ -222,6 +219,7 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             'flavor',
             'program',
             'last_process_comments_count',
+            'night',
         )
 
     def get_datemjd(self, obj):
@@ -232,13 +230,13 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
             return time.mjd
 
     def get_last_exposure_process_id(self, obj):
-        process = Process.objects.all().filter(exposure=obj.pk)
+        process = Process.objects.filter(exposure=obj.pk)
         if not process:
             return None
         return process.last().pk
 
     def get_last_exposure_process_qa_tests(self, obj):
-        process = Process.objects.all().filter(exposure=obj.pk)
+        process = Process.objects.filter(exposure=obj.pk)
         if not process:
             return None
         return process.last().qa_tests
@@ -260,6 +258,12 @@ class ExposureFlavorSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Exposure
         fields = ('flavor',)
+
+
+class ExposureNightSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Exposure
+        fields = ('night',)
 
 
 class ProcessCommentSerializer(DynamicFieldsModelSerializer):

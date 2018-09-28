@@ -1,27 +1,59 @@
-from bokeh.plotting import curdoc, figure
-from bokeh.models.widgets import Select
+import astropy
+from astropy.table import Table
+from astropy import units as u
+from astropy.coordinates import SkyCoord, EarthLocation, AltAz
+from astropy.time import Time
+
+from bokeh.plotting import figure
 from bokeh.layouts import widgetbox, row, column
-from dashboard.bokeh.helper import get_exposures
 from bokeh.models import Div, Panel, Tabs
+from bokeh.resources import CDN
+from bokeh.embed import file_html
+import os
 
-# Get the list of exposures
-exposures = get_exposures()
+from dashboard.models import Exposure
 
-x = exposures['ra']
-y = exposures['dec']
+# from log import get_logger
 
-plot = figure(tools='pan,box_zoom,reset')
+# qlf_root = os.environ.get('QLF_ROOT')
 
-plot.circle(x, y, size=8)
+# logger = get_logger(
+#     "qlf.bokeh",
+#     os.path.join(qlf_root, "logs", "bokeh.log")
+# )
 
-plot.xaxis.axis_label = "RA (deg)"
-plot.yaxis.axis_label = "DEC (deg)"
+class Footprint():
+    def footprint(self, coords, visibles):
 
-select = Select(title="Program:", value="All", options=["All", "Dark", "Grey", "Bright"])
+        x = coords.ra*u.hour
+        y = coords.dec*u.deg
 
-panel_exposures = row(column(Div(text="<b>N Exposures:</b> {}".format(str(len(x)))), widgetbox(select)), column(plot))
+        vx = visibles.ra*u.hour
+        vy = visibles.dec*u.deg
 
-tab = Panel(child=panel_exposures, title="Footprint")
+        plot = figure(tools='pan,wheel_zoom,reset,lasso_select,crosshair')
 
-curdoc().add_root(Tabs(tabs=[tab]))
-curdoc().title = "Footprint"
+        plot.circle(x, y, fill_color='blue', alpha=0.5)
+
+        plot.circle(vx, vy, fill_color='red', size=5, alpha=0.7)
+
+        plot.xaxis.axis_label = "RA (deg)"
+        plot.yaxis.axis_label = "DEC (deg)"
+
+        return plot
+
+    def render(self, exposures_radec):
+        pointings_file = os.environ.get(
+            'POINTINGS_FILE', '/app/spectro/noconstraints.dat')
+
+        # you need to edit the original file to comment the header and join hourangle
+        pointings = Table.read(pointings_file, format='ascii.commented_header')
+        coords = SkyCoord(ra=pointings['RA']*u.hour,
+                          dec=pointings['DEC']*u.deg, frame='icrs')
+        if not exposures_radec['ra']:
+            empty = SkyCoord(ra=[]*u.hour, dec=[]*u.deg, frame='icrs')
+            return file_html(self.footprint(coords, empty), CDN, "DESI Footprint")
+        visibles = SkyCoord(ra=exposures_radec['ra']*u.hour,
+                            dec=exposures_radec['dec']*u.deg, frame='icrs')
+
+        return file_html(self.footprint(coords, visibles), CDN, "DESI Footprint")
