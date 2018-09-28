@@ -11,14 +11,14 @@ from rest_framework.pagination import LimitOffsetPagination
 from django.db.models import Max, Min
 # from django.db.models import Q
 
-from .models import Job, Exposure, Camera, QA, Process, Configuration, ProcessComment
+from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
-    QASerializer, ProcessSerializer, ConfigurationSerializer,
+    ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
     ExposureFlavorSerializer, ProcessCommentSerializer,
-    ExposureNightSerializer
+    ExposureNightSerializer, FibermapSerializer
 )
 
 from datetime import datetime, timedelta
@@ -308,20 +308,19 @@ class SetConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
             return response
 
 
-class QAViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for listing QA results"""
-
-    filter_fields = ('name',)
-    queryset = QA.objects.order_by('name')
-    serializer_class = QASerializer
-
-
 class ExposureViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing exposures"""
 
     queryset = Exposure.objects.order_by('exposure_id')
     serializer_class = ExposureSerializer
     filter_fields = ('exposure_id',)
+
+
+class FibermapViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing fibermaps"""
+
+    queryset = Fibermap.objects.all()
+    serializer_class = FibermapSerializer
 
 
 class DistinctFlavorsViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):

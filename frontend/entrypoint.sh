@@ -3,8 +3,7 @@ if [ $DEV = "true" ]; then
   yarn --pure-lockfile --ignore-optional
   yarn start
 else
-  yarn
+  yarn --pure-lockfile --ignore-optional
   yarn build
-  yarn serve
 fi
 

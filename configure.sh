@@ -5,21 +5,22 @@ git submodule init
 git submodule update
 cd backend/desimodel
 svn export https://desi.lbl.gov/svn/code/desimodel/trunk/data
-cd ..
+cd ../..
 
-echo 'Copying default backend docker-compose.yml'
+echo 'Copying default docker-compose.yml'
 cp docker-compose.yml.template docker-compose.yml
 
-echo 'Copying default frontend docker-compose.yml'
+echo 'Copying default nginx-proxy'
+cd nginx
+cp nginx-proxy.conf.template nginx-proxy.conf
 cd ..
-cd frontend
-cp docker-compose.yml.template docker-compose.yml
 
 echo 'Copying default frontend .env'
+cd frontend
 cp .env.template .env
+cd ..
 
 if [ -z "$1" ]; then
-    cd ..
     echo 'Checking spectro test data'
     if [ "$(ls -A backend/spectro/data)" ]; then
         echo "=> spectro test data check OK"
