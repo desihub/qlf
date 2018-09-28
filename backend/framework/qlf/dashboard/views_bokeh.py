@@ -12,14 +12,23 @@ from dashboard.bokeh.qasnr.main import SNR
 from dashboard.bokeh.globalfiber.main import GlobalFiber
 from dashboard.bokeh.globalfocus.main import GlobalFocus
 from dashboard.bokeh.footprint.main import Footprint
+from dashboard.bokeh.footprint.object_count import ObjectStatistics
 from dashboard.bokeh.globalsnr.main import GlobalSnr
 from dashboard.bokeh.timeseries.main import TimeSeries
 from dashboard.bokeh.regression.main import Regression
+import datetime
 
 from .models import Process, Exposure
 
 from django.template import loader
 from django.http import HttpResponse
+from django.http import JsonResponse
+from astropy.io import fits
+
+import os
+
+spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+
 
 from log import get_logger
 import os
@@ -37,6 +46,7 @@ def embed_bokeh(request, bokeh_app):
     # http://bokeh.pydata.org/en/0.12.5/docs/reference/embed.html
 
     # TODO: test if bokeh server is reachable
+
     bokeh_script = server_document(arguments=request.GET, url="{}/{}".format(settings.QLF_BASE_URL,
                                                                              bokeh_app))
 
@@ -63,23 +73,89 @@ def embed_bokeh(request, bokeh_app):
     return response
 
 
+def filter_processed_exposures(start, end, program):
+    start_date = datetime.datetime.strptime(start, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc)
+    end_date = datetime.datetime.strptime(end, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc) + datetime.timedelta(days=1)
+
+    if not program or program == 'all':
+        exposures = Exposure.objects.filter(
+            dateobs__gte=start_date, dateobs__lte=end_date)
+    else:
+        exposures = Exposure.objects.filter(
+            program=program, dateobs__gte=start_date, dateobs__lte=end_date)
+
+    processed_exposures = list()
+    for exposure in exposures:
+        if list(Process.objects.filter(exposure_id=exposure.pk)) != []:
+            processed_exposures.append(exposure)
+
+    return processed_exposures
+
+
 def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
-    exposures = Exposure.objects.all()
+    start = request.GET.get('start')
+    end = request.GET.get('end')
+    program = request.GET.get('program')
+    if not start or not end:
+        context = {'image': "Select start and end date"}
+        response = HttpResponse(template.render(context, request))
+
+        return response
+    processed_exposures = filter_processed_exposures(start, end, program)
+
     exposures_ra = list()
     exposures_dec = list()
-    for exposure in exposures:
+    for exposure in processed_exposures:
         exposures_ra.append(exposure.telra)
         exposures_dec.append(exposure.teldec)
-    logger.info(exposures_ra)
-    logger.info(exposures_dec)
+
+    exposures_radec = {"ra": exposures_ra, "dec": exposures_dec}
     # Generate Footprint
-    footprint = Footprint().render([])
+    footprint = Footprint().render(exposures_radec)
     context = {'image': footprint}
     response = HttpResponse(template.render(context, request))
 
     return response
+
+
+def footprint_object_type_count(request):
+    """Generates exposures object type count"""
+    start = request.GET.get('start')
+    end = request.GET.get('end')
+    program = request.GET.get('program')
+    processed_exposures = filter_processed_exposures(start, end, program)
+    process_ids = []
+    for exposure in processed_exposures:
+        if list(Process.objects.filter(exposure_id=exposure.pk)) != []:
+            process_ids.append(Process.objects.filter(exposure_id=exposure.pk).last().pk)
+            
+    total_obj = [0]*4
+    snr_good = [0]*4
+    fib_good = [0]*4
+    snr_bad = [0]*4
+    fib_bad = [0]*4
+
+    good = [0]*4
+    bad = [0]*4
+
+    for ids in process_ids:
+        nobj, snr, fiber = ObjectStatistics(ids).generate_statistics()
+
+        for i, o in enumerate(['ELG', 'LRG', 'QSO', 'STAR']):
+            total_obj[i] += nobj[o]
+            good[i] += snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
+            bad[i] += snr['ALARM'][o] + fiber['BAD'][o]
+
+    result = dict(objects=['ELG', 'LRG', 'QSO', 'STAR'],
+                  total=total_obj,
+                  good=[int(good[i]) for i in range(4)],
+                  bad=[int(bad[i]) for i in range(4)])
+
+    return JsonResponse(result)
 
 
 def fits_to_png(request):
