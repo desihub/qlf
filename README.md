@@ -45,18 +45,18 @@ _frontend takes about 5 minutes to start on dev mode_
 Running `docker ps` you should see 4 containers:
 
 ```
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                             NAMES
-2e442179ea93        backend_qlf         "/usr/bin/tini -- ./…"   4 minutes ago       Up 4 minutes        0.0.0.0:5007->5007/tcp, 0.0.0.0:8001->8001/tcp, 0.0.0.0:56006->56006/tcp, 8000/tcp   backend_qlf_1
-c4681154ec2f        postgres            "docker-entrypoint.s…"   4 minutes ago       Up 4 minutes        0.0.0.0:5433->5432/tcp                             backend_db_1
-a8d6de192554        redis               "docker-entrypoint.s…"   4 minutes ago       Up 4 minutes        0.0.0.0:6380->6379/tcp                             backend_redis_1
-075e01f0dbb2        frontend_frontend   "sh entrypoint.sh"       4 minutes ago       Up 4 minutes        0.0.0.0:3000->3000/tcp                             frontend_frontend_1
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                                    NAMES
+d92b7eb3583e        qlf_nginx           "nginx -g 'daemon of…"   5 minutes ago       Up 5 minutes        80/tcp, 7070/tcp, 0.0.0.0:80->8080/tcp   qlf_nginx_1
+7622ffe8f2a9        qlf_backend         "/usr/bin/tini -- ./…"   5 minutes ago       Up 5 minutes        8000/tcp                                 qlf_backend_1
+1c69cb7e5aff        redis               "docker-entrypoint.s…"   5 minutes ago       Up 5 minutes        6379/tcp                                 qlf_redis_1
+709cc22755bc        postgres            "docker-entrypoint.s…"   5 minutes ago       Up 5 minutes        5432/tcp                                 qlf_db_1
 ```
 
 ### User Interface
 
 You can access QLF interface by going to 
 
-    http://localhost:3000/
+    http://localhost/
 
 ### Stoping QLF
 
@@ -94,18 +94,18 @@ Run `docker ps` to check for old containers up and running on your machine.
 
 ```
 $ docker ps
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                                                                                NAMES
-17c6cef9f994        redis               "docker-entrypoint.s…"   23 hours ago        Up 23 hours         0.0.0.0:6380->6379/tcp                                                               backend_redis_1
-9d93b1511b31        frontend_frontend   "sh entrypoint.sh"       23 hours ago        Up 23 hours         0.0.0.0:3000->3000/tcp                                                               frontend_frontend_1
-00a5ff89d32d        qlf_qlf             "/usr/bin/tini -- ./…"   3 weeks ago         Up 7 days           0.0.0.0:5007->5007/tcp, 0.0.0.0:8001->8001/tcp, 0.0.0.0:56006->56006/tcp, 8000/tcp   qlf_qlf_1
-d0cd726fc527        postgres            "docker-entrypoint.s…"   5 weeks ago         Up 7 days           0.0.0.0:5433->5432/tcp 
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                                    NAMES
+d92b7eb3583e        qlf_nginx           "nginx -g 'daemon of…"   5 minutes ago       Up 5 minutes        80/tcp, 7070/tcp, 0.0.0.0:80->8080/tcp   qlf_nginx_1
+7622ffe8f2a9        qlf_backend         "/usr/bin/tini -- ./…"   5 minutes ago       Up 5 minutes        8000/tcp                                 qlf_backend_1
+1c69cb7e5aff        redis               "docker-entrypoint.s…"   5 minutes ago       Up 5 minutes        6379/tcp                                 qlf_redis_1
+709cc22755bc        postgres            "docker-entrypoint.s…"   5 minutes ago       Up 5 minutes        5432/tcp                                 qlf_db_1
 ```
 
 You can stop it individually by name, for example: `docker stop qlf_qlf_1`
 
 - In case you need to access the backend
 
-    http://localhost:8001/
+    http://localhost/dashboard/api/
 
 
 ### Support
