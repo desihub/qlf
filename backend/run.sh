@@ -15,30 +15,50 @@ export DESI_ROOT=$QLF_ROOT
 export DESI_PRODUCT_ROOT=$QLF_ROOT
 
 for package in desispec desiutil desimodel desisim desitarget specter; do
-	echo "Setting $package..."
-	export PATH=$QLF_ROOT/$package/bin:$PATH
-	export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
+  echo "Setting $package..."
+  export PATH=$QLF_ROOT/$package/bin:$PATH
+  export PYTHONPATH=$QLF_ROOT/$package/py:$PYTHONPATH
 done
 
 export PYTHONPATH=$QLF_ROOT/framework/bin:$PYTHONPATH
 export DESIMODEL=$QLF_ROOT/desimodel
 
 if [ $START_ICS = "True" ]; then
-	# Staring ics interface
-	sh $QLF_ROOT/ics.sh
-	python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &> $QLF_ROOT/logs/ics_interface.log &
+  # Staring ics interface
+  sh $QLF_ROOT/ics.sh
+  if [ $LOGS_DIRECTORY = "True" ]; then
+    python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &> $QLF_ROOT/logs/ics_interface.log &
+  else
+    python3.6 $QLF_ROOT/framework/bin/ics_daemon.py &
+  fi 
 fi
 
-python -Wi framework/qlf/manage.py migrate
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass') if not User.objects.all() else None" | python framework/qlf/manage.py shell
+if [ ! -z $POSTGRES_PASSWORD_FILE ]; then
+  # Set db password nersc
+  export POSTGRES_PASSWORD=$(cat $POSTGRES_PASSWORD_FILE)
+fi
+
+if [ $RUN_DB_MIGRATIONS = "True" ]; then
+  python -Wi framework/qlf/manage.py migrate
+  echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass') if not User.objects.all() else None" | python framework/qlf/manage.py shell
+fi
 
 # Start QLF daemon
 if [ $DAEMON_TEST = "False" ]; then
-	echo "Initializing QLF Daemon..."
-	./startDaemon.sh &> $QLF_ROOT/logs/qlf_daemon.log &
+  echo "Initializing QLF Daemon..."
+  if [ $LOGS_DIRECTORY = "True" ]; then
+    ./startDaemon.sh &> $QLF_ROOT/logs/qlf_daemon.log &
+  else
+    ./startDaemon.sh &
+  fi 
 fi
 
+echo -e "\n\n\n----------------------------------------------------------------------"
+echo "Initializing QLF Backend..."
+echo -e "----------------------------------------------------------------------\n\n\n"
 
-echo "QLF Backend is running at http://$QLF_HOSTNAME:$QLF_PORT/dashboard/api"
-
-python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
+if [ $LOGS_DIRECTORY = "True" ]; then
+  python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
+else
+  python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT
+fi 
