@@ -207,25 +207,26 @@ class Steps extends Component {
 
     const steps = [];
     const stepsQa = {};
-
-    flavors[this.props.flavor].step_list.map(step => {
-      steps.push(step.name);
-      stepsQa[step.name] = step.qa_list.map(qa => {
-        return qa.display_name;
-      });
-      return null;
-    });
-
-    let message = '';
-    if (cameraQa) {
-      if (cameraQa[camera][steps[step]]) {
-        cameraQa[camera][steps[step]].forEach((val, idx) => {
-          message +=
-            stepsQa[steps[step]][idx] + ': ' + val.toLowerCase() + ' \n';
+    if (flavors[this.props.flavor]) {
+      flavors[this.props.flavor].step_list.map(step => {
+        steps.push(step.name);
+        stepsQa[step.name] = step.qa_list.map(qa => {
+          return qa.display_name;
         });
+        return null;
+      });
+
+      let message = '';
+      if (cameraQa) {
+        if (cameraQa[camera][steps[step]]) {
+          cameraQa[camera][steps[step]].forEach((val, idx) => {
+            message +=
+              stepsQa[steps[step]][idx] + ': ' + val.toLowerCase() + ' \n';
+          });
+        }
       }
+      this.setState({ message });
     }
-    this.setState({ message });
   };
 
   hideQaAlarms = () => {};
