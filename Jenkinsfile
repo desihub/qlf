@@ -16,6 +16,8 @@ pipeline {
         stage('Test Backend') {
             steps {
                 sh 'docker-compose run -u $(id -u jenkins) app ./test.sh'
+                sh 'docker-compose stop'
+                sh 'docker container prune -f'
             }
         }
         stage('Test Frontend') {
