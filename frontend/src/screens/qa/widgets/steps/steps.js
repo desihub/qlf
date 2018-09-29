@@ -9,15 +9,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
 import flavors from '../../../../flavors';
 
-// const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
-
-// const stepsQa = {
-//   preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
-//   extract: ['countbins'],
-//   fiberfl: ['skycont', 'skypeak'],
-//   skysubs: ['integ', 'skyresid', 'snr'],
-// };
-
 const arms = ['b', 'r', 'z'];
 
 const styles = {
