@@ -7,14 +7,14 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Resizable from 're-resizable';
 
 const apiUrl = process.env.REACT_APP_API;
 
 const styles = {
   iframe: {
-    width: '45vw',
-    height: 'calc(100vh - 151px)',
-    margin: '0 auto',
+    width: '100%',
+    height: '100%',
   },
   preview: {
     display: 'flex',
@@ -22,21 +22,24 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  previewcontent: {
+  previewContent: {
+    width: '100%',
     display: 'grid',
     gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 151px)',
-    width: '100%',
+    height: 'calc(100vh - 161px)',
+    overflowY: 'auto',
+  },
+  previewResize: {
+    borderRight: '1px solid darkgrey',
+    paddingRight: '10px',
+    marginRight: '10px',
+    overflow: 'hidden',
   },
   tableViewer: {
-    //width: '400px',
-    display: 'grid',
     overflowY: 'auto',
-    alignItems: 'start',
-    //justifyContent: 'space-evenly',
-    borderLeft: '1px solid darkgrey',
-    paddingLeft: '10px',
-    marginLeft: '10px',
+  },
+  legend: {
+    marginBottom: '10px',
   },
   button: {
     float: 'right',
@@ -145,14 +148,22 @@ class SurveyViewer extends React.Component {
 
     if (url !== '')
       return (
-        <div className={classes.previewcontent}>
-          <iframe
-            title="image-modal"
-            className={classes.iframe}
-            frameBorder="0"
-            src={url}
-            onLoad={this.props.loadEnd}
-          />
+        <div className={classes.previewContent}>
+          <Resizable
+            className={classes.previewResize}
+            defaultSize={{
+              width: 'auto',
+              height: 'auto',
+            }}
+          >
+            <iframe
+              title="image-modal"
+              className={classes.iframe}
+              frameBorder="0"
+              src={url}
+              onLoad={this.props.loadEnd}
+            />
+          </Resizable>
           {this.renderTable()}
         </div>
       );
@@ -199,7 +210,9 @@ class SurveyViewer extends React.Component {
     const { classes } = this.props;
     return (
       <div className={classes.preview}>
-        <FormLabel component="legend">Preview:</FormLabel>
+        <FormLabel component="legend" className={classes.legend}>
+          Preview:
+        </FormLabel>
         {this.renderImage()}
       </div>
     );
