@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { VictoryPie, Slice } from 'victory';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import flavors from '../../../../../flavors';
 
 const arms = ['b', 'r', 'z'];
-const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
 
 export default class PieChart extends Component {
   static propTypes = {
@@ -16,6 +16,7 @@ export default class PieChart extends Component {
     hideQaAlarms: PropTypes.func.isRequired,
     qaTests: PropTypes.array,
     monitor: PropTypes.bool,
+    flavor: PropTypes.string,
   };
 
   getColor = test => {
@@ -47,9 +48,14 @@ export default class PieChart extends Component {
         if (Object.keys(test)[0] === currentCamera) return test[currentCamera];
         return null;
       });
-      const step = steps[this.props.step];
-      if (currentTest) {
-        return currentTest[currentCamera][step];
+      if (flavors[this.props.flavor]) {
+        const steps = flavors[this.props.flavor]['step_list'].map(
+          flavor => flavor.name
+        );
+        const step = steps[this.props.step];
+        if (currentTest) {
+          return currentTest[currentCamera][step];
+        }
       }
     }
   };

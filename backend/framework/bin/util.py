@@ -109,8 +109,8 @@ def extract_fibermap_data(exposure_id, night):
         logger.error("Error to load fits file: %s" % err)
         return {}
 
-    ra_obs = fmap['FIBERMAP'].data['RA_OBS']
-    dec_obs = fmap['FIBERMAP'].data['DEC_OBS']
+    ra_obs = fmap['FIBERMAP'].data['FIBER_RA']
+    dec_obs = fmap['FIBERMAP'].data['FIBER_DEC']
     fiber = fmap['FIBERMAP'].data['FIBER']
     objtype = fmap['FIBERMAP'].data['OBJTYPE']
 

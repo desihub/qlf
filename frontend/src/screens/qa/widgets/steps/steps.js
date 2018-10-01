@@ -228,6 +228,7 @@ class Steps extends Component {
         renderMetrics={this.props.renderMetrics}
         step={step}
         arm={arm}
+        flavor={this.props.flavor}
         size={this.state.petalSize}
         showQaAlarms={this.showQaAlarms}
         hideQaAlarms={this.hideQaAlarms}

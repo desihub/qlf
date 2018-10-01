@@ -4,7 +4,6 @@ import requests
 from furl import furl
 from bokeh.plotting import Figure
 from dashboard.models import Process, Job
-from scalar_metrics import LoadMetrics
 from qlf_models import QLFModels
 import sys
 

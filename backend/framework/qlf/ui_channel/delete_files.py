@@ -1,6 +1,7 @@
 import os
 import shutil
 
+qlf_root = os.environ.get('QLF_ROOT')
 
 def delete_raw():
     desi_spectro_redux = os.environ.get('DESI_SPECTRO_DATA')
