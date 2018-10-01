@@ -3,7 +3,6 @@ import os
 import astropy.io.fits
 import datetime
 import yaml
-from qlf_models import QLFModels
 
 logger = logging.getLogger()
 

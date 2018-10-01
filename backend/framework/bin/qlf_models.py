@@ -316,7 +316,7 @@ class QLFModels(object):
             exposure_id=F("process__exposure__exposure_id"),
             dateobs=F("process__exposure__dateobs")
         ).values(
-            "value", "camera", "exposure_id", "dateobs"
+            "camera", "exposure_id", "dateobs", "value"
         ).distinct()
 
     def delete_all_processes(self):
