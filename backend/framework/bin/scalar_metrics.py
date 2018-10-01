@@ -1,6 +1,4 @@
 from __future__ import division
-# Scalar_metrics.py DESISPEC 0.20.0
-# To do: Finish the documentation
 
 import logging
 import requests
