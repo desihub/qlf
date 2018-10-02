@@ -64,7 +64,7 @@ class CameraStatus:
                 if not camera: return
 
                 for step in self.qlf_state.stages['step_list']:
-                    if "CRITICAL" in str(log) or "Error" in str(log) and \
+                    if "CRITICAL" in str(log) and \
                             camera.get_step_status(step['name']) is 'processing_stage':
                         camera.set_step_status(step['name'], 'error_stage')
                     if step['start'] in str(log) and \
