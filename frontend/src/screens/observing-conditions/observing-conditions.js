@@ -80,7 +80,7 @@ const styles = {
   },
 };
 
-class TrendAnalysis extends React.Component {
+class ObservingConditions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -109,7 +109,7 @@ class TrendAnalysis extends React.Component {
 
   handleChangeDatePeriod = evt => {
     this.setState({ datePeriod: evt.target.value, endDate: moment().format() });
-    this.loadStart();
+    this.loadEnd();
     switch (evt.target.value) {
       case 'night':
         this.setState({ startDate: moment().format() });
@@ -149,11 +149,16 @@ class TrendAnalysis extends React.Component {
 
   handleChangeYaxis = evt => {
     this.setState({ yaxis: evt.target.value });
+    this.loadEnd();
+  };
+
+  handleSubmit = () => {
+    //console.log(this.state.datePeriod, this.state.yaxis);
     this.loadStart();
   };
 
   loadStart = () => {
-    this.setState({ loading: true });
+    this.setState({ loading: true, preview: true });
   };
 
   loadEnd = () => {
@@ -181,11 +186,16 @@ class TrendAnalysis extends React.Component {
     }
   };
 
+  isValid = () => {
+    return this.state.yaxis !== '' && this.state.datePeriod !== '';
+  };
+
   clearSelection = () => {
     this.setState({
       yaxis: '',
       loading: false,
       datePeriod: '',
+      preview: false,
     });
   };
 
@@ -240,8 +250,21 @@ class TrendAnalysis extends React.Component {
       variant="raised"
       size="small"
       className={this.props.classes.button}
+      disabled={!this.isValid()}
     >
       Clear
+    </Button>
+  );
+
+  renderSubmit = () => (
+    <Button
+      onClick={this.handleSubmit}
+      variant="raised"
+      size="small"
+      className={this.props.classes.button}
+      disabled={!this.isValid()}
+    >
+      Submit
     </Button>
   );
 
@@ -270,6 +293,7 @@ class TrendAnalysis extends React.Component {
         {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
         {this.renderYaxisSelection()}
+        {this.renderSubmit()}
         {this.renderClear()}
       </div>
     );
@@ -290,13 +314,20 @@ class TrendAnalysis extends React.Component {
 
   render() {
     const { classes } = this.props;
+
+    let viewer = null;
+    if (this.state.preview) {
+      viewer = this.renderViewer('timeseries');
+    }
+
     return (
       <Paper elevation={4} className={classes.main}>
         <div className={classes.gridRow}>
           {this.renderControls()}
           <div className={classes.viewer}>
             {this.renderLoading()}
-            {this.renderViewer('timeseries')}
+            {/* {this.renderViewer('timeseries')} */}
+            {viewer}
           </div>
         </div>
       </Paper>
@@ -304,4 +335,4 @@ class TrendAnalysis extends React.Component {
   }
 }
 
-export default withStyles(styles)(TrendAnalysis);
+export default withStyles(styles)(ObservingConditions);
