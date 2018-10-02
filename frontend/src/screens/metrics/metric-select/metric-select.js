@@ -87,7 +87,6 @@ export default class MetricSelect extends Component {
 
     if (!this.props.stepsQa[step]) return;
     return this.props.stepsQa[step].map((qa, index) => {
-      console.log(qa)
       const selected =
         this.props.selectedQA && this.props.selectedQA.includes(qa)
           ? styles.selected

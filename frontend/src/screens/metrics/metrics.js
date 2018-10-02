@@ -201,6 +201,9 @@ export default class Metrics extends Component {
 
   render() {
     const camera = this.props.arms[this.state.arm] + this.state.spectrograph;
+    const step = this.state.steps[this.state.step]
+      ? this.state.steps[this.state.step].toUpperCase()
+      : undefined;
     return (
       <div style={{ ...styles.container }}>
         <div style={{ ...styles.controlsContainerLeft }}>
@@ -222,11 +225,7 @@ export default class Metrics extends Component {
               flavor={this.props.flavor}
             />
             <div style={styles.grid}>
-              <Control
-                change={this.changeStep}
-                title={'Step'}
-                value={this.state.steps[this.state.step]}
-              />
+              <Control change={this.changeStep} title={'Step'} value={step} />
               <Control
                 change={this.changeSpectrograph}
                 title={'Spectrograph'}
