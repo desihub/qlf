@@ -71,8 +71,8 @@ class Countbins:
                 </div>
             </div>
                 """
-        y=np.array(countbins['GOOD_FIBER'])
-        x=np.array(range(len(countbins['GOOD_FIBER'])))
+        y=np.array(countbins['GOOD_FIBERS'])
+        x=np.array(range(len(countbins['GOOD_FIBERS'])))
         hist_hover = HoverTool(tooltips=hist_tooltip)
         hist_source = ColumnDataSource(
                         data={'goodfiber': y,
@@ -86,7 +86,7 @@ class Countbins:
                                 'y1': dec,   
                             'QLF_FIBERID': qlf_fiberid,
                             'OBJ_TYPE': obj_type,
-                            'color': ['#319b5c' if i ==1 else '#282828' for i in countbins['GOOD_FIBER']]
+                            'color': ['#319b5c' if i ==1 else '#282828' for i in countbins['GOOD_FIBERS']]
                             })
 
 

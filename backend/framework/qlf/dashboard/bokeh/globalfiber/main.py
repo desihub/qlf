@@ -89,7 +89,7 @@ class GlobalFiber:
                 if cam in joblist:
                     try:
                         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-                        countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
+                        countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
                         y = y + countbins
                         color = color + [ 'green' if idx==1 else 'red' for idx in countbins]
                         status = status + ['GOOD' if idx==1 else 'BAD' for idx in countbins]

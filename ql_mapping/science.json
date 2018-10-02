@@ -16,7 +16,7 @@
         {
           "display_name": "Noise AMP",
           "status_key": "NOISE_AMP_STATUS",
-          "name": "noise",
+          "name": "rms",
           "bands": ["b", "r", "z"]
         },
         {
@@ -28,7 +28,13 @@
         {
           "display_name": "LITFRAC AMP",
           "status_key": "LITFRAC_AMP_STATUS",
-          "name": "litfrac",
+          "name": "countpix",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "XWSIGMA",
+          "status_key": "XWSIGMA_STATUS",
+          "name": "xwsigma",
           "bands": ["b", "r", "z"]
         }
       ]
@@ -42,13 +48,7 @@
         {
           "display_name": "NGOODFIB",
           "status_key": "NGOODFIB_STATUS",
-          "name": "ngoodfib",
-          "bands": ["b", "r", "z"]
-        },
-        {
-          "display_name": "XWSIGMA",
-          "status_key": "XWSIGMA_STATUS",
-          "name": "xwsigma",
+          "name": "countbins",
           "bands": ["b", "r", "z"]
         },
         {
@@ -80,7 +80,13 @@
         {
           "display_name": "DELTAMAG TGT",
           "status_key": "DELTAMAG_TGT_STATUS",
-          "name": "deltamag",
+          "name": "integ",
+          "bands": ["b", "r", "z"]
+        },
+        {
+          "display_name": "SNR",
+          "status_key": "FIDSNR_TGT_STATUS",
+          "name": "snr",
           "bands": ["b", "r", "z"]
         },
         {

@@ -16,7 +16,7 @@
         {
           "display_name": "Noise AMP",
           "status_key": "NOISE_AMP_STATUS",
-          "name": "noise",
+          "name": "rms",
           "bands": ["b", "r", "z"]
         },
         {
@@ -28,7 +28,7 @@
         {
           "display_name": "LITFRAC AMP",
           "status_key": "LITFRAC_AMP_STATUS",
-          "name": "litfrac",
+          "name": "countpix",
           "bands": ["b", "r", "z"]
         }
       ]
@@ -42,7 +42,7 @@
         {
           "display_name": "NGOODFIB",
           "status_key": "NGOODFIB_STATUS",
-          "name": "ngoodfib",
+          "name": "countbins",
           "bands": ["b", "r", "z"]
         },
         {
