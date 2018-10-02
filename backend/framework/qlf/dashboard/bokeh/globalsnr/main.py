@@ -53,8 +53,8 @@ class GlobalSnr:
             exposure = process.exposure
  
 
-            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
-            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
+            ra_tile = fmap['FIBERMAP'].data['FIBER_RA']
+            dec_tile = fmap['FIBERMAP'].data['FIBER_DEC']
             otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
             fid_tile = fmap['FIBERMAP'].data['FIBER']
             ra_center = fmap['FIBERMAP'].header['TELRA']
@@ -169,8 +169,8 @@ class GlobalSnr:
             exposure = process.exposure
  
 
-            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
-            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
+            ra_tile = fmap['FIBERMAP'].data['FIBER_RA']
+            dec_tile = fmap['FIBERMAP'].data['FIBER_DEC']
             otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
             fid_tile = fmap['FIBERMAP'].data['FIBER']
             ra_center = fmap['FIBERMAP'].header['TELRA']
@@ -268,8 +268,8 @@ class GlobalSnr:
 
     def wedge_plot(self, wedge_arm, fmap, common_source=None, sigma_kind='x'):
         try:
-            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
-            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
+            ra_tile = fmap['FIBERMAP'].data['FIBER_RA']
+            dec_tile = fmap['FIBERMAP'].data['FIBER_DEC']
             fid_tile = fmap['FIBERMAP'].data['FIBER']
             ra_center = fmap['FIBERMAP'].header['TELRA']
             dec_center = fmap['FIBERMAP'].header['TELDEC']
