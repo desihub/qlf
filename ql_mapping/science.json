@@ -5,7 +5,7 @@
       "display_name": "CHECK CCDS",
       "name": "checkccds",
       "start": "Running Check_HDUs",
-      "end": "Starting to run step BoxcarExtract",
+      "end": "Starting to run step Flexure",
       "qa_list": [
         {
           "display_name": "Check HDUs",
@@ -36,7 +36,7 @@
     {
       "display_name": "CHECK FIBERS",
       "name": "checkfibers",
-      "start": "Starting to run step BoxcarExtract",
+      "start": "Starting to run step Flexure",
       "end": "Starting to run step ApplyFiberFlat_QL",
       "qa_list": [
         {
