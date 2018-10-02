@@ -23,7 +23,7 @@ const qaTests = [
 ];
 
 describe('Metric Controls', () => {
-  let metrics, navigateToProcessingHistory, navigateToQA, wrapper;
+  let metrics, navigateToProcessingHistory, navigateToQA;
   beforeEach(() => {
     navigateToQA = jest.fn();
     navigateToProcessingHistory = jest.fn();
@@ -50,7 +50,7 @@ describe('Metric Controls', () => {
   });
 
   it('mounts', () => {
-    wrapper = mount(metrics);
+    mount(metrics);
   });
 
   // it('changes step', () => {
