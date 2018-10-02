@@ -185,8 +185,8 @@ class Job(models.Model):
 
 class Fibermap(models.Model):
     """Fibermap information"""
-    ra_obs = ArrayField(models.FloatField())
-    dec_obs = ArrayField(models.FloatField())
+    fiber_ra = ArrayField(models.FloatField())
+    fiber_dec = ArrayField(models.FloatField())
     fiber = ArrayField(models.FloatField())
     objtype = ArrayField(models.CharField(max_length=15))
     exposure = models.ForeignKey(Exposure, related_name='fibermap_exposure')

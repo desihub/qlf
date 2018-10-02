@@ -96,7 +96,7 @@ class FibermapSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Fibermap
         fields = (
-            'ra_obs', 'dec_obs', 'fiber', 'objtype', 'links'
+            'fiber_ra', 'fiber_dec', 'fiber', 'objtype', 'links'
         )
 
     def get_links(self, obj):
