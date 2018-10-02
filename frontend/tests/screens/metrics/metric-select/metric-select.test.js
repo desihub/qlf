@@ -20,6 +20,7 @@ describe('Metric Controls', () => {
           selectQA={selectQA}
           camera={'b0'}
           qaTests={[]}
+          stepsQa={['Pre Processing']}
         />
       </MuiThemeProvider>
     );
