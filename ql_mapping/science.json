@@ -5,7 +5,7 @@
       "display_name": "CHECK CCDS",
       "name": "checkccds",
       "start": "Running Check_HDUs",
-      "end": "Starting to run step Preproc",
+      "end": "Starting to run step BoxcarExtract",
       "qa_list": [
         {
           "display_name": "Check HDUs",
@@ -36,8 +36,8 @@
     {
       "display_name": "CHECK FIBERS",
       "name": "checkfibers",
-      "start": "Starting to run step Preproc",
-      "end": "Starting to run step BoxcarExtract",
+      "start": "Starting to run step BoxcarExtract",
+      "end": "Starting to run step ApplyFiberFlat_QL",
       "qa_list": [
         {
           "display_name": "NGOODFIB",
@@ -62,7 +62,7 @@
     {
       "display_name": "CHECK SPECTRA",
       "name": "checkspectra",
-      "start": "Starting to run step BoxcarExtract",
+      "start": "Starting to run step ApplyFiberFlat_QL",
       "end": "Pipeline completed",
       "qa_list": [
         {
