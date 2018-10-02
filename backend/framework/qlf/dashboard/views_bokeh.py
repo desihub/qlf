@@ -187,9 +187,9 @@ def load_qa(request):
     try:
         if qa == 'qacountpix':
             qa_html = Countpix(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qagetbias':
+        elif qa == 'qabias':
             qa_html = Bias(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qagetrms':
+        elif qa == 'qarms':
             qa_html = RMS(process_id, arm, spectrograph).load_qa()
         elif qa == 'qaxwsigma':
             qa_html = Xwsigma(process_id, arm, spectrograph).load_qa()
@@ -197,13 +197,13 @@ def load_qa(request):
             qa_html = Countbins(process_id, arm, spectrograph).load_qa()
         elif qa == 'qaskycont':
             qa_html = Skycont(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qaskypeak':
+        elif qa == 'qapeakcount':
             qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
         elif qa == 'qainteg':
             qa_html = Integ(process_id, arm, spectrograph).load_qa()
         elif qa == 'qaskyresid':
             qa_html = Skyresid(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qasnr':
+        elif qa == 'qanoise':
             qa_html = SNR(process_id, arm, spectrograph).load_qa()
         elif qa == 'globalfiber':
             qa_html = GlobalFiber(process_id, arm, spectrograph).load_qa()
