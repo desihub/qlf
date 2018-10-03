@@ -96,7 +96,7 @@ class QLFState:
         self.pipeline_running = 0 if not qlf.get_status() else 2
         if self.pipeline_running:
             if not qlf.is_running():
-                self.set_daemon_running(True)
+                self.pipeline_running = 1
 
     def update_qlf_state(self):
         self.update_pipeline_status()
@@ -163,6 +163,9 @@ class QLFState:
             "flavor": self.flavor,
             "process_id": self.current_process_id
         })
+
+        if self.old_state.pipeline_running is 1 and self.pipeline_running is 2:
+                self.set_daemon_running(True)
 
         if self.old_state != new_state:
             self.old_state = new_state
