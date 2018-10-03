@@ -189,8 +189,6 @@ def load_qa(request):
             qa_html = Countpix(process_id, arm, spectrograph).load_qa()
         elif qa == 'qabias':
             qa_html = Bias(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qahdu':
-            qa_html = ''
         elif qa == 'qarms':
             qa_html = RMS(process_id, arm, spectrograph).load_qa()
         elif qa == 'qaxwsigma':
@@ -213,6 +211,14 @@ def load_qa(request):
             qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
         elif qa == 'globalsnr':
             qa_html = GlobalSnr(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qahdu':
+            qa_html = 'No Drill Down'
+        elif qa == 'qacheckflat':
+            qa_html = 'No Drill Down'
+        elif qa == 'qacheckarc':
+            qa_html = 'No Drill Down'
+        elif qa == 'qaxyshifts':
+            qa_html = 'No Drill Down'
         else:
             qa_html = "Couldn't load QA"
     except Exception as err:
