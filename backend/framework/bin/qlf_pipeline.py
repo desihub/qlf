@@ -5,28 +5,26 @@ import gc
 import shutil
 import subprocess
 import time
+import json
 from datetime import datetime
 from multiprocessing import Lock, Manager, Process
 from threading import Thread
 from concurrent import futures
 
-from log import get_logger
+import logging
+
 from qlf_models import QLFModels
 from scalar_metrics import LoadMetrics
-from util import extract_exposure_data
 
 desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
-loglevel = os.environ.get('PIPELINE_LOGLEVEL')
 max_workers = int(os.environ.get('PIPELINE_MAX_WORKERS'))
 qlf_root = os.environ.get('QLF_ROOT')
 
-logger = get_logger(
-    "qlf.pipeline",
-    os.path.join(qlf_root, "logs", "pipeline.log")
-)
+logger = logging.getLogger(name='qlf.pipeline')
 
 if not max_workers > 0:
     max_workers = None
+
 
 class QLFProcess(object):
     """ Class responsible for managing Quick Look pipeline process. """
@@ -37,39 +35,19 @@ class QLFProcess(object):
 
         self.num_cameras = len(self.data.get('cameras'))
 
-        # TODO: improve getting stages
-        self.stages = [
-            {
-                "display_name": "Check_HDUs",
-                "start": {"regex": "Running Check_HDUs", "count": 0},
-                "end": {"regex": "Starting to run step Preproc",
-                        "count": 0}
-            },
-            {
-                "display_name": "Pre Processing",
-                "start": {"regex": "Starting to run step Preproc", "count": 0},
-                "end": {"regex": "Starting to run step BoxcarExtract",
-                        "count": 0}
-            },
-            {
-                "display_name": "Spectral Extraction",
-                "start": {"regex": "Starting to run step BoxcarExtract",
-                          "count": 0},
-                "end": {"regex": "Starting to run step ApplyFiberFlat_QL",
-                        "count": 0}
-            },
-            {
-                "display_name": "Fiber Flattening",
-                "start": {"regex": "Starting to run step ApplyFiberFlat_QL",
-                          "count": 0},
-                "end": {"regex": "Starting to run step SkySub", "count": 0}
-            },
-            {
-                "display_name": "Sky Subtraction",
-                "start": {"regex": "Starting to run step SkySub", "count": 0},
-                "end": {"regex": "Pipeline completed", "count": 0}
-            }
-        ]
+        flavor_path = os.path.join(
+            qlf_root, "framework", "ql_mapping",
+            "{}.json".format(self.data.get('flavor'))
+        )
+
+        with open(flavor_path) as f:
+            flavor = json.load(f)
+
+        self.stages = flavor.get('step_list')
+
+        for stage in self.stages:
+            stage['start'] = {"regex": stage.get('start'), "count": 0}
+            stage['end'] = {"regex": stage.get('end'), "count": 0}
 
         self.models = QLFModels()
 
@@ -178,8 +156,6 @@ class QLFProcess(object):
             '--rawdata_dir', data.get('desi_spectro_data'),
             '--specprod_dir', desi_spectro_redux
         ]
-
-        print(" ".join(str(x) for x in cmd))
 
         logname = io.open(os.path.join(
                 desi_spectro_redux,
@@ -365,15 +341,20 @@ class QLFProcess(object):
                     ))
 
 
-def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
+def run_process(exposure, return_process_id=None):
     """ Runs QL pipeline in parallel
 
     Arguments:
-        exposure_id {int} -- exposure ID
-        night {str} -- night (YYYYMMDD)
+        exposure {dict} -- exposure info 
+        e.g. of keys expected: exposure_id, dateobs, night, zfill,
+        desi_spectro_data, desi_spectro_redux, telra, teldec, tile,
+        flavor, program, airmass, exptime, qlconfig, time
+
+        The util.extract_exposure_data function returns this dictionary
+        or can be created by database if the exposition has already been
+        processed.
 
     Keyword Arguments:
-        qlconfig {str} -- path to QL config (default: {None})
         return_process_id {object 'multiprocessing.sharedctypes.Value'} --
             process ID object allocated from shared memory.
             (default: {None})
@@ -382,10 +363,8 @@ def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
         int -- process ID
     """
 
-    exposure = extract_exposure_data(exposure_id, night)
-
-    arms = os.environ.get('data', 'arms').split(',')
-    spectrographs = os.environ.get('data', 'spectrographs').split(',')
+    arms = os.environ.get('PIPELINE_ARMS').split(',')
+    spectrographs = os.environ.get('PIPELINE_SPECTROGRAPHS').split(',')
 
     cameras = list()
 
@@ -394,9 +373,6 @@ def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
             cameras.append({'name': arm + spec})
 
     exposure['cameras'] = cameras
-
-    if qlconfig:
-        exposure['qlconfig'] = qlconfig
 
     qlf_process = QLFProcess(exposure)
     process_id = qlf_process.start_process()
@@ -412,6 +388,8 @@ def run_process(exposure_id, night, qlconfig=None, return_process_id=None):
 
 if __name__ == "__main__":
     import sys
+    from util import extract_exposure_data
+
     logger.info('Manually starting the QL pipeline.')
 
     try:
@@ -420,9 +398,6 @@ if __name__ == "__main__":
     except Exception:
         logger.exception('Failed to get exposure ID and night')
 
-    qlconfig = None
+    exposure = extract_exposure_data(exposure_id, night)
 
-    if len(sys.argv) > 3:
-        qlconfig = sys.argv[3]
-
-    run_process(exposure_id, night, qlconfig)
+    run_process(exposure)

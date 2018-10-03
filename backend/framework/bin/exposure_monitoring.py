@@ -9,15 +9,19 @@ import os
 from clients import get_qlf_interface
 from log import get_logger
 from qlf_models import QLFModels
-from qlf_pipeline import QLFProcess
+from qlf_pipeline import run_process
 
-loglevel = os.environ.get("PIPELINE_LOGLEVEL")
 allowed_delay = float(os.environ.get("PIPELINE_DELAY"))
 qlf_root = os.environ.get('QLF_ROOT')
 
 logger = get_logger(
-    "qlf.monitoring",
+    'qlf.monitoring',
     os.path.join(qlf_root, "logs", "monitoring.log")
+)
+
+pipe_logger = get_logger(
+    'qlf.pipeline',
+    os.path.join(qlf_root, "logs", "pipeline.log")
 )
 
 class ExposureMonitoring(Process):
@@ -98,7 +102,8 @@ class ExposureMonitoring(Process):
 
             del self.process
             gc.collect()
-            self.process = self.pool.submit(process_run, exposure, self.process_id)
+            self.process = self.pool.submit(run_process, exposure, self.process_id)
+            self.process.add_done_callback(future_callback)
 
             self.running.set()
 
@@ -116,24 +121,14 @@ class ExposureMonitoring(Process):
         self.process = None
 
 
-def process_run(exposure, process_id):
-    """ """
+def future_callback(future):
+    """ Catch pipeline processing return.
+    """
 
-    arms = os.environ.get('PIPELINE_ARMS').split(',')
-    spectrographs = os.environ.get('PIPELINE_SPECTROGRAPHS').split(',')
-
-    cameras = list()
-
-    for arm in arms:
-        for spec in spectrographs:
-            cameras.append({'name': arm + spec})
-
-    exposure['cameras'] = cameras
-
-    qlf_process = QLFProcess(exposure)
-    process_id.value = qlf_process.start_process()
-    qlf_process.start_jobs()
-    qlf_process.finish_process()
+    try:
+        future.result()
+    except Exception:
+        pipe_logger.exception("Executor Exception")
 
 
 if __name__ == "__main__":

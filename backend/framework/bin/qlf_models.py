@@ -193,15 +193,6 @@ class QLFModels(object):
                 status=status
             )
 
-            qas = list()
-
-            output_path = os.path.join(
-                output_path, 'ql-*-%s-%s.json' % (
-                    camera,
-                    str(exposure_id).zfill(8)
-                )
-            )
-
             logger.info('Job {} updated.'.format(job_id))
         except Exception as err:
             logger.error('Job {} failed.'.format(job_id))
