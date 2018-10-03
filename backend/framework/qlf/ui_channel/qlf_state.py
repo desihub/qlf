@@ -93,6 +93,10 @@ class QLFState:
         2: Running
         """
         qlf = get_exposure_monitoring()
+
+        if self.pipeline_running is 1 and qlf.get_status():
+            self.camera_status_generator.reset_camera_status()
+
         self.pipeline_running = 0 if not qlf.get_status() else 2
         if self.pipeline_running:
             if not qlf.is_running():
@@ -163,9 +167,6 @@ class QLFState:
             "flavor": self.flavor,
             "process_id": self.current_process_id
         })
-
-        if self.old_state.pipeline_running is 1 and self.pipeline_running is 2:
-                self.set_daemon_running(True)
 
         if self.old_state != new_state:
             self.old_state = new_state
