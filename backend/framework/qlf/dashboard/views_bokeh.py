@@ -219,6 +219,8 @@ def load_qa(request):
             qa_html = 'No Drill Down'
         elif qa == 'qaxyshifts':
             qa_html = 'No Drill Down'
+        elif qa == 'qaskyrband':
+            qa_html = 'No Drill Down'
         else:
             qa_html = "Couldn't load QA"
     except Exception as err:

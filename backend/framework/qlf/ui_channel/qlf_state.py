@@ -120,7 +120,7 @@ class QLFState:
             self.update_camera_logs()
             self.logfile = self.tail_file(os.path.join(
                 qlf_root, "logs", "qlf.log"), 100)
-            self.available_cameras = self.get_avaiable_cameras(
+            self.available_cameras = self.get_available_cameras(
                 self.current_process
             )
             self.exposure_id = self.current_process.exposure_id
@@ -174,7 +174,7 @@ class QLFState:
         else:
             return None
 
-    def get_avaiable_cameras(self, process):
+    def get_available_cameras(self, process):
         cams = list()
         for job in Job.objects.filter(process=self.current_process.id):
             cams.append(job.camera.camera)
