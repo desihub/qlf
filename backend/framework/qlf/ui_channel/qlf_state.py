@@ -76,7 +76,6 @@ class QLFState:
     def pipeline_end(self):
         if self.end_date is None and self.current_process.end is not None:
             self.end_date = self.current_process.end
-            print(self.current_process)
             self.qa_results = self.camera_status_generator.get_qa_petals()
             if 'Fail' in str(self.qa_results) or \
                'Alarm' in str(self.qa_results):
@@ -97,7 +96,7 @@ class QLFState:
         self.pipeline_running = 0 if not qlf.get_status() else 2
         if self.pipeline_running:
             if not qlf.is_running():
-                self.pipeline_running = 1
+                self.set_daemon_running(True)
 
     def update_qlf_state(self):
         self.update_pipeline_status()
