@@ -187,7 +187,11 @@ class ObservingConditions extends React.Component {
   };
 
   isValid = () => {
-    return this.state.yaxis !== '' && this.state.datePeriod !== '';
+    return (
+      this.state.yaxis !== '' &&
+      this.props.startDate !== '' &&
+      this.props.endDate !== ''
+    );
   };
 
   clearSelection = () => {
