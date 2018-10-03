@@ -153,7 +153,7 @@ class ObservingConditions extends React.Component {
   };
 
   handleSubmit = () => {
-    //console.log(this.state.datePeriod, this.state.yaxis);
+    // console.log(this.state.datePeriod, this.state.yaxis);
     this.loadStart();
   };
 
