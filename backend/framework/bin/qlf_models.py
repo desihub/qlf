@@ -4,6 +4,7 @@ import logging
 import math
 import os
 import sys
+from datetime import datetime, timedelta
 
 import django
 import numpy
@@ -21,6 +22,7 @@ django.setup()
 from dashboard.models import (
     Camera, Configuration, Exposure, Job, Process, Fibermap
 )
+from django.db.models import F
 
 logger = logging.getLogger()
 
@@ -271,7 +273,7 @@ class QLFModels(object):
         return exposure
 
     def get_job(self, job_id):
-        """ gets last processed exposures """
+        """ Gets last processed exposures """
 
         try:
             exposure = Job.objects.filter(id=job_id)
@@ -279,6 +281,43 @@ class QLFModels(object):
             exposure = None
 
         return exposure
+
+    def get_outputs_json_chunk_by_camera(self, path_keys, camera, begin_date=None, end_date=None):
+        """ Obtains specific chunk of QA outputs by camera from the database.
+        
+        Arguments:
+            path_keys {str} -- path to specific QA outputs
+                e.g.: "GENERAL_INFO->B_PEAKS"
+            camera {str} -- selected camera
+        
+        Keyword Arguments:
+            begin_date {str} -- obtains entries beginning this date (default: None)
+            end_date {str} -- obtains entries until this date (default: None)
+        """
+
+        jobs_obj = Job.objects.filter(camera=camera)
+
+        if begin_date:
+            begin_date = datetime.strptime(begin_date, "%Y-%m-%d")
+            jobs_obj = jobs_obj.filter(process__exposure__dateobs__gte=begin_date)
+            
+        if end_date:
+            end_date = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
+            jobs_obj = jobs_obj.filter(process__exposure__dateobs__lte=end_date)
+
+        output_path = 'output'
+
+        for key in path_keys.split('->'):
+            output_path += "->'{}'".format(key)
+
+        return jobs_obj.extra(
+            select={"value": output_path}
+        ).annotate(
+            exposure_id=F("process__exposure__exposure_id"),
+            dateobs=F("process__exposure__dateobs")
+        ).values(
+            "camera", "exposure_id", "dateobs", "value"
+        ).distinct()
 
     def delete_all_processes(self):
         """ Delete all processes """
@@ -320,7 +359,3 @@ def jsonify(data):
         if math.isnan(data) or math.isinf(data):
             data = -9999
     return data
-
-
-if __name__ == '__main__':
-    qlf = QLFModels()
