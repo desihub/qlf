@@ -99,6 +99,10 @@ class ObservingConditions extends React.Component {
     endDate: PropTypes.string.isRequired,
   };
 
+  componentDidMount() {
+    document.title = 'Observing Conditions';
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.state.startDate === '' && this.state.endDate === '')
       this.setState({
@@ -153,7 +157,6 @@ class ObservingConditions extends React.Component {
   };
 
   handleSubmit = () => {
-    // console.log(this.state.datePeriod, this.state.yaxis);
     this.loadStart();
   };
 
@@ -167,12 +170,17 @@ class ObservingConditions extends React.Component {
 
   renderLoading = () => {
     if (!this.state.loading) return null;
-    const showControls = this.state.datePeriod || this.state.yaxis;
+    const showControls =
+      this.state.yaxis || this.props.startDate || this.props.endDate;
     const classLoading = showControls
       ? styles.fadeLoader
       : styles.fadeLoaderFull;
 
-    if (this.state.yaxis !== '' && this.state.datePeriod !== '') {
+    if (
+      this.state.yaxis !== '' &&
+      this.props.startDate !== '' &&
+      this.props.endDate !== ''
+    ) {
       return (
         <div className={this.props.classes.loading}>
           <FadeLoader
@@ -304,34 +312,29 @@ class ObservingConditions extends React.Component {
   };
 
   renderViewer = plot => {
-    return (
-      <ObservingViewer
-        plot={plot}
-        loadEnd={this.loadEnd}
-        startDate={this.state.startDate}
-        endDate={this.state.endDate}
-        yaxis={this.state.yaxis}
-        datePeriod={this.state.datePeriod}
-      />
-    );
+    if (this.state.preview) {
+      return (
+        <ObservingViewer
+          plot={plot}
+          loadEnd={this.loadEnd}
+          startDate={this.state.startDate}
+          endDate={this.state.endDate}
+          yaxis={this.state.yaxis}
+          datePeriod={this.state.datePeriod}
+        />
+      );
+    }
   };
 
   render() {
     const { classes } = this.props;
-
-    let viewer = null;
-    if (this.state.preview) {
-      viewer = this.renderViewer('timeseries');
-    }
-
     return (
       <Paper elevation={4} className={classes.main}>
         <div className={classes.gridRow}>
           {this.renderControls()}
           <div className={classes.viewer}>
             {this.renderLoading()}
-            {/* {this.renderViewer('timeseries')} */}
-            {viewer}
+            {this.renderViewer('timeseries')}
           </div>
         </div>
       </Paper>

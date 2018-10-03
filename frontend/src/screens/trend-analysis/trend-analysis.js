@@ -70,6 +70,7 @@ const styles = {
   },
   button: {
     float: 'right',
+    margin: '10px 0',
   },
   SpectroGraph: {
     paddingBottom: '2.5vh',
@@ -120,7 +121,7 @@ class TrendAnalysis extends React.Component {
 
   handleChangeDatePeriod = evt => {
     this.setState({ datePeriod: evt.target.value, endDate: moment().format() });
-    this.loadStart();
+    this.loadEnd();
     switch (evt.target.value) {
       case 'night':
         this.setState({ startDate: moment().format() });
@@ -160,26 +161,30 @@ class TrendAnalysis extends React.Component {
 
   handleChangeArm = evt => {
     this.setState({ arm: evt.target.value });
-    this.loadStart();
+    this.loadEnd();
   };
 
   handleChangeAmp = evt => {
     this.setState({ amp: evt.target.value });
-    this.loadStart();
+    this.loadEnd();
   };
 
   handleChangeXaxis = evt => {
     this.setState({ xaxis: evt.target.value });
-    this.loadStart();
+    this.loadEnd();
   };
 
   handleChangeYaxis = evt => {
     this.setState({ yaxis: evt.target.value });
+    this.loadEnd();
+  };
+
+  handleSubmit = () => {
     this.loadStart();
   };
 
   loadStart = () => {
-    this.setState({ loading: true });
+    this.setState({ loading: true, preview: true });
   };
 
   loadEnd = () => {
@@ -189,9 +194,11 @@ class TrendAnalysis extends React.Component {
   renderLoading = () => {
     if (!this.state.loading) return null;
     const showControls =
-      this.state.datePeriod ||
+      this.props.startDate ||
+      this.props.endDate ||
       this.state.arm ||
       this.state.amp ||
+      this.state.spectrograph ||
       this.state.xaxis ||
       this.state.yaxis;
     const classLoading = showControls
@@ -201,13 +208,19 @@ class TrendAnalysis extends React.Component {
     if (
       (this.state.tab === 'Time Series' &&
         this.state.amp !== '' &&
+        this.state.arm !== '' &&
+        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
-        this.state.datePeriod !== '') ||
+        this.props.startDate !== '' &&
+        this.props.endDate !== '') ||
       (this.state.tab === 'Regression' &&
         this.state.amp !== '' &&
+        this.state.arm !== '' &&
+        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
-        this.state.datePeriod !== '')
+        this.props.startDate !== '' &&
+        this.props.endDate !== '')
     ) {
       return (
         <div className={this.props.classes.loading}>
@@ -222,6 +235,31 @@ class TrendAnalysis extends React.Component {
     }
   };
 
+  isValid = () => {
+    if (this.state.tab === 'Time Series') {
+      return (
+        this.state.amp !== '' &&
+        this.state.arm !== '' &&
+        this.state.spectrograph !== '' &&
+        this.state.yaxis !== '' &&
+        this.props.startDate !== '' &&
+        this.props.endDate !== ''
+      );
+    }
+
+    if (this.state.tab === 'Regression') {
+      return (
+        this.state.amp !== '' &&
+        this.state.arm !== '' &&
+        this.state.spectrograph !== '' &&
+        this.state.yaxis !== '' &&
+        this.state.xaxis !== '' &&
+        this.props.startDate !== '' &&
+        this.props.endDate !== ''
+      );
+    }
+  };
+
   clearSelection = () => {
     this.setState({
       arm: null,
@@ -231,6 +269,7 @@ class TrendAnalysis extends React.Component {
       loading: false,
       spectrograph: [],
       datePeriod: '',
+      preview: false,
     });
   };
 
@@ -341,7 +380,7 @@ class TrendAnalysis extends React.Component {
 
   handleChangeSpectrograph = spectrograph => {
     this.setState({ spectrograph: [spectrograph] });
-    this.loadStart();
+    this.loadEnd();
   };
 
   renderSpectrographSelection = () => {
@@ -369,8 +408,21 @@ class TrendAnalysis extends React.Component {
       variant="raised"
       size="small"
       className={this.props.classes.button}
+      disabled={!this.isValid()}
     >
       Clear
+    </Button>
+  );
+
+  renderSubmit = () => (
+    <Button
+      onClick={this.handleSubmit}
+      variant="raised"
+      size="small"
+      className={this.props.classes.button}
+      disabled={!this.isValid()}
+    >
+      Submit
     </Button>
   );
 
@@ -407,25 +459,28 @@ class TrendAnalysis extends React.Component {
           {this.renderAmpSelection()}
           {this.renderArmSelection()}
         </div>
+        {this.renderSubmit()}
         {this.renderClear()}
       </div>
     );
   };
 
   renderViewer = plot => {
-    return (
-      <TrendViewer
-        plot={plot}
-        amp={this.state.amp}
-        arm={this.state.arm}
-        loadEnd={this.loadEnd}
-        startDate={this.state.startDate}
-        endDate={this.state.endDate}
-        xaxis={this.state.xaxis}
-        yaxis={this.state.yaxis}
-        datePeriod={this.state.datePeriod}
-      />
-    );
+    if (this.state.preview) {
+      return (
+        <TrendViewer
+          plot={plot}
+          amp={this.state.amp}
+          arm={this.state.arm}
+          loadEnd={this.loadEnd}
+          startDate={this.state.startDate}
+          endDate={this.state.endDate}
+          xaxis={this.state.xaxis}
+          yaxis={this.state.yaxis}
+          datePeriod={this.state.datePeriod}
+        />
+      );
+    }
   };
 
   renderTimeSeries = () => {
