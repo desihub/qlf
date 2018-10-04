@@ -228,16 +228,15 @@ def load_series(request):
     plot = request.GET.get('plot')
     xaxis = request.GET.get('xaxis')
     yaxis = request.GET.get('yaxis')
+    camera = request.GET.get('camera')
     start = request.GET.get('start')
     end = request.GET.get('end')
 
-    exposures = filter_processed_exposures(start, end)
-
     try:
         if plot == 'timeseries':
-            series_html = TimeSeries(yaxis, start, end, exposures).render()
+            series_html = TimeSeries(yaxis, start, end, camera).render()
         elif plot == 'regression':
-            series_html = Regression(xaxis, yaxis, start, end, exposures).render()
+            series_html = Regression(xaxis, yaxis, start, end).render()
         else:
             series_html = "Couldn't load plot"
     except Exception as err:
