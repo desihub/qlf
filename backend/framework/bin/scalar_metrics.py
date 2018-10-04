@@ -42,7 +42,6 @@ class LoadMetrics:
         self.models = QLFModels()
 
         stages = self.load_flavors()
-        print(self.flavor_stages)
 
         self.steps_dic = dict()
         self.qas_status = dict()

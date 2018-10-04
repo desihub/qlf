@@ -49,7 +49,7 @@
     },
     {
       "display_name": "CHECK ARC EXP",
-      "name": "RESOLUTIONFIT",
+      "name": "CHECK_ARC",
       "start": "Starting to run step ResolutionFit",
       "end": "Pipeline processing finished",
       "qa_list": [
