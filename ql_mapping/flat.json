@@ -3,7 +3,7 @@
   "step_list": [
     {
       "display_name": "CHECK CCDS",
-      "name": "checkccds",
+      "name": "CHECK_CCDs",
       "start": "Running Check_HDUs",
       "end": "Starting to run step Flexure",
       "qa_list": [
@@ -31,7 +31,7 @@
     },
     {
       "display_name": "CHECK FIBERS",
-      "name": "checkfibers",
+      "name": "CHECK_FIBERS",
       "start": "Starting to run step Flexure",
       "end": "Starting to run step ComputeFiberflat_QL",
       "qa_list": [
@@ -49,7 +49,7 @@
     },
     {
       "display_name": "CHECK FIBERFLAT",
-      "name": "checkfiberflat",
+      "name": "COMPUTEFIBERFLAT_QL",
       "start": "Starting to run step ComputeFiberflat_QL",
       "end": "Pipeline completed",
       "qa_list": [
