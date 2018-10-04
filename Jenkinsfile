@@ -5,21 +5,19 @@ pipeline {
         stage('Build') {
             steps {
                 sh './configure.sh ci'
-                dir('backend'){
-                    sh 'docker-compose down'
-                }
+                // dir('backend'){
+                //     sh 'docker-compose down'
+                // }
                 dir('frontend') {
                     sh 'yarn install'
                 }
             }
         }
-        stage('Test Backend') {
-            steps {
-                sh 'docker-compose run -u $(id -u jenkins) app ./test.sh'
-                sh 'docker-compose stop'
-                sh 'docker container prune -f'
-            }
-        }
+        // stage('Test Backend') {
+        //     steps {
+        //         sh 'docker-compose run -u $(id -u jenkins) app ./test.sh'
+        //     }
+        // }
         stage('Test Frontend') {
             steps {
                 dir('frontend') {
