@@ -43,12 +43,7 @@ class Xwsigma:
         handler.setLevel(logging.INFO)
         logger.addHandler(handler)
 
-        try:
-            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
+        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
         gen_info = mergedqa['GENERAL_INFO']
 

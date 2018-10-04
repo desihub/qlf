@@ -19,6 +19,8 @@ from bokeh.resources import CDN
 from bokeh.embed import file_html
 from astropy.io import fits
 import numpy as np
+from dashboard.models import Job, Process, Fibermap
+
 logger = logging.getLogger(__name__)
 
 spectro_data = os.environ.get('DESI_SPECTRO_DATA')
@@ -34,31 +36,24 @@ class SNR:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
 
-        try:
-            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        # try:
+        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
-            from dashboard.models import Job, Process
+        process_id = self.selected_process_id
+        process = Process.objects.get(pk=process_id)
+        joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+        exposure = process.exposure
+        fmap = Fibermap.objects.filter(exposure=exposure)
 
+        otype_tile = fmap[0].objtype
 
-            process_id = self.selected_process_id
-            process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-            exposure = process.exposure
-            folder = "{}/{}/{:08d}".format(
-                spectro_data, exposure.night, process.exposure_id)
-            file = "fibermap-{:08d}.fits".format(process.exposure_id)
+        objlist = sorted(set(otype_tile))
+        if 'SKY' in objlist:
+            objlist.remove('SKY')
 
-            fmap = fits.open('{}/{}'.format(folder, file))
- 
-            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
-
-            objlist = sorted(set(otype_tile))
-            if 'SKY' in objlist:
-                objlist.remove('SKY')
-
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
+        # except Exception as err:
+        #     logger.info(err)
+        #     return 'Could not load data'
 
 
         gen_info = mergedqa['GENERAL_INFO']
