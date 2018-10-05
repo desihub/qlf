@@ -33,6 +33,29 @@ logger = get_logger(
     os.path.join(qlf_root, "logs", "bokeh.log")
 )
 
+plots = {
+    'snr': {
+        'display': 'SNR',
+        'path': 'TASKS->CHECK_SPECTRA->METRICS->FIDSNR_TGT'
+    },
+    'skybrightness': {
+        'display': 'SKY BRIGHTNESS',
+        'path': 'TASKS->CHECK_SPECTRA->METRICS->PEAKCOUNT'
+    },
+    'traceshifts': {
+        'display': 'TRACE SHIFTS',
+        'path': 'TASKS->CHECK_SPECTRA->METRICS->XWSHIFT'
+    },
+    'psf': {
+        'display': 'PSF FWHM',
+        'path': 'TASKS->CHECK_CCDs->METRICS->XWSIGMA'
+    },
+    'airmass': {
+        'display': 'AIRMASS',
+        'path': 'GENERAL_INFO->AIRMASS'
+    },
+}
+
 
 class TimeSeries():
     def __init__(self, yaxis, start, end, camera):
@@ -43,13 +66,15 @@ class TimeSeries():
         self.models = QLFModels()
 
     def render(self):
-        # dic = {'2018-08-11': {'Yes': 157, 'Not sure': 2, 'No': 1}, '2017-08-22': {'Yes': 142, 'Not sure': 12}, '2017-08-01': {'Yes': 112, 'Others': 10, 'Not sure': 4, 'No': 9}, '2017-08-17': {'Yes': 117, 'No': 12, 'Not sure': 11, 'Others': 2}, '2017-08-25': {'Yes': 61, 'Not sure': 9}, '2017-08-23': {'Yes': 268, 'Not sure': 20, 'No': 1}, '2017-07-10': {'Yes': 123, 'Not sure': 4, 'No': 1}, '2017-08-10': {'Yes': 343, 'Not sure': 20}, '2017-07-13': {'Yes': 116, 'Others': 1, 'Not sure': 14, 'No': 2}, '2017-07-14': {'Yes': 255,
-        #                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             'Not sure': 22, 'No': 6}, '2017-08-07': {'Yes': 73, 'Others': 3, 'Not sure': 4, 'No': 5}, '2017-08-04': {'Not sure': 11, 'Others': 8, 'Yes': 178, 'No': 10}, '2017-08-16': {'Not sure': 10, 'Yes': 219}, '2017-07-18': {'Yes': 1, 'No': 1}, '2017-08-15': {'Yes': 301, 'Others': 4, 'Not sure': 37, 'No': 31}, '2017-08-08': {'Yes': 38, 'No': 2, 'Others': 1}, '2017-08-09': {'Yes': 120, 'Not sure': 3}, '2017-08-28': {'Yes': 206, 'Others': 2, 'Not sure': 18, 'No': 24}, '2017-08-14': {'Yes': 46, 'No': 3, 'Not sure': 5, 'Others': 7}}
-        values = self.models.get_outputs_json_chunk_by_camera('TASKS->CHECK_CCDs->PARAMS->CUTPIX', self.camera, begin_date=self.start, end_date=self.end)
+        axis_data = plots[self.yaxis]
+        values = self.models.get_outputs_json_chunk_by_camera(
+            axis_data['path'], self.camera, begin_date=self.start, end_date=self.end)
         dic = dict()
+        print(values)
         for val in values:
             if val['value']:
-                dic[val['dateobs']] = {"value": val['value']}
+                dic[val['dateobs']] = {
+                    "value": val['value'], "exposure": val['exposure_id'], 'dateobs': val['dateobs'].strftime('%Y-%m-%d')}
         df = pd.DataFrame.from_dict(dic, orient="index")
         df = df.fillna(0)
         df.index = pd.to_datetime(df.index)
@@ -57,6 +82,8 @@ class TimeSeries():
         df.sort_index(inplace=True)
 
         df['value'] = df.value
+        df['exposure'] = df.exposure
+        df['dateobs'] = df.dateobs
 
         source = ColumnDataSource(df)
 
@@ -81,15 +108,23 @@ class TimeSeries():
         fiber_tooltip = """
                     <div>
                         <div>
-                            <span style="font-size: 12px; font-weight: bold; color: #303030;">time (time_scale): </span>
-                            <span style="font-size: 13px; color: #515151">@Date</span>
+                            <span style="font-size: 12px; font-weight: bold; color: #303030;">Exposure: </span>
+                            <span style="font-size: 13px; color: #515151">@exposure</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 12px; font-weight: bold; color: #303030;">Value: </span>
+                            <span style="font-size: 13px; color: #515151">@value</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 12px; font-weight: bold; color: #303030;">Date Obs: </span>
+                            <span style="font-size: 13px; color: #515151">@dateobs</span>
                         </div>
                     </div>
                 """
 
         hover = HoverTool(tooltips=fiber_tooltip)
 
-        p = Figure(toolbar_location='above',  x_axis_type="datetime",
+        p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
                    plot_width=800, plot_height=350, tools=[hover, 'pan,wheel_zoom,zoom_in, zoom_out,reset'])
 
         p.xaxis.formatter = DatetimeTickFormatter(
