@@ -142,8 +142,8 @@ class TimeSeries():
                 camera=cameras,
                 dateobs=dateobs
             ))
-            self.p.line('x', 'y', source=source, legend='AMP {}'.format(self.amp), line_color='blue')
-            self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color='blue')
+            self.p.line('x', 'y', source=source, legend='AMP {}'.format(self.amp), line_color=colors[int(self.amp)])
+            self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=colors[int(self.amp)])
 
     def render(self):
         axis_data = plots[self.yaxis]
