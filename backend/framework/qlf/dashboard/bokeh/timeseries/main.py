@@ -123,7 +123,7 @@ class TimeSeries():
             'green',
             'orange'
         ]
-        if not self.amp:
+        if self.amp == 'all':
             for idx, color in enumerate(colors):
                 source = ColumnDataSource(data=dict(
                     x=dates,
