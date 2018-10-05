@@ -5,19 +5,30 @@ from multiprocessing import Event, Process, Value
 from concurrent import futures
 from threading import Thread
 import os
+import errno
+from socket import error as socket_error
 
 from clients import get_qlf_interface
 from log import get_logger
 from qlf_models import QLFModels
-from qlf_pipeline import QLFProcess
+from qlf_pipeline import run_process
 
-loglevel = os.environ.get("PIPELINE_LOGLEVEL")
 allowed_delay = float(os.environ.get("PIPELINE_DELAY"))
 qlf_root = os.environ.get('QLF_ROOT')
 
 logger = get_logger(
-    "qlf.monitoring",
+    'qlf.monitoring',
     os.path.join(qlf_root, "logs", "monitoring.log")
+)
+
+pipe_logger = get_logger(
+    'qlf.pipeline',
+    os.path.join(qlf_root, "logs", "pipeline.log")
+)
+
+daemon_logger = get_logger(
+    'qlf.daemon',
+    os.path.join(qlf_root, "logs", "qlf_daemon.log")
 )
 
 class ExposureMonitoring(Process):
@@ -44,12 +55,13 @@ class ExposureMonitoring(Process):
                 self.running.clear()
 
             last_exposure = self.ics.last_exposure()
-            exposure = last_exposure['exposure']
-            fibermap = last_exposure['fibermap']
+            exposure = last_exposure.get('exposure', None)
 
             if not exposure:
                 logger.debug('No exposure available')
                 continue
+
+            fibermap = last_exposure.get('fibermap', None)
 
             ics_last_expid = self.ics_last_exposure.get('exposure_id', None)
 
@@ -98,7 +110,8 @@ class ExposureMonitoring(Process):
 
             del self.process
             gc.collect()
-            self.process = self.pool.submit(process_run, exposure, self.process_id)
+            self.process = self.pool.submit(run_process, exposure, self.process_id)
+            self.process.add_done_callback(future_callback)
 
             self.running.set()
 
@@ -116,24 +129,22 @@ class ExposureMonitoring(Process):
         self.process = None
 
 
-def process_run(exposure, process_id):
-    """ """
+def future_callback(process):
+    """ Catch pipeline processing return.
+    
+    Arguments:
+        process {concurrent.futures object} -- background process
+    """
 
-    arms = os.environ.get('PIPELINE_ARMS').split(',')
-    spectrographs = os.environ.get('PIPELINE_SPECTROGRAPHS').split(',')
-
-    cameras = list()
-
-    for arm in arms:
-        for spec in spectrographs:
-            cameras.append({'name': arm + spec})
-
-    exposure['cameras'] = cameras
-
-    qlf_process = QLFProcess(exposure)
-    process_id.value = qlf_process.start_process()
-    qlf_process.start_jobs()
-    qlf_process.finish_process()
+    try:
+        process.result()
+    except socket_error as serr:
+        if serr.errno != errno.ECONNREFUSED:
+            pipe_logger.exception("Error in communicating with QL pipeline executor.")
+        
+        daemon_logger.exception('QL pipeline: stopped processing.')
+    except Exception:
+        daemon_logger.exception('QL pipeline error.')
 
 
 if __name__ == "__main__":

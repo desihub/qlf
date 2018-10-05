@@ -479,7 +479,9 @@ def get_camera_log(request):
                 'lines': ['missing process or camera']
             })
     job = Job.objects.filter(process=process, camera=camera)
+    
     log = []
+
     if job:
         log_path = job[0].logname
 

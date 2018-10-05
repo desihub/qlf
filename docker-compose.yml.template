@@ -71,6 +71,7 @@ services:
       - PIPELINE_DELAY=20
     volumes:
       - ./backend/:/app # maps host diretory to internal container directory
+      - ./ql_mapping:/app/framework/ql_mapping
     working_dir: /app/
     command: ./run.sh # script that runs on docker-compose up
     depends_on:
@@ -82,6 +83,8 @@ services:
     working_dir: /home/node
     volumes:
       - ./frontend/:/home/node
+      - ./ql_mapping:/home/node/src/assets/ql_mapping
+
   nginx:
     build: ./nginx
     ports:

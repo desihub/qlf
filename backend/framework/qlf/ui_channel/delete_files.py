@@ -1,9 +1,10 @@
 import os
 import shutil
 
+qlf_root = os.environ.get('QLF_ROOT')
 
 def delete_raw():
-    desi_spectro_redux = os.environ.get('DESI_SPECTRO_DATA')
+    desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
     delete_files(desi_spectro_data)
 
 
@@ -13,7 +14,7 @@ def delete_reduced():
 
 
 def delete_logs():
-    logfile = os.path.join(qlf_root, "logs", "qlf.log")
+    logfile = os.path.join(qlf_root, "logs", "monitoring.log")
     logpipeline = os.path.join(qlf_root, "logs", "pipeline.log")
     with open(logfile, 'w'):
         pass

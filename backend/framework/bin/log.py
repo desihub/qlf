@@ -13,7 +13,7 @@ def get_logger(name, log_file=None, level=logging.INFO, formatter=pattern):
 
     Keyword Arguments:
         log_file {str} -- log file path
-        level {int} -- log level (default: {logging.INFO == 20})
+        level {logging} -- log level
         formatter {logging.Formatter} -- log fommatter (default: {
             logging.Formatter(
                 "%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S"

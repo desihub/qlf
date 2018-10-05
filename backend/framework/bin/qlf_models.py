@@ -195,15 +195,6 @@ class QLFModels(object):
                 status=status
             )
 
-            qas = list()
-
-            output_path = os.path.join(
-                output_path, 'ql-*-%s-%s.json' % (
-                    camera,
-                    str(exposure_id).zfill(8)
-                )
-            )
-
             logger.info('Job {} updated.'.format(job_id))
         except Exception as err:
             logger.error('Job {} failed.'.format(job_id))
@@ -310,14 +301,16 @@ class QLFModels(object):
         for key in path_keys.split('->'):
             output_path += "->'{}'".format(key)
 
-        return jobs_obj.extra(
+        outputs = jobs_obj.extra(
             select={"value": output_path}
         ).annotate(
             exposure_id=F("process__exposure__exposure_id"),
             dateobs=F("process__exposure__dateobs")
         ).values(
             "camera", "exposure_id", "dateobs", "value"
-        ).distinct()
+        ).distinct().order_by('dateobs')
+
+        return outputs
 
     def delete_all_processes(self):
         """ Delete all processes """
