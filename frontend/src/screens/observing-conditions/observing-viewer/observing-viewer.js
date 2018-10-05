@@ -32,6 +32,7 @@ class ObservingViewer extends React.Component {
   static propTypes = {
     plot: PropTypes.string,
     arm: PropTypes.string,
+    amp: PropTypes.string,
     spectrograph: PropTypes.array,
     yaxis: PropTypes.string,
     startDate: PropTypes.string,
