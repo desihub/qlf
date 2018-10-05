@@ -67,74 +67,52 @@ class TimeSeries():
 
     def render(self):
         axis_data = plots[self.yaxis]
-        values = self.models.get_outputs_json_chunk_by_camera(
+        outputs = self.models.get_outputs_json_chunk_by_camera(
             axis_data['path'], self.camera, begin_date=self.start, end_date=self.end)
-        dic = dict()
-        print(values)
-        for val in values:
+
+        dates = list()
+        cameras = list()
+        values = list()
+        exposures = list()
+        dateobs = list()
+        for val in outputs:
             if val['value']:
-                dic[val['dateobs']] = {
-                    "value": val['value'], "exposure": val['exposure_id'], 'dateobs': val['dateobs'].strftime('%Y-%m-%d')}
-        df = pd.DataFrame.from_dict(dic, orient="index")
-        df = df.fillna(0)
-        df.index = pd.to_datetime(df.index)
-        df.index.name = 'Date'
-        df.sort_index(inplace=True)
+                dates.append(val['dateobs'])
+                dateobs.append(val['dateobs'].strftime('%Y-%m-%d'))
+                exposures.append(val['exposure_id'])
+                cameras.append(self.camera)
+                values.append(val['value'])
 
-        df['value'] = df.value
-        df['exposure'] = df.exposure
-        df['dateobs'] = df.dateobs
+        TOOLTIPS = [
+            ("Camera", "@camera"),
+            ("Value", "@y"),
+            ("Exposure ID", "@exposure"),
+            ("Date", "@dateobs"),
+        ]
 
-        source = ColumnDataSource(df)
-
-        def style(p):
-            # Title
-            p.title.align = 'center'
-            p.title.text_font_size = '20pt'
-            p.title.text_font = 'serif'
-
-            # Axis titles
-            p.xaxis.axis_label_text_font_size = '14pt'
-            p.xaxis.axis_label_text_font_style = 'bold'
-            p.yaxis.axis_label_text_font_size = '14pt'
-            p.yaxis.axis_label_text_font_style = 'bold'
-
-            # Tick labels
-            p.xaxis.major_label_text_font_size = '12pt'
-            p.yaxis.major_label_text_font_size = '12pt'
-
-            return p
-
-        fiber_tooltip = """
-                    <div>
-                        <div>
-                            <span style="font-size: 12px; font-weight: bold; color: #303030;">Exposure: </span>
-                            <span style="font-size: 13px; color: #515151">@exposure</span>
-                        </div>
-                        <div>
-                            <span style="font-size: 12px; font-weight: bold; color: #303030;">Value: </span>
-                            <span style="font-size: 13px; color: #515151">@value</span>
-                        </div>
-                        <div>
-                            <span style="font-size: 12px; font-weight: bold; color: #303030;">Date Obs: </span>
-                            <span style="font-size: 13px; color: #515151">@dateobs</span>
-                        </div>
-                    </div>
-                """
-
-        hover = HoverTool(tooltips=fiber_tooltip)
+        hover = HoverTool(tooltips=TOOLTIPS)
 
         p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
                    plot_width=800, plot_height=350, tools=[hover, 'pan,wheel_zoom,zoom_in, zoom_out,reset'])
 
-        p.xaxis.formatter = DatetimeTickFormatter(
-            hours=["%d %B %Y"],
-            days=["%d %B %Y"],
-            months=["%d %B %Y"],
-            years=["%d %B %Y"],
-        )
-        p.line('Date', 'value', source=source)
-        p.square('Date', 'value', source=source)
+        # amp_list = [
+        #     [0, 'red'],
+        #     [1, 'blue'],
+        #     [2, 'green']
+        #     # [3, 'orange']
+        # ]
+
+        # for amp in amp_list:
+        source = ColumnDataSource(data=dict(
+            x=dates,
+            y=values,
+            exposure=exposures,
+            camera=cameras,
+            dateobs=dateobs
+        ))
+        
+        p.line('x', 'y', source=source)#, legend='AMP {}'.format(amp[0]), line_color=amp[1])
+        p.circle('x', 'y', source=source, size=5)#, line_color=None, fill_color=amp[1])
 
         layout = column(p)
         return file_html(layout, CDN, "Time Series")
