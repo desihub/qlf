@@ -55,9 +55,10 @@ class ExposureMonitoring(Process):
                 self.running.clear()
 
             last_exposure = self.ics.last_exposure()
-            exposure = last_exposure.get('exposure', None)
-
-            if not exposure:
+            try:
+                exposure = last_exposure['exposure']
+                fibermap = last_exposure['fibermap']
+            except:
                 logger.debug('No exposure available')
                 continue
 

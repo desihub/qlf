@@ -268,11 +268,12 @@ class QLFProcess(object):
                     self.data.get('process_id'),
                     camera.get('name'),
                     self.data.get('exposure_id'),
-                    self.data.get('night')
+                    self.data.get('night'),
+                    self.data.get('flavor')
                 )
                 lm.get_merged_qa_status()
                 qa_tests.append({
-                    camera.get('name'): lm.status
+                    camera.get('name'): lm.qas_status
                 })
             except Exception as err:
                 logger.error(err)

@@ -18,9 +18,9 @@ services:
       - DESI_SPECTRO_REDUX=/app/spectro/redux # output directory for qlf
       - QL_SPEC_DATA=/app/spectro/data # input directory for ql
       - QL_SPEC_REDUX=/app/spectro/redux # output directory for ql
-      - DESI_CCD_CALIBRATION_DATA=/app/spectro/calibration/ # monthly calibration files
+      - DESI_CCD_CALIBRATION_DATA=/app/spectro/ccd_calibration_data/ # monthly calibration files
       - QL_CONFIG_DIR=/app/desispec/py/desispec/data/quicklook/ # mergedQA templates
-      - QL_CALIB_DIR=/app/spectro/calibration # psf files
+      - QL_CALIB_DIR=/app/spectro/ccd_calibration_data # psf files
       - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
       # Django:
       - QLF_API_URL=http://localhost:8000/dashboard/api
@@ -84,7 +84,6 @@ services:
     volumes:
       - ./frontend/:/home/node
       - ./ql_mapping:/home/node/src/assets/ql_mapping
-
   nginx:
     build: ./nginx
     ports:

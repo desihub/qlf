@@ -23,6 +23,7 @@ from bokeh.models.widgets import Div
 from dashboard.models import Process, Job
 from astropy.io import fits
 import os
+from dashboard.models import Job, Process, Fibermap
 
 spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
@@ -58,27 +59,19 @@ class GlobalFiber:
             }
 
 
-        try:
-            process_id = self.selected_process_id
-            process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-            exposure = process.exposure
- 
-
-            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
-            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
-            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
-            fid_tile = fmap['FIBERMAP'].data['FIBER']
-            ra_center = fmap['FIBERMAP'].header['TELRA']
-            dec_center = fmap['FIBERMAP'].header['TELDEC']
-
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
+        process_id = self.selected_process_id
+        process = Process.objects.get(pk=process_id)
+        joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+        exposure = process.exposure
 
 
+        ra_tile = fmap.fiber_ra
+        dec_tile = fmap.fiber_dec
+        otype_tile = fmap.objtype
+        fid_tile = fmap.fiber
+        ra_center = fmap.exposure.telra
+        dec_center = fmap.exposure.teldec
 
-        #for cam in [ arm+str(spec) for arm in ['b','r','z'] for spec in list(range(10))]:
         for arm in ['b','r','z']:
             y = []
             color = []
@@ -87,16 +80,11 @@ class GlobalFiber:
             for spec in list(range(10)): 
                 cam = arm+str(spec)   
                 if cam in joblist:
-                    try:
-                        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-                        countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
-                        y = y + countbins
-                        color = color + [ 'green' if idx==1 else 'red' for idx in countbins]
-                        status = status + ['GOOD' if idx==1 else 'BAD' for idx in countbins]
-
-                    except Exception as err:
-                        sys.exit(err)
-
+                    mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+                    countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
+                    y = y + countbins
+                    color = color + [ 'green' if idx==1 else 'red' for idx in countbins]
+                    status = status + ['GOOD' if idx==1 else 'BAD' for idx in countbins]
                 else:
                     y = y + 500*['']
                     color = color + ['lightgray']*500
@@ -119,20 +107,12 @@ class GlobalFiber:
 
 
     def wedge_plot(self, wedge_arm, fmap, common_source=None):
-
-        try:
-
-            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
-            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
-            fid_tile = fmap['FIBERMAP'].data['FIBER']
-            ra_center = fmap['FIBERMAP'].header['TELRA']
-            dec_center = fmap['FIBERMAP'].header['TELDEC']
-            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
-
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
+        ra_tile = fmap.fiber_ra
+        dec_tile = fmap.fiber_dec
+        fid_tile = fmap.fiber
+        ra_center = fmap.exposure.telra
+        dec_center = fmap.exposure.teldec
+        otype_tile = fmap.objtype
 
         fiber_tooltip = """
             <div>
@@ -191,37 +171,20 @@ class GlobalFiber:
 
 
     def load_qa(self):
+        process_id = self.selected_process_id
+        process = Process.objects.get(pk=process_id)
+        joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+        exposure = process.exposure
+        fmap = Fibermap.objects.filter(exposure=exposure)[0]
 
-        try:
-            from dashboard.models import Job, Process
-
-            process_id = self.selected_process_id
-            process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-            exposure = process.exposure
-            folder = "{}/{}/{:08d}".format(
-                spectro_data, exposure.night, process.exposure_id)
-
-            file = "fibermap-{:08d}.fits".format(process.exposure_id)
-            fitsfile = fits.open('{}/{}'.format(folder, file))
-            fmap = fitsfile
-              
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
-        
         src = self.data_source(fmap)
 
-        try:
-            pb = self.wedge_plot('b', fmap, common_source=src)#, common_source=source)
-            pr = self.wedge_plot('r', fmap, common_source=src)
-            pz = self.wedge_plot('z', fmap, common_source=src)
-            layout = row( column( pb), 
-                        column(pr),
-                        column(pz)) #, pz, 
-        except Exception as err:
-            sys.exit(err)
+        pb = self.wedge_plot('b', fmap, common_source=src)#, common_source=source)
+        pr = self.wedge_plot('r', fmap, common_source=src)
+        pz = self.wedge_plot('z', fmap, common_source=src)
+        layout = row( column( pb), 
+                    column(pr),
+                    column(pz)) #, pz, 
 
         return file_html(layout, CDN, "Global Fiber")
 

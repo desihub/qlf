@@ -187,9 +187,9 @@ def load_qa(request):
     try:
         if qa == 'qacountpix':
             qa_html = Countpix(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qagetbias':
+        elif qa == 'qabias':
             qa_html = Bias(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qagetrms':
+        elif qa == 'qarms':
             qa_html = RMS(process_id, arm, spectrograph).load_qa()
         elif qa == 'qaxwsigma':
             qa_html = Xwsigma(process_id, arm, spectrograph).load_qa()
@@ -197,7 +197,7 @@ def load_qa(request):
             qa_html = Countbins(process_id, arm, spectrograph).load_qa()
         elif qa == 'qaskycont':
             qa_html = Skycont(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qaskypeak':
+        elif qa == 'qapeakcount':
             qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
         elif qa == 'qainteg':
             qa_html = Integ(process_id, arm, spectrograph).load_qa()
@@ -211,6 +211,16 @@ def load_qa(request):
             qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
         elif qa == 'globalsnr':
             qa_html = GlobalSnr(process_id, arm, spectrograph).load_qa()
+        elif qa == 'qahdu':
+            qa_html = 'No Drill Down'
+        elif qa == 'qacheckflat':
+            qa_html = 'No Drill Down'
+        elif qa == 'qacheckarc':
+            qa_html = 'No Drill Down'
+        elif qa == 'qaxyshifts':
+            qa_html = 'No Drill Down'
+        elif qa == 'qaskyrband':
+            qa_html = 'No Drill Down'
         else:
             qa_html = "Couldn't load QA"
     except Exception as err:

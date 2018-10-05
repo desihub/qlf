@@ -27,6 +27,7 @@ class Connection extends Component {
       const notification = JSON.parse(result.notification);
       this.props.updateNotifications(notification);
     }
+    // console.log(result)
 
     if (result.lines) {
       const state = {

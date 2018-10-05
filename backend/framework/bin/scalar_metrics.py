@@ -1,6 +1,4 @@
 from __future__ import division
-# Scalar_metrics.py DESISPEC 0.20.0
-# To do: Finish the documentation
 
 import logging
 import requests
@@ -12,6 +10,7 @@ import json
 logger = logging.getLogger(__name__)
 
 desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
+qlf_root = os.environ.get('QLF_ROOT')
 
 
 class LoadMetrics:
@@ -29,7 +28,7 @@ class LoadMetrics:
     qa_name = ['countpix', 'getbias', 'getrms', 'xwsigma',
                'countbins', 'integ', 'skycont', 'skypeak', 'skyresid', 'snr']
 
-    def __init__(self, process_id, cam, exp=None, night=None):
+    def __init__(self, process_id, cam, exp=None, night=None, flavor=None):
         self.cam = cam
         self.exp = exp
         self.night = night
@@ -42,44 +41,33 @@ class LoadMetrics:
 
         self.models = QLFModels()
 
-        self.steps_list = ['preproc', 'extract', 'fiberfl', 'skysubs']
+        stages = self.load_flavors()
 
-        self.steps_dic = {
-            'preproc': ['countpix', 'getbias', 'getrms', 'xwsigma'],
-            'extract': ['countbins'],
-            'fiberfl': ['skycont', 'skypeak'],
-            'skysubs': ['skyresid', 'integ', 'snr'],
-        }
+        self.steps_dic = dict()
+        self.qas_status = dict()
+        self.alert_keys = dict()
+        for step in self.flavor_stages[flavor]['step_list']:
+            self.steps_dic[step['name']] = list()
+            self.qas_status[step['name']] = list()
+            for qa in step['qa_list']:
+                self.steps_dic[step['name']].append(qa['name'])
+                self.qas_status[step['name']].append('None')
+                self.alert_keys[qa['name']] = qa['status_key']
 
-        self.alert_keys = {
-            'getrms': 'NOISE_STATUS',
-            'countpix': 'LITFRAC_STATUS',
-            'getbias': 'BIAS_STATUS',
-            'countbins': 'NGOODFIB_STATUS',
-            'integ': 'DELTAMAG_STATUS',
-            'xwsigma': 'XWSIGMA_STATUS',
-            'snr': 'FIDSNR_STATUS',
-            'skycont': 'SKYCONT_STATUS',
-            'skypeak': 'PEAKCOUNT_STATUS',
-            'skyresid': 'SKYRBAND_STATUS',
-        }
-
-        self.checks = {
-            'CHECK_CCDs': ['getbias', 'countpix', 'getrms'],
-            'CHECK_FIBERS': ['countbins', 'xwsigma'],
-            'CHECK_SPECTRA': ['integ', 'snr', 'skypeak', 'skycont', 'skyresid']
-        }
-
-        self.status = {
-            'preproc': {'steps_status': ['None', 'None', 'None', 'None']},
-            'extract': {'steps_status': ['None']},
-            'fiberfl': {'steps_status': ['None', 'None']},
-            'skysubs': {'steps_status': ['None', 'None', 'None']},
-        }
+    def load_flavors(self):
+        flavors = ['science', 'arc', 'flat']
+        self.flavor_stages = dict()
+        for flavor in flavors:
+            flavor_path = os.path.join(qlf_root, "framework", "ql_mapping", "{}.json".format(flavor))
+            try:
+                stages_json = open(flavor_path).read()
+                self.flavor_stages[flavor] = json.loads(stages_json)
+            except Exception as err:
+                logger.error("flavor file not found {}".format(err))
 
     def find_qa_check(self, qa):
-        for check in self.checks:
-            if qa in self.checks[check]:
+        for check in self.steps_dic:
+            if qa in self.steps_dic[check]:
                 return check
         return None
 
@@ -93,7 +81,7 @@ class LoadMetrics:
         index = -1
         current_step = None
         qa_status = None
-        for step in self.steps_list:
+        for step in list(self.steps_dic):
             try:
                 index = self.steps_dic[step].index(qa)
                 current_step = step
@@ -108,17 +96,15 @@ class LoadMetrics:
             qa_status = data["TASKS"][check]["METRICS"][alert_key]
 
             if current_step:
-                self.status[current_step]['steps_status'][index] = qa_status
+                self.qas_status[current_step][index] = qa_status
         except Exception as err:
             logger.warning('Failed to update camera status: {}'.format(err))
 
     def get_merged_qa_status(self):
-        for qa in self.alert_keys.keys():
+        for qa in list(self.alert_keys):
             self.update_status(qa)
 
 
 if __name__ == "__main__":
-    lm = LoadMetrics(39, 'b0', '3905', '20191017')
-    # lm.update_status('snr')
+    lm = LoadMetrics(6, 'b0', '3905', '20191017', 'science')
     lm.get_merged_qa_status()
-    print(lm.status)

@@ -5,6 +5,7 @@ import MetricSelect from './metric-select/metric-select';
 import Iframe from 'react-iframe';
 import { FadeLoader } from 'halogenium';
 import Status from '../../components/status/status';
+import flavors from '../../flavors';
 
 const styles = {
   container: {
@@ -48,13 +49,6 @@ const styles = {
   },
 };
 
-const steps = [
-  'Pre Processing',
-  'Spectral Extraction',
-  'Fiber Flattening',
-  'Sky Subtraction',
-];
-
 export default class Metrics extends Component {
   static propTypes = {
     exposureId: PropTypes.string,
@@ -80,10 +74,24 @@ export default class Metrics extends Component {
     arm: this.props.arm,
     loading: false,
     qa: undefined,
+    steps: [],
+    stepsQa: {},
   };
 
   componentWillMount() {
     if (this.props.exposureId === '') this.props.navigateToProcessingHistory();
+    const steps = [];
+    const stepsQa = {};
+    if (flavors[this.props.flavor]) {
+      flavors[this.props.flavor].step_list.map(step => {
+        steps.push(step.name);
+        stepsQa[step.name] = step.qa_list.map(qa => {
+          return qa.name;
+        });
+        return null;
+      });
+      this.setState({ steps, stepsQa });
+    }
   }
 
   componentDidMount() {
@@ -93,10 +101,15 @@ export default class Metrics extends Component {
   changeStep = direction => {
     this.setState({ qa: undefined, loading: false });
     if (direction === 'next') {
-      this.setState({ step: Math.abs((this.state.step + 1) % steps.length) });
+      this.setState({
+        step: Math.abs((this.state.step + 1) % this.state.steps.length),
+      });
     } else {
       this.setState({
-        step: Math.abs((this.state.step + steps.length - 1) % steps.length),
+        step: Math.abs(
+          (this.state.step + this.state.steps.length - 1) %
+            this.state.steps.length
+        ),
       });
     }
   };
@@ -188,6 +201,9 @@ export default class Metrics extends Component {
 
   render() {
     const camera = this.props.arms[this.state.arm] + this.state.spectrograph;
+    const step = this.state.steps[this.state.step]
+      ? this.state.steps[this.state.step].toUpperCase()
+      : undefined;
     return (
       <div style={{ ...styles.container }}>
         <div style={{ ...styles.controlsContainerLeft }}>
@@ -196,8 +212,9 @@ export default class Metrics extends Component {
             selectedQA={this.props.qa}
             qaTests={this.props.qaTests}
             selectQA={this.selectQA}
-            step={steps[this.state.step]}
+            step={this.state.steps[this.state.step]}
             back={this.props.navigateToQA}
+            stepsQa={this.state.stepsQa}
           />
           <div style={{ ...styles.controlsContainerRight }}>
             <Status
@@ -208,11 +225,7 @@ export default class Metrics extends Component {
               flavor={this.props.flavor}
             />
             <div style={styles.grid}>
-              <Control
-                change={this.changeStep}
-                title={'Step'}
-                value={steps[this.state.step]}
-              />
+              <Control change={this.changeStep} title={'Step'} value={step} />
               <Control
                 change={this.changeSpectrograph}
                 title={'Spectrograph'}

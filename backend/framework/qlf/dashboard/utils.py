@@ -5,8 +5,6 @@ import logging
 
 from .models import Exposure
 
-qlf_root = os.getenv('QLF_ROOT')
-
 logger = logging.getLogger()
 
 desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')

@@ -3,60 +3,60 @@
   "step_list": [
     {
       "display_name": "CHECK CCDS",
-      "name": "checkccds",
+      "name": "CHECK_CCDs",
       "start": "Running Check_HDUs",
-      "end": "Starting to run step Preproc",
+      "end": "Starting to run step Flexure",
       "qa_list": [
         {
           "display_name": "Check HDUs",
           "status_key": "CHECKHDUS_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "hdu"
         },
         {
           "display_name": "Noise AMP",
           "status_key": "NOISE_AMP_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "rms"
         },
         {
           "display_name": "Bias AMP",
           "status_key": "BIAS_AMP_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "bias"
         },
         {
           "display_name": "LITFRAC AMP",
           "status_key": "LITFRAC_AMP_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "countpix"
         }
       ]
     },
     {
       "display_name": "CHECK FIBERS",
-      "name": "checkfibers",
-      "start": "Starting to run step Preproc",
-      "end": "Starting to run step BoxcarExtract",
+      "name": "CHECK_FIBERS",
+      "start": "Starting to run step Flexure",
+      "end": "Starting to run step ComputeFiberflat_QL",
       "qa_list": [
         {
           "display_name": "NGOODFIB",
           "status_key": "NGOODFIB_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "countbins"
         },
         {
           "display_name": "XYSHIFTS",
           "status_key": "XYSHIFTS_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "xyshifts"
         }
       ]
     },
     {
       "display_name": "CHECK FIBERFLAT",
-      "name": "checkfiberflat",
-      "start": "Starting to run step BoxcarExtract",
+      "name": "CHECK_FIBERFLAT",
+      "start": "Starting to run step ComputeFiberflat_QL",
       "end": "Pipeline completed",
       "qa_list": [
         {
           "display_name": "CHECKFLAT",
           "status_key": "CHECKFLAT_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "checkflat"
         }
       ]
     }

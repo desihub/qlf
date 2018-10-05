@@ -44,8 +44,8 @@ class Countpix:
 
         countpix = mergedqa['TASKS']['CHECK_CCDs']['METRICS']
         tests =  mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
-        nrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_NORMAL_RANGE']
-        wrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_WARN_RANGE']
+        nrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_NORMAL_RANGE']
+        wrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_WARN_RANGE']
 
         # ============================================
         # THIS: Given the set up in the block above, 

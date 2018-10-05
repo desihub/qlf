@@ -69,8 +69,8 @@ class QLFModels(object):
         if not Fibermap.objects.filter(exposure=exposure):
             fibermap = Fibermap(
                 exposure=exposure,
-                ra_obs=kwargs.get('ra_obs'),
-                dec_obs=kwargs.get('dec_obs'),
+                fiber_ra=kwargs.get('fiber_ra'),
+                fiber_dec=kwargs.get('fiber_dec'),
                 fiber=kwargs.get('fiber'),
                 objtype=kwargs.get('objtype')
             )

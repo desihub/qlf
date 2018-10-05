@@ -20,6 +20,7 @@ logger = get_logger(
 
 class QLFState:
     def __init__(self):
+        self.load_flavors()
         self.camera_status_generator = CameraStatus(self)
         self.reset_state()
         self.update_pipeline_status()
@@ -27,6 +28,17 @@ class QLFState:
             self.daemon_running = False
         else:
             self.daemon_running = True
+
+    def load_flavors(self):
+        flavors = ['science', 'arc', 'flat']
+        self.flavor_stages = dict()
+        for flavor in flavors:
+            flavor_path = os.path.join(qlf_root, "framework", "ql_mapping", "{}.json".format(flavor))
+            try:
+                stages_json = open(flavor_path).read()
+                self.flavor_stages[flavor] = json.loads(stages_json)
+            except Exception as err:
+                logger.error("flavor file not found {}".format(err))
 
     def update_pipeline_log(self):
         self.pipelinelog = self.get_pipeline_log()
@@ -64,7 +76,6 @@ class QLFState:
     def pipeline_end(self):
         if self.end_date is None and self.current_process.end is not None:
             self.end_date = self.current_process.end
-            print(self.current_process)
             self.qa_results = self.camera_status_generator.get_qa_petals()
             if 'Fail' in str(self.qa_results) or \
                'Alarm' in str(self.qa_results):
@@ -82,6 +93,10 @@ class QLFState:
         2: Running
         """
         qlf = get_exposure_monitoring()
+
+        if self.pipeline_running is 1 and qlf.is_running():
+            self.camera_status_generator.reset_camera_status()
+
         self.pipeline_running = 0 if not qlf.get_status() else 2
         if self.pipeline_running:
             if not qlf.is_running():
@@ -110,6 +125,7 @@ class QLFState:
             )
             self.exposure_id = self.current_process.exposure_id
             self.flavor = self.current_process.exposure.flavor
+            self.stages = self.flavor_stages[self.flavor]
             self.current_process_id = self.current_process.id
             date = get_date(self.exposure_id)
             self.date_time = date.value if date else ''
@@ -158,7 +174,7 @@ class QLFState:
         else:
             return None
 
-    def get_avaiable_cameras(self, process):
+    def get_available_cameras(self, process):
         cams = list()
         for job in Job.objects.filter(process=self.current_process.id):
             cams.append(job.camera.camera)

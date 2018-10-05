@@ -14,7 +14,7 @@ if not qlf_root:
 # TODO: flat program can also use flat_preproc.
 program_mapping = {
     'flat': 'flat',  # flat_preproc
-    'arc': 'arcs',
+    'arc': 'arc',
     'dark': 'darksurvey',
     'gray': 'graysurvey',
     'bright': 'brightsurvey'
@@ -108,14 +108,14 @@ def extract_fibermap_data(exposure_id, night):
         logger.error("Error to load fits file: %s" % err)
         return {}
 
-    ra_obs = fmap['FIBERMAP'].data['RA_OBS']
-    dec_obs = fmap['FIBERMAP'].data['DEC_OBS']
+    fiber_ra = fmap['FIBERMAP'].data['FIBER_RA']
+    fiber_dec = fmap['FIBERMAP'].data['FIBER_DEC']
     fiber = fmap['FIBERMAP'].data['FIBER']
     objtype = fmap['FIBERMAP'].data['OBJTYPE']
 
     return {
-        "ra_obs": ra_obs.tolist(),
-        "dec_obs": dec_obs.tolist(),
+        "fiber_ra": fiber_ra.tolist(),
+        "fiber_dec": fiber_dec.tolist(),
         "fiber": fiber.tolist(),
         "objtype": objtype.tolist()
     }

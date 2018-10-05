@@ -3,80 +3,85 @@
   "step_list": [
     {
       "display_name": "CHECK CCDS",
-      "name": "checkccds",
+      "name": "CHECK_CCDs",
       "start": "Running Check_HDUs",
-      "end": "Starting to run step Preproc",
+      "end": "Starting to run step Flexure",
       "qa_list": [
         {
           "display_name": "Check HDUs",
           "status_key": "CHECKHDUS_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "hdu"
         },
         {
           "display_name": "Noise AMP",
           "status_key": "NOISE_AMP_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "rms"
         },
         {
           "display_name": "Bias AMP",
           "status_key": "BIAS_AMP_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "bias"
         },
         {
           "display_name": "LITFRAC AMP",
           "status_key": "LITFRAC_AMP_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "countpix"
+        },
+        {
+          "display_name": "XWSIGMA",
+          "status_key": "XWSIGMA_STATUS",
+          "name": "xwsigma"
         }
       ]
     },
     {
       "display_name": "CHECK FIBERS",
-      "name": "checkfibers",
-      "start": "Starting to run step Preproc",
-      "end": "Starting to run step BoxcarExtract",
+      "name": "CHECK_FIBERS",
+      "start": "Starting to run step Flexure",
+      "end": "Starting to run step ApplyFiberFlat_QL",
       "qa_list": [
         {
           "display_name": "NGOODFIB",
           "status_key": "NGOODFIB_STATUS",
-          "bands": ["b", "r", "z"]
-        },
-        {
-          "display_name": "XWSIGMA",
-          "status_key": "XWSIGMA_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "countbins"
         },
         {
           "display_name": "XYSHIFTS",
           "status_key": "XYSHIFTS_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "xyshifts"
         }
       ]
     },
     {
       "display_name": "CHECK SPECTRA",
-      "name": "checkspectra",
-      "start": "Starting to run step BoxcarExtract",
+      "name": "CHECK_SPECTRA",
+      "start": "Starting to run step ApplyFiberFlat_QL",
       "end": "Pipeline completed",
       "qa_list": [
         {
           "display_name": "PEAKCOUNT",
           "status_key": "PEAKCOUNT_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "peakcount"
         },
         {
           "display_name": "SKYCONT",
           "status_key": "SKYCONT_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "skycont"
         },
         {
           "display_name": "DELTAMAG TGT",
           "status_key": "DELTAMAG_TGT_STATUS",
-          "bands": ["b", "r", "z"]
+          "name": "integ"
+        },
+        {
+          "display_name": "SNR",
+          "status_key": "FIDSNR_TGT_STATUS",
+          "name": "snr"
         },
         {
           "display_name": "SKYRBAND",
           "status_key": "SKYRBAND_STATUS",
-          "bands": ["r"]
+          "name": "skyrband"
         }
       ]
     }

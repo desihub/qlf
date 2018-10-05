@@ -43,29 +43,23 @@ class Xwsigma:
         handler.setLevel(logging.INFO)
         logger.addHandler(handler)
 
-        try:
-            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
+        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
         gen_info = mergedqa['GENERAL_INFO']
 
         ra = gen_info['RA']
         dec = gen_info['DEC']
        
-        check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
         check_ccds = mergedqa['TASKS']['CHECK_CCDs']
 
-        xwsigma = check_fibers['METRICS']['XWSIGMA']
-        xw_amp = check_fibers['METRICS']['XWSIGMA_AMP']
+        xwsigma = check_ccds['METRICS']['XWSIGMA']
+        xw_amp = check_ccds['METRICS']['XWSIGMA_AMP']
         
         xw_fib = check_ccds['METRICS']['XWSIGMA_FIB']
         
-        nrg = check_fibers['PARAMS']['XWSIGMA_NORMAL_RANGE']
-        wrg = check_fibers['PARAMS']['XWSIGMA_WARN_RANGE']
-        xw_ref = check_fibers['PARAMS']['XWSIGMA_REF']
+        nrg = check_ccds['PARAMS']['XWSIGMA_NORMAL_RANGE']
+        wrg = check_ccds['PARAMS']['XWSIGMA_WARN_RANGE']
+        xw_ref = check_ccds['PARAMS']['XWSIGMA_REF']
 
 
         xsigma = xw_fib[0]

@@ -156,7 +156,7 @@ class ObjectStatistics:
                     if cam in joblist:
                         mergedqa = get_merged_qa_scalar_metrics(
                             self.selected_process_id, cam)
-                        fiberstatus = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBER']
+                        fiberstatus = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
                         arm_col = arm_col+fiberstatus
                     else:
                         arm_col = arm_col + [-9999]*500

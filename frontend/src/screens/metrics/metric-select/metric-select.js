@@ -50,12 +50,12 @@ const styles = {
   },
 };
 
-const stepsQa = {
-  preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
-  extract: ['countbins'],
-  fiberfl: ['skycont', 'skypeak'],
-  skysubs: ['integ', 'skyresid', 'snr'],
-};
+// const stepsQa = {
+//   preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
+//   extract: ['countbins'],
+//   fiberfl: ['skycont', 'skypeak'],
+//   skysubs: ['integ', 'skyresid', 'snr'],
+// };
 
 export default class MetricSelect extends Component {
   static propTypes = {
@@ -65,6 +65,7 @@ export default class MetricSelect extends Component {
     selectQA: PropTypes.func.isRequired,
     back: PropTypes.func.isRequired,
     qaTests: PropTypes.array.isRequired,
+    stepsQa: PropTypes.object,
   };
 
   renderButtons = step => {
@@ -74,23 +75,18 @@ export default class MetricSelect extends Component {
         return test[this.props.camera];
       return null;
     });
+
     let buttonsStatus = [];
-    if (
-      tests &&
-      tests[this.props.camera] &&
-      tests[this.props.camera][step] &&
-      tests[this.props.camera][step].steps_status
-    ) {
-      buttonsStatus = tests[this.props.camera][step].steps_status.map(
-        status => {
-          return status;
-        }
-      );
+    if (tests && tests[this.props.camera] && tests[this.props.camera][step]) {
+      buttonsStatus = tests[this.props.camera][step].map(status => {
+        return status;
+      });
     } else {
       buttonsStatus = undefined;
     }
 
-    return stepsQa[step].map((qa, index) => {
+    if (!this.props.stepsQa[step]) return;
+    return this.props.stepsQa[step].map((qa, index) => {
       const selected =
         this.props.selectedQA && this.props.selectedQA.includes(qa)
           ? styles.selected
@@ -136,26 +132,9 @@ export default class MetricSelect extends Component {
   };
 
   renderMetricOptions = () => {
-    switch (this.props.step) {
-      case 'Pre Processing':
-        return (
-          <div style={styles.buttons}>{this.renderButtons('preproc')}</div>
-        );
-      case 'Spectral Extraction':
-        return (
-          <div style={styles.buttons}>{this.renderButtons('extract')}</div>
-        );
-      case 'Fiber Flattening':
-        return (
-          <div style={styles.buttons}>{this.renderButtons('fiberfl')}</div>
-        );
-      case 'Sky Subtraction':
-        return (
-          <div style={styles.buttons}>{this.renderButtons('skysubs')}</div>
-        );
-      default:
-        return null;
-    }
+    return (
+      <div style={styles.buttons}>{this.renderButtons(this.props.step)}</div>
+    );
   };
 
   renderTitle = () => {

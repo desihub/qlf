@@ -207,6 +207,7 @@ class OnlineContainer extends Component {
               arm={this.props.arm}
               step={this.props.step}
               spectrograph={this.props.spectrograph}
+              flavor={this.props.flavor}
             />
           )}
         />

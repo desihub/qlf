@@ -8,8 +8,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-qlf_root = os.getenv('QLF_ROOT')
-
 desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
 
 PROCESS = dict()
