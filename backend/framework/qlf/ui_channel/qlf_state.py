@@ -119,8 +119,8 @@ class QLFState:
             self.update_pipeline_log()
             self.update_camera_logs()
             self.logfile = self.tail_file(os.path.join(
-                qlf_root, "logs", "qlf.log"), 100)
-            self.available_cameras = self.get_available_cameras(
+                qlf_root, "logs", "monitoring.log"), 100)
+            self.available_cameras = self.get_avaiable_cameras(
                 self.current_process
             )
             self.exposure_id = self.current_process.exposure_id
