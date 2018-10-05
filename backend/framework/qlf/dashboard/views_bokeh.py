@@ -231,10 +231,11 @@ def load_series(request):
     camera = request.GET.get('camera')
     start = request.GET.get('start')
     end = request.GET.get('end')
+    amp = request.GET.get('amp')
 
     try:
         if plot == 'timeseries':
-            series_html = TimeSeries(yaxis, start, end, camera).render()
+            series_html = TimeSeries(yaxis, start, end, camera, amp).render()
         elif plot == 'regression':
             series_html = Regression(xaxis, yaxis, start, end).render()
         else:

@@ -48,22 +48,102 @@ plots = {
     },
     'psf': {
         'display': 'PSF FWHM',
-        'path': 'TASKS->CHECK_CCDs->METRICS->XWSIGMA'
+        'path': 'TASKS->CHECK_FIBERS->METRICS->XWSIGMA'
     },
     'airmass': {
         'display': 'AIRMASS',
         'path': 'GENERAL_INFO->AIRMASS'
     },
+    'bias': {
+        'display': 'BIAS',
+        'path': 'TASKS->CHECK_CCDs->METRICS->BIAS_AMP'
+    },
+    'noise': {
+        'display': 'NOISE',
+        'path': 'TASKS->CHECK_CCDs->METRICS->NOISE_AMP'
+    },
 }
 
 
 class TimeSeries():
-    def __init__(self, yaxis, start, end, camera):
+    def __init__(self, yaxis, start, end, camera, amp=None):
         self.yaxis = yaxis
         self.start = datetime.strptime(start, '%Y%m%d').strftime('%Y-%m-%d')
         self.end = datetime.strptime(end, '%Y%m%d').strftime('%Y-%m-%d')
         self.camera = camera
         self.models = QLFModels()
+        self.amp = amp
+
+    def single_value(self, dates, values, exposures, cameras, dateobs):
+        source = ColumnDataSource(data=dict(
+            x=dates,
+            y=values,
+            exposure=exposures,
+            camera=cameras,
+            dateobs=dateobs
+        ))
+        
+        self.p.line('x', 'y', source=source)
+        self.p.circle('x', 'y', source=source, size=5)
+
+    def double_value(self, dates, values, exposures, cameras, dateobs):
+        pair = [[],[]]
+
+        for value in values:
+            pair[0].append(value[0])
+            pair[1].append(value[1])
+
+        colors = [
+            ['spatial width averaged over fitted lines', 'blue'],
+            ['median taken over all fibers per amp', 'green']
+        ]
+
+        for idx, color in enumerate(colors):
+            source = ColumnDataSource(data=dict(
+                x=dates,
+                y=pair[idx],
+                exposure=exposures,
+                camera=cameras,
+                dateobs=dateobs
+            ))
+            self.p.line('x', 'y', source=source, legend='Lower {}'.format(color[0]), line_color=color[1])
+            self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color[1])
+
+    def amps(self, dates, values, exposures, cameras, dateobs):
+        amps = [[],[],[],[]]
+        for value in values:
+            amps[0].append(value[0])
+            amps[1].append(value[1])
+            amps[2].append(value[2])
+            amps[3].append(value[3])
+
+        colors = [
+            'red',
+            'blue',
+            'green',
+            'orange'
+        ]
+        if not self.amp:
+            for idx, color in enumerate(colors):
+                source = ColumnDataSource(data=dict(
+                    x=dates,
+                    y=amps[idx],
+                    exposure=exposures,
+                    camera=cameras,
+                    dateobs=dateobs
+                ))
+                self.p.line('x', 'y', source=source, legend='AMP {}'.format(idx), line_color=color)
+                self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color)
+        else:
+            source = ColumnDataSource(data=dict(
+                x=dates,
+                y=amps[int(self.amp)],
+                exposure=exposures,
+                camera=cameras,
+                dateobs=dateobs
+            ))
+            self.p.line('x', 'y', source=source, legend='AMP {}'.format(self.amp), line_color='blue')
+            self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color='blue')
 
     def render(self):
         axis_data = plots[self.yaxis]
@@ -92,29 +172,17 @@ class TimeSeries():
 
         hover = HoverTool(tooltips=TOOLTIPS)
 
-        p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
+        self.p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
                    plot_width=800, plot_height=350, tools=[hover, 'pan,wheel_zoom,zoom_in, zoom_out,reset'])
 
-        # amp_list = [
-        #     [0, 'red'],
-        #     [1, 'blue'],
-        #     [2, 'green']
-        #     # [3, 'orange']
-        # ]
+        if self.yaxis in ['skybrightness', 'airmass']:
+            self.single_value(dates, values, exposures, cameras, dateobs)
+        elif self.yaxis in ['traceshifts', 'psf']:
+            self.double_value(dates, values, exposures, cameras, dateobs)
+        elif self.yaxis in ['noise', 'bias']:
+            self.amps(dates, values, exposures, cameras, dateobs)
 
-        # for amp in amp_list:
-        source = ColumnDataSource(data=dict(
-            x=dates,
-            y=values,
-            exposure=exposures,
-            camera=cameras,
-            dateobs=dateobs
-        ))
-        
-        p.line('x', 'y', source=source)#, legend='AMP {}'.format(amp[0]), line_color=amp[1])
-        p.circle('x', 'y', source=source, size=5)#, line_color=None, fill_color=amp[1])
-
-        layout = column(p)
+        layout = column(self.p)
         return file_html(layout, CDN, "Time Series")
 
 if __name__ == "__main__":
