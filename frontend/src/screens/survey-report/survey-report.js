@@ -265,7 +265,6 @@ class SurveyReport extends React.Component {
   renderViewer = () => {
     return (
       <SurveyViewer
-        datePeriod={this.state.datePeriod}
         startDate={this.state.startDate}
         endDate={this.state.endDate}
         program={this.state.program}

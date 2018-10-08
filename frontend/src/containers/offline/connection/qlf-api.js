@@ -316,4 +316,18 @@ export default class QlfApi {
     const responseJson = await ticket.json();
     return responseJson;
   }
+
+  static async getObjectData(startDate, endDate, program) {
+    const objectData = await fetch(
+      `${apiUrl}dashboard/footprint_object_type_count?start=${startDate}&end=${
+        endDate
+      }&program=${program}`,
+      {
+        method: 'GET',
+        headers: headers,
+      }
+    );
+    const responseJson = await objectData.json();
+    return responseJson;
+  }
 }
