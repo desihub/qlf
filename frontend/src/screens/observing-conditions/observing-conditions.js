@@ -65,6 +65,10 @@ const styles = {
   button: {
     float: 'right',
   },
+  buttonGreen: {
+    backgroundColor: 'green',
+    color: 'white',
+  },
   SpectroGraph: {
     paddingBottom: '2.5vh',
     textAlign: 'center',
@@ -90,6 +94,9 @@ class ObservingConditions extends React.Component {
       startDate: '',
       endDate: '',
       datePeriod: '',
+      selectYaxis: '',
+      selectStartDate: '',
+      selectEndDate: '',
     };
   }
 
@@ -113,7 +120,6 @@ class ObservingConditions extends React.Component {
 
   handleChangeDatePeriod = evt => {
     this.setState({ datePeriod: evt.target.value, endDate: moment().format() });
-    this.loadEnd();
     switch (evt.target.value) {
       case 'night':
         this.setState({ startDate: moment().format() });
@@ -153,11 +159,21 @@ class ObservingConditions extends React.Component {
 
   handleChangeYaxis = evt => {
     this.setState({ yaxis: evt.target.value });
-    this.loadEnd();
   };
 
   handleSubmit = () => {
-    this.loadStart();
+    if (
+      this.state.selectYaxis !== this.state.yaxis ||
+      this.state.selectStartDate !== this.state.startDate ||
+      this.state.selectEndDate !== this.state.endDate
+    ) {
+      this.setState({
+        selectYaxis: this.state.yaxis,
+        selectStartDate: this.state.startDate,
+        selectEndDate: this.state.endDate,
+      });
+      this.loadStart();
+    }
   };
 
   loadStart = () => {
@@ -171,15 +187,15 @@ class ObservingConditions extends React.Component {
   renderLoading = () => {
     if (!this.state.loading) return null;
     const showControls =
-      this.state.yaxis || this.props.startDate || this.props.endDate;
+      this.state.yaxis || this.state.startDate || this.state.endDate;
     const classLoading = showControls
       ? styles.fadeLoader
       : styles.fadeLoaderFull;
 
     if (
       this.state.yaxis !== '' &&
-      this.props.startDate !== '' &&
-      this.props.endDate !== ''
+      this.state.startDate !== '' &&
+      this.state.endDate !== ''
     ) {
       return (
         <div className={this.props.classes.loading}>
@@ -197,8 +213,8 @@ class ObservingConditions extends React.Component {
   isValid = () => {
     return (
       this.state.yaxis !== '' &&
-      this.props.startDate !== '' &&
-      this.props.endDate !== ''
+      this.state.startDate !== '' &&
+      this.state.endDate !== ''
     );
   };
 
@@ -274,6 +290,7 @@ class ObservingConditions extends React.Component {
       variant="raised"
       size="small"
       className={this.props.classes.button}
+      classes={{ raised: this.props.classes.buttonGreen }}
       disabled={!this.isValid()}
     >
       Submit
@@ -317,9 +334,9 @@ class ObservingConditions extends React.Component {
         <ObservingViewer
           plot={plot}
           loadEnd={this.loadEnd}
-          startDate={this.state.startDate}
-          endDate={this.state.endDate}
-          yaxis={this.state.yaxis}
+          startDate={this.state.selectStartDate}
+          endDate={this.state.selectEndDate}
+          yaxis={this.state.selectYaxis}
           datePeriod={this.state.datePeriod}
         />
       );
