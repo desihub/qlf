@@ -97,7 +97,7 @@ class TimeSeries():
             self.p.line('x', 'y', source=source, legend='Lower {}'.format(color[0]), line_color=color[1])
             self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color[1])
 
-    def amps(self, dates, values, exposures, cameras, dateobs):
+    def quadruple_values(self, dates, values, exposures, cameras, dateobs, objtype=None):
         amps = [[],[],[],[]]
         for value in values:
             amps[0].append(value[0])
@@ -111,7 +111,18 @@ class TimeSeries():
             'green',
             'orange'
         ]
-        if self.amp == 'all':
+        if objtype is not None:
+            for idx, color in enumerate(colors):
+                source = ColumnDataSource(data=dict(
+                    x=dates,
+                    y=amps[idx],
+                    exposure=exposures,
+                    camera=cameras,
+                    dateobs=dateobs
+                ))
+                self.p.line('x', 'y', source=source, legend='OBJ {}'.format(idx), line_color=color)
+                self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color)
+        elif self.amp == 'all':
             for idx, color in enumerate(colors):
                 source = ColumnDataSource(data=dict(
                     x=dates,
@@ -168,7 +179,9 @@ class TimeSeries():
         elif self.yaxis in ['traceshifts', 'psf']:
             self.double_value(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['noise', 'bias']:
-            self.amps(dates, values, exposures, cameras, dateobs)
+            self.quadruple_values(dates, values, exposures, cameras, dateobs)
+        elif self.yaxis in ['snr']:
+            self.quadruple_values(dates, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
 
         layout = column(self.p)
         return file_html(layout, CDN, "Time Series")
