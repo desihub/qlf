@@ -4,7 +4,6 @@ import requests
 from furl import furl
 from bokeh.plotting import Figure
 from dashboard.models import Process, Job
-from scalar_metrics import LoadMetrics
 from qlf_models import QLFModels
 import sys
 
@@ -196,7 +195,7 @@ def write_info(qa_name, params):
         skypeak=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
                  'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
         getbias=['BIAS_AMP_NORMAL_RANGE',  'BIAS_AMP_WARN_RANGE'],#, 'PERCENTILES'],
-        countpix=['LITFRAC_NORMAL_RANGE', 'LITFRAC_WARN_RANGE', 'CUTPIX'],#, 'LITFRAC_AMP_REF'
+        countpix=['LITFRAC_AMP_NORMAL_RANGE', 'LITFRAC_AMP_WARN_RANGE', 'CUTPIX'],#, 'LITFRAC_AMP_REF'
         integ=['DELTAMAG_WARN_RANGE', 'DELTAMAG_NORMAL_RANGE'],
         snr=['FIDSNR_TGT_NORMAL_RANGE', 'FIDSNR_TGT_WARN_RANGE', 'FIDMAG'])
 

@@ -14,7 +14,7 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: '50% 50%',
+    gridTemplateColumns: '50vw 50vw',
     gridTemplateRows: 'auto 32vh',
     height: 'calc(100vh - 160px)',
   },
@@ -187,6 +187,7 @@ export default class Monitor extends Component {
               openDialog={this.openDialog}
               renderHeader={true}
               pipelineRunning={this.props.pipelineRunning}
+              flavor={this.props.flavor}
             />
             <Stages
               status={this.state.camerasStages.r}
@@ -194,6 +195,7 @@ export default class Monitor extends Component {
               openDialog={this.openDialog}
               renderHeader={false}
               pipelineRunning={this.props.pipelineRunning}
+              flavor={this.props.flavor}
             />
             <Stages
               status={this.state.camerasStages.z}
@@ -201,6 +203,7 @@ export default class Monitor extends Component {
               openDialog={this.openDialog}
               renderHeader={false}
               pipelineRunning={this.props.pipelineRunning}
+              flavor={this.props.flavor}
             />
           </div>
           <div style={styles.gridItem}>
@@ -210,6 +213,7 @@ export default class Monitor extends Component {
               spectrographs={this.state.spectrographs}
               petalSizeFactor={22}
               monitor={true}
+              flavor={this.props.flavor}
             />
           </div>
           <div style={styles.gridItem}>

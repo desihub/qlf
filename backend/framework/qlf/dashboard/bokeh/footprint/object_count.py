@@ -159,7 +159,73 @@ class ObjectStatistics:
                 else:
                     arm_col = arm_col + [-9999]*500
 
-            col_fiber.update({arm: arm_col})
+            # SNR classification for ALL arms:
+            snr_class = {}
+            for j in ['NORMAL', 'WARN', 'ALARM', 'n/a']:
+                obj_class = {}
+                for i in ['ELG', 'LRG', 'QSO',  'STAR', 'SKY']:
+                    obj_class.update({i: check_df(i, j, 'snr_status')})
+                snr_class.update({j: obj_class})
+
+            # SNR classification per EACH arm:
+            snr_class_arm = {}
+            for arm in ['b', 'r', 'z']:
+                status_class = {}
+                for j in ['NORMAL', 'WARN', 'ALARM', 'n/a']:
+                    obj_class = {}
+                    for i in ['ELG', 'LRG', 'QSO',  'STAR', 'SKY']:
+                        obj_class.update(
+                            {i: check_df(i, j, 'snr_status', qarm=arm)})
+                    status_class.update({j: obj_class})
+                snr_class_arm.update({arm: status_class})
+
+            # ===================
+            #       Fiber df
+
+            col_fiber = {'b': [], 'r': [], 'z': []}
+            for arm in ['b', 'r', 'z']:
+                arm_col = []
+                for spec in list(range(10)):
+                    cam = arm+str(spec)
+                    if cam in joblist:
+                        mergedqa = get_merged_qa_scalar_metrics(
+                            self.selected_process_id, cam)
+                        fiberstatus = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
+                        arm_col = arm_col+fiberstatus
+                    else:
+                        arm_col = arm_col + [-9999]*500
+
+                col_fiber.update({arm: arm_col})
+
+            df_fiber = pd.DataFrame({**col_fiber, **{'object': objects}})
+
+            def check_fibers(qtype, qstatus, qarm=None):
+                """Fiber query"""
+                if qstatus == 'GOOD':
+                    stat = 1
+                elif qstatus == 'BAD':
+                    stat = 0
+                elif qstatus == 'n/a':
+                    stat = -9999
+                else:
+                    return None
+
+                if qtype == 'STAR':
+                    qtype = 'STD'
+
+                if qarm == None:
+                    count = 0
+                    for i in ['b', 'r', 'z']:
+                        obj_statistics = df_fiber.loc[(
+                            df_fiber[i] == stat)]['object']
+                        count += list(obj_statistics).count(qtype)
+                    return count
+                if qarm in ['b', 'r', 'z']:
+                    obj_statistics = df_fiber.loc[(
+                        df_fiber[qarm] == stat)]['object']
+                    return list(obj_statistics).count(qtype)
+                else:
+                    return None
 
         df_fiber = pd.DataFrame({**col_fiber, **{'object': objects}})
 

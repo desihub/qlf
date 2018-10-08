@@ -31,6 +31,9 @@ const styles = {
 class ObservingViewer extends React.Component {
   static propTypes = {
     plot: PropTypes.string,
+    arm: PropTypes.string,
+    amp: PropTypes.string,
+    spectrograph: PropTypes.array,
     yaxis: PropTypes.string,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
@@ -49,6 +52,10 @@ class ObservingViewer extends React.Component {
     }
   }
 
+  formatDate = date => {
+    return date.split('T')[0].replace(/-/g, '');
+  };
+
   renderImage = () => {
     const { classes } = this.props;
     let url = '';
@@ -57,11 +64,17 @@ class ObservingViewer extends React.Component {
       this.props.plot === 'timeseries' &&
       this.props.yaxis !== '' &&
       this.props.startDate !== '' &&
+      this.props.arm !== '' &&
+      this.props.spectrograph.length !== 0 &&
       this.props.endDate !== ''
     )
-      url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&xaxis=${
+      url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&yaxis=${
         this.props.yaxis
-      }&start=${1}&end=${700}`;
+      }&amp=${this.props.amp}&start=${this.formatDate(
+        this.props.startDate
+      )}&end=${this.formatDate(this.props.endDate)}&camera=${this.props.arm}${
+        this.props.spectrograph[0]
+      }`;
 
     if (url !== '')
       return (
