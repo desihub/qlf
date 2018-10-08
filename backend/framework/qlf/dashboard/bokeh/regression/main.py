@@ -21,11 +21,12 @@ from bokeh.embed import file_html
 import json
 
 class Regression():
-    def __init__(self, xaxis, yaxis, start, end):
+    def __init__(self, xaxis, yaxis, start, end, exposures):
         self.xaxis = xaxis
         self.yaxis = yaxis
         self.start = start
         self.end = end
+        self.exposures = exposures
 
     def render(self):
         try:

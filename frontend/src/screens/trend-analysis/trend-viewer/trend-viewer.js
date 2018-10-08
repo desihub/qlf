@@ -31,6 +31,7 @@ const styles = {
 class TrendViewer extends React.Component {
   static propTypes = {
     arm: PropTypes.string,
+    spectrograph: PropTypes.array,
     amp: PropTypes.string,
     plot: PropTypes.string,
     xaxis: PropTypes.string,
@@ -52,6 +53,10 @@ class TrendViewer extends React.Component {
     }
   }
 
+  formatDate = date => {
+    return date.split('T')[0].replace(/-/g, '');
+  };
+
   renderImage = () => {
     const { classes } = this.props;
     let url = '';
@@ -60,23 +65,29 @@ class TrendViewer extends React.Component {
       this.props.plot === 'timeseries' &&
       this.props.yaxis !== '' &&
       this.props.amp !== '' &&
+      this.props.arm !== '' &&
+      this.props.spectrograph.length !== 0 &&
       this.props.startDate !== '' &&
       this.props.endDate !== ''
     )
-      url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&xaxis=${
+      url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&yaxis=${
         this.props.yaxis
-      }${this.props.amp}&start=${1}&end=${700}`;
-    else if (
-      this.props.plot === 'regression' &&
-      this.props.xaxis !== '' &&
-      this.props.yaxis !== '' &&
-      this.props.amp !== '' &&
-      this.props.startDate !== '' &&
-      this.props.endDate !== ''
-    )
-      url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&xaxis=${
-        this.props.xaxis
-      }${this.props.amp}&yaxis=${this.props.yaxis}${this.props.amp}`;
+      }&amp=${this.props.amp}&start=${this.formatDate(
+        this.props.startDate
+      )}&end=${this.formatDate(this.props.endDate)}&camera=${this.props.arm}${
+        this.props.spectrograph[0]
+      }`;
+    // else if (
+    //   this.props.plot === 'regression' &&
+    //   this.props.xaxis !== '' &&
+    //   this.props.yaxis !== '' &&
+    //   this.props.amp !== '' &&
+    //   this.props.startDate !== '' &&
+    //   this.props.endDate !== ''
+    // )
+    //   url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&xaxis=${
+    //     this.props.xaxis
+    //   }${this.props.amp}&yaxis=${this.props.yaxis}${this.props.amp}`;
 
     if (url !== '')
       return (

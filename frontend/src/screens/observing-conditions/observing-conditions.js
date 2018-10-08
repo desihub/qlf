@@ -12,6 +12,10 @@ import Select from '@material-ui/core/Select';
 import ObservingViewer from './observing-viewer/observing-viewer';
 import SelectDate from '../../components/select-date/select-date';
 import moment from 'moment';
+import Petals from '../../components/petals/petals';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
 
 const styles = {
   controlsContainer: {
@@ -90,6 +94,8 @@ class TrendAnalysis extends React.Component {
       startDate: '',
       endDate: '',
       datePeriod: '',
+      arm: '',
+      spectrograph: [],
     };
   }
 
@@ -186,6 +192,8 @@ class TrendAnalysis extends React.Component {
       yaxis: '',
       loading: false,
       datePeriod: '',
+      arm: '',
+      spectrograph: [],
     });
   };
 
@@ -226,10 +234,58 @@ class TrendAnalysis extends React.Component {
             <MenuItem value={'snr'}>SNR</MenuItem>
             <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
             <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
-            <MenuItem value={'psffwhm'}>PSF FWHM</MenuItem>
+            <MenuItem value={'psf'}>PSF FWHM</MenuItem>
             <MenuItem value={'airmass'}>AIRMASS</MenuItem>
           </Select>
         </FormControl>
+      </div>
+    );
+  };
+
+  handleChangeArm = evt => {
+    this.setState({ arm: evt.target.value });
+    this.loadStart();
+  };
+
+  renderArmSelection = () => {
+    return (
+      <div className={this.props.classes.selectionRadio}>
+        <FormControl className={this.props.classes.formControl}>
+          <InputLabel shrink>Arm</InputLabel>
+          <RadioGroup
+            className={this.props.classes.column}
+            value={this.state.arm}
+            onChange={this.handleChangeArm}
+          >
+            <FormControlLabel value="b" control={<Radio />} label="b" />
+            <FormControlLabel value="r" control={<Radio />} label="r" />
+            <FormControlLabel value="z" control={<Radio />} label="z" />
+          </RadioGroup>
+        </FormControl>
+      </div>
+    );
+  };
+
+  handleChangeSpectrograph = spectrograph => {
+    this.setState({ spectrograph: [spectrograph] });
+    this.loadStart();
+  };
+
+  renderSpectrographSelection = () => {
+    return (
+      <div className={this.props.classes.SpectroGraph}>
+        <InputLabel
+          shrink
+          className={this.props.classes.spectrographLabel}
+          component="legend"
+        >
+          Spectrograph
+        </InputLabel>
+        <Petals
+          selected={this.state.spectrograph}
+          onClick={this.handleChangeSpectrograph}
+          size={100}
+        />
       </div>
     );
   };
@@ -270,6 +326,8 @@ class TrendAnalysis extends React.Component {
         {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
         {this.renderYaxisSelection()}
+        {this.renderSpectrographSelection()}
+        {this.renderArmSelection()}
         {this.renderClear()}
       </div>
     );
@@ -283,7 +341,8 @@ class TrendAnalysis extends React.Component {
         startDate={this.state.startDate}
         endDate={this.state.endDate}
         yaxis={this.state.yaxis}
-        datePeriod={this.state.datePeriod}
+        arm={this.state.arm}
+        spectrograph={this.state.spectrograph}
       />
     );
   };

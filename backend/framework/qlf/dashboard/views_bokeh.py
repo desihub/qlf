@@ -93,7 +93,6 @@ def filter_processed_exposures(start, end, program):
 
     return processed_exposures
 
-
 def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
@@ -239,11 +238,14 @@ def load_series(request):
     plot = request.GET.get('plot')
     xaxis = request.GET.get('xaxis')
     yaxis = request.GET.get('yaxis')
+    camera = request.GET.get('camera')
     start = request.GET.get('start')
     end = request.GET.get('end')
+    amp = request.GET.get('amp')
+
     try:
         if plot == 'timeseries':
-            series_html = TimeSeries(xaxis, start, end).render()
+            series_html = TimeSeries(yaxis, start, end, camera, amp).render()
         elif plot == 'regression':
             series_html = Regression(xaxis, yaxis, start, end).render()
         else:
