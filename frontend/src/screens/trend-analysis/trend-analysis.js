@@ -65,6 +65,10 @@ const styles = {
     width: '50%',
     paddingBottom: '2.5vh',
   },
+  selectionRadioInner: {
+    position: 'relative',
+    paddingLeft: '15px',
+  },
   formControl: {
     width: '100%',
   },
@@ -88,6 +92,48 @@ const styles = {
     margin: '16px',
     padding: '16px',
     height: 'calc(100vh - 135px)',
+  },
+  blue: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'dodgerblue',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '78px',
+    left: '0',
+  },
+  red: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'red',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '126px',
+    left: '0',
+  },
+  pink: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'fuchsia',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '174px',
+    left: '0',
   },
 };
 
@@ -384,18 +430,24 @@ class TrendAnalysis extends React.Component {
   renderArmSelection = () => {
     return (
       <div className={this.props.classes.selectionRadio}>
-        <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Arm</InputLabel>
-          <RadioGroup
-            className={this.props.classes.column}
-            value={this.state.arm}
-            onChange={this.handleChangeArm}
-          >
-            <FormControlLabel value="b" control={<Radio />} label="b" />
-            <FormControlLabel value="r" control={<Radio />} label="r" />
-            <FormControlLabel value="z" control={<Radio />} label="z" />
-          </RadioGroup>
-        </FormControl>
+        <div className={this.props.classes.selectionRadioInner}>
+          <span className={this.props.classes.blue}>blue</span>
+          <span className={this.props.classes.red}>red</span>
+          <span className={this.props.classes.pink}>pink</span>
+          <FormControl className={this.props.classes.formControl}>
+            <InputLabel shrink>Arm</InputLabel>
+            <RadioGroup
+              className={this.props.classes.column}
+              value={this.state.arm}
+              onChange={this.handleChangeArm}
+            >
+              <FormControlLabel value="all" control={<Radio />} label="All" />
+              <FormControlLabel value="b" control={<Radio />} label="b" />
+              <FormControlLabel value="r" control={<Radio />} label="r" />
+              <FormControlLabel value="z" control={<Radio />} label="z" />
+            </RadioGroup>
+          </FormControl>
+        </div>
       </div>
     );
   };
@@ -547,10 +599,10 @@ class TrendAnalysis extends React.Component {
           centered
         >
           <Tab label="Time Series" value={'Time Series'} />
-          {/* <Tab label="Regression" value={'Regression'} /> */}
+          <Tab label="Regression" value={'Regression'} />
         </Tabs>
         {tab === 'Time Series' ? this.renderTimeSeries() : null}
-        {/* {tab === 'Regression' ? this.renderRegression() : null} */}
+        {tab === 'Regression' ? this.renderRegression() : null}
       </div>
     );
   };
