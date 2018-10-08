@@ -5,7 +5,7 @@ import requests
 from furl import furl
 from bokeh.plotting import Figure
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
-
+from scalar_metrics import LoadMetrics
 
 def sort_obj(gen_info):
     """ Hover info of objects type in fibers plots.
@@ -313,7 +313,7 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
     elif nrows==1:
         if isinstance(curexp, float):
             cur_tb='%4.3f'%curexp
-            ref_tb='%2.1f'%ref
+            ref_tb='%2.1f'%ref[0]
         elif isinstance(curexp, int):
             cur_tb='%d'%curexp
             ref_tb=ref
@@ -326,7 +326,9 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
         # per_TGT
         if objtype is not None:
             objtype_tb = ['STAR' if i=='STD' else i for i in objtype]
-            key_tb= [qa_metrics[qa] + ' ( %s)'%objtype_tb[i] for i in list(range(nrows))]
+            key_tb = [qa_metrics[qa]] * nrows
+            # key_tb = [qa_metrics[qa] + ' ( %s)' % objtype_tb[i]
+                    #   for i in list(range(nrows))]
         else:
             key_tb= [qa_metrics[qa]] *nrows
 
@@ -365,7 +367,6 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
                 </tr>
                 """.format( key_tb[i], cur_tb[i], ref_tb[i])
 
-    print(cur_tb, ref_tb)
     return style + header + tblines + end
 
 
@@ -379,7 +380,6 @@ def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nr
     tblines=""" """
     nlines= len(names)
     if(nlines != len(vals)):
-        print('error in table')
         return """error in table"""
 
     style = """
