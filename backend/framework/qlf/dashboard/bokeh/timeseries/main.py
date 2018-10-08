@@ -12,7 +12,7 @@ from bokeh.models import DatetimeTickFormatter
 from log import get_logger
 import os
 from qlf_models import QLFModels
-from datetime import datetime
+from datetime import datetime, timedelta
 
 qlf_root = os.environ.get('QLF_ROOT')
 
@@ -32,11 +32,11 @@ plots = {
     },
     'traceshifts': {
         'display': 'TRACE SHIFTS',
-        'path': 'TASKS->CHECK_SPECTRA->METRICS->XWSHIFT'
+        'path': 'TASKS->CHECK_FIBERS->METRICS->XYSHIFTS'
     },
     'psf': {
         'display': 'PSF FWHM',
-        'path': 'TASKS->CHECK_FIBERS->METRICS->XWSIGMA'
+        'path': 'TASKS->CHECK_CCDs->METRICS->XWSIGMA'
     },
     'airmass': {
         'display': 'AIRMASS',
@@ -143,9 +143,9 @@ class TimeSeries():
         values = list()
         exposures = list()
         dateobs = list()
-        for val in outputs:
+        for idx,val in enumerate(outputs):
             if val['value']:
-                dates.append(val['dateobs'])
+                dates.append(val['dateobs'] - timedelta(minutes=20*idx))
                 dateobs.append(val['dateobs'].strftime('%Y-%m-%d'))
                 exposures.append(val['exposure_id'])
                 cameras.append(self.camera)
