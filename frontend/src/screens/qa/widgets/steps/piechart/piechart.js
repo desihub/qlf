@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { VictoryPie, Slice } from 'victory';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import flavors from '../../../../../flavors';
 
 const arms = ['b', 'r', 'z'];
-const steps = ['preproc', 'extract', 'fiberfl', 'skysubs'];
 
 export default class PieChart extends Component {
   static propTypes = {
@@ -16,28 +16,20 @@ export default class PieChart extends Component {
     hideQaAlarms: PropTypes.func.isRequired,
     qaTests: PropTypes.array,
     monitor: PropTypes.bool,
+    flavor: PropTypes.string,
   };
 
   getColor = test => {
-    if (test && !test.steps_status) return 'gray';
-    if (
-      test &&
-      test.steps_status &&
-      test.steps_status.includes('WARNING') &&
-      !test.steps_status.includes('ALARM')
-    )
+    if (test && !test) return 'gray';
+    if (test && test.includes('WARNING') && !test.includes('ALARM'))
       return 'yellow';
     if (
-      (test && test.steps_status && test.steps_status.includes('ALARM')) ||
-      (!this.props.monitor &&
-        test.steps_status.includes('None') &&
-        test.steps_status.includes('NORMAL'))
+      (test && test.includes('ALARM')) ||
+      (!this.props.monitor && test.includes('None') && test.includes('NORMAL'))
     )
       return 'red';
-    if (test && test.steps_status && test.steps_status.includes('None'))
-      return 'lightgray';
-    if (test && test.steps_status && test.steps_status.includes('Fail'))
-      return 'black';
+    if (test && test.includes('None')) return 'lightgray';
+    if (test && test.includes('Fail')) return 'black';
     return 'green';
   };
 
@@ -56,9 +48,14 @@ export default class PieChart extends Component {
         if (Object.keys(test)[0] === currentCamera) return test[currentCamera];
         return null;
       });
-      const step = steps[this.props.step];
-      if (currentTest) {
-        return currentTest[currentCamera][step];
+      if (flavors[this.props.flavor]) {
+        const steps = flavors[this.props.flavor]['step_list'].map(
+          flavor => flavor.name
+        );
+        const step = steps[this.props.step];
+        if (currentTest) {
+          return currentTest[currentCamera][step];
+        }
       }
     }
   };
