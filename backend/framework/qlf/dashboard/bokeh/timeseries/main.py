@@ -1,15 +1,3 @@
-import sys
-import os
-import django
-
-qlf_root = os.environ.get('QLF_ROOT')
-
-sys.path.append(os.path.join(qlf_root, "framework/qlf"))
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
-
-django.setup()
-
 import numpy as np
 import pandas as pd
 from bokeh.plotting import ColumnDataSource, Figure
