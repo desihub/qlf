@@ -46,7 +46,7 @@ class CameraStatus:
         camera = self.find_camera(camera_name)
 
         if camera is None:
-            camera = Camera(camera_name)
+            camera = Camera(camera_name, self.qlf_state.stages)
             self.update_qa_state(camera, log)
             self.cameras.append(camera)
         else:
@@ -56,59 +56,23 @@ class CameraStatus:
                 logger.info(e)
 
     def update_camera_status(self):
-        for camera_name in self.qlf_state.camera_logs.keys():
+        for camera_name in list(self.qlf_state.camera_logs):
             try:
                 log = self.qlf_state.camera_logs[camera_name]
                 self.update_petals(camera_name, log)
                 camera = self.find_camera(camera_name)
                 if not camera: return
 
-                if "Pipeline completed. Final result" in str(log) \
-                        and camera.get_step_status('skysubs') is 'processing_stage':
-
-                    camera.set_step_status('skysubs', 'success_stage')
-                    camera.set_step_status('fiberfl', 'success_stage')
-                    camera.set_step_status('extract', 'success_stage')
-                    camera.set_step_status('preproc', 'success_stage')
-
-                if "Starting to run step SkySub_QL" in str(log) \
-                        and camera.get_step_status('skysubs') is 'none':
-
-                    camera.set_step_status('skysubs', 'processing_stage')
-
-                    if "CRITICAL" in str(log) or "Error" in str(log):
-                        camera.set_step_status('fiberfl', 'error_stage')
-                    else:
-                        camera.set_step_status('extract', 'success_stage')
-                        camera.set_step_status('fiberfl', 'success_stage')
-
-                if "Starting to run step ApplyFiberFlat_QL" in str(log) \
-                        and camera.get_step_status('fiberfl') is 'none':
-
-                    camera.set_step_status('fiberfl', 'processing_stage')
-
-                    if "CRITICAL" in str(log) or "Error" in str(log):
-                        camera.set_step_status('extract', 'error_stage')
-                    else:
-                        camera.set_step_status('extract', 'success_stage')
-
-                if "Starting to run step BoxcarExtract" in str(log) \
-                        and camera.get_step_status('extract') is 'none':
-
-                    camera.set_step_status('extract', 'processing_stage')
-
-                    if "CRITICAL" in str(log) or "Error" in str(log):
-                        camera.set_step_status('preproc', 'error_stage')
-                    else:
-                        camera.set_step_status('preproc', 'success_stage')
-
-                if "Starting to run step Initialize" in str(log) \
-                        and camera.get_step_status('preproc') is 'none':
-                    camera.set_step_status('preproc', 'processing_stage')
-
-                if "CRITICAL" in str(log) or "Error" in str(log) \
-                        and camera.get_step_status('preproc') is 'none':
-                    camera.set_step_status('preproc', 'error_stage')
+                for step in self.qlf_state.stages['step_list']:
+                    if "CRITICAL" in str(log) and \
+                            camera.get_step_status(step['name']) is 'processing_stage':
+                        camera.set_step_status(step['name'], 'error_stage')
+                    if step['start'] in str(log) and \
+                            camera.get_step_status(step['name']) is 'none':
+                        camera.set_step_status(step['name'], 'processing_stage')
+                    if step['end'] in str(log) and \
+                            camera.get_step_status(step['name']) is 'processing_stage':
+                        camera.set_step_status(step['name'], 'success_stage')
 
             except Exception as err:
                 logger.warn(err)
@@ -116,7 +80,7 @@ class CameraStatus:
     def format_camera_stage_results(self):
         result = {"r": [], "b": [], "z": []}
         for camera in self.cameras:
-            for band in result.keys():
+            for band in list(result):
                 if band in camera.name:
                     result[band].append({camera.name[1:]: camera.steps_status})
         return result
