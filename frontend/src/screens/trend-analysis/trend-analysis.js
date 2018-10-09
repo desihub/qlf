@@ -181,42 +181,39 @@ class TrendAnalysis extends React.Component {
   }
 
   handleChangeDatePeriod = evt => {
-    this.setState({ datePeriod: evt.target.value, endDate: moment().format() });
+    let start = null;
     switch (evt.target.value) {
       case 'night':
-        this.setState({ startDate: moment().format() });
+        start = moment().format();
         break;
       case 'week':
-        this.setState({
-          startDate: moment()
-            .subtract(7, 'days')
-            .format(),
-        });
+        start = moment()
+          .subtract(7, 'days')
+          .format();
         break;
       case 'month':
-        this.setState({
-          startDate: moment()
-            .subtract(1, 'month')
-            .format(),
-        });
+        start = moment()
+          .subtract(1, 'month')
+          .format();
         break;
       case 'semester':
-        this.setState({
-          startDate: moment()
-            .subtract(6, 'month')
-            .format(),
-        });
+        start = moment()
+          .subtract(6, 'month')
+          .format();
         break;
       case 'year':
-        this.setState({
-          startDate: moment()
-            .subtract(1, 'year')
-            .format(),
-        });
+        start = moment()
+          .subtract(1, 'year')
+          .format();
         break;
       default:
         return;
     }
+    this.setState({
+      datePeriod: evt.target.value,
+      startDate: moment(start).format('YYYY-MM-DD'),
+      endDate: moment().format('YYYY-MM-DD'),
+    });
   };
 
   handleChangeArm = evt => {
@@ -504,7 +501,7 @@ class TrendAnalysis extends React.Component {
   );
 
   renderSelectDate = () => {
-    if (this.props.startDate !== '' && this.props.endDate !== '')
+    if (this.state.startDate !== '' && this.state.endDate !== '')
       return (
         <SelectDate
           startDate={this.state.startDate}
