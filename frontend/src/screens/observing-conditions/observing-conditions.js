@@ -63,6 +63,10 @@ const styles = {
     width: '50%',
     paddingBottom: '2.5vh',
   },
+  selectionRadioInner: {
+    position: 'relative',
+    paddingLeft: '15px',
+  },
   formControl: {
     width: '100%',
   },
@@ -86,6 +90,48 @@ const styles = {
     padding: '16px',
     height: 'calc(100vh - 135px)',
   },
+  bulletB: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'dodgerblue',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '30px',
+    left: '0',
+  },
+  bulletR: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'red',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '78px',
+    left: '0',
+  },
+  bulletZ: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'fuchsia',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '126px',
+    left: '0',
+  },
 };
 
 class ObservingConditions extends React.Component {
@@ -94,6 +140,8 @@ class ObservingConditions extends React.Component {
     this.state = {
       loading: false,
       firstLoad: false,
+      spectrograph: [],
+      arm: '',
       yaxis: '',
       startDate: '',
       endDate: '',
@@ -101,6 +149,8 @@ class ObservingConditions extends React.Component {
       selectYaxis: '',
       selectStartDate: '',
       selectEndDate: '',
+      selectArm: '',
+      selectSpectrograph: [],
     };
   }
 
@@ -165,16 +215,28 @@ class ObservingConditions extends React.Component {
     this.setState({ yaxis: evt.target.value });
   };
 
+  handleChangeSpectrograph = spectrograph => {
+    this.setState({ spectrograph: [spectrograph] });
+  };
+
+  handleChangeArm = evt => {
+    this.setState({ arm: evt.target.value });
+  };
+
   handleSubmit = () => {
     if (
       this.state.selectYaxis !== this.state.yaxis ||
       this.state.selectStartDate !== this.state.startDate ||
-      this.state.selectEndDate !== this.state.endDate
+      this.state.selectEndDate !== this.state.endDate ||
+      this.state.selectSpectrograph !== this.state.spectrograph ||
+      this.state.selectArm !== this.state.arm
     ) {
       this.setState({
         selectYaxis: this.state.yaxis,
         selectStartDate: this.state.startDate,
         selectEndDate: this.state.endDate,
+        selectSpectrograph: this.state.spectrograph,
+        selectArm: this.state.arm,
       });
       this.loadStart();
     }
@@ -191,7 +253,11 @@ class ObservingConditions extends React.Component {
   renderLoading = () => {
     if (!this.state.loading) return null;
     const showControls =
-      this.state.yaxis || this.state.startDate || this.state.endDate;
+      this.state.yaxis ||
+      this.state.startDate ||
+      this.state.endDate ||
+      this.state.arm ||
+      this.state.spectrograph;
     const classLoading = showControls
       ? styles.fadeLoader
       : styles.fadeLoaderFull;
@@ -199,7 +265,9 @@ class ObservingConditions extends React.Component {
     if (
       this.state.yaxis !== '' &&
       this.state.startDate !== '' &&
-      this.state.endDate !== ''
+      this.state.endDate !== '' &&
+      this.state.arm !== '' &&
+      this.state.spectrograph !== ''
     ) {
       return (
         <div className={this.props.classes.loading}>
@@ -218,7 +286,9 @@ class ObservingConditions extends React.Component {
     return (
       this.state.yaxis !== '' &&
       this.state.startDate !== '' &&
-      this.state.endDate !== ''
+      this.state.endDate !== '' &&
+      this.state.arm !== '' &&
+      this.state.spectrograph !== ''
     );
   };
 
@@ -228,6 +298,8 @@ class ObservingConditions extends React.Component {
       loading: false,
       datePeriod: '',
       preview: false,
+      arm: '',
+      spectrograph: [],
     });
   };
 
@@ -276,33 +348,23 @@ class ObservingConditions extends React.Component {
     );
   };
 
-  handleChangeArm = evt => {
-    this.setState({ arm: evt.target.value });
-    this.loadStart();
-  };
-
-  renderArmSelection = () => {
+  renderSpectrographSelection = () => {
     return (
-      <div className={this.props.classes.selectionRadio}>
-        <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Arm</InputLabel>
-          <RadioGroup
-            className={this.props.classes.column}
-            value={this.state.arm}
-            onChange={this.handleChangeArm}
-          >
-            <FormControlLabel value="b" control={<Radio />} label="b" />
-            <FormControlLabel value="r" control={<Radio />} label="r" />
-            <FormControlLabel value="z" control={<Radio />} label="z" />
-          </RadioGroup>
-        </FormControl>
+      <div className={this.props.classes.SpectroGraph}>
+        <InputLabel
+          shrink
+          className={this.props.classes.spectrographLabel}
+          component="legend"
+        >
+          Spectrograph
+        </InputLabel>
+        <Petals
+          selected={this.state.spectrograph}
+          onClick={this.handleChangeSpectrograph}
+          size={100}
+        />
       </div>
     );
-  };
-
-  handleChangeSpectrograph = spectrograph => {
-    this.setState({ spectrograph: [spectrograph] });
-    this.loadStart();
   };
 
   renderSpectrographSelection = () => {
@@ -320,6 +382,30 @@ class ObservingConditions extends React.Component {
           onClick={this.handleChangeSpectrograph}
           size={100}
         />
+      </div>
+    );
+  };
+
+  renderArmSelection = () => {
+    return (
+      <div className={this.props.classes.selectionRadio}>
+        <div className={this.props.classes.selectionRadioInner}>
+          <span className={this.props.classes.bulletB}>blue</span>
+          <span className={this.props.classes.bulletR}>red</span>
+          <span className={this.props.classes.bulletZ}>pink</span>
+          <FormControl className={this.props.classes.formControl}>
+            <InputLabel shrink>Arm</InputLabel>
+            <RadioGroup
+              className={this.props.classes.column}
+              value={this.state.arm}
+              onChange={this.handleChangeArm}
+            >
+              <FormControlLabel value="b" control={<Radio />} label="b" />
+              <FormControlLabel value="r" control={<Radio />} label="r" />
+              <FormControlLabel value="z" control={<Radio />} label="z" />
+            </RadioGroup>
+          </FormControl>
+        </div>
       </div>
     );
   };
@@ -374,6 +460,8 @@ class ObservingConditions extends React.Component {
         {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
         {this.renderYaxisSelection()}
+        {this.renderSpectrographSelection()}
+        {this.renderArmSelection()}
         {this.renderSubmit()}
         {this.renderClear()}
       </div>
@@ -390,6 +478,8 @@ class ObservingConditions extends React.Component {
           endDate={this.state.selectEndDate}
           yaxis={this.state.selectYaxis}
           datePeriod={this.state.datePeriod}
+          arm={this.state.selectArm}
+          spectrograph={this.state.selectSpectrograph}
         />
       );
     }

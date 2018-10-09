@@ -65,6 +65,10 @@ const styles = {
     width: '50%',
     paddingBottom: '2.5vh',
   },
+  selectionRadioInner: {
+    position: 'relative',
+    paddingLeft: '15px',
+  },
   formControl: {
     width: '100%',
   },
@@ -88,6 +92,48 @@ const styles = {
     margin: '16px',
     padding: '16px',
     height: 'calc(100vh - 135px)',
+  },
+  bulletB: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'dodgerblue',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '30px',
+    left: '0',
+  },
+  bulletR: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'red',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '78px',
+    left: '0',
+  },
+  bulletZ: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'fuchsia',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '126px',
+    left: '0',
   },
 };
 
@@ -183,6 +229,10 @@ class TrendAnalysis extends React.Component {
 
   handleChangeYaxis = evt => {
     this.setState({ yaxis: evt.target.value });
+  };
+
+  handleChangeSpectrograph = spectrograph => {
+    this.setState({ spectrograph: [spectrograph] });
   };
 
   handleSubmit = () => {
@@ -384,24 +434,25 @@ class TrendAnalysis extends React.Component {
   renderArmSelection = () => {
     return (
       <div className={this.props.classes.selectionRadio}>
-        <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Arm</InputLabel>
-          <RadioGroup
-            className={this.props.classes.column}
-            value={this.state.arm}
-            onChange={this.handleChangeArm}
-          >
-            <FormControlLabel value="b" control={<Radio />} label="b" />
-            <FormControlLabel value="r" control={<Radio />} label="r" />
-            <FormControlLabel value="z" control={<Radio />} label="z" />
-          </RadioGroup>
-        </FormControl>
+        <div className={this.props.classes.selectionRadioInner}>
+          <span className={this.props.classes.bulletB}>blue</span>
+          <span className={this.props.classes.bulletR}>red</span>
+          <span className={this.props.classes.bulletZ}>pink</span>
+          <FormControl className={this.props.classes.formControl}>
+            <InputLabel shrink>Arm</InputLabel>
+            <RadioGroup
+              className={this.props.classes.column}
+              value={this.state.arm}
+              onChange={this.handleChangeArm}
+            >
+              <FormControlLabel value="b" control={<Radio />} label="b" />
+              <FormControlLabel value="r" control={<Radio />} label="r" />
+              <FormControlLabel value="z" control={<Radio />} label="z" />
+            </RadioGroup>
+          </FormControl>
+        </div>
       </div>
     );
-  };
-
-  handleChangeSpectrograph = spectrograph => {
-    this.setState({ spectrograph: [spectrograph] });
   };
 
   renderSpectrographSelection = () => {
