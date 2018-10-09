@@ -172,7 +172,7 @@ class TimeSeries():
         hover = HoverTool(tooltips=TOOLTIPS)
 
         self.p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
-                   plot_width=800, plot_height=350, tools=[hover, 'pan,wheel_zoom,zoom_in, zoom_out,reset'])
+                   plot_width=700, plot_height=350, tools=[hover, 'pan,wheel_zoom,zoom_in, zoom_out,reset'])
 
         if self.yaxis in ['skybrightness', 'airmass']:
             self.single_value(dates, values, exposures, cameras, dateobs)
