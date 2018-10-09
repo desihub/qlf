@@ -104,7 +104,7 @@ const styles = {
     fontSize: 0,
     textIndent: '-9999em',
     position: 'absolute',
-    top: '78px',
+    top: '30px',
     left: '0',
   },
   bulletR: {
@@ -118,7 +118,7 @@ const styles = {
     fontSize: 0,
     textIndent: '-9999em',
     position: 'absolute',
-    top: '126px',
+    top: '78px',
     left: '0',
   },
   bulletZ: {
@@ -132,7 +132,7 @@ const styles = {
     fontSize: 0,
     textIndent: '-9999em',
     position: 'absolute',
-    top: '174px',
+    top: '126px',
     left: '0',
   },
 };
@@ -449,7 +449,6 @@ class TrendAnalysis extends React.Component {
               value={this.state.arm}
               onChange={this.handleChangeArm}
             >
-              <FormControlLabel value="all" control={<Radio />} label="All" />
               <FormControlLabel value="b" control={<Radio />} label="b" />
               <FormControlLabel value="r" control={<Radio />} label="r" />
               <FormControlLabel value="z" control={<Radio />} label="z" />
