@@ -168,6 +168,10 @@ class TrendAnalysis extends React.Component {
     endDate: PropTypes.string.isRequired,
   };
 
+  componentDidMount() {
+    document.title = 'Trend Analysis';
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.state.startDate === '' && this.state.endDate === '')
       this.setState({
