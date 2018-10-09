@@ -18,7 +18,7 @@ import numpy as np
 
 from dashboard.bokeh.helper import get_url_args, write_description, write_info,\
             get_merged_qa_scalar_metrics, eval_histpar, get_palette  
-from dashboard.bokeh.qlf_plot import alert_table, metric_table, mtable
+from dashboard.bokeh.qlf_plot import alert_table, mtable
 
 import numpy as np
 import logging
@@ -174,8 +174,7 @@ class Bias:
         keyname='getbias'
         curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
         refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
-        metric_txt=metric_table(metricname, comments, keyname,  curexp=curexp, refexp=refexp )
-        metric_txt=mtable('getbias', mergedqa, comments )
+        metric_txt=mtable('getbias', mergedqa)
         metric_tb=Div(text=metric_txt, width=350)
 
         alert_txt = alert_table(nrg,wrg)

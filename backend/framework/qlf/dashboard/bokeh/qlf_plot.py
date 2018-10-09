@@ -18,51 +18,6 @@ def sort_obj(gen_info):
         else:
             pass
     return obj_type
-                
-
-
-def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx'):
-    """ Create tables in format
-    delta = current val - refval
-    """
-    style = """    <style>        table {
-            font-family: arial, sans-serif;
-            font-size: 16px;
-            border-collapse: collapse;
-            width: 100%;
-            }
-
-        td, th {
-            border: 1px solid #dddddd;
-            text-align: center;
-            padding: 8px;
-            }
-        tr:nth-child(even) {
-        background-color: #dcdcdc;
-                text-align:center;
-        }
-        tr:{text-align:center;}        </style>        """
-
-    header= """
-        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
-        <table>
-        <tr>
-        <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>  <th>Delta</th>
-        </tr>"""
-    end="""</table> </div> """
-    title="""<h2 style="text-align:center;">  {} </h2>""".format(metricname)
-    
-    tblines=""
-
-    nlines=1
-    for i in range(nlines):
-        tblines=tblines+"""<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>""".format(comments,keyname,curexp,refexp,delta)
-        
-
-    return style + title + header + tblines + end
-
 
 
 def alert_table(nrg,wrg):
@@ -204,14 +159,8 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
 
 
 
-def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
+def mtable(qa, data, objtype=['XXELG','XXSTAR']):
     import numpy as np
-    # DEFINE qa_step
-    # qa_metrics
-    #     style, title, header, end='','','',''
-
-    #comments='xxasdas '*4
-    
     qa_metrics={}
     qa_metrics['countpix']= 'LITFRAC_AMP'
     qa_metrics['getbias']= 'BIAS_AMP'
@@ -262,12 +211,11 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
     header= """
         <div  style="text-align:center;padding-left:20px;padding-top:10px;">
         <table>
-              <col width="200">
               <col width="120">
               <col width="90">
               <col width="90">
         <tr>
-        <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
+            <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
         </tr>"""
 
     end="""</table> </div> """
@@ -351,19 +299,19 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
         if nrows==1:
             tblines=tblines+\
                 """<tr>
-                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td>
                 </tr>
-                """.format(nrows, comments, key, cur_tb, ref_tb)
+                """.format(nrows, key, cur_tb, ref_tb)
         elif i ==0:
             tblines=tblines+\
                 """<tr>
-                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td> <td>{}</td>
+                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td>
                 </tr>
-                """.format(nrows, comments, key_tb[i], cur_tb[i], ref_tb[i])
+                """.format(nrows, key_tb[i], cur_tb[i], ref_tb[i])
         else:
             tblines=tblines+\
                 """<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td>
+                <td>{}</td> <td>{}</td>
                 </tr>
                 """.format( key_tb[i], cur_tb[i], ref_tb[i])
 
@@ -571,8 +519,8 @@ def plot_amp(dz, mapper, name=""):
     hover = HoverTool(tooltips=cmap_tooltip)
 
     p = Figure(title=name, tools=[hover],
-           x_range= list([-0.5,1.5]),           # length = 18
-           y_range= list([-0.5,1.5]), 
+           x_range= list([-0.5,1.5]),
+           y_range= list([-0.5,1.5]),
            plot_width=450, plot_height=400)
 
     p.grid.grid_line_color = None

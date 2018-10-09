@@ -17,7 +17,7 @@ from bokeh.models import LinearColorMapper, ColorBar
 from bokeh.models.widgets import Select, Slider
 from dashboard.bokeh.helper import get_url_args, write_description, \
        get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import alert_table, metric_table
+from dashboard.bokeh.qlf_plot import alert_table
 
 import numpy as np
 import logging
@@ -276,15 +276,9 @@ class Skyresid:
 
         width_tb, height_tb = 400, 140
 
-        alert = alert_table(nrg, wrg)
-        tb_alert = Div(text=alert, width=width_tb, height=height_tb)
-
-        info = metric_table('Sky Residuals', 'comments', 'keyname') 
-        tb_metric =Div(text=info, width=width_tb, height=height_tb)
-
        # Prepare tables
         comments='Median of residuals over all sky fibers'
-        metric_txt=mtable('skyresid', mergedqa, comments )
+        metric_txt=mtable('skyresid', mergedqa)
         metric_tb=Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg,wrg)
         alert_tb = Div(text=alert_txt, width=350)

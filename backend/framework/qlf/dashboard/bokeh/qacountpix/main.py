@@ -17,7 +17,7 @@ from dashboard.bokeh.helper import get_url_args, write_description, write_info, 
             get_merged_qa_scalar_metrics
 
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import alert_table, metric_table, mtable
+from dashboard.bokeh.qlf_plot import alert_table, mtable
 import numpy as np
 import logging
 from bokeh.resources import CDN
@@ -166,8 +166,7 @@ class Countpix:
         keyname='countpix'
         curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
         refexp='N/A'#mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_REF']
-        metric_txt=metric_table(metricname, comments, keyname,  curexp=curexp, refexp=refexp )
-        metric_txt=mtable('countpix', mergedqa, comments )
+        metric_txt=mtable('countpix', mergedqa)
 
         metric_tb=Div(text=metric_txt, width=300)
 

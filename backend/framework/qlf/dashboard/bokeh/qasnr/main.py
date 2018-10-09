@@ -14,7 +14,7 @@ from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import html_table, sort_obj, mtable, alert_table
 from dashboard.bokeh.helper import get_exposure_ids, \
     init_xy_plot, get_url_args, get_arms_and_spectrographs, get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import alert_table, metric_table
+from dashboard.bokeh.qlf_plot import alert_table
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 from astropy.io import fits
@@ -509,7 +509,6 @@ class SNR:
         alert = alert_table(nrg, wrg)
         tb_alert = Div(text=alert, width=width_tb, height=height_tb)
 
-        info = metric_table('Sky Residuals', 'comments', 'keyname') #, curexp=check_spectra['MED_RESID'], refexp=check_spectra['MED_RESID_REF'])
         tb_metric =Div(text=info, width=width_tb, height=height_tb)
 
 
@@ -539,8 +538,8 @@ class SNR:
             plot_snr.append(Spacer(width=pltxy_w, height=pltxy_h))
 
        # Prepare tables
-        comments='List of average SNR for the N target type'#, N is number of target types'
-        metric_txt=mtable('snr', mergedqa, comments, objtype=objlist)
+        comments='List of average SNR for the N target type'
+        metric_txt=mtable('snr', mergedqa, objtype=objlist)
         metric_tb=Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg,wrg)
         alert_tb = Div(text=alert_txt, width=350)
