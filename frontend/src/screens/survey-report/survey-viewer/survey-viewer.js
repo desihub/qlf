@@ -118,19 +118,19 @@ class SurveyViewer extends React.Component {
     document.title = 'Survey Report';
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.startDate !== '' &&
-      nextProps.endDate !== '' &&
-      nextProps.program !== ''
-    ) {
-      this.fetchObjects(
-        this.formatDate(nextProps.startDate),
-        this.formatDate(nextProps.endDate),
-        nextProps.program
-      );
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (
+  //     nextProps.startDate !== '' &&
+  //     nextProps.endDate !== '' &&
+  //     nextProps.program !== ''
+  //   ) {
+  //     this.fetchObjects(
+  //       this.formatDate(nextProps.startDate),
+  //       this.formatDate(nextProps.endDate),
+  //       nextProps.program
+  //     );
+  //   }
+  // }
 
   fetchObjects = async (startDate, endDate, program) => {
     const rows = await QlfApi.getObjectData(startDate, endDate, program);
@@ -151,7 +151,7 @@ class SurveyViewer extends React.Component {
 
   renderImage = () => {
     const { classes } = this.props;
-    let url = '';
+    let url = `${apiUrl}dashboard/get_footprint`;
 
     if (
       this.formatDate(this.props.startDate) !== '' &&
@@ -164,27 +164,26 @@ class SurveyViewer extends React.Component {
         this.props.program
       }`;
 
-    if (url !== '')
-      return (
-        <div className={classes.previewContent}>
-          <Resizable
-            className={classes.previewResize}
-            defaultSize={{
-              width: 'auto',
-              height: 'auto',
-            }}
-          >
-            <iframe
-              title="image-modal"
-              className={classes.iframe}
-              frameBorder="0"
-              src={url}
-              onLoad={this.props.loadEnd}
-            />
-          </Resizable>
-          {this.renderTable()}
-        </div>
-      );
+    return (
+      <div className={classes.previewContent}>
+        <Resizable
+          className={classes.previewResize}
+          defaultSize={{
+            width: 'auto',
+            height: 'auto',
+          }}
+        >
+          <iframe
+            title="image-modal"
+            className={classes.iframe}
+            frameBorder="0"
+            src={url}
+            onLoad={this.props.loadEnd}
+          />
+        </Resizable>
+        {this.renderTable()}
+      </div>
+    );
   };
 
   renderTable = () => {

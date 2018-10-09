@@ -29,25 +29,18 @@ logger = logging.getLogger(__name__)
 
 
 class GlobalFocus:
-    def __init__(self, process_id, arm, spectrograph):
+    def __init__(self, process_id, arm):
             self.selected_process_id = process_id
             self.selected_arm = arm
-            self.selected_spectrograph = spectrograph
 
 
     def data_source(self, fmap ):
         """ Creating data source for plots
         """
         data_model = {
-            'x_b':[],
-            'x_r':[],
-            'x_z':[],
-            'w_b':[],
-            'w_r':[],
-            'w_z':[],          
-            'cam_b': [],
-            'cam_r': [],
-            'cam_z': [],          
+            'x':[],
+            'w':[],
+            'cam': [],
             'OBJ_TYPE': [],
             'ra':  [],
             'dec': [],
@@ -55,46 +48,35 @@ class GlobalFocus:
 
 
         process_id = self.selected_process_id
-        process = Process.objects.get(pk=process_id)
         joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-        exposure = process.exposure
-
-
         ra_tile = fmap.fiber_ra
         dec_tile = fmap.fiber_dec
         otype_tile = fmap.objtype
-        fid_tile = fmap.fiber
-        ra_center = fmap.exposure.telra
-        dec_center = fmap.exposure.teldec
 
-        #for cam in [ arm+str(spec) for arm in ['b','r','z'] for spec in list(range(10))]:
-        for arm in ['b','r','z']:
-            y = []
-            w = []
-            color = []
-            status = []
-            cam_inst = []
-            for spec in list(range(10)): 
-                cam = arm+str(spec)   
-                if cam in joblist:
-                    mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-                    xwsig = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['XWSIGMA_FIB']
-                    y = y + xwsig[0]
-                    w = w + xwsig[1]
+        y = []
+        w = []
+        cam_inst = []
+        for spec in list(range(10)): 
+            cam = self.selected_arm+str(spec)
+            if cam in joblist:
+                mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+                xwsig = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['XWSIGMA_FIB']
+                y = y + xwsig[0]
+                w = w + xwsig[1]
 
-                else:
-                    y = y + 500*[np.nan]
-                    w = w + 500*[np.nan]
+            else:
+                y = y + 500*[np.nan]
+                w = w + 500*[np.nan]
 
-                cam_inst = cam_inst +[cam]*500
+            cam_inst = cam_inst +[cam]*500
 
-                data_model['x_' + cam[0]] = y
-                data_model['w_' + cam[0]] = w
-                data_model['cam_'+cam[0]] = cam_inst
+            data_model['x'] = y
+            data_model['w'] = w
+            data_model['cam'] = cam_inst
 
-            data_model['OBJ_TYPE'] = otype_tile
-            data_model['ra'] = ra_tile
-            data_model['dec'] = dec_tile
+        data_model['OBJ_TYPE'] = otype_tile
+        data_model['ra'] = ra_tile
+        data_model['dec'] = dec_tile
 
         source = ColumnDataSource(data=data_model)
 
@@ -103,12 +85,8 @@ class GlobalFocus:
 
 
     def wedge_plot(self, wedge_arm, fmap, common_source=None, sigma_kind='x'):
-        ra_tile = fmap.fiber_ra
-        dec_tile = fmap.fiber_dec
-        fid_tile = fmap.fiber
         ra_center = fmap.exposure.telra
         dec_center = fmap.exposure.teldec
-        otype_tile = fmap.objtype
 
         fiber_tooltip = """
             <div>
@@ -130,24 +108,18 @@ class GlobalFocus:
                 </div>
                 <div>
                     <span style="font-size: 12px; font-weight: bold; color: #303030;">CAM: </span>
-                    <span style="font-size: 13px; color: #515151;">@cam_</span>
+                    <span style="font-size: 13px; color: #515151;">@cam</span>
                 </div>
         """
-        fiber_tooltip = fiber_tooltip.replace('@y', '@{}_'.format(sigma_kind) +wedge_arm)
-        fiber_tooltip = fiber_tooltip.replace('@cam_','@cam_'+wedge_arm)
         fiber_tooltip = fiber_tooltip.replace('SIGMA:','%sSIGMA:'%sigma_kind.upper())
 
 
         hover = HoverTool(tooltips=fiber_tooltip)
 
-        my_palette = get_palette("bwr") #"seismic")#"RdYlBu_r")#"viridis")
+        my_palette = get_palette("bwr")
         source = common_source
 
-
-
-
         process_id = self.selected_process_id
-        process = Process.objects.get(pk=process_id)
         joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
         if len(joblist) >0:
             cam=joblist[0]
@@ -157,7 +129,7 @@ class GlobalFocus:
             refvalue = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['XWSIGMA_REF'][arg_kind[sigma_kind]]
             rng_warn_min, rng_warn_max = warn_range[0]+refvalue, warn_range[1] + refvalue
 
-        sigma = source.data['{}_'.format(sigma_kind) +wedge_arm]
+        sigma = source.data['{}'.format(sigma_kind)]
         rng_min, rng_max = np.nanmin(sigma), np.nanmax(sigma)
         rng = rng_max-rng_min
 
@@ -168,7 +140,7 @@ class GlobalFocus:
                                 low= rng_warn_min ,
                                 high=rng_warn_max )
 
-            fill_color = {'field':'%s_'%(sigma_kind) +  wedge_arm, 'transform':mapper}
+            fill_color = {'field':'%s'%(sigma_kind), 'transform':mapper}
 
     
         radius = 0.017
@@ -222,23 +194,15 @@ class GlobalFocus:
     def load_qa(self):
         process_id = self.selected_process_id
         process = Process.objects.get(pk=process_id)
-        joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
         exposure = process.exposure
 
         fmap = Fibermap.objects.filter(exposure=exposure)[0]
 
         src = self.data_source(fmap)
 
-        pb = self.wedge_plot('b', fmap, common_source=src, sigma_kind='x')#, common_source=source)
-        pr = self.wedge_plot('r', fmap, common_source=src)
-        pz = self.wedge_plot('z', fmap, common_source=src)
-        pwb = self.wedge_plot('b', fmap, common_source=src, sigma_kind='w')
-        pwr = self.wedge_plot('r', fmap, common_source=src, sigma_kind='w')
-        pwz = self.wedge_plot('z', fmap, common_source=src, sigma_kind='w')
-        layout =   row(
-                    column( row(pb), row(pwb)), 
-                    column( row(pr), row(pwr)),
-                    column( row(pz), row(pwz))) 
+        p = self.wedge_plot(self.selected_arm, fmap, common_source=src, sigma_kind='x')#, common_source=source)
+        pw = self.wedge_plot(self.selected_arm, fmap, common_source=src, sigma_kind='w')
+        layout =   row(column( row(p), row(pw)),) 
 
         return file_html(layout, CDN, "Global Focus")
 
