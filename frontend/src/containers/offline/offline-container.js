@@ -139,9 +139,18 @@ class OfflineContainer extends Component {
     return (
       <div>
         {this.renderLoading()}
-        <Route path="/fiber-viewer" render={() => <SelectionViewer />} />
-        <Route path="/focus-viewer" render={() => <SelectionViewer />} />
-        <Route path="/snr-viewer" render={() => <SelectionViewer />} />
+        <Route
+          path="/fiber-viewer"
+          render={() => <SelectionViewer arm={true} />}
+        />
+        <Route
+          path="/focus-viewer"
+          render={() => <SelectionViewer arm={true} />}
+        />
+        <Route
+          path="/snr-viewer"
+          render={() => <SelectionViewer arm={true} />}
+        />
         <Route
           path="/observing-conditions"
           render={() => (

@@ -29,10 +29,9 @@ logger = logging.getLogger(__name__)
 
 
 class GlobalSnr:
-    def __init__(self, process_id, arm, spectrograph):
+    def __init__(self, process_id, arm):
             self.selected_process_id = process_id
             self.selected_arm = arm
-            self.selected_spectrograph = spectrograph
 
 
     def data_source_arm(self, fmap, arm ):
@@ -50,15 +49,11 @@ class GlobalSnr:
         process_id = self.selected_process_id
         process = Process.objects.get(pk=process_id)
         joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-        exposure = process.exposure
 
 
         ra_tile = fmap.fiber_ra
         dec_tile = fmap.fiber_dec
         otype_tile = fmap.objtype
-        fid_tile = fmap.fiber
-        ra_center = fmap.exposure.telra
-        dec_center = fmap.exposure.teldec
 
         objlist = sorted(set(otype_tile))
         if 'SKY' in objlist:
@@ -155,91 +150,81 @@ class GlobalSnr:
             }
 
         process_id = self.selected_process_id
-        process = Process.objects.get(pk=process_id)
         joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-        exposure = process.exposure
-
 
         ra_tile = fmap.fiber_ra
         dec_tile = fmap.fiber_dec
         otype_tile = fmap.objtype
-        fid_tile = fmap.fiber
-        ra_center = fmap.exposure.telra
-        dec_center = fmap.exposure.teldec
 
         objlist = sorted(set(otype_tile))
         if 'SKY' in objlist:
             objlist.remove('SKY')
 
-        rayes_tile = []
-        decyes_tile = []
-
-        for arm in ['b','r','z']:
-            fibaux = []
+        fibaux = []
 
 
 
-            y = []
-            cam_inst = []
-            ra_all=[]
-            dec_all=[]
+        y = []
+        cam_inst = []
+        ra_all=[]
+        dec_all=[]
 
-            for spect in list(range(1)): 
-                cam = arm+str(spect)   
-                if cam in joblist:
-                    mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-                    
-                    # Assign available objects
-                    objtype = otype_tile[500*spect: 500*(spect + 1) ]
+        for spect in list(range(1)): 
+            cam = self.selected_arm+str(spect)   
+            if cam in joblist:
+                mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+                
+                # Assign available objects
+                objtype = otype_tile[500*spect: 500*(spect + 1) ]
 
-                    med_snr = np.array( mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']["MEDIAN_SNR"])
-                    resids = mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']['SNR_RESID']
+                med_snr = np.array( mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']["MEDIAN_SNR"])
+                resids = mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']['SNR_RESID']
 
-                    obj = np.arange(len(objlist))
+                obj = np.arange(len(objlist))
 
-                    rayes = []
-                    decyes = []
+                rayes = []
+                decyes = []
 
-                    for t in range(len(obj)):
-                        otype = list(objlist)[t]
-                        oid = np.where(np.array(list(objlist))==otype)[0][0]
+                for t in range(len(obj)):
+                    otype = list(objlist)[t]
+                    oid = np.where(np.array(list(objlist))==otype)[0][0]
 
-                        if otype == 'STD':
-                            fibers = mergedqa['GENERAL_INFO']['STAR_FIBERID']
-                        else:
-                            fibers = mergedqa['GENERAL_INFO']['%s_FIBERID'%otype]
+                    if otype == 'STD':
+                        fibers = mergedqa['GENERAL_INFO']['STAR_FIBERID']
+                    else:
+                        fibers = mergedqa['GENERAL_INFO']['%s_FIBERID'%otype]
 
-                        fibaux = fibaux + [ 500*spect+ i for i in fibers]
-    
-
-                        for i in range(len(fibers)):
-                            ras = mergedqa['GENERAL_INFO']['RA'][fibers[i]]
-                            decs = mergedqa['GENERAL_INFO']['DEC'][fibers[i]]         
-                            rayes.append(ras)
-                            decyes.append(decs)
-
-                    ra_all= ra_all +  rayes
-                    dec_all = dec_all + decyes
-
-                    nanresids = [i if i >-9999.  else np.nan for i in resids]
-
-                    y = y + nanresids
-
-                else:
-                    y = y + 500*[np.nan]
-                    ra_all =  ra_all +[ i for i in ra_tile[500*spect:500*(spect + 1)]] 
-                    dec_all =  dec_all+ [ i for i in dec_tile[500*spect:500*(spect + 1)]] 
-                    fibaux = fibaux + list(range(500*spect, 500*(spect+1)))
+                    fibaux = fibaux + [ 500*spect+ i for i in fibers]
 
 
-                cam_inst = cam_inst +[cam]*500
+                    for i in range(len(fibers)):
+                        ras = mergedqa['GENERAL_INFO']['RA'][fibers[i]]
+                        decs = mergedqa['GENERAL_INFO']['DEC'][fibers[i]]         
+                        rayes.append(ras)
+                        decyes.append(decs)
 
-                data_model['x_' + cam[0]] = y
-                data_model['cam_'+cam[0]] = cam_inst
+                ra_all= ra_all +  rayes
+                dec_all = dec_all + decyes
 
-            data_model['OBJ_TYPE'] = [ otype_tile[ii] for ii in fibaux]
-            data_model['ra'] = ra_all #ra_tile
-            data_model['dec'] = dec_all #dec_tile
+                nanresids = [i if i >-9999.  else np.nan for i in resids]
+
+                y = y + nanresids
+
+            else:
+                y = y + 500*[np.nan]
+                ra_all =  ra_all +[ i for i in ra_tile[500*spect:500*(spect + 1)]] 
+                dec_all =  dec_all+ [ i for i in dec_tile[500*spect:500*(spect + 1)]] 
+                fibaux = fibaux + list(range(500*spect, 500*(spect+1)))
+
+
+            cam_inst = cam_inst +[cam]*500
+
+            data_model['x_' + cam[0]] = y
+            data_model['cam_'+cam[0]] = cam_inst
+
+        data_model['OBJ_TYPE'] = [ otype_tile[ii] for ii in fibaux]
+        data_model['ra'] = ra_all #ra_tile
+        data_model['dec'] = dec_all #dec_tile
 
         source = ColumnDataSource(data=data_model)
 
@@ -249,12 +234,8 @@ class GlobalSnr:
 
 
     def wedge_plot(self, wedge_arm, fmap, common_source=None, sigma_kind='x'):
-        ra_tile = fmap.fiber_ra
-        dec_tile = fmap.fiber_dec
-        fid_tile = fmap.fiber
         ra_center = fmap.exposure.telra
         dec_center = fmap.exposure.teldec
-        otype_tile = fmap.objtype
 
         fiber_tooltip = """
             <div>
@@ -276,11 +257,10 @@ class GlobalSnr:
                 </div>
                 <div>
                     <span style="font-size: 12px; font-weight: bold; color: #303030;">CAM: </span>
-                    <span style="font-size: 13px; color: #515151;">@cam_</span>
+                    <span style="font-size: 13px; color: #515151;">@cam</span>
                 </div>
         """
         fiber_tooltip = fiber_tooltip.replace('@y', '@hover')
-        fiber_tooltip = fiber_tooltip.replace('@cam_','@cam')
 
 
         hover = HoverTool(tooltips=fiber_tooltip)
@@ -352,26 +332,12 @@ class GlobalSnr:
     def load_qa(self):
         process_id = self.selected_process_id
         process = Process.objects.get(pk=process_id)
-        joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
         exposure = process.exposure
-
         fmap = Fibermap.objects.filter(exposure=exposure)[0]
 
-        otype_tile = fmap.objtype
+        src_arm = self.data_source_arm(fmap,self.selected_arm)
 
-        src_b = self.data_source_arm(fmap,'b')
-
-               
-        src_b = self.data_source_arm(fmap,'b')
-        src_r = self.data_source_arm(fmap,'r')
-        src_z = self.data_source_arm(fmap,'z')
-
-        pb = self.wedge_plot('b', fmap, common_source=src_b)#, common_source=source)
-        pr = self.wedge_plot('r', fmap, common_source=src_r)
-        pz = self.wedge_plot('z', fmap, common_source=src_z)
-        layout = row(   column( row(pb)),
-                        column( row(pr)),
-                        column( row(pz))
-                    )
+        p = self.wedge_plot(self.selected_arm, fmap, common_source=src_arm)#, common_source=source)
+        layout = row(column( row(p)))
 
         return file_html(layout, CDN, "Global SNR")

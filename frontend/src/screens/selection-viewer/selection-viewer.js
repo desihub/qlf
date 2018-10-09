@@ -252,6 +252,7 @@ class SelectionViewer extends React.Component {
             screen={'globalfiber'}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
+            arm={this.state.arm}
           />
         );
       case '/focus-viewer':
@@ -260,6 +261,7 @@ class SelectionViewer extends React.Component {
             screen={'globalfocus'}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
+            arm={this.state.arm}
           />
         );
       case '/snr-viewer':
@@ -268,6 +270,7 @@ class SelectionViewer extends React.Component {
             screen={'globalsnr'}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
+            arm={this.state.arm}
           />
         );
       default:

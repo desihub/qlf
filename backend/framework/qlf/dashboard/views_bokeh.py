@@ -210,11 +210,11 @@ def load_qa(request):
         elif qa == 'qasnr':
             qa_html = SNR(process_id, arm, spectrograph).load_qa()
         elif qa == 'globalfiber':
-            qa_html = GlobalFiber(process_id, arm, spectrograph).load_qa()
+            qa_html = GlobalFiber(process_id, arm).load_qa()
         elif qa == 'globalfocus':
-            qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
+            qa_html = GlobalFocus(process_id, arm).load_qa()
         elif qa == 'globalsnr':
-            qa_html = GlobalSnr(process_id, arm, spectrograph).load_qa()
+            qa_html = GlobalSnr(process_id, arm).load_qa()
         elif qa == 'qahdu':
             qa_html = 'No Drill Down'
         elif qa == 'qacheckflat':
