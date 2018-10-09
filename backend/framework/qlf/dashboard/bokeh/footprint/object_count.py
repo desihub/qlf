@@ -13,7 +13,7 @@ django.setup()
 import os
 import sys
 from astropy.io import fits
-from dashboard.models import Job, Process
+from dashboard.models import Job, Process, Fibermap
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 import pandas as pd
 import numpy as np
@@ -33,19 +33,15 @@ class ObjectStatistics:
         joblist = [entry.camera.camera for entry in 
                     Job.objects.filter(process_id=process_id)]
         exposure = process.exposure
-        folder = "{}/{}/{:08d}".format(
-            spectro_data, exposure.night, process.exposure_id)
-
-        file = "fibermap-{:08d}.fits".format(process.exposure_id)
-        fmap = fits.open('{}/{}'.format(folder, file))
+        fmap = Fibermap.objects.filter(exposure=exposure)
 
         # RA and DEC for footprint:
-        ra_tile = fmap['FIBERMAP'].header['TELRA']
-        dec_tile = fmap['FIBERMAP'].header['TELDEC']
+        ra_tile = exposure.telra
+        dec_tile = exposure.teldec
 
 
         # Object Statistics from fmap:
-        objects = fmap['FIBERMAP'].data['OBJTYPE']
+        objects = fmap.objtype
 
         obj_stat_dict = {}
         list_of_obj = ['ELG', 'LRG', 'STD', 'QSO']

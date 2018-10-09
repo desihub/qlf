@@ -43,8 +43,8 @@ class Footprint():
         return plot
 
     def render(self, exposures_radec):
-        pointings_file = os.environ.get(
-            'POINTINGS_FILE', '/app/spectro/noconstraints.dat')
+        qlf_root = os.environ.get('QLF_ROOT', '/app')
+        pointings_file = os.path.join(qlf_root, 'framework/qlf/dashboard/bokeh/footprint/noconstraints.dat')
 
         # you need to edit the original file to comment the header and join hourangle
         pointings = Table.read(pointings_file, format='ascii.commented_header')
