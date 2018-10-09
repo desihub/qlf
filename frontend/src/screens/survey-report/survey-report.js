@@ -52,6 +52,7 @@ const styles = {
   },
   button: {
     float: 'right',
+    margin: '10px 0',
   },
   buttonGreen: {
     backgroundColor: 'green',
