@@ -118,19 +118,19 @@ class SurveyViewer extends React.Component {
     document.title = 'Survey Report';
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   if (
-  //     nextProps.startDate !== '' &&
-  //     nextProps.endDate !== '' &&
-  //     nextProps.program !== ''
-  //   ) {
-  //     this.fetchObjects(
-  //       this.formatDate(nextProps.startDate),
-  //       this.formatDate(nextProps.endDate),
-  //       nextProps.program
-  //     );
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.startDate !== '' &&
+      nextProps.endDate !== '' &&
+      nextProps.program !== ''
+    ) {
+      this.fetchObjects(
+        this.formatDate(nextProps.startDate),
+        this.formatDate(nextProps.endDate),
+        nextProps.program
+      );
+    }
+  }
 
   fetchObjects = async (startDate, endDate, program) => {
     const rows = await QlfApi.getObjectData(startDate, endDate, program);
