@@ -224,7 +224,7 @@ class TrendAnalysis extends React.Component {
 
   clearSelection = () => {
     this.setState({
-      arm: null,
+      arm: '',
       amp: '',
       xaxis: '',
       yaxis: '',
@@ -271,7 +271,6 @@ class TrendAnalysis extends React.Component {
             >
               <MenuItem value={'noise'}>Noise</MenuItem>
               <MenuItem value={'bias'}>Bias</MenuItem>
-              <MenuItem value={'peakcount'}>Peakcount</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -291,7 +290,6 @@ class TrendAnalysis extends React.Component {
           >
             <MenuItem value={'noise'}>Noise</MenuItem>
             <MenuItem value={'bias'}>Bias</MenuItem>
-            <MenuItem value={'peakcount'}>Peakcount</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -309,10 +307,10 @@ class TrendAnalysis extends React.Component {
             onChange={this.handleChangeAmp}
           >
             <FormControlLabel value="all" control={<Radio />} label="All" />
+            <FormControlLabel value="0" control={<Radio />} label="0" />
             <FormControlLabel value="1" control={<Radio />} label="1" />
             <FormControlLabel value="2" control={<Radio />} label="2" />
             <FormControlLabel value="3" control={<Radio />} label="3" />
-            <FormControlLabel value="4" control={<Radio />} label="4" />
           </RadioGroup>
         </FormControl>
       </div>
@@ -329,7 +327,6 @@ class TrendAnalysis extends React.Component {
             value={this.state.arm}
             onChange={this.handleChangeArm}
           >
-            <FormControlLabel value="all" control={<Radio />} label="All" />
             <FormControlLabel value="b" control={<Radio />} label="b" />
             <FormControlLabel value="r" control={<Radio />} label="r" />
             <FormControlLabel value="z" control={<Radio />} label="z" />
@@ -380,8 +377,6 @@ class TrendAnalysis extends React.Component {
         <SelectDate
           startDate={this.state.startDate}
           endDate={this.state.endDate}
-          //selectedStartDate={this.state.startDate}
-          //selectedEndDate={this.state.endDate}
           setHistoryRangeDate={this.setHistoryRangeDate}
         />
       );
@@ -418,12 +413,12 @@ class TrendAnalysis extends React.Component {
         plot={plot}
         amp={this.state.amp}
         arm={this.state.arm}
+        spectrograph={this.state.spectrograph}
         loadEnd={this.loadEnd}
         startDate={this.state.startDate}
         endDate={this.state.endDate}
         xaxis={this.state.xaxis}
         yaxis={this.state.yaxis}
-        datePeriod={this.state.datePeriod}
       />
     );
   };
@@ -471,10 +466,10 @@ class TrendAnalysis extends React.Component {
           centered
         >
           <Tab label="Time Series" value={'Time Series'} />
-          <Tab label="Regression" value={'Regression'} />
+          {/* <Tab label="Regression" value={'Regression'} /> */}
         </Tabs>
         {tab === 'Time Series' ? this.renderTimeSeries() : null}
-        {tab === 'Regression' ? this.renderRegression() : null}
+        {/* {tab === 'Regression' ? this.renderRegression() : null} */}
       </div>
     );
   };

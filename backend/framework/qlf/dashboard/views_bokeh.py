@@ -93,27 +93,31 @@ def filter_processed_exposures(start, end, program):
 
     return processed_exposures
 
-
 def get_footprint(request):
     """Generates and render png"""
     template = loader.get_template('dashboard/fits_to_png.html')
     start = request.GET.get('start')
     end = request.GET.get('end')
     program = request.GET.get('program')
-    if not start or not end:
+    if not program:
+        exposures_radec = {"ra": [], "dec": []}
+    elif not start or not end:
         context = {'image': "Select start and end date"}
         response = HttpResponse(template.render(context, request))
 
         return response
-    processed_exposures = filter_processed_exposures(start, end, program)
+    else:
+        processed_exposures = filter_processed_exposures(start, end, program)
 
-    exposures_ra = list()
-    exposures_dec = list()
-    for exposure in processed_exposures:
-        exposures_ra.append(exposure.telra)
-        exposures_dec.append(exposure.teldec)
+        exposures_ra = list()
+        exposures_dec = list()
+        for exposure in processed_exposures:
+            if exposure.telra:
+                exposures_ra.append(exposure.telra)
+            if exposure.teldec:
+                exposures_dec.append(exposure.teldec)
 
-    exposures_radec = {"ra": exposures_ra, "dec": exposures_dec}
+        exposures_radec = {"ra": exposures_ra, "dec": exposures_dec}
     # Generate Footprint
     footprint = Footprint().render(exposures_radec)
     context = {'image': footprint}
@@ -145,12 +149,12 @@ def footprint_object_type_count(request):
     for ids in process_ids:
         nobj, snr, fiber = ObjectStatistics(ids).generate_statistics()
 
-        for i, o in enumerate(['ELG', 'LRG', 'QSO', 'STAR']):
+        for i, o in enumerate(['TGT', 'STAR']):
             total_obj[i] += nobj[o]
             good[i] += snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
             bad[i] += snr['ALARM'][o] + fiber['BAD'][o]
 
-    result = dict(objects=['ELG', 'LRG', 'QSO', 'STAR'],
+    result = dict(objects=['TGT', 'STAR'],
                   total=total_obj,
                   good=[int(good[i]) for i in range(4)],
                   bad=[int(bad[i]) for i in range(4)])
@@ -187,9 +191,9 @@ def load_qa(request):
     try:
         if qa == 'qacountpix':
             qa_html = Countpix(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qagetbias':
+        elif qa == 'qabias':
             qa_html = Bias(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qagetrms':
+        elif qa == 'qarms':
             qa_html = RMS(process_id, arm, spectrograph).load_qa()
         elif qa == 'qaxwsigma':
             qa_html = Xwsigma(process_id, arm, spectrograph).load_qa()
@@ -197,7 +201,7 @@ def load_qa(request):
             qa_html = Countbins(process_id, arm, spectrograph).load_qa()
         elif qa == 'qaskycont':
             qa_html = Skycont(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qaskypeak':
+        elif qa == 'qapeakcount':
             qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
         elif qa == 'qainteg':
             qa_html = Integ(process_id, arm, spectrograph).load_qa()
@@ -206,11 +210,21 @@ def load_qa(request):
         elif qa == 'qasnr':
             qa_html = SNR(process_id, arm, spectrograph).load_qa()
         elif qa == 'globalfiber':
-            qa_html = GlobalFiber(process_id, arm, spectrograph).load_qa()
+            qa_html = GlobalFiber(process_id, arm).load_qa()
         elif qa == 'globalfocus':
-            qa_html = GlobalFocus(process_id, arm, spectrograph).load_qa()
+            qa_html = GlobalFocus(process_id, arm).load_qa()
         elif qa == 'globalsnr':
-            qa_html = GlobalSnr(process_id, arm, spectrograph).load_qa()
+            qa_html = GlobalSnr(process_id, arm).load_qa()
+        elif qa == 'qahdu':
+            qa_html = 'No Drill Down'
+        elif qa == 'qacheckflat':
+            qa_html = 'No Drill Down'
+        elif qa == 'qacheckarc':
+            qa_html = 'No Drill Down'
+        elif qa == 'qaxyshifts':
+            qa_html = 'No Drill Down'
+        elif qa == 'qaskyrband':
+            qa_html = 'No Drill Down'
         else:
             qa_html = "Couldn't load QA"
     except Exception as err:
@@ -229,11 +243,14 @@ def load_series(request):
     plot = request.GET.get('plot')
     xaxis = request.GET.get('xaxis')
     yaxis = request.GET.get('yaxis')
+    camera = request.GET.get('camera')
     start = request.GET.get('start')
     end = request.GET.get('end')
+    amp = request.GET.get('amp')
+
     try:
         if plot == 'timeseries':
-            series_html = TimeSeries(xaxis, start, end).render()
+            series_html = TimeSeries(yaxis, start, end, camera, amp).render()
         elif plot == 'regression':
             series_html = Regression(xaxis, yaxis, start, end).render()
         else:

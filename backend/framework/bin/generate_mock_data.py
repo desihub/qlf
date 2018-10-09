@@ -51,6 +51,8 @@ class MockData():
             new_job = Job(
                 camera=job.camera,
                 process=process,
+                end=datetime.now().replace(microsecond=0),
+                start=datetime.now().replace(microsecond=0),
                 output=job.output,
                 status=job.status,
                 logname=job.logname,

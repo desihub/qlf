@@ -10,13 +10,11 @@ from log import get_logger
 from procutil import kill_proc_tree
 from qlf_models import QLFModels
 
-loglevel = os.environ.get('PIPELINE_LOGLEVEL')
 qlf_root = os.environ.get('QLF_ROOT')
 
 logger = get_logger(
     "pyro.servers",
-    os.path.join(qlf_root, "logs", "servers.log"),
-    loglevel
+    os.path.join(qlf_root, "logs", "servers.log")
 )
 
 

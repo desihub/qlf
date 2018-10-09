@@ -7,7 +7,7 @@ const apiUrl = process.env.REACT_APP_API;
 const styles = {
   iframe: {
     height: 'calc(100vh - 135px)',
-    width: 'calc(100vw - 80px)',
+    width: 'calc(100vw - 220px)',
   },
   preview: {
     display: 'flex',
@@ -39,7 +39,8 @@ class GlobalViewer extends React.Component {
     classes: PropTypes.object,
     loadEnd: PropTypes.func.isRequired,
     loadStart: PropTypes.func.isRequired,
-    screen: PropTypes.func.isRequired,
+    screen: PropTypes.string,
+    arm: PropTypes.string,
   };
 
   componentWillMount() {
@@ -58,12 +59,15 @@ class GlobalViewer extends React.Component {
     }
 
     if (window.location.search.includes('process=')) {
-      this.setState(
-        {
-          processId: window.location.search.split('process=')[1],
-        },
-        this.props.loadStart
-      );
+      this.setState({
+        processId: window.location.search.split('process=')[1],
+      });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.arm && nextProps.arm !== this.props.arm) {
+      this.props.loadStart();
     }
   }
 
@@ -71,17 +75,18 @@ class GlobalViewer extends React.Component {
     const { classes } = this.props;
     const url = `${apiUrl}dashboard/load_qa/?qa=${
       this.props.screen
-    }&process_id=${this.state.processId}`;
+    }&process_id=${this.state.processId}&arm=${this.props.arm}`;
 
-    return (
-      <iframe
-        title="image-modal"
-        className={classes.iframe}
-        frameBorder="0"
-        src={url}
-        onLoad={this.props.loadEnd}
-      />
-    );
+    if (this.props.arm)
+      return (
+        <iframe
+          title="image-modal"
+          className={classes.iframe}
+          frameBorder="0"
+          src={url}
+          onLoad={this.props.loadEnd}
+        />
+      );
   };
 
   render() {

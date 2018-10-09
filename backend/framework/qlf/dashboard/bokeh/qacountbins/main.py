@@ -44,6 +44,8 @@ class Countbins:
             countbins  = check_fibers['METRICS']
             ra = gen_info['RA']
             dec = gen_info['DEC']
+            if ra is None or dec is None:
+                return 'Missing RA and DEC'
             nrg = check_fibers['PARAMS']['NGOODFIB_NORMAL_RANGE']
             wrg = check_fibers['PARAMS']['NGOODFIB_WARN_RANGE']
 
@@ -71,8 +73,10 @@ class Countbins:
                 </div>
             </div>
                 """
-        y=np.array(countbins['GOOD_FIBER'])
-        x=np.array(range(len(countbins['GOOD_FIBER'])))
+        y=np.array(countbins['GOOD_FIBERS'])
+        fibers = list(countbins['GOOD_FIBERS'])
+        colors = ['#319b5c' if i ==1 else '#282828' for i in fibers]
+        x=np.array(range(len(fibers)))
         hist_hover = HoverTool(tooltips=hist_tooltip)
         hist_source = ColumnDataSource(
                         data={'goodfiber': y,
@@ -86,7 +90,7 @@ class Countbins:
                                 'y1': dec,   
                             'QLF_FIBERID': qlf_fiberid,
                             'OBJ_TYPE': obj_type,
-                            'color': ['#319b5c' if i ==1 else '#282828' for i in countbins['GOOD_FIBER']]
+                            'color': colors
                             })
 
 

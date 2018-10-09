@@ -7,13 +7,15 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Resizable from 're-resizable';
+import QlfApi from '../../../containers/offline/connection/qlf-api';
 
 const apiUrl = process.env.REACT_APP_API;
 
 const styles = {
   iframe: {
-    width: '45vw', //'calc(100vw - 710px)',
-    height: 'calc(100vh - 151px)',
+    width: '100%',
+    height: '100%',
   },
   preview: {
     display: 'flex',
@@ -21,20 +23,24 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  previewcontent: {
+  previewContent: {
+    width: '100%',
     display: 'grid',
     gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 151px)',
+    height: 'calc(100vh - 161px)',
+    overflowY: 'auto',
+  },
+  previewResize: {
+    borderRight: '1px solid darkgrey',
+    paddingRight: '10px',
+    marginRight: '10px',
+    overflow: 'hidden',
   },
   tableViewer: {
-    //width: '400px',
-    display: 'grid',
     overflowY: 'auto',
-    alignItems: 'start',
-    //justifyContent: 'space-evenly',
-    borderLeft: '1px solid darkgrey',
-    paddingLeft: '10px',
-    marginLeft: '10px',
+  },
+  legend: {
+    marginBottom: '10px',
   },
   button: {
     float: 'right',
@@ -90,23 +96,16 @@ const CustomTableCell = withStyles(() => ({
   },
 }))(TableCell);
 
-let id = 0;
-
-function createData(name, calories, fat, carbs, protein) {
-  id += 1;
-  return { id, name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData('Exposures', '40', '20 (50%)', '20 (50%)'),
-  createData('LRG', '38', '20 (50%)', '20 (50%)'),
-  createData('ELG', '41', '20 (50%)', '20 (50%)'),
-  createData('STAR', '29', '20 (50%)', '20 (50%)'),
-  createData('QSO', '20', '20 (50%)', '20 (50%)'),
-  createData('SKY', '20', '20 (50%)', '20 (50%)'),
-];
-
 class SurveyViewer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      objects: [],
+      total: [],
+      good: [],
+      bad: [],
+    };
+  }
   static propTypes = {
     program: PropTypes.string,
     startDate: PropTypes.string,
@@ -119,6 +118,30 @@ class SurveyViewer extends React.Component {
     document.title = 'Survey Report';
   }
 
+  // componentWillReceiveProps(nextProps) {
+  //   if (
+  //     nextProps.startDate !== '' &&
+  //     nextProps.endDate !== '' &&
+  //     nextProps.program !== ''
+  //   ) {
+  //     this.fetchObjects(
+  //       this.formatDate(nextProps.startDate),
+  //       this.formatDate(nextProps.endDate),
+  //       nextProps.program
+  //     );
+  //   }
+  // }
+
+  fetchObjects = async (startDate, endDate, program) => {
+    const rows = await QlfApi.getObjectData(startDate, endDate, program);
+    this.setState({
+      objects: rows.objects,
+      total: rows.total,
+      good: rows.good,
+      bad: rows.bad,
+    });
+  };
+
   formatDate = date => {
     if (date.includes('T') && date.includes('-')) {
       return date.split('T')[0].replace(/-/g, '');
@@ -128,22 +151,28 @@ class SurveyViewer extends React.Component {
 
   renderImage = () => {
     const { classes } = this.props;
-    let url = '';
+    let url = `${apiUrl}dashboard/get_footprint`;
 
     if (
       this.formatDate(this.props.startDate) !== '' &&
       this.formatDate(this.props.endDate) !== '' &&
       this.props.program !== ''
     )
-      url = `${apiUrl}dashboard/get_footprint/?start=${this.formatDate(
+      url = `${apiUrl}dashboard/get_footprint?start=${this.formatDate(
         this.props.startDate
       )}&end=${this.formatDate(this.props.endDate)}&program=${
         this.props.program
       }`;
 
-    if (url !== '')
-      return (
-        <div className={classes.previewcontent}>
+    return (
+      <div className={classes.previewContent}>
+        <Resizable
+          className={classes.previewResize}
+          defaultSize={{
+            width: 'auto',
+            height: 'auto',
+          }}
+        >
           <iframe
             title="image-modal"
             className={classes.iframe}
@@ -151,9 +180,10 @@ class SurveyViewer extends React.Component {
             src={url}
             onLoad={this.props.loadEnd}
           />
-          {this.renderTable()}
-        </div>
-      );
+        </Resizable>
+        {this.renderTable()}
+      </div>
+    );
   };
 
   renderTable = () => {
@@ -175,15 +205,21 @@ class SurveyViewer extends React.Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => {
+            {this.state.objects.map((object, index) => {
               return (
-                <TableRow className={classes.row} key={row.id}>
+                <TableRow className={classes.row} key={index}>
                   <CustomTableCell component="th" scope="row">
-                    {row.name}
+                    {object}
                   </CustomTableCell>
-                  <CustomTableCell numeric>{row.calories}</CustomTableCell>
-                  <CustomTableCell numeric>{row.fat}</CustomTableCell>
-                  <CustomTableCell numeric>{row.carbs}</CustomTableCell>
+                  <CustomTableCell numeric>
+                    {this.state.total[index]}
+                  </CustomTableCell>
+                  <CustomTableCell numeric>
+                    {this.state.good[index]}
+                  </CustomTableCell>
+                  <CustomTableCell numeric>
+                    {this.state.bad[index]}
+                  </CustomTableCell>
                 </TableRow>
               );
             })}
@@ -197,7 +233,9 @@ class SurveyViewer extends React.Component {
     const { classes } = this.props;
     return (
       <div className={classes.preview}>
-        <FormLabel component="legend">Preview:</FormLabel>
+        <FormLabel component="legend" className={classes.legend}>
+          Preview:
+        </FormLabel>
         {this.renderImage()}
       </div>
     );

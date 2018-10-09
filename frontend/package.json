@@ -19,6 +19,7 @@
     "material-ui": "^0.19.4",
     "material-ui-icons": "^1.0.0-beta.17",
     "moment": "^2.19.2",
+    "re-resizable": "^4.9.0",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
     "react-grid-layout": "^0.16.0",

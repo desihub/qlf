@@ -21,6 +21,7 @@ from bokeh.models.widgets import Div
 from dashboard.models import Process, Job
 from astropy.io import fits
 import os
+from dashboard.models import Job, Process, Fibermap
 
 spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
@@ -28,82 +29,54 @@ logger = logging.getLogger(__name__)
 
 
 class GlobalFocus:
-    def __init__(self, process_id, arm, spectrograph):
+    def __init__(self, process_id, arm):
             self.selected_process_id = process_id
             self.selected_arm = arm
-            self.selected_spectrograph = spectrograph
 
 
     def data_source(self, fmap ):
         """ Creating data source for plots
         """
         data_model = {
-            'x_b':[],
-            'x_r':[],
-            'x_z':[],
-            'w_b':[],
-            'w_r':[],
-            'w_z':[],          
-            'cam_b': [],
-            'cam_r': [],
-            'cam_z': [],          
+            'x':[],
+            'w':[],
+            'cam': [],
             'OBJ_TYPE': [],
             'ra':  [],
             'dec': [],
             }
 
 
-        try:
-            process_id = self.selected_process_id
-            process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-            exposure = process.exposure
- 
+        process_id = self.selected_process_id
+        joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
+        ra_tile = fmap.fiber_ra
+        dec_tile = fmap.fiber_dec
+        otype_tile = fmap.objtype
 
-            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
-            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
-            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
-            fid_tile = fmap['FIBERMAP'].data['FIBER']
-            ra_center = fmap['FIBERMAP'].header['TELRA']
-            dec_center = fmap['FIBERMAP'].header['TELDEC']
+        y = []
+        w = []
+        cam_inst = []
+        for spec in list(range(10)): 
+            cam = self.selected_arm+str(spec)
+            if cam in joblist:
+                mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+                xwsig = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['XWSIGMA_FIB']
+                y = y + xwsig[0]
+                w = w + xwsig[1]
 
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
+            else:
+                y = y + 500*[np.nan]
+                w = w + 500*[np.nan]
 
+            cam_inst = cam_inst +[cam]*500
 
-        #for cam in [ arm+str(spec) for arm in ['b','r','z'] for spec in list(range(10))]:
-        for arm in ['b','r','z']:
-            y = []
-            w = []
-            color = []
-            status = []
-            cam_inst = []
-            for spec in list(range(10)): 
-                cam = arm+str(spec)   
-                if cam in joblist:
-                    try:
-                        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-                        xwsig = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['XWSIGMA_FIB']
-                        y = y + xwsig[0]
-                        w = w + xwsig[1]
+            data_model['x'] = y
+            data_model['w'] = w
+            data_model['cam'] = cam_inst
 
-                    except Exception as err:
-                        sys.exit(err)
-
-                else:
-                    y = y + 500*[np.nan]
-                    w = w + 500*[np.nan]
-
-                cam_inst = cam_inst +[cam]*500
-
-                data_model['x_' + cam[0]] = y
-                data_model['w_' + cam[0]] = w
-                data_model['cam_'+cam[0]] = cam_inst
-
-            data_model['OBJ_TYPE'] = otype_tile
-            data_model['ra'] = ra_tile
-            data_model['dec'] = dec_tile
+        data_model['OBJ_TYPE'] = otype_tile
+        data_model['ra'] = ra_tile
+        data_model['dec'] = dec_tile
 
         source = ColumnDataSource(data=data_model)
 
@@ -112,19 +85,8 @@ class GlobalFocus:
 
 
     def wedge_plot(self, wedge_arm, fmap, common_source=None, sigma_kind='x'):
-
-        try:
-            ra_tile = fmap['FIBERMAP'].data['RA_OBS']
-            dec_tile = fmap['FIBERMAP'].data['DEC_OBS']
-            fid_tile = fmap['FIBERMAP'].data['FIBER']
-            ra_center = fmap['FIBERMAP'].header['TELRA']
-            dec_center = fmap['FIBERMAP'].header['TELDEC']
-            otype_tile = fmap['FIBERMAP'].data['OBJTYPE']
-
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
+        ra_center = fmap.exposure.telra
+        dec_center = fmap.exposure.teldec
 
         fiber_tooltip = """
             <div>
@@ -146,137 +108,101 @@ class GlobalFocus:
                 </div>
                 <div>
                     <span style="font-size: 12px; font-weight: bold; color: #303030;">CAM: </span>
-                    <span style="font-size: 13px; color: #515151;">@cam_</span>
+                    <span style="font-size: 13px; color: #515151;">@cam</span>
                 </div>
         """
-        fiber_tooltip = fiber_tooltip.replace('@y', '@{}_'.format(sigma_kind) +wedge_arm)
-        fiber_tooltip = fiber_tooltip.replace('@cam_','@cam_'+wedge_arm)
         fiber_tooltip = fiber_tooltip.replace('SIGMA:','%sSIGMA:'%sigma_kind.upper())
 
 
         hover = HoverTool(tooltips=fiber_tooltip)
 
-        my_palette = get_palette("bwr") #"seismic")#"RdYlBu_r")#"viridis")
+        my_palette = get_palette("bwr")
         source = common_source
 
-
-
-
         process_id = self.selected_process_id
-        process = Process.objects.get(pk=process_id)
         joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
         if len(joblist) >0:
             cam=joblist[0]
             mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-            warn_range = mergedqa['TASKS']['CHECK_FIBERS']['PARAMS']['XWSIGMA_WARN_RANGE']
+            warn_range = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['XWSIGMA_WARN_RANGE']
             arg_kind={'x':0, 'w':1}
-            refvalue = mergedqa['TASKS']['CHECK_FIBERS']['PARAMS']['XWSIGMA_REF'][arg_kind[sigma_kind]]
+            refvalue = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['XWSIGMA_REF'][arg_kind[sigma_kind]]
             rng_warn_min, rng_warn_max = warn_range[0]+refvalue, warn_range[1] + refvalue
 
+        sigma = source.data['{}'.format(sigma_kind)]
+        rng_min, rng_max = np.nanmin(sigma), np.nanmax(sigma)
+        rng = rng_max-rng_min
 
+        if np.isnan(rng_min) or np.isnan(rng_max):
+            fill_color = 'lightgray'
+        else:
+            mapper = LinearColorMapper(palette= my_palette,  nan_color='lightgray',
+                                low= rng_warn_min ,
+                                high=rng_warn_max )
 
-        try:
-            sigma = source.data['{}_'.format(sigma_kind) +wedge_arm]
-            rng_min, rng_max = np.nanmin(sigma), np.nanmax(sigma)
-            rng = rng_max-rng_min
+            fill_color = {'field':'%s'%(sigma_kind), 'transform':mapper}
 
-            if np.isnan(rng_min) or np.isnan(rng_max):
-                fill_color = 'lightgray'
-            else:
-                mapper = LinearColorMapper(palette= my_palette,  nan_color='lightgray',
-                                 low= rng_warn_min ,
-                                 high=rng_warn_max )
+    
+        radius = 0.017
+        radius_hover = 0.018 
 
-                fill_color = {'field':'%s_'%(sigma_kind) +  wedge_arm, 'transform':mapper}
+        xrange = Range1d(start=ra_center +2, end=ra_center-2) 
+        yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8) 
 
-        
-            radius = 0.017
-            radius_hover = 0.018 
-
-            xrange = Range1d(start=ra_center +2, end=ra_center-2) 
-            yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8) 
-
-            p = Figure( title='FOCUS %s (ARM %s)'%(sigma_kind.upper(), wedge_arm)
-                    , x_axis_label='RA', y_axis_label='DEC'
-                    , plot_width=600, plot_height=600
-                    , tools=[hover, "pan,wheel_zoom,reset,lasso_select,crosshair"]
-                    , x_range = xrange, y_range=yrange
-                    )
-            p.title.align='center'
-
-            p.circle('ra', 'dec', source=source, name="data", radius=radius,
-                   fill_color= fill_color, 
-                   line_color='black', line_width=0.4,
-                   hover_line_color='red')
-
-            p.circle('ra', 'dec', source=source, name="data", radius=radius_hover, 
-                     hover_fill_color= fill_color,
-                     fill_color=None,
-                     line_color=None, line_width=3, hover_line_color='orange')
-            
-            if 'mapper' in locals():
-                cbar = Figure(height=p.plot_height, 
-                width=120, 
-                toolbar_location=None, 
-                min_border=0, 
-                outline_line_color=None,
+        p = Figure( title='FOCUS %s (ARM %s)'%(sigma_kind.upper(), wedge_arm)
+                , x_axis_label='RA', y_axis_label='DEC'
+                , plot_width=600, plot_height=600
+                , tools=[hover, "pan,wheel_zoom,reset,lasso_select,crosshair"]
+                , x_range = xrange, y_range=yrange
                 )
+        p.title.align='center'
 
-                color_bar = ColorBar(color_mapper= mapper, label_standoff=14,
-                            major_label_text_font_style="bold", padding = 26,
-                            major_label_text_align='right',
-                            major_label_text_font_size="10pt",
-                            location=(0, 0))
-                cbar.title.align = 'center'
-                cbar.title.text_font_size = '10pt'
-                cbar.add_layout(color_bar, 'left')
-                p_list = [cbar, p]
-            else:
-                p_list = [p]
+        p.circle('ra', 'dec', source=source, name="data", radius=radius,
+                fill_color= fill_color, 
+                line_color='black', line_width=0.4,
+                hover_line_color='red')
 
-        except Exception as err:
-            sys.exit(err)
+        p.circle('ra', 'dec', source=source, name="data", radius=radius_hover, 
+                    hover_fill_color= fill_color,
+                    fill_color=None,
+                    line_color=None, line_width=3, hover_line_color='orange')
+        
+        if 'mapper' in locals():
+            cbar = Figure(height=p.plot_height, 
+            width=120, 
+            toolbar_location=None, 
+            min_border=0, 
+            outline_line_color=None,
+            )
+
+            color_bar = ColorBar(color_mapper= mapper, label_standoff=14,
+                        major_label_text_font_style="bold", padding = 26,
+                        major_label_text_align='right',
+                        major_label_text_font_size="10pt",
+                        location=(0, 0))
+            cbar.title.align = 'center'
+            cbar.title.text_font_size = '10pt'
+            cbar.add_layout(color_bar, 'left')
+            p_list = [cbar, p]
+        else:
+            p_list = [p]
 
         return p_list
 
 
 
     def load_qa(self):
+        process_id = self.selected_process_id
+        process = Process.objects.get(pk=process_id)
+        exposure = process.exposure
 
-        try:
-            from dashboard.models import Job, Process
-
-            process_id = self.selected_process_id
-            process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(process_id=process_id)]
-            exposure = process.exposure
-            folder = "{}/{}/{:08d}".format(
-                spectro_data, exposure.night, process.exposure_id)
-
-            file = "fibermap-{:08d}.fits".format(process.exposure_id)
-            fitsfile = fits.open('{}/{}'.format(folder, file))
-            fmap = fitsfile
-              
-        except Exception as err:
-            logger.info(err)
-            sys.exit('Could not load data')
-
+        fmap = Fibermap.objects.filter(exposure=exposure)[0]
 
         src = self.data_source(fmap)
 
-        try:
-            pb = self.wedge_plot('b', fmap, common_source=src, sigma_kind='x')#, common_source=source)
-            pr = self.wedge_plot('r', fmap, common_source=src)
-            pz = self.wedge_plot('z', fmap, common_source=src)
-            pwb = self.wedge_plot('b', fmap, common_source=src, sigma_kind='w')
-            pwr = self.wedge_plot('r', fmap, common_source=src, sigma_kind='w')
-            pwz = self.wedge_plot('z', fmap, common_source=src, sigma_kind='w')
-            layout =   row(
-                       column( row(pb), row(pwb)), 
-                       column( row(pr), row(pwr)),
-                       column( row(pz), row(pwz))) 
-        except Exception as err:
-            sys.exit(err)
+        p = self.wedge_plot(self.selected_arm, fmap, common_source=src, sigma_kind='x')#, common_source=source)
+        pw = self.wedge_plot(self.selected_arm, fmap, common_source=src, sigma_kind='w')
+        layout =   row(column( row(p), row(pw)),) 
 
         return file_html(layout, CDN, "Global Focus")
 
