@@ -39,8 +39,7 @@ const styles = {
   gridRow: {
     display: 'grid',
     gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 200px)',
-    paddingTop: '16px',
+    height: 'calc(100vh - 135px)',
   },
   viewer: {
     width: 'calc(100vw - 280px)',
@@ -63,11 +62,20 @@ const styles = {
     width: '50%',
     paddingBottom: '2.5vh',
   },
+  selectionRadioInner: {
+    position: 'relative',
+    paddingLeft: '15px',
+  },
   formControl: {
     width: '100%',
   },
   button: {
     float: 'right',
+    margin: '10px 0',
+  },
+  buttonGreen: {
+    backgroundColor: 'green',
+    color: 'white',
   },
   SpectroGraph: {
     paddingBottom: '2.5vh',
@@ -82,20 +90,67 @@ const styles = {
     padding: '16px',
     height: 'calc(100vh - 135px)',
   },
+  bulletB: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'dodgerblue',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '30px',
+    left: '0',
+  },
+  bulletR: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'red',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '78px',
+    left: '0',
+  },
+  bulletZ: {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    border: 'solid 1px #333',
+    background: 'fuchsia',
+    fontSize: 0,
+    textIndent: '-9999em',
+    position: 'absolute',
+    top: '126px',
+    left: '0',
+  },
 };
 
-class TrendAnalysis extends React.Component {
+class ObservingConditions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
       firstLoad: false,
+      spectrograph: [],
+      arm: '',
       yaxis: '',
       startDate: '',
       endDate: '',
       datePeriod: '',
-      arm: '',
-      spectrograph: [],
+      selectYaxis: '',
+      selectStartDate: '',
+      selectEndDate: '',
+      selectArm: '',
+      selectSpectrograph: [],
     };
   }
 
@@ -104,6 +159,10 @@ class TrendAnalysis extends React.Component {
     startDate: PropTypes.string.isRequired,
     endDate: PropTypes.string.isRequired,
   };
+
+  componentDidMount() {
+    document.title = 'Observing Conditions';
+  }
 
   componentWillReceiveProps(nextProps) {
     if (this.state.startDate === '' && this.state.endDate === '')
@@ -114,52 +173,74 @@ class TrendAnalysis extends React.Component {
   }
 
   handleChangeDatePeriod = evt => {
-    this.setState({ datePeriod: evt.target.value, endDate: moment().format() });
-    this.loadStart();
+    let start = null;
     switch (evt.target.value) {
       case 'night':
-        this.setState({ startDate: moment().format() });
+        start = moment().format();
         break;
       case 'week':
-        this.setState({
-          startDate: moment()
-            .subtract(7, 'days')
-            .format(),
-        });
+        start = moment()
+          .subtract(7, 'days')
+          .format();
         break;
       case 'month':
-        this.setState({
-          startDate: moment()
-            .subtract(1, 'month')
-            .format(),
-        });
+        start = moment()
+          .subtract(1, 'month')
+          .format();
         break;
       case 'semester':
-        this.setState({
-          startDate: moment()
-            .subtract(6, 'month')
-            .format(),
-        });
+        start = moment()
+          .subtract(6, 'month')
+          .format();
         break;
       case 'year':
-        this.setState({
-          startDate: moment()
-            .subtract(1, 'year')
-            .format(),
-        });
+        start = moment()
+          .subtract(1, 'year')
+          .format();
         break;
       default:
         return;
     }
+    this.setState({
+      datePeriod: evt.target.value,
+      startDate: moment(start).format('YYYY-MM-DD'),
+      endDate: moment().format('YYYY-MM-DD'),
+    });
   };
 
   handleChangeYaxis = evt => {
     this.setState({ yaxis: evt.target.value });
-    this.loadStart();
+  };
+
+  handleChangeSpectrograph = spectrograph => {
+    this.setState({ spectrograph: [spectrograph] });
+  };
+
+  handleChangeArm = evt => {
+    this.setState({ arm: evt.target.value });
+  };
+
+  handleSubmit = () => {
+    if (
+      this.state.selectYaxis !== this.state.yaxis ||
+      this.state.selectStartDate !== this.state.startDate ||
+      this.state.selectEndDate !== this.state.endDate ||
+      this.state.selectSpectrograph !== this.state.spectrograph ||
+      this.state.selectArm !== this.state.arm
+    ) {
+      this.setState({
+        selectYaxis: this.state.yaxis,
+        selectStartDate: this.state.startDate,
+        selectEndDate: this.state.endDate,
+        selectSpectrograph: this.state.spectrograph,
+        selectArm: this.state.arm,
+      });
+      this.loadStart();
+    }
   };
 
   loadStart = () => {
-    this.setState({ loading: true });
+    this.setState({ loading: true, preview: true });
   };
 
   loadEnd = () => {
@@ -168,12 +249,23 @@ class TrendAnalysis extends React.Component {
 
   renderLoading = () => {
     if (!this.state.loading) return null;
-    const showControls = this.state.datePeriod || this.state.yaxis;
+    const showControls =
+      this.state.yaxis ||
+      this.state.startDate ||
+      this.state.endDate ||
+      this.state.arm ||
+      this.state.spectrograph;
     const classLoading = showControls
       ? styles.fadeLoader
       : styles.fadeLoaderFull;
 
-    if (this.state.yaxis !== '' && this.state.datePeriod !== '') {
+    if (
+      this.state.yaxis !== '' &&
+      this.state.startDate !== '' &&
+      this.state.endDate !== '' &&
+      this.state.arm !== '' &&
+      this.state.spectrograph !== ''
+    ) {
       return (
         <div className={this.props.classes.loading}>
           <FadeLoader
@@ -187,11 +279,22 @@ class TrendAnalysis extends React.Component {
     }
   };
 
+  isValid = () => {
+    return (
+      this.state.yaxis !== '' &&
+      this.state.startDate !== '' &&
+      this.state.endDate !== '' &&
+      this.state.arm !== '' &&
+      this.state.spectrograph !== ''
+    );
+  };
+
   clearSelection = () => {
     this.setState({
       yaxis: '',
       loading: false,
       datePeriod: '',
+      preview: false,
       arm: '',
       spectrograph: [],
     });
@@ -242,35 +345,6 @@ class TrendAnalysis extends React.Component {
     );
   };
 
-  handleChangeArm = evt => {
-    this.setState({ arm: evt.target.value });
-    this.loadStart();
-  };
-
-  renderArmSelection = () => {
-    return (
-      <div className={this.props.classes.selectionRadio}>
-        <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Arm</InputLabel>
-          <RadioGroup
-            className={this.props.classes.column}
-            value={this.state.arm}
-            onChange={this.handleChangeArm}
-          >
-            <FormControlLabel value="b" control={<Radio />} label="b" />
-            <FormControlLabel value="r" control={<Radio />} label="r" />
-            <FormControlLabel value="z" control={<Radio />} label="z" />
-          </RadioGroup>
-        </FormControl>
-      </div>
-    );
-  };
-
-  handleChangeSpectrograph = spectrograph => {
-    this.setState({ spectrograph: [spectrograph] });
-    this.loadStart();
-  };
-
   renderSpectrographSelection = () => {
     return (
       <div className={this.props.classes.SpectroGraph}>
@@ -290,19 +364,57 @@ class TrendAnalysis extends React.Component {
     );
   };
 
+  renderArmSelection = () => {
+    return (
+      <div className={this.props.classes.selectionRadio}>
+        <div className={this.props.classes.selectionRadioInner}>
+          <span className={this.props.classes.bulletB}>blue</span>
+          <span className={this.props.classes.bulletR}>red</span>
+          <span className={this.props.classes.bulletZ}>pink</span>
+          <FormControl className={this.props.classes.formControl}>
+            <InputLabel shrink>Arm</InputLabel>
+            <RadioGroup
+              className={this.props.classes.column}
+              value={this.state.arm}
+              onChange={this.handleChangeArm}
+            >
+              <FormControlLabel value="b" control={<Radio />} label="b" />
+              <FormControlLabel value="r" control={<Radio />} label="r" />
+              <FormControlLabel value="z" control={<Radio />} label="z" />
+            </RadioGroup>
+          </FormControl>
+        </div>
+      </div>
+    );
+  };
+
   renderClear = () => (
     <Button
       onClick={this.clearSelection}
       variant="raised"
       size="small"
       className={this.props.classes.button}
+      disabled={!this.isValid()}
     >
       Clear
     </Button>
   );
 
+  renderSubmit = () => (
+    <Button
+      onClick={this.handleSubmit}
+      variant="raised"
+      size="small"
+      className={this.props.classes.button}
+      classes={{ raised: this.props.classes.buttonGreen }}
+      disabled={!this.isValid()}
+    >
+      Submit
+    </Button>
+  );
+
   renderSelectDate = () => {
-    if (this.props.startDate !== '' && this.props.endDate !== '')
+    if (this.state.startDate !== '' && this.state.endDate !== '')
       return (
         <SelectDate
           startDate={this.state.startDate}
@@ -328,23 +440,27 @@ class TrendAnalysis extends React.Component {
         {this.renderYaxisSelection()}
         {this.renderSpectrographSelection()}
         {this.renderArmSelection()}
+        {this.renderSubmit()}
         {this.renderClear()}
       </div>
     );
   };
 
   renderViewer = plot => {
-    return (
-      <ObservingViewer
-        plot={plot}
-        loadEnd={this.loadEnd}
-        startDate={this.state.startDate}
-        endDate={this.state.endDate}
-        yaxis={this.state.yaxis}
-        arm={this.state.arm}
-        spectrograph={this.state.spectrograph}
-      />
-    );
+    if (this.state.preview) {
+      return (
+        <ObservingViewer
+          plot={plot}
+          loadEnd={this.loadEnd}
+          startDate={this.state.selectStartDate}
+          endDate={this.state.selectEndDate}
+          yaxis={this.state.selectYaxis}
+          datePeriod={this.state.datePeriod}
+          arm={this.state.selectArm}
+          spectrograph={this.state.selectSpectrograph}
+        />
+      );
+    }
   };
 
   render() {
@@ -363,4 +479,4 @@ class TrendAnalysis extends React.Component {
   }
 }
 
-export default withStyles(styles)(TrendAnalysis);
+export default withStyles(styles)(ObservingConditions);
