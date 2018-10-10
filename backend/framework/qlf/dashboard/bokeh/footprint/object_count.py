@@ -33,18 +33,13 @@ class ObjectStatistics:
         joblist = [entry.camera.camera for entry in 
                     Job.objects.filter(process_id=process_id)]
         exposure = process.exposure
-        fmap = Fibermap.objects.filter(exposure=exposure)
-
-        # RA and DEC for footprint:
-        ra_tile = exposure.telra
-        dec_tile = exposure.teldec
-
+        fmap = Fibermap.objects.filter(exposure=exposure)[0]
 
         # Object Statistics from fmap:
         objects = fmap.objtype
 
         obj_stat_dict = {}
-        list_of_obj = ['ELG', 'LRG', 'STD', 'QSO']
+        list_of_obj = ['TGT', 'STAR']
 
         speclist = set([int(x[-1]) for x in joblist])
         obj_spec=[objects[i*500:(i+1)*500] for i in speclist]
@@ -55,12 +50,8 @@ class ObjectStatistics:
                 count = 0
             else:
                 count = obj_spec.count(o)
-            if o == 'STD':
-                key = 'STAR'
-            else:
-                key = o
 
-            obj_stat_dict.update({key: count})
+            obj_stat_dict.update({o: count})
 
         #####################################################
         # Classification
@@ -69,25 +60,14 @@ class ObjectStatistics:
         # Their status may be different per arm
 
         col_stat = []
-        col_nelg = []
-        col_nlrg = []
-        col_nqso = []
+        col_ntgt = []
         col_nstar = []
-        col_nsky = []
 
         # Creating columns for snr df
         for cam in [arm+str(spec) for arm in ['b', 'r', 'z'] for spec in list(range(10))]:
             arm = int(cam[-1])
-            col_nelg.append(
-                sum(objects[arm*500: (arm+1)*500].count('ELG')))
-            col_nlrg.append(
-                sum(objects[arm*500: (arm+1)*500].count('LRG')))
-            col_nqso.append(
-                sum(objects[arm*500: (arm+1)*500].count('QSO')))
-            col_nstar.append(
-                sum(objects[arm*500: (arm+1)*500].count('STD')))
-            col_nsky.append(
-                sum(objects[arm*500: (arm+1)*500].count('SKY')))
+            col_ntgt.append(objects[arm*500: (arm+1)*500].count('TGT'))
+            col_nstar.append(objects[arm*500: (arm+1)*500].count('STAR'))
 
             if cam in joblist:
                 mergedqa = get_merged_qa_scalar_metrics(
@@ -99,11 +79,8 @@ class ObjectStatistics:
 
         df = pd.DataFrame({'cam': [arm+str(spec) for arm in ['b', 'r', 'z'] for spec in list(range(10))],
                             'snr_status': col_stat,
-                            'ELG': col_nelg,
-                            'LRG': col_nlrg,
-                            'QSO': col_nqso,
-                            'STAR': col_nstar,
-                            'SKY': col_nsky})
+                            'TGT': col_ntgt,
+                            'STAR': col_nstar})
 
         def check_df(qtype, qstatus, qa, qarm=None):
             """ Query in dataframe
@@ -123,7 +100,7 @@ class ObjectStatistics:
         snr_class = {}
         for j in ['NORMAL', 'WARN', 'ALARM', 'n/a']:
             obj_class = {}
-            for i in ['ELG', 'LRG', 'QSO',  'STAR', 'SKY']:
+            for i in ['TGT',  'STAR']:
                 obj_class.update({i: check_df(i, j, 'snr_status')})
             snr_class.update({j: obj_class})
 
@@ -133,7 +110,7 @@ class ObjectStatistics:
             status_class = {}
             for j in ['NORMAL', 'WARN', 'ALARM', 'n/a']:
                 obj_class = {}
-                for i in ['ELG', 'LRG', 'QSO',  'STAR', 'SKY']:
+                for i in ['TGT', 'STAR']:
                     obj_class.update(
                         {i: check_df(i, j, 'snr_status', qarm=arm)})
                 status_class.update({j: obj_class})
@@ -159,7 +136,7 @@ class ObjectStatistics:
             snr_class = {}
             for j in ['NORMAL', 'WARN', 'ALARM', 'n/a']:
                 obj_class = {}
-                for i in ['ELG', 'LRG', 'QSO',  'STAR', 'SKY']:
+                for i in ['TGT', 'STAR']:
                     obj_class.update({i: check_df(i, j, 'snr_status')})
                 snr_class.update({j: obj_class})
 
@@ -169,7 +146,7 @@ class ObjectStatistics:
                 status_class = {}
                 for j in ['NORMAL', 'WARN', 'ALARM', 'n/a']:
                     obj_class = {}
-                    for i in ['ELG', 'LRG', 'QSO',  'STAR', 'SKY']:
+                    for i in ['TGT', 'STAR']:
                         obj_class.update(
                             {i: check_df(i, j, 'snr_status', qarm=arm)})
                     status_class.update({j: obj_class})
@@ -257,7 +234,7 @@ class ObjectStatistics:
         fiber_class = {}
         for j in ['GOOD', 'BAD', 'n/a']:
             obj_class = {}
-            for i in ['ELG', 'LRG', 'QSO',  'STAR', 'SKY']:
+            for i in ['TGT', 'STAR']:
                 obj_class.update({i: check_fibers(i, j)})
             fiber_class.update({j: obj_class})
 
@@ -267,7 +244,7 @@ class ObjectStatistics:
             status_class = {}
             for j in ['GOOD', 'BAD', 'n/a']:
                 obj_class = {}
-                for i in ['ELG', 'LRG', 'QSO',  'STAR', 'SKY']:
+                for i in ['TGT', 'STAR']:
                     obj_class.update({i: check_fibers(i, j, qarm=arm)})
                 status_class.update({j: obj_class})
             fiber_class_arm.update({arm: status_class})
@@ -301,13 +278,13 @@ if __name__ == '__main__':
         nobj, snr, fiber=ObjectStatistics(iexp).generate_statistics()
 
         print('Nobj:', nobj)
-        for i, o in enumerate(['ELG','LRG','QSO','STAR']):
+        for i, o in enumerate(['TGT','STAR']):
             total_obj[i]+=nobj[o]
             good[i]+=snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
             bad[i]+=snr['ALARM'][o] + fiber['BAD'][o]
 
     print('\n\n Statistics:\n\n')
-    print('       [ELG, LRG, QSO, STAR]')
+    print('       [TGT, STAR]')
     print('Total  ', total_obj)
     print(' Good  ', [100*good[i]/(good[i] + bad[i]) if (good[i]+bad[i]) >0 
                         else 0  for i in range(4)] )

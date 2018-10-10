@@ -104,6 +104,9 @@ class SurveyViewer extends React.Component {
       total: [],
       good: [],
       bad: [],
+      startDate: '',
+      endDate: '',
+      program: '',
     };
   }
   static propTypes = {
@@ -118,27 +121,39 @@ class SurveyViewer extends React.Component {
     document.title = 'Survey Report';
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   if (
-  //     nextProps.startDate !== '' &&
-  //     nextProps.endDate !== '' &&
-  //     nextProps.program !== ''
-  //   ) {
-  //     this.fetchObjects(
-  //       this.formatDate(nextProps.startDate),
-  //       this.formatDate(nextProps.endDate),
-  //       nextProps.program
-  //     );
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.startDate !== this.state.startDate &&
+      nextProps.endDate !== this.state.endDate &&
+      nextProps.program !== this.state.program
+    ) {
+      this.fetchObjects(
+        this.formatDate(nextProps.startDate),
+        this.formatDate(nextProps.endDate),
+        nextProps.program
+      );
+    }
+  }
 
   fetchObjects = async (startDate, endDate, program) => {
+    this.setState({
+      objects: [],
+      total: [],
+      good: [],
+      bad: [],
+      startDate: '',
+      endDate: '',
+      program: '',
+    });
     const rows = await QlfApi.getObjectData(startDate, endDate, program);
     this.setState({
       objects: rows.objects,
       total: rows.total,
       good: rows.good,
       bad: rows.bad,
+      startDate,
+      endDate,
+      program,
     });
   };
 
