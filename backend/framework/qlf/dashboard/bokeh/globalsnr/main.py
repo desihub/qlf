@@ -284,7 +284,7 @@ class GlobalSnr:
         radius = 0.017
         radius_hover = 0.018 
 
-        xrange = Range1d(start=ra_center +2, end=ra_center-2) 
+        xrange = Range1d(start=ra_center +3, end=ra_center-3) 
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8) 
 
         p = Figure( title='SNR (ARM {})'.format( wedge_arm)
