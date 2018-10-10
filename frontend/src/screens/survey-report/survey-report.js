@@ -52,6 +52,11 @@ const styles = {
   },
   button: {
     float: 'right',
+    margin: '10px 0',
+  },
+  buttonGreen: {
+    backgroundColor: 'green',
+    color: 'white',
   },
   spectrographLabel: {
     paddingBottom: 10,
@@ -73,6 +78,9 @@ class SurveyReport extends React.Component {
       program: '',
       loading: false,
       firstLoad: false,
+      selectProgram: '',
+      selectStartDate: '',
+      selectEndDate: '',
     };
   }
 
@@ -96,51 +104,61 @@ class SurveyReport extends React.Component {
 
   handleChangeProgram = evt => {
     this.setState({ program: evt.target.value });
-    this.loadStart();
   };
 
   handleChangeDatePeriod = evt => {
-    this.setState({ datePeriod: evt.target.value, endDate: moment().format() });
-    this.loadStart();
+    let start = null;
     switch (evt.target.value) {
       case 'night':
-        this.setState({ startDate: moment().format() });
+        start = moment().format();
         break;
       case 'week':
-        this.setState({
-          startDate: moment()
-            .subtract(7, 'days')
-            .format(),
-        });
+        start = moment()
+          .subtract(7, 'days')
+          .format();
         break;
       case 'month':
-        this.setState({
-          startDate: moment()
-            .subtract(1, 'month')
-            .format(),
-        });
+        start = moment()
+          .subtract(1, 'month')
+          .format();
         break;
       case 'semester':
-        this.setState({
-          startDate: moment()
-            .subtract(6, 'month')
-            .format(),
-        });
+        start = moment()
+          .subtract(6, 'month')
+          .format();
         break;
       case 'year':
-        this.setState({
-          startDate: moment()
-            .subtract(1, 'year')
-            .format(),
-        });
+        start = moment()
+          .subtract(1, 'year')
+          .format();
         break;
       default:
         return;
     }
+    this.setState({
+      datePeriod: evt.target.value,
+      startDate: moment(start).format('YYYY-MM-DD'),
+      endDate: moment().format('YYYY-MM-DD'),
+    });
+  };
+
+  handleSubmit = () => {
+    if (
+      this.state.selectProgram !== this.state.program ||
+      this.state.selectStartDate !== this.state.startDate ||
+      this.state.selectEndDate !== this.state.endDate
+    ) {
+      this.setState({
+        selectProgram: this.state.program,
+        selectStartDate: this.state.startDate,
+        selectEndDate: this.state.endDate,
+      });
+      this.loadStart();
+    }
   };
 
   loadStart = () => {
-    this.setState({ loading: true });
+    this.setState({ loading: true, preview: true });
   };
 
   loadEnd = () => {
@@ -149,12 +167,17 @@ class SurveyReport extends React.Component {
 
   renderLoading = () => {
     if (!this.state.loading) return null;
-    const showControls = this.state.datePeriod || this.state.program;
+    const showControls =
+      this.state.startDate || this.state.endDate || this.state.program;
     const classLoading = showControls
       ? styles.fadeLoader
       : styles.fadeLoaderFull;
 
-    if (this.state.datePeriod !== '' && this.state.program !== '') {
+    if (
+      this.state.startDate !== '' &&
+      this.state.endDate !== '' &&
+      this.state.program !== ''
+    ) {
       return (
         <div className={this.props.classes.loading}>
           <FadeLoader
@@ -168,11 +191,20 @@ class SurveyReport extends React.Component {
     }
   };
 
+  isValid = () => {
+    return (
+      this.state.program !== '' &&
+      this.state.startDate !== '' &&
+      this.state.endDate !== ''
+    );
+  };
+
   clearSelection = () => {
     this.setState({
       datePeriod: '',
       program: '',
       loading: false,
+      preview: false,
     });
   };
 
@@ -182,8 +214,22 @@ class SurveyReport extends React.Component {
       variant="raised"
       size="small"
       className={this.props.classes.button}
+      disabled={!this.isValid()}
     >
       Clear
+    </Button>
+  );
+
+  renderSubmit = () => (
+    <Button
+      onClick={this.handleSubmit}
+      variant="raised"
+      size="small"
+      className={this.props.classes.button}
+      classes={{ raised: this.props.classes.buttonGreen }}
+      disabled={!this.isValid()}
+    >
+      Submit
     </Button>
   );
 
@@ -257,20 +303,24 @@ class SurveyReport extends React.Component {
         {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
         {this.renderProgramSelection()}
+        {this.renderSubmit()}
         {this.renderClear()}
       </div>
     );
   };
 
   renderViewer = () => {
-    return (
-      <SurveyViewer
-        startDate={this.state.startDate}
-        endDate={this.state.endDate}
-        program={this.state.program}
-        loadEnd={this.loadEnd}
-      />
-    );
+    if (this.state.preview) {
+      return (
+        <SurveyViewer
+          datePeriod={this.state.datePeriod}
+          startDate={this.state.selectStartDate}
+          endDate={this.state.selectEndDate}
+          program={this.state.selectProgram}
+          loadEnd={this.loadEnd}
+        />
+      );
+    }
   };
 
   render() {
