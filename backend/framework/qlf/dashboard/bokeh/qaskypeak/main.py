@@ -1,65 +1,46 @@
-import sys
-
 from bokeh.plotting import Figure
-from bokeh.layouts import row, column, widgetbox, gridplot
-from bokeh.layouts import Spacer
+from bokeh.layouts import row, column, widgetbox
 
-from bokeh.io import curdoc
-from bokeh.io import output_notebook, show, output_file
-
-from bokeh.models import HoverTool, ColumnDataSource, Range1d, Span
-from bokeh.models import (LinearColorMapper, ColorBar)
+from bokeh.models import HoverTool, ColumnDataSource, Span
+from bokeh.models import LinearColorMapper, ColorBar
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
-from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.helper import write_info, get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import html_table, sort_obj, mtable, alert_table
 
-from bokeh.palettes import (RdYlBu, Colorblind, Viridis256)
-
-from bokeh.io import output_notebook
-import numpy as np
-
-from dashboard.bokeh.helper import get_url_args, write_description, get_palette
+from dashboard.bokeh.helper import write_description, get_palette
 
 import numpy as np
 import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
+
 logger = logging.getLogger(__name__)
 
 
 class Skypeak:
     def __init__(self, process_id, arm, spectrograph):
-            self.selected_process_id = process_id
-            self.selected_arm = arm
-            self.selected_spectrograph = spectrograph
+        self.selected_process_id = process_id
+        self.selected_arm = arm
+        self.selected_spectrograph = spectrograph
 
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
-        try:
-            mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-            skypeak = mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']
-            par = mergedqa['TASKS']['CHECK_SPECTRA']['PARAMS']
+        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        skypeak = mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']
+        par = mergedqa['TASKS']['CHECK_SPECTRA']['PARAMS']
 
-        except Exception as err:
-            logger.critical(str(err))
-            sys.exit('Could not load data')
-
-        gen_info=mergedqa['GENERAL_INFO']
+        gen_info = mergedqa['GENERAL_INFO']
 
         # ============================================
         # values to plot:
         name = 'PEAKCOUNT'
         metr = skypeak
 
-
         # ============================================
         # THIS: Given the set up in the block above,
         #       we have the bokeh plots
-
-
 
         my_palette = get_palette("viridis")
 
@@ -85,10 +66,9 @@ class Skypeak:
         """
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
-        c1, c2 = 0,500 # int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
-        qlf_fiberid = np.arange(0, 500)#[c1:c2]
-
-
+        # int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
+        c1, c2 = 0, 500
+        qlf_fiberid = np.arange(0, 500)  # [c1:c2]
 
         obj_type = sort_obj(gen_info)
         # ---------------------------------
@@ -107,8 +87,8 @@ class Skypeak:
         })
 
         mapper = LinearColorMapper(palette=my_palette,
-                                low=0.98*np.min(peakcount_fib),
-                                high=1.02*np.max(peakcount_fib))
+                                   low=0.98*np.min(peakcount_fib),
+                                   high=1.02*np.max(peakcount_fib))
 
         radius = 0.013
         radius_hover = 0.015
@@ -116,45 +96,43 @@ class Skypeak:
         # axes limit
         xmin, xmax = [min(gen_info['RA'][:]), max(gen_info['RA'][:])]
         ymin, ymax = [min(gen_info['DEC'][:]), max(gen_info['DEC'][:])]
-        xfac, yfac  = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
-        left, right = xmin -xfac, xmax+xfac
+        xfac, yfac = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
+        left, right = xmin - xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
-        p = Figure(title='PEAKCOUNT: sum of counts in peak regions '
-                , x_axis_label='RA', y_axis_label='DEC'
-                , plot_width=500, plot_height=400
-                , tools=[peak_hover, "pan,box_zoom,reset,crosshair, tap"])
+        p = Figure(title='PEAKCOUNT: sum of counts in peak regions ', x_axis_label='RA', y_axis_label='DEC',
+                   plot_width=500, plot_height=400, tools=[peak_hover, "pan,box_zoom,reset,crosshair, tap"])
 
         # Color Map
         p.circle('x1', 'y1', source=source, name="data", radius=radius,
-                fill_color={'field': 'peakcount_fib', 'transform': mapper},
-                line_color='black', line_width=0.1,
-                hover_line_color='red')
+                 fill_color={'field': 'peakcount_fib', 'transform': mapper},
+                 line_color='black', line_width=0.1,
+                 hover_line_color='red')
 
         # marking the Hover point
         p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-                'field': 'peakcount_fib', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+            'field': 'peakcount_fib', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
 
         #taptool = p.select(type=TapTool)
         #taptool.callback = OpenURL(url=url)
 
         # bokeh.pydata.org/en/latest/docs/reference/models/annotations.html
         xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
-                            title="counts",
-                            major_label_text_font_style="bold", padding=26,
-                            major_label_text_align='right',
-                            major_label_text_font_size="10pt",
-                            location=(0, 0))
+                              title="counts",
+                              major_label_text_font_style="bold", padding=26,
+                              major_label_text_align='right',
+                              major_label_text_font_size="10pt",
+                              location=(0, 0))
 
         p.add_layout(xcolor_bar, 'right')
 
         try:
-            info_col = Div(text=write_description('skypeak'), width=p.plot_width)
+            info_col = Div(text=write_description(
+                'skypeak'), width=p.plot_width)
         except Exception as err:
-            f = open('dbg','w')
+            f = open('dbg', 'w')
             f.write(str(err))
-            info_col=Div(text="""""")
-
+            info_col = Div(text="""""")
 
         # ================================
         # histogram
@@ -185,8 +163,8 @@ class Skypeak:
         hover = HoverTool(tooltips=hist_tooltip)
 
         p_hist = Figure(title='', tools=[hover, "pan,wheel_zoom,box_zoom,reset"],
-                        y_axis_label='Frequency + 1', 
-                        x_axis_label='PEAKCOUNT', background_fill_color="white", 
+                        y_axis_label='Frequency + 1',
+                        x_axis_label='PEAKCOUNT', background_fill_color="white",
                         plot_width=550, plot_height=300, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
 
         p_hist.quad(top='histplusone', bottom='bottomplusone', left='left', right='right',
@@ -194,34 +172,30 @@ class Skypeak:
                     fill_color="dodgerblue", line_color="black", alpha=0.8,
                     hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
 
-
-
-        #logger.info(par['PEAKCOUNT_WARN_RANGE'])
+        # logger.info(par['PEAKCOUNT_WARN_RANGE'])
         spans = Span(location=par['PEAKCOUNT_WARN_RANGE'][0], dimension='height', line_color='yellow',
-                    line_dash='dashed', line_width=3)
+                     line_dash='dashed', line_width=3)
 
         p_hist.add_layout(spans)
 
-
-
-        nrg= par['PEAKCOUNT_NORMAL_RANGE']
-        wrg= par['PEAKCOUNT_WARN_RANGE']
-        tb = html_table(names=['Peakcount noise'], vals=['{:.3f}'.format(skypeak['PEAKCOUNT_NOISE']) ], nrng=nrg, wrng=wrg  )
-        tbinfo=Div(text=tb, width=400)
+        nrg = par['PEAKCOUNT_NORMAL_RANGE']
+        wrg = par['PEAKCOUNT_WARN_RANGE']
+        tb = html_table(names=['Peakcount noise'], vals=[
+                        '{:.3f}'.format(skypeak['PEAKCOUNT_NOISE'])], nrng=nrg, wrng=wrg)
+        tbinfo = Div(text=tb, width=400)
 
        # Prepare tables
-        comments='Sky continuum in all configured continuum areas averaged over all sky fibers'
-        metric_txt=mtable('skypeak', mergedqa, comments )
-        metric_tb=Div(text=metric_txt, width=350)
-        alert_txt = alert_table(nrg,wrg)
+        comments = 'Sky continuum in all configured continuum areas averaged over all sky fibers'
+        metric_txt = mtable('skypeak', mergedqa, comments)
+        metric_tb = Div(text=metric_txt, width=350)
+        alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt, width=350)
-
 
         #row1 = column(p, p_hist)
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                      widgetbox(metric_tb),widgetbox(alert_tb),
-                      p,
-                      p_hist,
-                      css_classes=["display-grid"])
+                        widgetbox(metric_tb), widgetbox(alert_tb),
+                        p,
+                        p_hist,
+                        css_classes=["display-grid"])
 
         return file_html(layout, CDN, "SKYPEAK")
