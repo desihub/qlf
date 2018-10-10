@@ -6,38 +6,6 @@ import os
 logger = logging.getLogger()
 
 
-def reap_children(timeout=3):
-    """ Tries hard to terminate and ultimately kill all the children of
-    this process.
-
-    https://psutil.readthedocs.io/en/latest/#terminate-my-children
-    """
-
-    def on_terminate(proc):
-        logger.info("process {} terminated with exit code {}".format(
-            proc, proc.returncode))
-
-    procs = psutil.Process().children()
-
-    for p in procs:
-        p.terminate()
-
-    gone, alive = psutil.wait_procs(procs, timeout=timeout,
-                                    callback=on_terminate)
-
-    if alive:
-        for p in alive:
-            logger.info("process {} survived SIGTERM; trying SIGKILL" % p)
-            p.kill()
-
-        gone, alive = psutil.wait_procs(alive, timeout=timeout,
-                                        callback=on_terminate)
-
-        if alive:
-            for p in alive:
-                logger.info("process {} survived SIGKILL; giving up" % p)
-
-
 def kill_proc_tree(pid, sig=signal.SIGTERM, include_parent=True,
                    timeout=None, on_terminate=None):
     """ Kill a process tree (including grandchildren) with signal
