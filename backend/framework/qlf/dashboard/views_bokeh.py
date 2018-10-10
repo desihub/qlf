@@ -147,7 +147,7 @@ def footprint_object_type_count(request):
         for i, o in enumerate(['TGT', 'STAR']):
             good[i] += snr['NORMAL'][o] + snr['WARN'][o]
             bad[i] += snr['ALARM'][o]
-            total_obj[i] += nobj[o]
+            total_obj[i] = str(int(good[i])+int(bad[i]))
             # good[i] += snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
             # bad[i] += snr['ALARM'][o] + fiber['BAD'][o]
 
