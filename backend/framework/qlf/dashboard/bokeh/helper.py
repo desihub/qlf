@@ -116,7 +116,6 @@ def load_fits(process_id, cam):
     '''Load reduced fits '''
     from astropy.io import fits
 
-
     try:
         process = Process.objects.get(pk=process_id)
         exposure = process.exposure
@@ -132,49 +131,15 @@ def load_fits(process_id, cam):
         return None
 
 
-
 def init_xy_plot(hover, yscale):
     """
     Defaults for xy plots
     """
-    plot = Figure(tools=[hover,"pan,wheel_zoom,box_zoom,reset,tap"], y_axis_type=yscale
-    , plot_width=601, plot_height=400)
-    #plot.add_tools(hover)
+    plot = Figure(tools=[hover, "pan,wheel_zoom,box_zoom,reset,tap"],
+                  y_axis_type=yscale, plot_width=601, plot_height=400)
+    # plot.add_tools(hover)
 
     return plot
-
-
-def get_url_args(curdoc, defaults=None):
-    """
-    Return url args recovered from django_full_path cookie in
-    the bokeh request header.
-    If url args are not provided, default values can be used
-    instead
-    """
-    args = {}
-
-    if defaults:
-        for key in defaults:
-            args[key] = defaults[key]
-
-    http_request = curdoc().session_context.request
-
-    logger.info(http_request)
-
-    if http_request and 'process_id' in http_request.arguments:
-        tmp = http_request.arguments
-        for key in http_request.arguments:
-            args[key] = tmp[key][0].decode("utf-8")
-
-        logger.info('ARGS: {}'.format(tmp))
-        logger.info(__name__)
-
-        print(args)
-
-        # the bokeh app name is the second segment of the url path
-        args['bokeh_app'] = args['bokeh-app-path']
-
-    return args
 
 
 def write_info(qa_name, params):
@@ -194,11 +159,12 @@ def write_info(qa_name, params):
                    'NGOODFIB_WARN_RANGE', 'NGOODFIB_NORMAL_RANGE'],
         skypeak=['B_PEAKS', 'R_PEAKS', 'Z_PEAKS',
                  'PEAKCOUNT_NORMAL_RANGE', 'PEAKCOUNT_WARN_RANGE'],
-        getbias=['BIAS_AMP_NORMAL_RANGE',  'BIAS_AMP_WARN_RANGE'],#, 'PERCENTILES'],
-        countpix=['LITFRAC_AMP_NORMAL_RANGE', 'LITFRAC_AMP_WARN_RANGE', 'CUTPIX'],#, 'LITFRAC_AMP_REF'
+        # , 'PERCENTILES'],
+        getbias=['BIAS_AMP_NORMAL_RANGE',  'BIAS_AMP_WARN_RANGE'],
+        countpix=['LITFRAC_AMP_NORMAL_RANGE',
+                  'LITFRAC_AMP_WARN_RANGE', 'CUTPIX'],  # , 'LITFRAC_AMP_REF'
         integ=['DELTAMAG_WARN_RANGE', 'DELTAMAG_NORMAL_RANGE'],
         snr=['FIDSNR_TGT_NORMAL_RANGE', 'FIDSNR_TGT_WARN_RANGE', 'FIDMAG'])
-
 
     keys = dict_test_keys[qa_name]
     for ii in keys:
@@ -233,7 +199,7 @@ def eval_histpar(yscale, hist):
     from numpy import log10
     if yscale == 'log':
         ylabel = "Frequency + 1"
-        yrange = (1, 1.* 10**(int(log10(max(hist))) +1) )
+        yrange = (1, 1. * 10**(int(log10(max(hist))) + 1))
         bottomval = 'bottomplusone'
         histval = 'histplusone'
     else:
@@ -241,7 +207,7 @@ def eval_histpar(yscale, hist):
         yrange = (-0.1*max(hist), 1.1*max(hist))
         bottomval = 'bottom'
         histval = 'hist'
-    return [ylabel,yrange,bottomval,histval]
+    return [ylabel, yrange, bottomval, histval]
 
 
 def get_palette(name_of_mpl_palette):
@@ -251,11 +217,11 @@ def get_palette(name_of_mpl_palette):
     import numpy as np
     from matplotlib.colors import rgb2hex
     import matplotlib.cm as cm
-    colormap =cm.get_cmap(name_of_mpl_palette) #choose any matplotlib colormap here
+    # choose any matplotlib colormap here
+    colormap = cm.get_cmap(name_of_mpl_palette)
     bokehpalette = [rgb2hex(m) for m in colormap(np.arange(colormap.N))]
     return bokehpalette
 
 
 if __name__ == '__main__':
     logger.info('Standalone execution...')
-    
