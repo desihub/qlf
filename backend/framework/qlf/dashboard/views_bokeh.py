@@ -136,28 +136,25 @@ def footprint_object_type_count(request):
     for exposure in processed_exposures:
         if list(Process.objects.filter(exposure_id=exposure.pk)) != []:
             process_ids.append(Process.objects.filter(exposure_id=exposure.pk).last().pk)
-            
-    total_obj = [0]*4
-    snr_good = [0]*4
-    fib_good = [0]*4
-    snr_bad = [0]*4
-    fib_bad = [0]*4
 
-    good = [0]*4
-    bad = [0]*4
+    total_obj = [0]*2
+    good = [0]*2
+    bad = [0]*2
 
     for ids in process_ids:
         nobj, snr, fiber = ObjectStatistics(ids).generate_statistics()
 
         for i, o in enumerate(['TGT', 'STAR']):
-            total_obj[i] += nobj[o]
-            good[i] += snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
-            bad[i] += snr['ALARM'][o] + fiber['BAD'][o]
+            good[i] += snr['NORMAL'][o] + snr['WARN'][o]
+            bad[i] += snr['ALARM'][o]
+            total_obj[i] = str(int(good[i])+int(bad[i]))
+            # good[i] += snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
+            # bad[i] += snr['ALARM'][o] + fiber['BAD'][o]
 
     result = dict(objects=['TGT', 'STAR'],
                   total=total_obj,
-                  good=[int(good[i]) for i in range(4)],
-                  bad=[int(bad[i]) for i in range(4)])
+                  good=[int(good[i]) for i in range(2)],
+                  bad=[int(bad[i]) for i in range(2)])
 
     return JsonResponse(result)
 
