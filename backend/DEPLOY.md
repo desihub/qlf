@@ -1,3 +1,5 @@
+# DEPRECATED
+
 # Deployment
 
 _This is an deployment example using `docker`, `nginx` on a linux machine._

@@ -74,5 +74,6 @@ frontend/dist/*
 docker-compose.yml
 
 build
+.yarn
 
 nginx/nginx-proxy.conf

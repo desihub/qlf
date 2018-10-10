@@ -1,23 +1,7 @@
-import sys
 import os
-import django
-
-qlf_root = os.environ.get('QLF_ROOT')
-
-sys.path.append(os.path.join(qlf_root, "framework/qlf"))
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
-
-django.setup()
-
-import os
-import sys
-from astropy.io import fits
 from dashboard.models import Job, Process, Fibermap
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 import pandas as pd
-import numpy as np
-
 
 spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
@@ -30,8 +14,8 @@ class ObjectStatistics:
         # Load fibermap
         process_id = self.selected_process_id
         process = Process.objects.get(pk=process_id)
-        joblist = [entry.camera.camera for entry in 
-                    Job.objects.filter(process_id=process_id)]
+        joblist = [entry.camera.camera for entry in
+                   Job.objects.filter(process_id=process_id)]
         exposure = process.exposure
         fmap = Fibermap.objects.filter(exposure=exposure)[0]
 
@@ -42,8 +26,8 @@ class ObjectStatistics:
         list_of_obj = ['TGT', 'STAR']
 
         speclist = set([int(x[-1]) for x in joblist])
-        obj_spec=[objects[i*500:(i+1)*500] for i in speclist]
-        obj_spec=[i for ob in obj_spec for i in ob]
+        obj_spec = [objects[i*500:(i+1)*500] for i in speclist]
+        obj_spec = [i for ob in obj_spec for i in ob]
 
         for o in list_of_obj:
             if o not in set(obj_spec):
@@ -78,9 +62,9 @@ class ObjectStatistics:
                 col_stat.append('n/a')
 
         df = pd.DataFrame({'cam': [arm+str(spec) for arm in ['b', 'r', 'z'] for spec in list(range(10))],
-                            'snr_status': col_stat,
-                            'TGT': col_ntgt,
-                            'STAR': col_nstar})
+                           'snr_status': col_stat,
+                           'TGT': col_ntgt,
+                           'STAR': col_nstar})
 
         def check_df(qtype, qstatus, qa, qarm=None):
             """ Query in dataframe
@@ -249,46 +233,45 @@ class ObjectStatistics:
                 status_class.update({j: obj_class})
             fiber_class_arm.update({arm: status_class})
 
-        # obj_stat= { k: sum([fiber_class[i][k] 
-        #         for i in ['GOOD', 'BAD']])  
+        # obj_stat= { k: sum([fiber_class[i][k]
+        #         for i in ['GOOD', 'BAD']])
         #         for k in ['STAR', 'SKY', 'QSO', 'ELG', 'LRG']}
-
 
         return obj_stat_dict, snr_class, fiber_class
 
 
 if __name__ == '__main__':
     import time
-    t1=time.time()
+    t1 = time.time()
 
-    # Example: 
+    # Example:
     # let us say , for instance, we have the following selected exposures:
     exposures_list = [2, 3]
 
     total_obj = [0]*4
-    snr_good  = [0]*4
-    fib_good  = [0]*4
-    snr_bad   = [0]*4
-    fib_bad   = [0]*4
+    snr_good = [0]*4
+    fib_good = [0]*4
+    snr_bad = [0]*4
+    fib_bad = [0]*4
 
     good = [0]*4
-    bad  = [0]*4
+    bad = [0]*4
 
     for iexp in exposures_list:
-        nobj, snr, fiber=ObjectStatistics(iexp).generate_statistics()
+        nobj, snr, fiber = ObjectStatistics(iexp).generate_statistics()
 
         print('Nobj:', nobj)
-        for i, o in enumerate(['TGT','STAR']):
-            total_obj[i]+=nobj[o]
-            good[i]+=snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
-            bad[i]+=snr['ALARM'][o] + fiber['BAD'][o]
+        for i, o in enumerate(['TGT', 'STAR']):
+            total_obj[i] += nobj[o]
+            good[i] += snr['NORMAL'][o] + snr['WARN'][o] + fiber['GOOD'][o]
+            bad[i] += snr['ALARM'][o] + fiber['BAD'][o]
 
     print('\n\n Statistics:\n\n')
     print('       [TGT, STAR]')
     print('Total  ', total_obj)
-    print(' Good  ', [100*good[i]/(good[i] + bad[i]) if (good[i]+bad[i]) >0 
-                        else 0  for i in range(4)] )
-    print('  Bad  ', [100*bad[i]/(good[i] + bad[i])  if (good[i]+bad[i]) >0 
-                        else 0  for i in range(4)] )
+    print(' Good  ', [100*good[i]/(good[i] + bad[i]) if (good[i]+bad[i]) > 0
+                      else 0 for i in range(4)])
+    print('  Bad  ', [100*bad[i]/(good[i] + bad[i]) if (good[i]+bad[i]) > 0
+                      else 0 for i in range(4)])
 
     print(time.time()-t1, ' s')
