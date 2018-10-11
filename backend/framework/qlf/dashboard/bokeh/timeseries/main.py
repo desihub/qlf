@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
-from bokeh.plotting import ColumnDataSource, Figure
+from bokeh.plotting import ColumnDataSource, figure
 from bokeh.models import HoverTool
 
-from bokeh.layouts import column
 from bokeh.models.widgets import Div, Select, RangeSlider
 from bokeh.resources import CDN
 from bokeh.embed import file_html
@@ -171,8 +170,15 @@ class TimeSeries():
 
         hover = HoverTool(tooltips=TOOLTIPS)
 
-        self.p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
-                   plot_width=700, plot_height=350, tools=[hover, 'pan,wheel_zoom,zoom_in, zoom_out,reset'])
+        self.p = figure(
+            sizing_mode='scale_width',
+            toolbar_location='above',
+            x_axis_type="datetime",
+            x_axis_label='Date',
+            y_axis_label=axis_data['display'],
+            plot_width=700, plot_height=350,
+            tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
+        )
 
         if self.yaxis in ['skybrightness', 'airmass']:
             self.single_value(dates, values, exposures, cameras, dateobs)
@@ -183,8 +189,8 @@ class TimeSeries():
         elif self.yaxis in ['snr']:
             self.quadruple_values(dates, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
 
-        layout = column(self.p)
-        return file_html(layout, CDN, "Time Series")
+        return file_html(self.p, CDN, "Time Series")
+
 
 if __name__ == "__main__":
     ts = TimeSeries("test", "20191001", "20191001", "b0")
