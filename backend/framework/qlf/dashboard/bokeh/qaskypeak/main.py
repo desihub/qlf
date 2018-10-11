@@ -101,7 +101,7 @@ class Skypeak:
         bottom, top = ymin-yfac, ymax+yfac
 
         p = Figure(title='PEAKCOUNT: sum of counts in peak regions ', x_axis_label='RA', y_axis_label='DEC',
-                   plot_width=500, plot_height=400, tools=[peak_hover, "pan,box_zoom,reset,crosshair, tap"])
+                   plot_width=500, plot_height=400, tools=[peak_hover, "box_zoom,pan,reset,crosshair, tap"], active_drag="box_zoom",)
 
         # Color Map
         p.circle('x1', 'y1', source=source, name="data", radius=radius,
@@ -162,7 +162,7 @@ class Skypeak:
 
         hover = HoverTool(tooltips=hist_tooltip)
 
-        p_hist = Figure(title='', tools=[hover, "pan,wheel_zoom,box_zoom,reset"],
+        p_hist = Figure(title='', tools=[hover, "box_zoom,pan,wheel_zoom,reset"], active_drag="box_zoom",
                         y_axis_label='Frequency + 1',
                         x_axis_label='PEAKCOUNT', background_fill_color="white",
                         plot_width=550, plot_height=300, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
@@ -182,14 +182,14 @@ class Skypeak:
         wrg = par['PEAKCOUNT_WARN_RANGE']
         tb = html_table(names=['Peakcount noise'], vals=[
                         '{:.3f}'.format(skypeak['PEAKCOUNT_NOISE'])], nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
+        tbinfo = Div(text=tb)
 
        # Prepare tables
         comments = 'Sky continuum in all configured continuum areas averaged over all sky fibers'
         metric_txt = mtable('skypeak', mergedqa, comments)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt, width=350)
+        alert_tb = Div(text=alert_txt)
 
         #row1 = column(p, p_hist)
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),

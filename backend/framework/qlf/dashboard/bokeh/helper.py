@@ -135,7 +135,7 @@ def init_xy_plot(hover, yscale):
     """
     Defaults for xy plots
     """
-    plot = Figure(tools=[hover, "pan,wheel_zoom,box_zoom,reset,tap"],
+    plot = Figure(tools=[hover, "pan,wheel_zoom,box_zoom,reset,tap"],active_drag="box_zoom",
                   y_axis_type=yscale, plot_width=601, plot_height=400)
     # plot.add_tools(hover)
 

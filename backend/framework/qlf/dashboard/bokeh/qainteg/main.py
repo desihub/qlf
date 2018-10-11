@@ -101,9 +101,9 @@ class Integ:
         comments = 'List of the average fiber mag for each of N target types in this camera'
         # objtype=['ELG','STAR'] )
         metric_txt = mtable('integ', mergedqa, comments, objtype=objlist)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt, width=350)
+        alert_tb = Div(text=alert_txt)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),

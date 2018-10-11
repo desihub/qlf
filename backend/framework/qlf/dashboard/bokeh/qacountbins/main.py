@@ -77,9 +77,12 @@ class Countbins:
                   'color': colors
                   })
 
-        p = Figure(tools=[hist_hover, "pan,wheel_zoom,  box_zoom, lasso_select, reset, crosshair, tap"],
-                   plot_width=550, plot_height=300, y_range=Range1d(-.1, 1.1),
-                   x_axis_label='Fiber', y_axis_label=' Fiber Status'
+        p = Figure(tools=[hist_hover, "box_zoom, pan,wheel_zoom, lasso_select, reset, crosshair, tap"],
+                    y_range=Range1d(-.1, 1.1),
+                    x_axis_label='Fiber', y_axis_label=' Fiber Status',
+                    active_drag="box_zoom",
+                    plot_width=550,
+                    plot_height=300,
                    )
         from bokeh.models.glyphs import Segment
 
@@ -131,11 +134,18 @@ class Countbins:
         left, right = xmin - xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
-        p2 = Figure(title='GOOD FIBERS', x_axis_label='RA', y_axis_label='DEC', plot_width=400, plot_height=400, tools=[hover, "pan,box_zoom,reset,lasso_select,crosshair, tap"], toolbar_location="right"
-                    )
+        p2 = Figure(title='GOOD FIBERS',
+        plot_width=450,
+        plot_height=350,
+        active_drag="box_zoom",
+        x_axis_label='RA',
+        y_axis_label='DEC',
+        tools=[hover,
+        "box_zoom,pan,reset,lasso_select,crosshair,tap"],
+        toolbar_location="right")
 
         # Color Map
-        p2.circle('x1', 'y1', source=hist_source, name="data", radius=radius,
+        p2.circle('x1','y1', source=hist_source, name="data", radius=radius,
                   fill_color={'field': 'color'},
                   line_color='black', line_width=0.3,
                   hover_line_color='red')
@@ -149,16 +159,16 @@ class Countbins:
         fracgood = ngood/500. - 1.
         tb = html_table(names=['NGOODFIB', 'FRACTION BAD'], vals=[ngood, str(fracgood*100)+' %'],
                         nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
+        tbinfo = Div(text=tb)
 
         info_col = Div(text=write_description('countbins'))
 
        # Prepare tables
         comments = 'Number of fibers with a nonzero number of bins above highest threshold'
         metric_txt = mtable('countbins', mergedqa, comments)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt, width=350)
+        alert_tb = Div(text=alert_txt)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),

@@ -4,23 +4,25 @@
   padding: 0px !important;
 }
 
-.container {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, 0);
-  max-width: 100%;
-  max-height: 100%;
-}
-
 .header {
   grid-area: header;
-  width: auto !important;
+}
+
+.xwsigma-center {
+  align-items: center;
+}
+
+.bk-widget-box{
+  width: 45vw !important;
+}
+
+.bk-grid-column {
+  width: 45vw !important;
 }
 
 .table-ranges {
   grid-area: table-ranges;
-  width: auto !important;
+  width: 100vw !important;
 }
 
 .table-ranges-xwsigma {
@@ -36,9 +38,9 @@
   display: grid !important;
   grid-gap: 1rem;
   grid-template-columns: auto;
-  width: auto !important;
-  height: auto !important;
-  justify-content: center;
+  width: 100vw !important;
+  height: max-content !important;
+  justify-items: center;
   grid-template-areas:
   "header"
   "table-ranges"
@@ -49,9 +51,9 @@
     display: grid !important;
     grid-gap: 1rem;
     grid-template-columns: auto;
-    width: auto !important;
-    height: auto !important;
-    justify-content: center;
+    width: 100vw !important;
+    height: max-content !important;
+    justify-items: center;
     grid-template-areas:
     "header"
     "table-ranges"
@@ -62,9 +64,8 @@
   display: grid !important;
   grid-gap: 1rem;
   grid-template-columns: auto;
-  width: auto !important;
-  height: auto !important;
-  justify-content: center;
+  width: 100vw !important;
+  height: max-content !important;
   justify-items: center;
   grid-template-areas:
   "header"
@@ -76,9 +77,8 @@
   display: grid !important;
   grid-gap: 1rem;
   grid-template-columns: auto;
-  width: auto !important;
-  height: auto !important;
-  justify-content: center;
+  width: 100vw !important;
+  height: max-content !important;
   justify-items: center;
   grid-template-areas:
   "header"
@@ -89,10 +89,10 @@
 @media screen and (min-width: 1500px) {
   .display-grid-xwsigma {
       display: grid !important;
-      grid-gap: 4em;
-      width: auto !important;
-      height: auto !important;
-      justify-content: center;
+      grid-gap: 1em;
+      width: 100vw !important;
+      height: max-content !important;
+      justify-items: center;
       align-items: center;
       grid-template-areas: "header table-ranges";
     }
@@ -101,11 +101,10 @@
 @media screen and (min-width: 1100px) {
   .display-grid-countbins {
     display: grid !important;
-    grid-gap: 4em;
-    width: auto !important;
+    grid-gap: 1em;
+    width: 100vw !important;
     grid-template-columns: auto auto;
-    height: auto !important;
-    justify-content: center;
+    height: max-content !important;
     justify-items: center;
     align-items: center;
     grid-template-areas:
@@ -115,11 +114,10 @@
 
     .display-grid-skyresid {
       display: grid !important;
-      grid-gap: 4em;
-      width: auto !important;
+      grid-gap: 1em;
+      width: 100vw !important;
       grid-template-columns: auto auto;
-      height: auto !important;
-      justify-content: center;
+      height: max-content !important;
       justify-items: center;
       align-items: center;
       grid-template-areas:
@@ -131,11 +129,11 @@
 @media screen and (min-width: 800px) {
   .display-grid {
     display: grid !important;
-    grid-gap: 4em;
-    width: auto !important;
-    grid-template-columns: 400px 400px;
-    height: auto !important;
-    justify-content: center;
+    grid-gap: 1em;
+    width: 100vw !important;
+    grid-template-columns: 1fr 1fr;
+    height: max-content !important;
+    justify-items: center;
     grid-template-areas:
     "header table-ranges"
     "main main";
@@ -143,11 +141,10 @@
 
   .display-grid-xwsigma {
     display: grid !important;
-    grid-gap: 4em;
-    width: 90vw !important;
-    grid-template-columns: 400px 400px;
-    height: auto !important;
-    justify-content: center;
+    grid-gap: 1em;
+    grid-template-columns: 1fr 1fr;
+    height: max-content !important;
+    justify-items: center;
     grid-template-areas:
     "header table-ranges"
     "main main";

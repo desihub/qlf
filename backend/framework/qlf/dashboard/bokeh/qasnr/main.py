@@ -396,7 +396,7 @@ class SNR:
         left, right = xmin - xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
-        p = Figure(title='Residual SNR'+name_warn, x_axis_label='RA', y_axis_label='DEC', plot_width=380, plot_height=380, tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"]
+        p = Figure(title='Residual SNR'+name_warn, active_drag="box_zoom", x_axis_label='RA', y_axis_label='DEC', plot_width=380, plot_height=380, tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"]
                    )  # ,x_range=(left,right), y_range=(bottom, top) )
 
         # Color Map
@@ -416,7 +416,7 @@ class SNR:
                  fill_color='lightgray', line_color=None, line_width=0.3)
 
         cbar = Figure(height=p.plot_height,
-                      width=120,
+                      active_drag="box_zoom",
                       toolbar_location=None,
                       min_border=0,
                       outline_line_color=None,
@@ -471,7 +471,8 @@ class SNR:
 
         p_m = Figure(title='',
                      x_axis_label='Fiber ', y_axis_label='Median S/N',
-                     plot_width=400, plot_height=240,
+                     plot_height=300,
+                     active_drag="box_zoom",
                      tools=[median_hover, "pan,box_zoom,reset,crosshair"],
                      toolbar_location='above')
 
@@ -521,9 +522,9 @@ class SNR:
         # , N is number of target types'
         comments = 'List of average SNR for the N target type'
         metric_txt = mtable('snr', mergedqa, comments, objtype=objlist)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt, width=350)
+        alert_tb = Div(text=alert_txt)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
