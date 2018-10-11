@@ -109,6 +109,14 @@ class SurveyReport extends React.Component {
   handleChangeDatePeriod = evt => {
     let start = null;
     switch (evt.target.value) {
+      case 'all':
+        this.setState({
+          datePeriod: evt.target.value,
+          startDate: this.props.startDate,
+          endDate: this.props.endDate,
+          preview: false,
+        });
+        return;
       case 'night':
         start = moment().format();
         break;
@@ -245,11 +253,11 @@ class SurveyReport extends React.Component {
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
-            <MenuItem value={'night'}>Last Night</MenuItem>
-            <MenuItem value={'week'}>Past Week</MenuItem>
-            <MenuItem value={'month'}>Past Month</MenuItem>
-            <MenuItem value={'semester'}>Past Semester</MenuItem>
-            <MenuItem value={'year'}>Past Year</MenuItem>
+            <MenuItem value={'all'}>All</MenuItem>
+            <MenuItem value={'night'}>Night</MenuItem>
+            <MenuItem value={'week'}>Week</MenuItem>
+            <MenuItem value={'month'}>Month</MenuItem>
+            <MenuItem value={'year'}>Year</MenuItem>
           </Select>
         </FormControl>
       </div>
