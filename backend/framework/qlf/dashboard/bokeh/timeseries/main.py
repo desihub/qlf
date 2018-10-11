@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from bokeh.plotting import ColumnDataSource, figure
 from bokeh.models import HoverTool, Legend
+from bokeh.layouts import column
 
 from bokeh.models.widgets import Div, Select, RangeSlider
 from bokeh.resources import CDN
@@ -187,7 +188,7 @@ class TimeSeries():
             x_axis_type="datetime",
             x_axis_label='Date',
             y_axis_label=axis_data['display'],
-            plot_width=700, plot_height=350,
+            plot_width=700, plot_height=300,
             tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
         )
 
@@ -203,7 +204,7 @@ class TimeSeries():
             self.quadruple_values(dates, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
 
         info_col = Div(text=info)
-        layout = column(info_col, self.p)
+        layout = column(info_col, self.p, sizing_mode='scale_width')
         return file_html(layout, CDN, "Time Series")
 
 if __name__ == "__main__":
