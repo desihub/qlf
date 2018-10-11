@@ -35,7 +35,6 @@ def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx')
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dcdcdc;
@@ -44,7 +43,7 @@ def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx')
         tr:{text-align:center;}        </style>        """
 
     header= """
-        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+        <div  style="text-align:center;">
         <table>
         <tr>
         <th> Comments</th>  <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>  <th>Delta</th>
@@ -78,7 +77,6 @@ def alert_table(nrg,wrg):
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dcdcdc;
@@ -87,7 +85,7 @@ def alert_table(nrg,wrg):
         tr:{text-align:center;}        </style>        """
 
     header= """
-        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+        <div  style="text-align:center;">
         <table>
         <tr>
         <th> Alert </th>  <th>Minimum value</th> <th>Maximum value</th>
@@ -121,7 +119,6 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dcdcdc;
@@ -131,7 +128,7 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
         </style>"""
 
     header= """
-        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+        <div  style="text-align:center;">
         <table>
               <col width="200">
               <col width="100">
@@ -250,7 +247,6 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dcdcdc;
@@ -260,7 +256,7 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
         </style>"""
 
     header= """
-        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+        <div  style="text-align:center;">
         <table>
               <col width="200">
               <col width="120">
@@ -405,7 +401,7 @@ def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nr
         """
 
     header= """
-    <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+    <div  style="text-align:center;">
     <table>
     <tr>
         <th>Alert</th>     <th>Minimum Value</th>        <th>Maximum Value</th>
@@ -514,13 +510,15 @@ def plot_hist(hover,yrange, yscale="auto", pw=600, ph=400):
     if yscale not in ["log","auto"]:
         logger.warn('Wrong yscale')
     if yrange==None:
-        plot = Figure(tools=[hover,"pan,wheel_zoom,box_zoom,reset, crosshair, tap"] 
-            , plot_width=pw, plot_height=ph, background_fill_color="white"
+        plot = Figure(tools=[hover,"box_zoom,pan,wheel_zoom,reset, crosshair, tap"] 
+            ,active_drag="box_zoom"
+            , plot_height=ph, background_fill_color="white"
             , x_axis_type="auto", y_axis_type=yscale)
 
     else:    
-        plot = Figure(tools=[hover,"pan,wheel_zoom,box_zoom,reset, crosshair, tap"] 
-            , plot_width=pw, plot_height=ph, background_fill_color="white"
+        plot = Figure(tools=[hover,"box_zoom,pan,wheel_zoom,reset, crosshair, tap"] 
+            ,active_drag="box_zoom"
+            , plot_height=ph, background_fill_color="white"
             , x_axis_type="auto", y_axis_type=yscale
             , y_range =yrange)
 
@@ -573,7 +571,8 @@ def plot_amp(dz, mapper, name=""):
     p = Figure(title=name, tools=[hover],
            x_range= list([-0.5,1.5]),           # length = 18
            y_range= list([-0.5,1.5]), 
-           plot_width=450, plot_height=400)
+           plot_width=450, plot_height=400,
+           toolbar_location='left')
 
     p.grid.grid_line_color = None
     p.outline_line_color = None
