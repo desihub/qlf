@@ -87,10 +87,10 @@ class RMS:
         comments = 'value of RMS for each amplifier read directly from the header of the pre processed image'
         refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
         metric_txt = mtable('getbias', mergedqa, comments)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
 
         alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt, width=350)
+        alert_tb = Div(text=alert_txt)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),

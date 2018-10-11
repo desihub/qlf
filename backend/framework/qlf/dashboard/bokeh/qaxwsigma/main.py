@@ -1,5 +1,5 @@
 from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column, widgetbox, gridplot
 
 from bokeh.models import Span, Label
 
@@ -162,11 +162,19 @@ class Xwsigma:
         radius = 0.013  # 0.015
         radius_hover = 0.015  # 0.0165
 
-        px = Figure(title='XSIGMA', x_axis_label='RA', y_axis_label='DEC', plot_width=500, plot_height=350, x_range=Range1d(left, right), y_range=Range1d(bottom, top), tools=[xsigma_hover, "pan,box_zoom,reset,crosshair"]
-                    )
+        px = Figure(title='XSIGMA',
+        x_axis_label='RA',
+        y_axis_label='DEC',
+        plot_height=350,
+        x_range=Range1d(left,right),
+        y_range=Range1d(bottom,
+        top),
+        tools=[xsigma_hover,
+        "box_zoom,pan,reset,crosshair"],
+        active_drag="box_zoom")
 
         # Color Map
-        px.circle('x1', 'y1', source=source, name="data", radius=radius,
+        px.circle('x1','y1', source=source, name="data", radius=radius,
                   fill_color={'field': 'xsigma', 'transform': xmapper},
                   line_color='black', line_width=0.1,
                   hover_line_color='red')
@@ -190,7 +198,7 @@ class Xwsigma:
         d_yplt = (max(xsigma) - min(xsigma))*0.1
         yrange = [0, max(xsigma) + d_yplt]
 
-        xhist = plot_hist(xsigma_hover, yrange, ph=240, pw=500)
+        xhist = plot_hist(xsigma_hover, yrange, ph=280)
         xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data', source=source,
                    fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
                    hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -200,11 +208,18 @@ class Xwsigma:
 
         # ======
         # WSIGMA
-        pw = Figure(title='WSIGMA', x_axis_label='RA', y_axis_label='DEC', plot_width=500, plot_height=350, x_range=Range1d(left, right), y_range=Range1d(bottom, top), tools=[wsigma_hover, "pan,box_zoom,reset,crosshair"]
-                    )
+        pw = Figure(title='WSIGMA',
+                x_axis_label='RA',
+                y_axis_label='DEC',
+                plot_height=350,
+                x_range=Range1d(left,right),
+                y_range=Range1d(bottom,top),
+                tools=[wsigma_hover,
+                "box_zoom,pan,reset,crosshair"],
+                active_drag="box_zoom")
 
         # Color Map
-        pw.circle('x1', 'y1', source=source, name="data", radius=radius,
+        pw.circle('x1','y1', source=source, name="data", radius=radius,
                   fill_color={'field': 'wsigma', 'transform': wmapper},
                   line_color='black', line_width=0.1,
                   hover_line_color='red')
@@ -228,7 +243,7 @@ class Xwsigma:
         d_yplt = (max(wsigma) - min(wsigma))*0.1
         yrange = [0, max(wsigma) + d_yplt]
 
-        whist = plot_hist(wsigma_hover, yrange, ph=240, pw=500)
+        whist = plot_hist(wsigma_hover, yrange, ph=280)
         whist.quad(top='wsigma', bottom='bottom', left='left', right='right', name='data', source=source,
                    fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
                    hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -284,8 +299,8 @@ class Xwsigma:
 
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
 
-        p_hist_x = Figure(title='', tools=[hover, "pan,wheel_zoom,box_zoom,reset"],
-                          y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", plot_width=500, plot_height=300, x_axis_type="auto", y_axis_type=yscale, y_range=yrange, x_range=hist_rg
+        p_hist_x = Figure(title='', tools=[hover, "box_zoom,wheel_zoom,pan,reset"], active_drag="box_zoom",
+                          y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale, y_range=yrange, x_range=hist_rg
                           )
 
         p_hist_x.quad(top=histval, bottom=bottomval, left='left', right='right',
@@ -326,8 +341,8 @@ class Xwsigma:
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
         yrangew = yrange
 
-        p_hist_w = Figure(title='', tools=[hover, "pan,wheel_zoom,box_zoom,reset"],
-                          y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", plot_width=500, plot_height=300, x_axis_type="auto",    y_axis_type=yscale, y_range=yrange, x_range=hist_rg)  # , y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
+        p_hist_w = Figure(title='', tools=[hover, "box_zoom, pan,wheel_zoom,reset"], active_drag="box_zoom",
+                          y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", plot_height=300, x_axis_type="auto",    y_axis_type=yscale, y_range=yrange, x_range=hist_rg)  # , y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
         p_hist_w.quad(top=histval, bottom=bottomval, left='left', right='right',
                       source=source_hist,
@@ -383,7 +398,6 @@ class Xwsigma:
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
                              formatter=formatter, title="", title_text_baseline="alphabetic")
         xamp.height = 400
-        xamp.width = 500
         xamp.add_layout(color_bar, 'right')
 
         dz = xw_amp[1]  # xwsigma['XWSIGMA_AMP'][1]
@@ -399,7 +413,6 @@ class Xwsigma:
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
                              formatter=formatter, title="", title_text_baseline="alphabetic")
         wamp.height = 400
-        wamp.width = 500
         wamp.add_layout(color_bar, 'right')
 
         # -------------------------------------------------------------------------
@@ -407,34 +420,34 @@ class Xwsigma:
         pxh = column(px, xhist, p_hist_x, xamp)
         pwh = column(pw, whist, p_hist_w, wamp)
 
-        width_tb, height_tb = 400, 220
-
         curexp, refexp = '%3.2f' % xwsigma[0], '%3.2f' % xw_ref[0]  # 'xx..xx'
         comments = 'fitted X SIGMA averaged over isolated bright sky wavelengths'
         info = metric_table('X sigma', comments, 'xsigma', curexp, refexp)
-        tb_x = Div(text=info, width=width_tb, height=height_tb)
+        tb_x = Div(text=info)
 
         comments = 'fitted W SIGMA averaged over isolated bright sky wavelengths'
 
         curexp, refexp = '%3.2f' % xwsigma[1], '%3.2f' % xw_ref[1]
         info = metric_table('W sigma', comments, 'wsigma', curexp, refexp)
-        tb_w = Div(text=info, width=width_tb, height=height_tb)
-
-        width_tb, height_tb = 400, 140
+        tb_w = Div(text=info)
 
         alert_x = alert_table(nrg, wrg)
         alert_w = alert_table(nrg, wrg)
-        tb_alert_x = Div(text=alert_x, width=width_tb, height=height_tb)
-        tb_alert_w = Div(text=alert_w, width=width_tb, height=height_tb)
+        tb_alert_x = Div(text=alert_x)
+        tb_alert_w = Div(text=alert_w)
 
         layout = column(
             widgetbox(info_col, css_classes=["header-xwsigma"]),
             widgetbox(Div(), css_classes=["table-ranges-xwsigma"]),
             widgetbox(tb_x, css_classes=["table-comments-xwsigma"]),
             widgetbox(tb_w, css_classes=["table-comments-xwsigma"]),
-            column(widgetbox(tb_alert_x), px, xhist,
-                   p_hist_x, xamp, css_classes=["xwsigma"]),
-            column(widgetbox(tb_alert_w), pw, whist,
-                   p_hist_w, wamp, css_classes=["xwsigma"]),
+            column(widgetbox(tb_alert_x), px,
+                gridplot([[xhist]], plot_height=300, toolbar_location='left'),
+                gridplot([[p_hist_x]], plot_height=300, toolbar_location='left'),
+                gridplot([[xamp]], plot_width=500, toolbar_location='left'), css_classes=["xwsigma-center"]),
+            column(widgetbox(tb_alert_w), pw,
+                gridplot([[whist]], plot_height=300, toolbar_location='left'),
+                gridplot([[p_hist_w]], plot_height=300, toolbar_location='left'),
+                gridplot([[wamp]], plot_width=500, toolbar_location='left'), css_classes=["xwsigma-center"]),
             css_classes=["display-grid-xwsigma"])
         return file_html(layout, CDN, "XWSIGMA")

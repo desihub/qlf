@@ -91,7 +91,7 @@ class Bias:
         p = Figure(title=name, tools=[hover, "save"],
                 x_range= list([-0.5,1.5]),
                 y_range= list([-0.5,1.5]),
-                plot_width=450, plot_height=400
+                plot_width=450, plot_height=400,
                 )
 
 
@@ -144,7 +144,7 @@ class Bias:
         from dashboard.bokeh.qlf_plot import html_table
 
         tb = html_table(nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
+        tbinfo = Div(text=tb)
 
         info_col = Div(text=write_description('getbias'), width=2*p.plot_width)
 
@@ -157,10 +157,10 @@ class Bias:
         metric_txt = metric_table(
             metricname, comments, keyname,  curexp=curexp, refexp=refexp)
         metric_txt = mtable('getbias', mergedqa, comments)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
 
         alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt, width=350)
+        alert_tb = Div(text=alert_txt)
         p.sizing_mode = "scale_width"
 
 

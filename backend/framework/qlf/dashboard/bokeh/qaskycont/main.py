@@ -98,7 +98,7 @@ class Skycont:
         p2 = Figure(title='SKY_CONT',
                     x_axis_label='RA', y_axis_label='DEC',
                     plot_width=500, plot_height=380,
-                    tools=[hover, "pan,box_zoom,reset,tap"])
+                    tools=[hover, "pan,box_zoom,reset,tap"], active_drag="box_zoom",)
 
         p2.circle('ra', 'dec', source=source2, radius=radius,
                   fill_color={'field': 'skycont', 'transform': mapper},
@@ -139,9 +139,9 @@ class Skycont:
        # Prepare tables
         comments = 'Sky continuum in all configured continuum areas averaged over all sky fibers'
         metric_txt = mtable('skycont', mergedqa, comments)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt, width=350)
+        alert_tb = Div(text=alert_txt)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
