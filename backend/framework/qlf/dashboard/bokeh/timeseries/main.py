@@ -174,16 +174,23 @@ class TimeSeries():
         self.p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
                    plot_width=700, plot_height=350, tools=[hover, 'box_zoom, pan,wheel_zoom,zoom_in, zoom_out,reset'], active_drag="box_zoom",)
 
+        info = "<h3>Camera: {} | Y Axis: {}<h3>".format(self.camera, self.yaxis)
         if self.yaxis in ['skybrightness', 'airmass']:
             self.single_value(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['traceshifts', 'psf']:
             self.double_value(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['noise', 'bias']:
+            info = "<h3>Camera: {} | Amp: {} | Y Axis: {}<h3>".format(self.camera, self.amp, self.yaxis)
             self.quadruple_values(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['snr']:
             self.quadruple_values(dates, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
 
-        layout = column(self.p)
+        if info:
+            info_col = Div(text=info)
+            layout = column(info_col, self.p)
+        else:
+            layout = column(self.p)
+
         return file_html(layout, CDN, "Time Series")
 
 if __name__ == "__main__":
