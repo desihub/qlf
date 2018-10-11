@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
-from bokeh.plotting import ColumnDataSource, Figure
+from bokeh.plotting import ColumnDataSource, figure
 from bokeh.models import HoverTool, Legend
 
-from bokeh.layouts import column
 from bokeh.models.widgets import Div, Select, RangeSlider
 from bokeh.resources import CDN
 from bokeh.embed import file_html
@@ -181,9 +180,16 @@ class TimeSeries():
         ]
 
         hover = HoverTool(tooltips=TOOLTIPS)
-
-        self.p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
-                   plot_width=700, plot_height=350, tools=[hover, 'box_zoom, pan,wheel_zoom,zoom_in, zoom_out,reset'], active_drag="box_zoom",)
+ 
+        self.p = figure(
+            sizing_mode='scale_width',
+            toolbar_location='above',
+            x_axis_type="datetime",
+            x_axis_label='Date',
+            y_axis_label=axis_data['display'],
+            plot_width=700, plot_height=350,
+            tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
+        )
 
         info = "<h3>Camera: {} | Y Axis: {}<h3>".format(self.camera, self.yaxis)
         if self.yaxis in ['skybrightness', 'airmass']:
@@ -196,12 +202,8 @@ class TimeSeries():
         elif self.yaxis in ['snr']:
             self.quadruple_values(dates, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
 
-        if info:
-            info_col = Div(text=info)
-            layout = column(info_col, self.p)
-        else:
-            layout = column(self.p)
-
+        info_col = Div(text=info)
+        layout = column(info_col, self.p)
         return file_html(layout, CDN, "Time Series")
 
 if __name__ == "__main__":
