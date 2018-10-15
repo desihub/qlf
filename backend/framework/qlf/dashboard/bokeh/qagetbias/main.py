@@ -166,7 +166,7 @@ class Bias:
 
         ptxt = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb),widgetbox(alert_tb),
-                        p,
+                        column(p, sizing_mode='scale_both', css_classes=["main-one"]),
                         css_classes=["display-grid"])
 
 

@@ -191,11 +191,21 @@ class Skypeak:
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
+        font_size = "1vw"
+        for plot in [p_hist, p]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
+
+
         #row1 = column(p, p_hist)
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
-                        p,
-                        p_hist,
+                        column(p, sizing_mode='scale_both'),
+                        column(p_hist, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "SKYPEAK")

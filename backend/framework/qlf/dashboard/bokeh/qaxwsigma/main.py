@@ -1,4 +1,4 @@
-from bokeh.plotting import Figure
+from bokeh.plotting import figure
 from bokeh.layouts import column, widgetbox, gridplot
 
 from bokeh.models import Span, Label
@@ -162,16 +162,16 @@ class Xwsigma:
         radius = 0.013  # 0.015
         radius_hover = 0.015  # 0.0165
 
-        px = Figure(title='XSIGMA',
-        x_axis_label='RA',
-        y_axis_label='DEC',
-        plot_height=350,
-        x_range=Range1d(left,right),
-        y_range=Range1d(bottom,
-        top),
-        tools=[xsigma_hover,
-        "box_zoom,pan,reset,crosshair"],
-        active_drag="box_zoom")
+        px = figure(title='XSIGMA',
+            x_axis_label='RA',
+            y_axis_label='DEC',
+            plot_height=350,
+            x_range=Range1d(left,right),
+            y_range=Range1d(bottom,
+            top),
+            tools=[xsigma_hover,
+            "box_zoom,pan,reset,crosshair"],
+            active_drag="box_zoom")
 
         # Color Map
         px.circle('x1','y1', source=source, name="data", radius=radius,
@@ -198,7 +198,7 @@ class Xwsigma:
         d_yplt = (max(xsigma) - min(xsigma))*0.1
         yrange = [0, max(xsigma) + d_yplt]
 
-        xhist = plot_hist(xsigma_hover, yrange, ph=280)
+        xhist = plot_hist(xsigma_hover, yrange, ph=300)
         xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data', source=source,
                    fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
                    hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -208,7 +208,7 @@ class Xwsigma:
 
         # ======
         # WSIGMA
-        pw = Figure(title='WSIGMA',
+        pw = figure(title='WSIGMA',
                 x_axis_label='RA',
                 y_axis_label='DEC',
                 plot_height=350,
@@ -243,7 +243,7 @@ class Xwsigma:
         d_yplt = (max(wsigma) - min(wsigma))*0.1
         yrange = [0, max(wsigma) + d_yplt]
 
-        whist = plot_hist(wsigma_hover, yrange, ph=280)
+        whist = plot_hist(wsigma_hover, yrange, ph=300)
         whist.quad(top='wsigma', bottom='bottom', left='left', right='right', name='data', source=source,
                    fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
                    hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -299,7 +299,7 @@ class Xwsigma:
 
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
 
-        p_hist_x = Figure(title='', tools=[hover, "box_zoom,wheel_zoom,pan,reset"], active_drag="box_zoom",
+        p_hist_x = figure(sizing_mode='scale_width', title='', tools=[hover, "box_zoom,wheel_zoom,pan,reset"], active_drag="box_zoom", plot_height=300,
                           y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale, y_range=yrange, x_range=hist_rg
                           )
 
@@ -341,7 +341,7 @@ class Xwsigma:
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
         yrangew = yrange
 
-        p_hist_w = Figure(title='', tools=[hover, "box_zoom, pan,wheel_zoom,reset"], active_drag="box_zoom",
+        p_hist_w = figure(sizing_mode='scale_width', title='', tools=[hover, "box_zoom, pan,wheel_zoom,reset"], active_drag="box_zoom",
                           y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", plot_height=300, x_axis_type="auto",    y_axis_type=yscale, y_range=yrange, x_range=hist_rg)  # , y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
         p_hist_w.quad(top=histval, bottom=bottomval, left='left', right='right',
@@ -437,17 +437,19 @@ class Xwsigma:
         tb_alert_w = Div(text=alert_w)
 
         layout = column(
-            widgetbox(info_col, css_classes=["header-xwsigma"]),
-            widgetbox(Div(), css_classes=["table-ranges-xwsigma"]),
-            widgetbox(tb_x, css_classes=["table-comments-xwsigma"]),
-            widgetbox(tb_w, css_classes=["table-comments-xwsigma"]),
-            column(widgetbox(tb_alert_x), px,
-                gridplot([[xhist]], plot_height=300, toolbar_location='left'),
-                gridplot([[p_hist_x]], plot_height=300, toolbar_location='left'),
-                gridplot([[xamp]], plot_width=500, toolbar_location='left'), css_classes=["xwsigma-center"]),
-            column(widgetbox(tb_alert_w), pw,
-                gridplot([[whist]], plot_height=300, toolbar_location='left'),
-                gridplot([[p_hist_w]], plot_height=300, toolbar_location='left'),
-                gridplot([[wamp]], plot_width=500, toolbar_location='left'), css_classes=["xwsigma-center"]),
-            css_classes=["display-grid-xwsigma"])
+            widgetbox(info_col, css_classes=["header"]),
+            widgetbox(Div(), css_classes=["tableranges"]),
+            widgetbox(tb_x),
+            widgetbox(tb_w),
+            widgetbox(tb_alert_x),
+            widgetbox(tb_alert_w),
+            column(px, sizing_mode='scale_both'),
+            column(pw, sizing_mode='scale_both'),
+            column(xhist, sizing_mode='scale_both'),
+            column(whist, sizing_mode='scale_both'),
+            column(p_hist_x, sizing_mode='scale_both'),
+            column(p_hist_w, sizing_mode='scale_both'),
+            column(xamp, sizing_mode='scale_both'),
+            column(wamp, sizing_mode='scale_both'),
+            css_classes=["display-grid"], sizing_mode='scale_width')
         return file_html(layout, CDN, "XWSIGMA")

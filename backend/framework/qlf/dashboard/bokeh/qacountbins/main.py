@@ -172,8 +172,8 @@ class Countbins:
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
-                        p,
-                        p2,
-                        css_classes=["display-grid-countbins"])
+                        column(p, sizing_mode='scale_both'),
+                        column(p2, sizing_mode='scale_both'),
+                        css_classes=["display-grid"])
 
         return file_html(layout, CDN, "COUNTBINS")
