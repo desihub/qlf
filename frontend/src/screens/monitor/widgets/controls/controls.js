@@ -13,7 +13,7 @@ import ConfirmDialog from '../../../../components/dialog/dialog';
 const styles = {
   controls: {
     minWidth: '5em',
-    width: '12vw',
+    width: '25vw',
     marginLeft: '1vw',
     display: 'flex',
     alignItems: 'center',
