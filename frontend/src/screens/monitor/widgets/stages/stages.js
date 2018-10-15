@@ -60,7 +60,7 @@ class Stages extends Component {
   };
 
   state = {
-    columnHeight: 4,
+    columnHeight: 0,
     openDialog: true,
     completed: 0,
   };
