@@ -7,7 +7,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Resizable from 're-resizable';
+// import Resizable from 're-resizable';
 import QlfApi from '../../../containers/offline/connection/qlf-api';
 
 const apiUrl = process.env.REACT_APP_API;
@@ -26,7 +26,7 @@ const styles = {
   previewContent: {
     width: '100%',
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
+    gridTemplateColumns: 'auto',
     height: 'calc(100vh - 161px)',
     overflowY: 'auto',
   },
@@ -121,19 +121,19 @@ class SurveyViewer extends React.Component {
     document.title = 'Survey Report';
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.startDate !== this.state.startDate &&
-      nextProps.endDate !== this.state.endDate &&
-      nextProps.program !== this.state.program
-    ) {
-      this.fetchObjects(
-        this.formatDate(nextProps.startDate),
-        this.formatDate(nextProps.endDate),
-        nextProps.program
-      );
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (
+  //     nextProps.startDate !== this.state.startDate &&
+  //     nextProps.endDate !== this.state.endDate &&
+  //     nextProps.program !== this.state.program
+  //   ) {
+  //     this.fetchObjects(
+  //       this.formatDate(nextProps.startDate),
+  //       this.formatDate(nextProps.endDate),
+  //       nextProps.program
+  //     );
+  //   }
+  // }
 
   fetchObjects = async (startDate, endDate, program) => {
     this.setState({
@@ -181,22 +181,22 @@ class SurveyViewer extends React.Component {
 
     return (
       <div className={classes.previewContent}>
-        <Resizable
+        {/* <Resizable
           className={classes.previewResize}
           defaultSize={{
             width: 'auto',
             height: 'auto',
           }}
-        >
-          <iframe
-            title="image-modal"
-            className={classes.iframe}
-            frameBorder="0"
-            src={url}
-            onLoad={this.props.loadEnd}
-          />
-        </Resizable>
-        {this.renderTable()}
+        > */}
+        <iframe
+          title="image-modal"
+          className={classes.iframe}
+          frameBorder="0"
+          src={url}
+          onLoad={this.props.loadEnd}
+        />
+        {/* </Resizable> */}
+        {/* {this.renderTable()} */}
       </div>
     );
   };
