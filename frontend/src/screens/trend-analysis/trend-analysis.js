@@ -183,6 +183,14 @@ class TrendAnalysis extends React.Component {
   handleChangeDatePeriod = evt => {
     let start = null;
     switch (evt.target.value) {
+      case 'all':
+        this.setState({
+          datePeriod: evt.target.value,
+          startDate: this.props.startDate,
+          endDate: this.props.endDate,
+          preview: false,
+        });
+        return;
       case 'night':
         start = moment().format();
         break;
@@ -194,11 +202,6 @@ class TrendAnalysis extends React.Component {
       case 'month':
         start = moment()
           .subtract(1, 'month')
-          .format();
-        break;
-      case 'semester':
-        start = moment()
-          .subtract(6, 'month')
           .format();
         break;
       case 'year':
@@ -213,27 +216,28 @@ class TrendAnalysis extends React.Component {
       datePeriod: evt.target.value,
       startDate: moment(start).format('YYYY-MM-DD'),
       endDate: moment().format('YYYY-MM-DD'),
+      preview: false,
     });
   };
 
   handleChangeArm = evt => {
-    this.setState({ arm: evt.target.value });
+    this.setState({ arm: evt.target.value, preview: false });
   };
 
   handleChangeAmp = evt => {
-    this.setState({ amp: evt.target.value });
+    this.setState({ amp: evt.target.value, preview: false });
   };
 
   handleChangeXaxis = evt => {
-    this.setState({ xaxis: evt.target.value });
+    this.setState({ xaxis: evt.target.value, preview: false });
   };
 
   handleChangeYaxis = evt => {
-    this.setState({ yaxis: evt.target.value });
+    this.setState({ yaxis: evt.target.value, preview: false });
   };
 
   handleChangeSpectrograph = spectrograph => {
-    this.setState({ spectrograph: [spectrograph] });
+    this.setState({ spectrograph: [spectrograph], preview: false });
   };
 
   handleSubmit = () => {
@@ -361,10 +365,10 @@ class TrendAnalysis extends React.Component {
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
+            <MenuItem value={'all'}>All</MenuItem>
             <MenuItem value={'night'}>Night</MenuItem>
             <MenuItem value={'week'}>Week</MenuItem>
             <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'semester'}>Semester</MenuItem>
             <MenuItem value={'year'}>Year</MenuItem>
           </Select>
         </FormControl>

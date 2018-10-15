@@ -40,6 +40,12 @@ const styles = {
   loading: {
     height: 8,
   },
+  barColorPrimary: {
+    backgroundColor: 'gray',
+  },
+  colorPrimary: {
+    backgroundColor: 'lightgray',
+  },
 };
 
 class Stages extends Component {
@@ -196,6 +202,12 @@ class Stages extends Component {
                                     style={styles.loading}
                                     variant="determinate"
                                     value={this.state.completed}
+                                    classes={{
+                                      barColorPrimary: this.props.classes
+                                        .barColorPrimary,
+                                      colorPrimary: this.props.classes
+                                        .colorPrimary,
+                                    }}
                                   />
                                 ) : null}
                               </TableCell>

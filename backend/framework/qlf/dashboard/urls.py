@@ -37,16 +37,10 @@ api_router.register(r'add_exposure', views.AddExposureViewSet, 'add_exposure')
 api_router.register(r'qlconfig', views.QlConfigViewSet, 'qlconfig')
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^start', views.start, name='start'),
-    url(r'^stop', views.stop, name='stop'),
-    url(r'^reset', views.reset, name='reset'),
     url(r'^send_ticket_email',
         views.send_ticket_email, name='send_ticket_email'),
     url(r'^dashboard/api/disk_thresholds',
         views.disk_thresholds, name='disk_thresholds'),
-    url(r'^daemon_status', views.daemon_status, name='daemon_status'),
-    url(r'^run_manual_mode', views.run_manual_mode, name='run_manual_mode'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
     url(r'^dashboard/get_footprint',

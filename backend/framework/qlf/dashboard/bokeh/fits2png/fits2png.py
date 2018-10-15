@@ -1,4 +1,3 @@
-import sys
 import os
 from astropy.io import fits
 from bokeh.plotting import figure
