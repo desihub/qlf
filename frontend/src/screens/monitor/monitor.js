@@ -212,7 +212,7 @@ export default class Monitor extends Component {
               arms={this.state.arms}
               spectrographs={this.state.spectrographs}
               petalSizeFactor={22}
-              monitor={true}
+              monitor={false}
               flavor={this.props.flavor}
             />
           </div>

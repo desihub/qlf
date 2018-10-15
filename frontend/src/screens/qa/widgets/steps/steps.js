@@ -44,13 +44,13 @@ const styles = {
   },
   arm: {
     fontWeight: 'bold',
-    fontSize: '14px',
+    fontSize: '1.6vw',
     textAlign: 'center',
     flex: 1,
   },
   step: {
     width: 100,
-    fontSize: '12px',
+    fontSize: '1.34vw',
     textAlign: 'center',
     cursor: 'pointer',
   },

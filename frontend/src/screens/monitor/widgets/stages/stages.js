@@ -12,7 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import flavors from '../../../../flavors';
 
-const headerSize = '11px';
+const headerSize = '1.2vw';
 
 const styles = {
   flex: { display: 'flex', flexDirection: 'row', alignItems: 'center' },
@@ -27,6 +27,7 @@ const styles = {
   arm: {
     color: '#9E9E9E',
     fontWeight: 'bold',
+    fontSize: '1.8vw',
   },
   header: {
     fontSize: headerSize,
@@ -53,7 +54,7 @@ class Stages extends Component {
   };
 
   state = {
-    columnHeight: 0,
+    columnHeight: 4,
     openDialog: true,
     completed: 0,
   };
