@@ -48,12 +48,12 @@ class Countbins:
         hist_tooltip = """ 
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER STATUS: </span>
-                    <span style="font-size: 13px; color: #515151;">@status</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER STATUS: </span>
+                    <span style="font-size: 1vw; color: #515151;">@status</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER ID: </span>
-                    <span style="font-size: 13px; color: #515151;">@fiberid</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
+                    <span style="font-size: 1vw; color: #515151;">@fiberid</span>
                 </div>
             </div>
                 """
@@ -104,20 +104,20 @@ class Countbins:
         count_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER STATUS: </span>
-                    <span style="font-size: 13px; color: #515151">@status</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER STATUS: </span>
+                    <span style="font-size: 1vw; color: #515151">@status</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
             </div>
         """
@@ -162,6 +162,15 @@ class Countbins:
         tbinfo = Div(text=tb)
 
         info_col = Div(text=write_description('countbins'))
+
+        font_size = "1vw"
+        for plot in [p, p2]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
 
        # Prepare tables
         comments = 'Number of fibers with a nonzero number of bins above highest threshold'

@@ -45,12 +45,12 @@ class Integ:
         hist_tooltip = """ 
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">INTEG: </span>
-                    <span style="font-size: 13px; color: #515151;">@integ</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">INTEG: </span>
+                    <span style="font-size: 1vw; color: #515151;">@integ</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER ID: </span>
-                    <span style="font-size: 13px; color: #515151;">@x</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x</span>
                 </div>
             </div>
                 """
@@ -70,8 +70,7 @@ class Integ:
         fiber_hist.xaxis.axis_label = "Fibers"
         fiber_hist.yaxis.axis_label = "Integral (counts)"
 
-        info_col = Div(text=write_description(
-            'integ'), width=fiber_hist.plot_width)
+        info_col = Div(text=write_description('integ'))
 
         # List of mag diff b/w the fibermag and the imaging mag from the fibermap
         tb = html_table(names=['DELTAMAG (Mean)'], vals=[

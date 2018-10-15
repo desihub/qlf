@@ -65,25 +65,25 @@ class Xwsigma:
         xsigma_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">XSigma: </span>
-                    <span style="font-size: 13px; color: #515151">@xsigma</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">XSigma: </span>
+                    <span style="font-size: 1vw; color: #515151">@xsigma</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
 
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
-                    <span style="font-size: 13px; color: #515151;">@xfiber</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; color: #515151;">@xfiber</span>
                 </div>
 
             </div>
@@ -92,24 +92,24 @@ class Xwsigma:
         wsigma_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">WSigma: </span>
-                    <span style="font-size: 13px; color: #515151">@wsigma</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">WSigma: </span>
+                    <span style="font-size: 1vw; color: #515151">@wsigma</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
-                    <span style="font-size: 13px; color: #515151;">@wfiber</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; color: #515151;">@wfiber</span>
                 </div>
 
             </div>
@@ -274,12 +274,12 @@ class Xwsigma:
         hist_tooltip_x = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
-                    <span style="font-size: 13px; color: #515151">@hist</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Frequency: </span>
+                    <span style="font-size: 1vw; color: #515151">@hist</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">XSIGMA: </span>
-                    <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">XSIGMA: </span>
+                    <span style="font-size: 1vw; color: #515151;">[@left, @right]</span>
                 </div>
             </div>
         """
@@ -315,12 +315,12 @@ class Xwsigma:
         hist_tooltip_w = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
-                    <span style="font-size: 13px; color: #515151">@hist</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Frequency: </span>
+                    <span style="font-size: 1vw; color: #515151">@hist</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">WSIGMA: </span>
-                    <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">WSIGMA: </span>
+                    <span style="font-size: 1vw; color: #515151;">[@left, @right]</span>
                 </div>
             </div>
         """
@@ -435,6 +435,15 @@ class Xwsigma:
         alert_w = alert_table(nrg, wrg)
         tb_alert_x = Div(text=alert_x)
         tb_alert_w = Div(text=alert_w)
+
+        font_size = "1vw"
+        for plot in [px, pw, xhist, whist, p_hist_x, p_hist_w, xamp, wamp]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
 
         layout = column(
             widgetbox(info_col, css_classes=["header"]),

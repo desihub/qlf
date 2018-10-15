@@ -27,7 +27,7 @@ def info_table(metricname, comments, keyname, delta, curexp='xxx', refexp='xxx')
     """
     style = """    <style>        table {
             font-family: arial, sans-serif;
-            font-size: 16px;
+            font-size: 1vw;
             border-collapse: collapse;
             width: 100%;
             }
@@ -69,7 +69,7 @@ def alert_table(nrg,wrg):
     """
     style = """    <style>        table {
             font-family: arial, sans-serif;
-            font-size: 16px;
+            font-size: 1vw;
             border-collapse: collapse;
             width: 100%;
             }
@@ -111,7 +111,7 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
     
     style = """    <style>        table {
             font-family: arial, sans-serif;
-            font-size: 16px;
+            font-size: 1vw;
             border-collapse: collapse;
             width: 100%;
             }
@@ -239,7 +239,7 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
  
     style = """    <style>        table {
             font-family: arial, sans-serif;
-            font-size: 16px;
+            font-size: 1vw;
             border-collapse: collapse;
             width: 100%;
             }
@@ -382,7 +382,7 @@ def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nr
     <style>
         table {
             font-family: arial, sans-serif;
-            font-size: 16px;
+            font-size: 1vw;
             border-collapse: collapse;
             width: 100%;
             }
@@ -465,7 +465,7 @@ def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrn
     <style>
         table {
             font-family: arial, sans-serif;
-            font-size: 16px;
+            font-size: 1vw;
             border-collapse: collapse;
             width: 100%;
             }
@@ -557,12 +557,12 @@ def plot_amp(dz, mapper, name=""):
     cmap_tooltip = """
         <div>
             <div>
-                <span style="font-size: 12px; font-weight: bold; color: #303030;">counts: </span>
-                <span style="font-size: 13px; color: #515151">@z</span>
+                <span style="font-size: 1vw; font-weight: bold; color: #303030;">counts: </span>
+                <span style="font-size: 1vw; color: #515151">@z</span>
             </div>
             <div>
-                <span style="font-size: 12px; font-weight: bold; color: #303030;">AMP: </span>
-                <span style="font-size: 13px; color: #515151;">@amp</span>
+                <span style="font-size: 1vw; font-weight: bold; color: #303030;">AMP: </span>
+                <span style="font-size: 1vw; color: #515151;">@amp</span>
             </div>
         </div>
     """.replace("counts:", name+":")
@@ -611,9 +611,9 @@ def plot_amp(dz, mapper, name=""):
            fill_color={'field': 'z', 'transform': mapper}, fill_alpha=0.9)
 
     p.text(x="x", y="y_offset2", text="ztext",
-           text_font_style="bold", text_font_size="20pt", **text_props)
+           text_font_style="bold", text_font_size="1.1vw", **text_props)
     p.text(x="x", y="y_offset1", text="amp",
-            text_font_size="18pt", **text_props)
+            text_font_size="1vw", **text_props)
     
 
     return p

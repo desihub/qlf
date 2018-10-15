@@ -208,24 +208,24 @@ class SNR:
         html_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">SNR^2: </span>
-                    <span style="font-size: 13px; color: #515151;">@y</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">SNR^2: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DECAM_R: </span>
-                    <span style="font-size: 13px; color: #515151;">@x</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DECAM_R: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
-                    <span style="font-size: 13px; color: #515151;">@fiber_id</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Fiber ID: </span>
+                    <span style="font-size: 1vw; color: #515151;">@fiber_id</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@ra</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@ra</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Dec: </span>
-                    <span style="font-size: 13px; color: #515151">@dec</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Dec: </span>
+                    <span style="font-size: 1vw; color: #515151">@dec</span>
                 </div>
             </div>
         """
@@ -305,25 +305,25 @@ class SNR:
         snr_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Resid: </span>
-                    <span style="font-size: 13px; color: #515151">@resid_snr</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Resid: </span>
+                    <span style="font-size: 1vw; color: #515151">@resid_snr</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
 
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
-                    <span style="font-size: 13px; color: #515151;">@QLF_FIBERID</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; color: #515151;">@QLF_FIBERID</span>
                 </div>
 
             </div>
@@ -440,29 +440,29 @@ class SNR:
         median_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">MEDIAN: </span>
-                    <span style="font-size: 13px; color: #515151">@median</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">MEDIAN: </span>
+                    <span style="font-size: 1vw; color: #515151">@median</span>
                 </div>
        <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Resid: </span>
-                    <span style="font-size: 13px; color: #515151">@resid_snr</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Resid: </span>
+                    <span style="font-size: 1vw; color: #515151">@resid_snr</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
 
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
-                    <span style="font-size: 13px; color: #515151;">@QLF_FIBERID</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; color: #515151;">@QLF_FIBERID</span>
                 </div>
 
             </div>

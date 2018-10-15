@@ -47,20 +47,20 @@ class Skypeak:
         peak_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">PEAKCOUNT: </span>
-                    <span style="font-size: 13px; color: #515151">@peakcount_fib</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">PEAKCOUNT: </span>
+                    <span style="font-size: 1vw; color: #515151">@peakcount_fib</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
             </div>
         """
@@ -127,8 +127,7 @@ class Skypeak:
         p.add_layout(xcolor_bar, 'right')
 
         try:
-            info_col = Div(text=write_description(
-                'skypeak'), width=p.plot_width)
+            info_col = Div(text=write_description('skypeak'))
         except Exception as err:
             f = open('dbg', 'w')
             f.write(str(err))
@@ -139,12 +138,12 @@ class Skypeak:
         hist_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
-                    <span style="font-size: 13px; color: #515151">@hist</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Frequency: </span>
+                    <span style="font-size: 1vw; color: #515151">@hist</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Peakcount: </span>
-                    <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Peakcount: </span>
+                    <span style="font-size: 1vw; color: #515151;">[@left, @right]</span>
                 </div>
             </div>
         """

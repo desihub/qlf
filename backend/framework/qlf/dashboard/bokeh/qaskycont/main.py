@@ -47,16 +47,16 @@ class Skycont:
         skc_tooltips = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">SKY CONT: </span>
-                    <span style="font-size: 13px; color: #515151;">@skycont</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">SKY CONT: </span>
+                    <span style="font-size: 1vw; color: #515151;">@skycont</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@ra</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@ra</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@dec</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@dec</span>
                 </div>
             </div>
         """
@@ -130,7 +130,7 @@ class Skycont:
         # infos
         info, nlines = write_info('skycont', check_spectra['PARAMS'])
         txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
-        info_col = Div(text=write_description('skycont'), width=p2.plot_width)
+        info_col = Div(text=write_description('skycont'))
 
         tb = html_table(names=['Sky continuum averaged over sky fibers'], vals=[
             '{:.3f}'.format(skycont['SKYCONT'])], nrng=nrg, wrng=wrg)
