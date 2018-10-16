@@ -156,7 +156,7 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
     elif keyname in [ 'countpix','getbias','getrms']:
         #per AMP
         for i in list(range(len(curexp))):
-            key_tb.append(metricname + ' (AMP %d)'%(i+1))
+            key_tb.append(metricname + ' %d'%(i+1))
             try: curtb[i] = '{:4.3f}'.format(curexp[i])
             except: curtb[i] = '???'#curexp[i]
         
@@ -331,7 +331,7 @@ def mtable(qa, data, comments, objtype=['XXELG','XXSTAR']):
        
     elif qa in [ 'countpix','getbias','getrms']:
         #per AMP
-        key_tb= [qa_metrics[qa] + ' (AMP %d)'%(i+1) for i in list(range(nrows))]
+        key_tb= [qa_metrics[qa] + ' %d'%(i+1) for i in list(range(nrows))]
         
     elif qa in ['xwsigma']:
         # per axis x or w
