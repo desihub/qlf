@@ -181,7 +181,7 @@ class TimeSeries():
         ]
 
         hover = HoverTool(tooltips=TOOLTIPS)
- 
+
         self.p = figure(
             sizing_mode='scale_width',
             toolbar_location='above',
