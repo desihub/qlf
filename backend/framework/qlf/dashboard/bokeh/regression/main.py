@@ -1,45 +1,47 @@
-#        bokeh serve --show regression_hist.py
 import numpy as np
+import pandas as pd
+from bokeh.plotting import ColumnDataSource, figure
+from bokeh.models import HoverTool, Legend
+from bokeh.layouts import column
 
-from numpy.random import random
-
-from bokeh.io import curdoc
-from bokeh.layouts import column, row
-from bokeh.plotting import ColumnDataSource, Figure
-from bokeh.models.widgets import Select, TextInput
-from bokeh.models import HoverTool
-
-from bokeh.io import curdoc
-from bokeh.layouts import row, column, widgetbox
-from bokeh.models import ColumnDataSource, Spacer
-from bokeh.models.widgets import PreText, Select
-from bokeh.plotting import Figure
-from bokeh.io import output_notebook, show
-from scipy.stats import pearsonr
+from bokeh.models.widgets import Div, Select, RangeSlider
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import json
+from bokeh.models import DatetimeTickFormatter
+from log import get_logger
+import os
+from qlf_models import QLFModels
+from datetime import datetime, timedelta
+
+qlf_root = os.environ.get('QLF_ROOT')
+
+logger = get_logger(
+    "qlf.bokeh",
+    os.path.join(qlf_root, "logs", "bokeh.log")
+)
+
+plots = {
+    'skybrightness': {
+        'display': 'SKY BRIGHTNESS',
+        'path': 'TASKS->CHECK_SPECTRA->METRICS->PEAKCOUNT'
+    },
+    'airmass': {
+        'display': 'AIRMASS',
+        'path': 'GENERAL_INFO->AIRMASS'
+    },
+}
 
 class Regression():
-    def __init__(self, xaxis, yaxis, start, end, exposures):
-        self.xaxis = xaxis
+    def __init__(self, xaxis, yaxis, start, end, camera):
         self.yaxis = yaxis
-        self.start = start
-        self.end = end
-        self.exposures = exposures
+        self.xaxis = xaxis
+        self.start = datetime.strptime(start, '%Y%m%d').strftime('%Y-%m-%d')
+        self.end = datetime.strptime(end, '%Y%m%d').strftime('%Y-%m-%d')
+        self.camera = camera
+        self.models = QLFModels()
 
-    def render(self):
-        try:
-            data_json = json.load(
-                open('/app/spectro/mock_files/QLFmock_trend_data-b0.json'))
-        except Exception as err:
-            print(err)
-        noise = data_json['noise']
-        bias = data_json['bias']
-        fidsnr = data_json['fidsnr']
-        peakcount = data_json['peakcount']
-
-
+    def render_plot(self, exposures, x_values, y_values, cameras):
         data_model = dict(
             noise1=noise[0], noise2=noise[1], noise3=noise[2], noise4=noise[3],
             bias1=bias[0], bias2=bias[1], bias3=bias[2], bias4=bias[3],
@@ -52,7 +54,6 @@ class Regression():
             x=data_model[self.xaxis],
             y=data_model[self.yaxis]
         ))
-
 
         def style(p):
             # Title
@@ -72,7 +73,6 @@ class Regression():
 
             return p
 
-
         fiber_tooltip = """
                     <div>
                         <div>
@@ -91,9 +91,9 @@ class Regression():
         corr = pearsonr(data_model['noise1'], data_model['noise2'])
 
         plot = Figure(title='r: {:3.2f}'.format(corr[0]), plot_width=600, plot_height=600,
-                    toolbar_location='above',
-                    x_axis_label='Noise (AMP 1)', y_axis_label='Noise (AMP 2)',
-                    tools=[hover, 'pan,wheel_zoom,box_select,reset'])
+                      toolbar_location='above',
+                      x_axis_label='Noise (AMP 1)', y_axis_label='Noise (AMP 2)',
+                      tools=[hover, 'pan,wheel_zoom,box_select,reset'])
 
         q = plot.circle('x', 'y', source=source, size=8,
                         fill_color='dodgerblue',
@@ -105,19 +105,19 @@ class Regression():
             + ['peak']
 
         label_dict = dict(zip(qa_options,
-                            ["Noise (AMP %s)" % i for i in list(range(1, 5))]
-                            + ["Bias (AMP %s)" % i for i in list(range(1, 5))]
-                            + ["SNR %s" % (i+1) for i in list(range(len(fidsnr)))]
-                            + ['Peak Count']
-                            ))
+                              ["Noise (AMP %s)" % i for i in list(range(1, 5))]
+                              + ["Bias (AMP %s)" %
+                                 i for i in list(range(1, 5))]
+                              + ["SNR %s" % (i+1)
+                                 for i in list(range(len(fidsnr)))]
+                              + ['Peak Count']
+                              ))
 
         plot = style(plot)
-
 
         hhist, hedges = np.histogram(source.data['x'], bins='sqrt')
         hzeros = np.zeros(len(hedges)-1)
         hmax = max(hhist)*1.1
-
 
         ph = Figure(tools='pan,wheel_zoom, reset', toolbar_location='left', plot_width=plot.plot_width, plot_height=200, x_range=plot.x_range,
                     y_range=(-0.1*hmax, hmax),
@@ -127,8 +127,7 @@ class Regression():
         ph.yaxis.major_label_orientation = 0
 
         qh = ph.quad(bottom=0, left=hedges[:-1], right=hedges[1:],
-                    top=hhist, color="#a7bae1", line_color="black")
-
+                     top=hhist, color="#a7bae1", line_color="black")
 
         # create the vertical histogram
         vhist, vedges = np.histogram(source.data['y'], bins='sqrt')
@@ -142,9 +141,56 @@ class Regression():
         pv.background_fill_color = "#fafafa"
 
         qv = pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:],
-                    right=vhist, color="#a7bae1", line_color="black")
+                     right=vhist, color="#a7bae1", line_color="black")
 
+        self.layout = column(
+            row(column(row(plot, pv), row(ph, Spacer(width=pv.width, height=ph.height)))), sizing_mode='scale_width')
 
-        layout = column(row(column(row(plot, pv), row(ph, Spacer(width=pv.width, height=ph.height)))))
+    def render(self):
+        y_data = plots[self.yaxis]
+        outputs_y = self.models.get_outputs_json_chunk_by_camera(
+            y_data['path'], self.camera, begin_date=self.start, end_date=self.end)
+        x_data = plots[self.xaxis]
+        outputs = self.models.get_outputs_json_chunk_by_camera(
+            x_data['path'], self.camera, begin_date=self.start, end_date=self.end)
+
+        cameras = list()
+        x_values = list()
+        y_values = list()
+        exposures = list()
+        for idx, val in enumerate(outputs_y):
+            if val['value']:
+                exposures.append(val['exposure_id'])
+                cameras.append(self.camera)
+                y_values.append(val['value'])
+
+        for idx, val in enumerate(outputs_x):
+            if val['value']:
+                x_values.append(val['value'])
+
+        TOOLTIPS = [
+            ("Camera", "@camera"),
+            (y_data['display'], "@y"),
+            (x_data['display'], "@x"),
+            ("Exposure", "@exposure"),
+        ]
+
+        hover = HoverTool(tooltips=TOOLTIPS)
+
+        self.p = figure(
+            sizing_mode='scale_width',
+            toolbar_location='above',
+            x_axis_label=x_data['display'],
+            y_axis_label=y_data['display'],
+            plot_width=700, plot_height=300,
+            active_drag="box_zoom",
+            tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
+        )
+
+        info = "<h3>Camera: {}<h3>".format(self.camera)
+        self.render_plot(exposures, x_values, y_values, cameras)
+
+        info_col = Div(text=info)
+        layout = column(info_col, self.layout, sizing_mode='scale_width')
 
         return file_html(layout, CDN, "Regression")
