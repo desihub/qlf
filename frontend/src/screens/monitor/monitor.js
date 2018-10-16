@@ -37,7 +37,7 @@ const styles = {
     flexDirection: 'column',
     padding: '0vh 1vw',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingBottom: '1vh',
   },
 };
