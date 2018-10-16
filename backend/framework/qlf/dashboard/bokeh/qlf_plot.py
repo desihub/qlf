@@ -113,12 +113,13 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
     elif keyname in ['countpix', 'getbias', 'getrms']:
         # per AMP
         for i in list(range(len(curexp))):
-            key_tb.append(metricname + ' (AMP %d)' % (i+1))
+            key_tb.append(metricname + ' %d'%(i+1))
+
             try:
                 curtb[i] = '{:4.3f}'.format(curexp[i])
             except:
                 curtb[i] = '???'  # curexp[i]
-
+                
     elif keyname in ['xwsigma']:
         # per axis x or w
         for i in list(range(len(curexp))):

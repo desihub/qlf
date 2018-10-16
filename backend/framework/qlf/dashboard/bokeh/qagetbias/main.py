@@ -1,5 +1,5 @@
 from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import layout, widgetbox, row, column, gridplot
 
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
@@ -14,6 +14,7 @@ from dashboard.bokeh.qlf_plot import alert_table, mtable
 import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +33,6 @@ class Bias:
 
         nrg = check_ccds['PARAMS']['BIAS_AMP_NORMAL_RANGE']
         wrg = check_ccds['PARAMS']['BIAS_AMP_WARN_RANGE']
-        tests = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
 
         # ============================================
         # THIS: Given the set up in the block above,
@@ -88,12 +88,12 @@ class Bias:
 
         hover = HoverTool(tooltips=cmap_tooltip)
 
-        p = Figure(title=name, tools=[hover, "save"],
+        p = Figure(
+                title=name, tools=[hover, "save"],
                 x_range= list([-0.5,1.5]),
                 y_range= list([-0.5,1.5]),
-                plot_width=450, plot_height=400,
-                )
-
+                plot_width=450, plot_height=400
+            )
 
         p.grid.grid_line_color = None
         p.outline_line_color = None
@@ -159,7 +159,23 @@ class Bias:
 
         alert_txt = alert_table(nrg,wrg)
         alert_tb = Div(text=alert_txt)
-        p.sizing_mode = "scale_width"
+
+        # ptxt = layout([
+        #     [widgetbox(info_col), Div()],
+        #     [p, column(widgetbox(metric_tb), widgetbox(alert_tb))]
+        # ], sizing_mode='scale_width')
+
+        p.sizing_mode = 'scale_width'
+
+        coltable = column(
+            widgetbox(metric_tb, sizing_mode='scale_width'),
+            widgetbox(alert_tb, sizing_mode='scale_width'),
+            sizing_mode='scale_width'
+        )
+        ptxt = [
+            row(widgetbox(info_col)),
+            row(p, coltable, sizing_mode='scale_width')
+        ]
 
         font_size = "1vw"
         for plot in [p]:
@@ -170,11 +186,7 @@ class Bias:
             plot.legend.label_text_font_size = font_size
             plot.title.text_font_size = font_size
 
-        ptxt = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb),widgetbox(alert_tb),
-                        column(p, sizing_mode='scale_both', css_classes=["main-one"]),
-                        css_classes=["display-grid"])
-
+        # return ptxt
 
         # End of Bokeh Block
         return file_html(ptxt, CDN, "GETBIAS")
