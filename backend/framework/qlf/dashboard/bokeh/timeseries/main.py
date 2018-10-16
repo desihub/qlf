@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from bokeh.plotting import ColumnDataSource, Figure
-from bokeh.models import HoverTool
-
+from bokeh.plotting import ColumnDataSource, figure
+from bokeh.models import HoverTool, Legend
 from bokeh.layouts import column
+
 from bokeh.models.widgets import Div, Select, RangeSlider
 from bokeh.resources import CDN
 from bokeh.embed import file_html
@@ -85,7 +85,7 @@ class TimeSeries():
             ['spatial width averaged over fitted lines', 'blue'],
             ['median taken over all fibers per amp', 'green']
         ]
-
+        legends=list()
         for idx, color in enumerate(colors):
             source = ColumnDataSource(data=dict(
                 x=dates,
@@ -94,8 +94,12 @@ class TimeSeries():
                 camera=cameras,
                 dateobs=dateobs
             ))
-            self.p.line('x', 'y', source=source, legend='Lower {}'.format(color[0]), line_color=color[1])
-            self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color[1])
+            line = self.p.line('x', 'y', source=source, line_color=color[1])
+            circle = self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color[1])
+            legends.append(('Lower {}'.format(color[0]), [line, circle]))
+        legend = Legend(items=legends, location=(0, 0))
+
+        self.p.add_layout(legend, 'below')
 
     def quadruple_values(self, dates, values, exposures, cameras, dateobs, objtype=None):
         amps = [[],[],[],[]]
@@ -111,6 +115,7 @@ class TimeSeries():
             'green',
             'orange'
         ]
+        legends=list()
         if objtype is not None:
             for idx, color in enumerate(colors):
                 source = ColumnDataSource(data=dict(
@@ -120,8 +125,9 @@ class TimeSeries():
                     camera=cameras,
                     dateobs=dateobs
                 ))
-                self.p.line('x', 'y', source=source, legend='OBJ {}'.format(idx), line_color=color)
-                self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color)
+                line=self.p.line('x', 'y', source=source, line_color=color)
+                circle=self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color)
+                legends.append(('OBJ {}'.format(idx), [line, circle]))
         elif self.amp == 'all':
             for idx, color in enumerate(colors):
                 source = ColumnDataSource(data=dict(
@@ -131,8 +137,9 @@ class TimeSeries():
                     camera=cameras,
                     dateobs=dateobs
                 ))
-                self.p.line('x', 'y', source=source, legend='AMP {}'.format(idx), line_color=color)
-                self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color)
+                line=self.p.line('x', 'y', source=source, line_color=color)
+                circle=self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color)
+                legends.append(('AMP {}'.format(idx), [line, circle]))
         else:
             source = ColumnDataSource(data=dict(
                 x=dates,
@@ -141,8 +148,12 @@ class TimeSeries():
                 camera=cameras,
                 dateobs=dateobs
             ))
-            self.p.line('x', 'y', source=source, legend='AMP {}'.format(self.amp), line_color=colors[int(self.amp)])
-            self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=colors[int(self.amp)])
+            line=self.p.line('x', 'y', source=source, line_color=colors[int(self.amp)])
+            circle=self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=colors[int(self.amp)])
+            legends.append(('AMP {}'.format(self.amp), [line, circle]))
+        legend = Legend(items=legends, location=(0, 0))
+
+        self.p.add_layout(legend, 'below')
 
     def render(self):
         axis_data = plots[self.yaxis]
@@ -170,20 +181,30 @@ class TimeSeries():
         ]
 
         hover = HoverTool(tooltips=TOOLTIPS)
+ 
+        self.p = figure(
+            sizing_mode='scale_width',
+            toolbar_location='above',
+            x_axis_type="datetime",
+            x_axis_label='Date',
+            y_axis_label=axis_data['display'],
+            plot_width=700, plot_height=300,
+            tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
+        )
 
-        self.p = Figure(toolbar_location='above',  x_axis_type="datetime", x_axis_label='Date', y_axis_label=axis_data['display'],
-                   plot_width=700, plot_height=350, tools=[hover, 'pan,wheel_zoom,zoom_in, zoom_out,reset'])
-
+        info = "<h3>Camera: {} | Y Axis: {}<h3>".format(self.camera, self.yaxis)
         if self.yaxis in ['skybrightness', 'airmass']:
             self.single_value(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['traceshifts', 'psf']:
             self.double_value(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['noise', 'bias']:
+            info = "<h3>Camera: {} | Amp: {} | Y Axis: {}<h3>".format(self.camera, self.amp, self.yaxis)
             self.quadruple_values(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['snr']:
             self.quadruple_values(dates, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
 
-        layout = column(self.p)
+        info_col = Div(text=info)
+        layout = column(info_col, self.p, sizing_mode='scale_width')
         return file_html(layout, CDN, "Time Series")
 
 if __name__ == "__main__":

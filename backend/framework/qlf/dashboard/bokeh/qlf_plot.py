@@ -20,7 +20,6 @@ def sort_obj(gen_info):
             pass
     return obj_type
 
-
 def alert_table(nrg, wrg):
     """ Create metric tables
     """
@@ -34,7 +33,6 @@ def alert_table(nrg, wrg):
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dcdcdc;
@@ -76,7 +74,6 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dcdcdc;
@@ -204,7 +201,6 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
         td, th {
             border: 1px solid #dddddd;
             text-align: center;
-            padding: 8px;
             }
         tr:nth-child(even) {
         background-color: #dcdcdc;
@@ -356,6 +352,8 @@ def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nr
 
     header = """
     <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+
+
     <table>
     <tr>
         <th>Alert</th>     <th>Minimum Value</th>        <th>Maximum Value</th>
