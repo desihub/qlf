@@ -48,12 +48,12 @@ class Countbins:
         hist_tooltip = """ 
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER STATUS: </span>
-                    <span style="font-size: 13px; color: #515151;">@status</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER STATUS: </span>
+                    <span style="font-size: 1vw; color: #515151;">@status</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER ID: </span>
-                    <span style="font-size: 13px; color: #515151;">@fiberid</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
+                    <span style="font-size: 1vw; color: #515151;">@fiberid</span>
                 </div>
             </div>
                 """
@@ -104,20 +104,20 @@ class Countbins:
         count_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER STATUS: </span>
-                    <span style="font-size: 13px; color: #515151">@status</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER STATUS: </span>
+                    <span style="font-size: 1vw; color: #515151">@status</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
             </div>
         """
@@ -163,17 +163,26 @@ class Countbins:
 
         info_col = Div(text=write_description('countbins'))
 
+        font_size = "1vw"
+        for plot in [p, p2]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
+
        # Prepare tables
         comments = 'Number of fibers with a nonzero number of bins above highest threshold'
         metric_txt = mtable('countbins', mergedqa)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
-                        p,
-                        p2,
-                        css_classes=["display-grid-countbins"])
+                        column(p, sizing_mode='scale_both'),
+                        column(p2, sizing_mode='scale_both'),
+                        css_classes=["display-grid"])
 
         return file_html(layout, CDN, "COUNTBINS")

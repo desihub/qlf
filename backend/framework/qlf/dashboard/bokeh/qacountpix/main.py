@@ -76,12 +76,12 @@ class Countpix:
         cmap_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">counts: </span>
-                    <span style="font-size: 13px; color: #515151">@z</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">counts: </span>
+                    <span style="font-size: 1vw; color: #515151">@z</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">AMP: </span>
-                    <span style="font-size: 13px; color: #515151;">@amp</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">AMP: </span>
+                    <span style="font-size: 1vw; color: #515151;">@amp</span>
                 </div>
             </div>
         """.replace("counts:", name+":")
@@ -112,9 +112,9 @@ class Countpix:
         p.axis.minor_tick_line_color = None
 
         p.text(x="x", y="y_offset2", text="ztext",
-               text_font_style="bold", text_font_size="20pt", **text_props)
+               text_font_style="bold", text_font_size="1vw", **text_props)
         p.text(x="x", y="y_offset1", text="amp",
-               text_font_size="18pt", **text_props)
+               text_font_size="1vw", **text_props)
         formatter = PrintfTickFormatter(format=cbarformat)  # format='%2.1e')
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0), formatter=formatter, title="", title_text_baseline="alphabetic")
@@ -139,8 +139,7 @@ class Countpix:
         tb = html_table(nrng=nrg, wrng=wrg)
         tbinfo = Div(text=tb, width=400)
 
-        info_col = Div(text=write_description('countpix'),
-                       width=450)
+        info_col = Div(text=write_description('countpix'))
 
         # Prepare tables
         comments = 'Fraction of the pixels per amp that are above CUTPIX = 5sigmas '
@@ -156,9 +155,19 @@ class Countpix:
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
+        font_size = "1vw"
+        for plot in [p]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
+
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
-                        p,
+                        column(p, sizing_mode='scale_both',
+                               css_classes=["main-one"]),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "Countpix")

@@ -208,24 +208,24 @@ class SNR:
         html_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">SNR^2: </span>
-                    <span style="font-size: 13px; color: #515151;">@y</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">SNR^2: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DECAM_R: </span>
-                    <span style="font-size: 13px; color: #515151;">@x</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DECAM_R: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
-                    <span style="font-size: 13px; color: #515151;">@fiber_id</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Fiber ID: </span>
+                    <span style="font-size: 1vw; color: #515151;">@fiber_id</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@ra</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@ra</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Dec: </span>
-                    <span style="font-size: 13px; color: #515151">@dec</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Dec: </span>
+                    <span style="font-size: 1vw; color: #515151">@dec</span>
                 </div>
             </div>
         """
@@ -305,25 +305,25 @@ class SNR:
         snr_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Resid: </span>
-                    <span style="font-size: 13px; color: #515151">@resid_snr</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Resid: </span>
+                    <span style="font-size: 1vw; color: #515151">@resid_snr</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
 
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
-                    <span style="font-size: 13px; color: #515151;">@QLF_FIBERID</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; color: #515151;">@QLF_FIBERID</span>
                 </div>
 
             </div>
@@ -440,29 +440,29 @@ class SNR:
         median_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">MEDIAN: </span>
-                    <span style="font-size: 13px; color: #515151">@median</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">MEDIAN: </span>
+                    <span style="font-size: 1vw; color: #515151">@median</span>
                 </div>
        <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Resid: </span>
-                    <span style="font-size: 13px; color: #515151">@resid_snr</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Resid: </span>
+                    <span style="font-size: 1vw; color: #515151">@resid_snr</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
 
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER #: </span>
-                    <span style="font-size: 13px; color: #515151;">@QLF_FIBERID</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; color: #515151;">@QLF_FIBERID</span>
                 </div>
 
             </div>
@@ -470,7 +470,7 @@ class SNR:
         median_hover = HoverTool(tooltips=median_tooltip, mode='vline')
 
         p_m = Figure(title='',
-                     x_axis_label='Fiber ', y_axis_label='Median S/N',
+                     x_axis_label='Fiber', y_axis_label='Median S/N',
                      plot_height=300,
                      active_drag="box_zoom",
                      tools=[median_hover, "pan,box_zoom,reset,crosshair"],
@@ -519,14 +519,26 @@ class SNR:
        # Prepare tables
         comments = 'List of average SNR for the N target type'
         metric_txt = mtable('snr', mergedqa, objtype=objlist)
-        metric_tb = Div(text=metric_txt, width=350)
+        metric_tb = Div(text=metric_txt)
 
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
+        font_size = "1vw"
+        for plot in [elg_plot, star_plot, p_m, p]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
+
+
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
-                        elg_plot, star_plot,
-                        p_m, p,
+                        column(elg_plot, sizing_mode='scale_both'),
+                        column(star_plot, sizing_mode='scale_both'),
+                        column(p_m, sizing_mode='scale_both'),
+                        column(p, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
         return file_html(layout, CDN, "MEDIAN SNR")

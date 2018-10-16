@@ -189,7 +189,7 @@ def write_description(qa_name):
                 'checkHDUs': ['','']
               }
     
-    text="""<body><p  style="text-align:left; color:#262626; font-size:20px;">
+    text="""<body><p  style="text-align:left; color:#262626; font-size:1.5vw;">
             <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0],info_dic[qa_name][1])
     return text
 
