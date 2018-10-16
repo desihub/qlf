@@ -26,9 +26,15 @@ const styles = {
   },
   green: { backgroundColor: 'green', color: 'white' },
   red: { backgroundColor: 'red', color: 'white' },
-  clearButtons: { fontSize: 12, padding: 12, minHeight: 0 },
-  clearButton: { fontSize: 12, marginTop: 8 },
-  checkbox: { height: 26 },
+  clearButtons: { fontSize: '1.2vw', padding: '1.2vw', minHeight: 0 },
+  clearButton: { fontSize: '1.2vw', marginTop: '0.8vh' },
+  checkbox: { height: '2.8vh' },
+  titleText: {
+    fontSize: '1.25vw',
+  },
+  text: {
+    fontSize: '1.1vw',
+  },
 };
 
 class Controls extends Component {
@@ -147,7 +153,12 @@ class Controls extends Component {
       >
         <div className={classes.clearButtons}>
           <FormControl component="fieldset">
-            <FormLabel component="legend">Delete Files</FormLabel>
+            <FormLabel
+              classes={{ root: this.props.classes.titleText }}
+              component="legend"
+            >
+              Delete Files
+            </FormLabel>
             <FormGroup>
               {/* <FormControlLabel
                 control={
@@ -175,6 +186,7 @@ class Controls extends Component {
                     onChange={() => this.handleChangeCheckbox('reduced')}
                   />
                 }
+                classes={{ label: this.props.classes.text }}
                 label="Reduced"
               />
               <FormControlLabel
@@ -189,6 +201,7 @@ class Controls extends Component {
                     onChange={() => this.handleChangeCheckbox('log')}
                   />
                 }
+                classes={{ label: this.props.classes.text }}
                 label="Logs"
               />
             </FormGroup>

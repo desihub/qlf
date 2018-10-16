@@ -38,7 +38,7 @@ const styles = {
     textAlign: 'center',
   },
   loading: {
-    height: 8,
+    height: '100%',
   },
   barColorPrimary: {
     backgroundColor: 'gray',
