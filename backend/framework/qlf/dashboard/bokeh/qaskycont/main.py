@@ -138,8 +138,8 @@ class Skycont:
 
        # Prepare tables
         comments = 'Sky continuum in all configured continuum areas averaged over all sky fibers'
-        metric_txt = mtable('skycont', mergedqa, comments)
-        metric_tb = Div(text=metric_txt)
+        metric_txt = mtable('skycont', mergedqa)
+        metric_tb = Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 

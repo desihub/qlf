@@ -8,8 +8,8 @@ from bokeh.models import LinearColorMapper, ColorBar
 import numpy as np
 
 from dashboard.bokeh.helper import write_description, write_info,\
-    get_merged_qa_scalar_metrics, get_palette
-from dashboard.bokeh.qlf_plot import alert_table, metric_table, mtable
+            get_merged_qa_scalar_metrics, get_palette  
+from dashboard.bokeh.qlf_plot import alert_table, mtable
 
 import logging
 from bokeh.resources import CDN
@@ -149,20 +149,16 @@ class Bias:
         info_col = Div(text=write_description('getbias'), width=2*p.plot_width)
 
         # Prepare tables
-        comments = 'Value of bias averaged over each amplifier'
-        metricname = 'BIAS_AMP'
-        keyname = 'getbias'
-        curexp = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
-        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
-        metric_txt = metric_table(
-            metricname, comments, keyname,  curexp=curexp, refexp=refexp)
-        metric_txt = mtable('getbias', mergedqa, comments)
-        metric_tb = Div(text=metric_txt)
+        comments='Value of bias averaged over each amplifier'
+        metricname='BIAS_AMP'
+        keyname='getbias'
+        curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
+        refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
+        metric_txt=mtable('getbias', mergedqa)
+        metric_tb=Div(text=metric_txt, width=350)
 
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
-        p.sizing_mode = "scale_width"
-
+        alert_txt = alert_table(nrg,wrg)
+        alert_tb = Div(text=alert_txt, width=350)
 
         ptxt = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb),widgetbox(alert_tb),
