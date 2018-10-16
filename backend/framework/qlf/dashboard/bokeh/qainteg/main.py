@@ -75,7 +75,7 @@ class Integ:
         # List of mag diff b/w the fibermag and the imaging mag from the fibermap
         tb = html_table(names=['DELTAMAG (Mean)'], vals=[
                         '{:.3f}'.format(np.mean(fiber_mag))], nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
+        tbinfo = Div(text=tb)
 
         # Reading obj_type
         try:
@@ -99,7 +99,8 @@ class Integ:
         # Prepare tables
         comments = 'List of the average fiber mag for each of N target types in this camera'
         # objtype=['ELG','STAR'] )
-        metric_txt = mtable('integ', mergedqa, comments, objtype=objlist)
+
+        metric_txt = mtable('integ', mergedqa, objtype=objlist)
         metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)

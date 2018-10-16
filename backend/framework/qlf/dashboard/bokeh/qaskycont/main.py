@@ -129,16 +129,16 @@ class Skycont:
 
         # infos
         info, nlines = write_info('skycont', check_spectra['PARAMS'])
-        txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
+        txt = PreText(text=info, height=nlines*20)
         info_col = Div(text=write_description('skycont'))
 
         tb = html_table(names=['Sky continuum averaged over sky fibers'], vals=[
             '{:.3f}'.format(skycont['SKYCONT'])], nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
+        tbinfo = Div(text=tb)
 
        # Prepare tables
         comments = 'Sky continuum in all configured continuum areas averaged over all sky fibers'
-        metric_txt = mtable('skycont', mergedqa, comments)
+        metric_txt = mtable('skycont', mergedqa)
         metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
