@@ -16,6 +16,8 @@ import Petals from '../../components/petals/petals';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 const styles = {
   controlsContainer: {
@@ -142,15 +144,18 @@ class ObservingConditions extends React.Component {
       firstLoad: false,
       spectrograph: [],
       arm: '',
+      xaxis: '',
       yaxis: '',
       startDate: '',
       endDate: '',
       datePeriod: '',
       selectYaxis: '',
+      selectXaxis: '',
       selectStartDate: '',
       selectEndDate: '',
       selectArm: '',
       selectSpectrograph: [],
+      tab: 'Time Series',
     };
   }
 
@@ -216,6 +221,10 @@ class ObservingConditions extends React.Component {
     this.setState({ yaxis: evt.target.value, preview: false });
   };
 
+  handleChangeXaxis = evt => {
+    this.setState({ xaxis: evt.target.value, preview: false });
+  };
+
   handleChangeSpectrograph = spectrograph => {
     this.setState({ spectrograph: [spectrograph], preview: false });
   };
@@ -227,12 +236,14 @@ class ObservingConditions extends React.Component {
   handleSubmit = () => {
     if (
       this.state.selectYaxis !== this.state.yaxis ||
+      this.state.selectXaxis !== this.state.xaxis ||
       this.state.selectStartDate !== this.state.startDate ||
       this.state.selectEndDate !== this.state.endDate ||
       this.state.selectSpectrograph !== this.state.spectrograph ||
       this.state.selectArm !== this.state.arm
     ) {
       this.setState({
+        selectXaxis: this.state.xaxis,
         selectYaxis: this.state.yaxis,
         selectStartDate: this.state.startDate,
         selectEndDate: this.state.endDate,
@@ -327,6 +338,29 @@ class ObservingConditions extends React.Component {
     );
   };
 
+  renderXaxisSelection = () => {
+    if (this.state.tab !== 'Time Series')
+      return (
+        <div className={this.props.classes.selection}>
+          <FormControl className={this.props.classes.formControl}>
+            <InputLabel shrink>Xaxis</InputLabel>
+            <Select
+              value={this.state.xaxis}
+              onChange={this.handleChangeXaxis}
+              input={<Input />}
+              displayEmpty
+            >
+              {/* <MenuItem value={'snr'}>SNR</MenuItem> */}
+              <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
+              {/* <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
+            <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
+              <MenuItem value={'airmass'}>AIRMASS</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      );
+  };
+
   renderYaxisSelection = () => {
     return (
       <div className={this.props.classes.selection}>
@@ -338,10 +372,10 @@ class ObservingConditions extends React.Component {
             input={<Input />}
             displayEmpty
           >
-            <MenuItem value={'snr'}>SNR</MenuItem>
+            {/* <MenuItem value={'snr'}>SNR</MenuItem> */}
             <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
-            <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
-            <MenuItem value={'psf'}>PSF FWHM</MenuItem>
+            {/* <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
+            <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
             <MenuItem value={'airmass'}>AIRMASS</MenuItem>
           </Select>
         </FormControl>
@@ -441,6 +475,7 @@ class ObservingConditions extends React.Component {
       <div className={classes.controlsContainer}>
         {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
+        {this.renderXaxisSelection()}
         {this.renderYaxisSelection()}
         {this.renderSpectrographSelection()}
         {this.renderArmSelection()}
@@ -459,6 +494,7 @@ class ObservingConditions extends React.Component {
           startDate={this.state.selectStartDate}
           endDate={this.state.selectEndDate}
           yaxis={this.state.selectYaxis}
+          xaxis={this.state.selectXaxis}
           datePeriod={this.state.datePeriod}
           arm={this.state.selectArm}
           spectrograph={this.state.selectSpectrograph}
@@ -467,17 +503,62 @@ class ObservingConditions extends React.Component {
     }
   };
 
+  renderTimeSeries = () => {
+    const { classes } = this.props;
+    return (
+      <div className={classes.gridRow}>
+        {this.renderControls()}
+        <div className={classes.viewer}>
+          {this.renderLoading()}
+          {this.renderViewer('timeseries')}
+        </div>
+      </div>
+    );
+  };
+
+  renderRegression = () => {
+    const { classes } = this.props;
+    return (
+      <div className={classes.gridRow}>
+        {this.renderControls()}
+        <div className={classes.viewer}>
+          {this.renderLoading()}
+          {this.renderViewer('regression')}
+        </div>
+      </div>
+    );
+  };
+
+  handleTabChange = (evt, tab) => {
+    this.setState({ tab });
+  };
+
+  renderTabs = () => {
+    const { tab } = this.state;
+    return (
+      <div>
+        <Tabs
+          value={tab}
+          onChange={this.handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          fullWidth
+          centered
+        >
+          <Tab label="Time Series" value={'Time Series'} />
+          <Tab label="Regression" value={'Regression'} />
+        </Tabs>
+        {tab === 'Time Series' ? this.renderTimeSeries() : null}
+        {tab === 'Regression' ? this.renderRegression() : null}
+      </div>
+    );
+  };
+
   render() {
     const { classes } = this.props;
     return (
       <Paper elevation={4} className={classes.main}>
-        <div className={classes.gridRow}>
-          {this.renderControls()}
-          <div className={classes.viewer}>
-            {this.renderLoading()}
-            {this.renderViewer('timeseries')}
-          </div>
-        </div>
+        {this.renderTabs()}
       </Paper>
     );
   }
