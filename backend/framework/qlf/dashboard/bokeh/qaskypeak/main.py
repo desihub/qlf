@@ -47,20 +47,20 @@ class Skypeak:
         peak_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">PEAKCOUNT: </span>
-                    <span style="font-size: 13px; color: #515151">@peakcount_fib</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">PEAKCOUNT: </span>
+                    <span style="font-size: 1vw; color: #515151">@peakcount_fib</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@x1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@y1</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
             </div>
         """
@@ -127,8 +127,7 @@ class Skypeak:
         p.add_layout(xcolor_bar, 'right')
 
         try:
-            info_col = Div(text=write_description(
-                'skypeak'), width=p.plot_width)
+            info_col = Div(text=write_description('skypeak'))
         except Exception as err:
             f = open('dbg', 'w')
             f.write(str(err))
@@ -139,12 +138,12 @@ class Skypeak:
         hist_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Frequency: </span>
-                    <span style="font-size: 13px; color: #515151">@hist</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Frequency: </span>
+                    <span style="font-size: 1vw; color: #515151">@hist</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Peakcount: </span>
-                    <span style="font-size: 13px; color: #515151;">[@left, @right]</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Peakcount: </span>
+                    <span style="font-size: 1vw; color: #515151;">[@left, @right]</span>
                 </div>
             </div>
         """
@@ -186,16 +185,26 @@ class Skypeak:
 
        # Prepare tables
         comments = 'Sky continuum in all configured continuum areas averaged over all sky fibers'
-        metric_txt = mtable('skypeak', mergedqa, comments)
+        metric_txt = mtable('skypeak', mergedqa)
         metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
+        font_size = "1vw"
+        for plot in [p_hist, p]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
+
+
         #row1 = column(p, p_hist)
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
-                        p,
-                        p_hist,
+                        column(p, sizing_mode='scale_both'),
+                        column(p_hist, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "SKYPEAK")

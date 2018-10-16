@@ -81,6 +81,7 @@ class SurveyReport extends React.Component {
       selectProgram: '',
       selectStartDate: '',
       selectEndDate: '',
+      preview: true,
     };
   }
 
@@ -103,19 +104,21 @@ class SurveyReport extends React.Component {
   }
 
   handleChangeProgram = evt => {
-    this.setState({ program: evt.target.value });
+    if (evt.target.value !== this.state.program)
+      this.setState({ program: evt.target.value, preview: false });
   };
 
   handleChangeDatePeriod = evt => {
     let start = null;
     switch (evt.target.value) {
       case 'all':
-        this.setState({
-          datePeriod: evt.target.value,
-          startDate: this.props.startDate,
-          endDate: this.props.endDate,
-          preview: false,
-        });
+        if (evt.target.value !== this.state.datePeriod)
+          this.setState({
+            datePeriod: evt.target.value,
+            startDate: this.props.startDate,
+            endDate: this.props.endDate,
+            preview: false,
+          });
         return;
       case 'night':
         start = moment().format();
@@ -143,11 +146,13 @@ class SurveyReport extends React.Component {
       default:
         return;
     }
-    this.setState({
-      datePeriod: evt.target.value,
-      startDate: moment(start).format('YYYY-MM-DD'),
-      endDate: moment().format('YYYY-MM-DD'),
-    });
+    if (evt.target.value !== this.state.datePeriod)
+      this.setState({
+        datePeriod: evt.target.value,
+        startDate: moment(start).format('YYYY-MM-DD'),
+        endDate: moment().format('YYYY-MM-DD'),
+        preview: false,
+      });
   };
 
   handleSubmit = () => {
@@ -277,8 +282,10 @@ class SurveyReport extends React.Component {
 
   setHistoryRangeDate = (startDate, endDate) => {
     this.setState({
+      datePeriod: '',
       startDate,
       endDate,
+      preview: false,
     });
   };
 

@@ -8,8 +8,8 @@ from bokeh.models import LinearColorMapper, ColorBar
 import numpy as np
 
 from dashboard.bokeh.helper import write_description, write_info,\
-    get_merged_qa_scalar_metrics, get_palette
-from dashboard.bokeh.qlf_plot import alert_table, metric_table, mtable
+            get_merged_qa_scalar_metrics, get_palette  
+from dashboard.bokeh.qlf_plot import alert_table, mtable
 
 import logging
 from bokeh.resources import CDN
@@ -76,12 +76,12 @@ class Bias:
         cmap_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">counts: </span>
-                    <span style="font-size: 13px; color: #515151">@z</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">counts: </span>
+                    <span style="font-size: 1vw; color: #515151">@z</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">AMP: </span>
-                    <span style="font-size: 13px; color: #515151;">@amp</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">AMP: </span>
+                    <span style="font-size: 1vw; color: #515151;">@amp</span>
                 </div>
             </div>
         """.replace("counts:", name+":")
@@ -115,12 +115,12 @@ class Bias:
         p.axis.minor_tick_line_color = None
 
         p.text(x="x", y="y_offset2", text="ztext",
-               text_font_style="bold", text_font_size="20pt", **text_props)
+               text_font_style="bold", text_font_size="2vw", **text_props)
         p.text(x="x", y="y_offset1", text="amp",
-               text_font_size="18pt", **text_props)
+               text_font_size="1vw", **text_props)
         formatter = PrintfTickFormatter(format=cbarformat)  # format='%2.1e')
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0), formatter=formatter, title="", title_text_baseline="alphabetic")
+                             major_label_text_font_size='1vw', label_standoff=2, location=(0, 0), formatter=formatter, title="", title_text_baseline="alphabetic")
 
         p.add_layout(color_bar, 'right')
 
@@ -132,20 +132,32 @@ class Bias:
         p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
         p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
-        info_col = Div(text=write_description('getbias'), width=2*p.plot_width)
+        info, nlines = write_info('getbias', tests)
+        try:
+            info_hist = """
+            <p style="font-size:1vw;"> BIAS: {} </p>
+            """.format(getbias['BIAS'])
+        except:
+            info_hist = """"""
+        txt = Div(text=info_hist)
+
+        from dashboard.bokeh.qlf_plot import html_table
+
+        tb = html_table(nrng=nrg, wrng=wrg)
+        tbinfo = Div(text=tb)
+
+        info_col = Div(text=write_description('getbias'))
 
         # Prepare tables
-        comments = 'Value of bias averaged over each amplifier'
-        metricname = 'BIAS_AMP'
-        keyname = 'getbias'
-        curexp = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
-        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
-        metric_txt = metric_table(
-            metricname, comments, keyname,  curexp=curexp, refexp=refexp)
-        metric_txt = mtable('getbias', mergedqa, comments)
-        metric_tb = Div(text=metric_txt)
+        comments='Value of bias averaged over each amplifier'
+        metricname='BIAS_AMP'
+        keyname='getbias'
+        curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
+        refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
+        metric_txt=mtable('getbias', mergedqa)
+        metric_tb=Div(text=metric_txt)
 
-        alert_txt = alert_table(nrg, wrg)
+        alert_txt = alert_table(nrg,wrg)
         alert_tb = Div(text=alert_txt)
 
         # ptxt = layout([
@@ -164,6 +176,15 @@ class Bias:
             row(widgetbox(info_col)),
             row(p, coltable, sizing_mode='scale_width')
         ]
+
+        font_size = "1vw"
+        for plot in [p]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
 
         # return ptxt
 
