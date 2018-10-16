@@ -81,60 +81,62 @@ const styles = {
   green: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#008000',
     fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
   },
   yellow: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#ffff00',
     fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
   },
   red: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#ff0000',
     fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
   },
   lightgray: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#d3d3d3',
     fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
   },
   black: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#000000',
     fontSize: '0.3vw',
     textIndent: '-9999em',
-  },
-  stepToolt: {
-    fontSize: '0.3vw',
+    marginTop: '0.25vh',
   },
   tooltipText: {
     fontSize: '1.5vh',
@@ -248,7 +250,11 @@ class Steps extends Component {
 
   renderTooltipContent = () => {
     const message = this.state.message.split('\n').map((msg, i) => {
-      return <p key={i}>{msg}</p>;
+      return (
+        <p style={styles.tooltipText} key={i}>
+          {msg}
+        </p>
+      );
     });
     return message;
   };
@@ -307,7 +313,7 @@ class Steps extends Component {
     return (
       <div key={`ì${index}`} style={styles.gridItem}>
         <Tooltip
-          style={styles.stepToolt}
+          classes={{ tooltip: this.props.classes.tooltipText }}
           title={step.display_name}
           placement="top"
         >

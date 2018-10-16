@@ -15,8 +15,10 @@ const styles = {
   grid: {
     display: 'grid',
     gridTemplateColumns: '50vw 50vw',
-    gridTemplateRows: '47vh calc(100vh - 38px - 28px - 1.2vw - 8px - 2.5vh - 1vh - 2vh - 40px - 47vh)',
-    height: 'calc(100vh - 38px - 28px - 1.2vw - 8px - 2.5vh - 1vh - 2vh - 40px)',
+    gridTemplateRows:
+      '47vh calc(100vh - 38px - 28px - 1.2vw - 8px - 2.5vh - 1vh - 2vh - 40px - 47vh)',
+    height:
+      'calc(100vh - 38px - 28px - 1.2vw - 8px - 2.5vh - 1vh - 2vh - 40px)',
   },
   gridItem: {
     paddingTop: '1vh',

@@ -46,8 +46,8 @@ const styles = {
   colorPrimary: {
     backgroundColor: 'lightgray',
   },
-  stepToolt: {
-    fontSize: '0.3vw',
+  tooltipText: {
+    fontSize: '1.5vh',
   },
 };
 
@@ -104,6 +104,7 @@ class Stages extends Component {
                 key={`stageHeader${idx}`}
                 title={step.display_name}
                 placement="bottom"
+                classes={{ tooltip: this.props.classes.tooltipText }}
               >
                 <TableCell style={styles.header}>Step {idx + 1}</TableCell>
               </Tooltip>
@@ -178,7 +179,7 @@ class Stages extends Component {
                         key={index}
                         title={`Camera ${this.props.arm}${index}`}
                         placement="top"
-                        style={styles.stepToolt}
+                        classes={{ tooltip: this.props.classes.tooltipText }}
                       >
                         <TableRow
                           hover
