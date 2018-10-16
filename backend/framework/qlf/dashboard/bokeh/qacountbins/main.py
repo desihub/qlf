@@ -165,8 +165,8 @@ class Countbins:
 
        # Prepare tables
         comments = 'Number of fibers with a nonzero number of bins above highest threshold'
-        metric_txt = mtable('countbins', mergedqa, comments)
-        metric_tb = Div(text=metric_txt)
+        metric_txt = mtable('countbins', mergedqa)
+        metric_tb = Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 

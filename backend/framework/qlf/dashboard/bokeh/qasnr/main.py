@@ -490,8 +490,6 @@ class SNR:
         alert = alert_table(nrg, wrg)
         tb_alert = Div(text=alert, width=width_tb, height=height_tb)
 
-        # , curexp=check_spectra['MED_RESID'], refexp=check_spectra['MED_RESID_REF'])
-        info = metric_table('Sky Residuals', 'comments', 'keyname')
         tb_metric = Div(text=info, width=width_tb, height=height_tb)
 
         pltxy_h = 350
@@ -519,10 +517,10 @@ class SNR:
             plot_snr.append(Spacer(width=pltxy_w, height=pltxy_h))
 
        # Prepare tables
-        # , N is number of target types'
         comments = 'List of average SNR for the N target type'
-        metric_txt = mtable('snr', mergedqa, comments, objtype=objlist)
-        metric_tb = Div(text=metric_txt)
+        metric_txt = mtable('snr', mergedqa, objtype=objlist)
+        metric_tb = Div(text=metric_txt, width=350)
+
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
