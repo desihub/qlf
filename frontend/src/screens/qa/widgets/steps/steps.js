@@ -76,6 +76,7 @@ const styles = {
     top: '1px',
     left: '1px',
     cursor: 'pointer',
+    fontSize: '2.5vh',
   },
   green: {
     display: 'inline-block',
@@ -135,6 +136,9 @@ const styles = {
   stepToolt: {
     fontSize: '0.3vw',
   },
+  tooltipText: {
+    fontSize: '1.5vh',
+  },
 };
 
 class Steps extends Component {
@@ -150,6 +154,7 @@ class Steps extends Component {
     processId: PropTypes.number,
     monitor: PropTypes.bool,
     flavor: PropTypes.string,
+    classes: PropTypes.object,
   };
 
   state = {
@@ -322,7 +327,11 @@ class Steps extends Component {
         <Card style={styles.card}>
           <div style={styles.container}>
             <div style={styles.containerLegend}>
-              <Tooltip title={this.renderLegendColor()} placement="bottom">
+              <Tooltip
+                classes={{ tooltip: this.props.classes.tooltipText }}
+                title={this.renderLegendColor()}
+                placement="bottom"
+              >
                 <Icon style={styles.icon}>info</Icon>
               </Tooltip>
             </div>
