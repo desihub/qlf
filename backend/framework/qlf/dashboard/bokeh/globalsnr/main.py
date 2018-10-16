@@ -274,7 +274,7 @@ class GlobalSnr:
         xrange = Range1d(start=ra_center + 2, end=ra_center-2)
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
 
-        p = Figure(title='SNR (ARM {})'.format(wedge_arm), x_axis_label='RA', y_axis_label='DEC', plot_width=600, plot_height=600, tools=[hover, "pan,wheel_zoom,reset,box_zoom,crosshair"], x_range=xrange, y_range=yrange
+        p = Figure(title='SNR (ARM {})'.format(wedge_arm), x_axis_label='RA', y_axis_label='DEC', plot_width=600, plot_height=600, tools=[hover, "pan,wheel_zoom,reset,box_zoom,crosshair"], active_drag="box_zoom", x_range=xrange, y_range=yrange
                    )
 
         p.title.align = 'center'

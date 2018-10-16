@@ -20,9 +20,12 @@ class Footprint():
         vx = visibles.ra*u.hour
         vy = visibles.dec*u.deg
 
-        plot = figure(tools='pan,wheel_zoom,reset,lasso_select,crosshair')
+        plot = figure(
+            tools='box_zoom,pan,wheel_zoom,reset,lasso_select,crosshair',
+            active_drag="box_zoom"
+        )
 
-        plot.circle(x, y, fill_color='blue', alpha=0.5)
+        plot.circle(x, y, fill_color='black', alpha=0.1)
 
         plot.circle(vx, vy, fill_color='red', size=5, alpha=0.7)
 
