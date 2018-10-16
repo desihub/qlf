@@ -44,13 +44,13 @@ const styles = {
   },
   arm: {
     fontWeight: 'bold',
-    fontSize: '1.6vw',
+    fontSize: '1.2vw',
     textAlign: 'center',
     flex: 1,
   },
   step: {
     width: 100,
-    fontSize: '1.34vw',
+    fontSize: '1.2vw',
     textAlign: 'center',
     cursor: 'pointer',
   },
@@ -85,7 +85,7 @@ const styles = {
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#008000',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
   },
   yellow: {
@@ -96,7 +96,7 @@ const styles = {
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#ffff00',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
   },
   red: {
@@ -107,7 +107,7 @@ const styles = {
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#ff0000',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
   },
   lightgray: {
@@ -118,7 +118,7 @@ const styles = {
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#d3d3d3',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
   },
   black: {
@@ -129,8 +129,11 @@ const styles = {
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#000000',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
+  },
+  stepToolt: {
+    fontSize: '0.3vw',
   },
 };
 
@@ -298,7 +301,11 @@ class Steps extends Component {
   renderTitles = (step, index) => {
     return (
       <div key={`ì${index}`} style={styles.gridItem}>
-        <Tooltip title={step.display_name} placement="top">
+        <Tooltip
+          style={styles.stepToolt}
+          title={step.display_name}
+          placement="top"
+        >
           <span style={styles.step}>Step {index + 1}</span>
         </Tooltip>
       </div>

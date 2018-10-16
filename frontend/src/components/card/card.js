@@ -12,7 +12,7 @@ const styles = {
     minHeight: 30,
   },
   titleStyle: {
-    fontSize: '1.6vw',
+    fontSize: '1.2vw',
     color: 'rgba(0, 0, 0, 1)',
     padding: 4,
   },

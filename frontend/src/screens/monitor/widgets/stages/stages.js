@@ -12,7 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import flavors from '../../../../flavors';
 
-const headerSize = '1.2vw';
+const headerSize = '1vw';
 
 const styles = {
   flex: { display: 'flex', flexDirection: 'row', alignItems: 'center' },
@@ -27,7 +27,7 @@ const styles = {
   arm: {
     color: '#9E9E9E',
     fontWeight: 'bold',
-    fontSize: '1.8vw',
+    fontSize: '1.2vw',
   },
   header: {
     fontSize: headerSize,
@@ -45,6 +45,9 @@ const styles = {
   },
   colorPrimary: {
     backgroundColor: 'lightgray',
+  },
+  stepToolt: {
+    fontSize: '0.3vw',
   },
 };
 
@@ -78,16 +81,16 @@ class Stages extends Component {
   getColor = row => {
     switch (row) {
       case 'success_stage':
-        return { backgroundColor: 'green', padding: 4 };
+        return { backgroundColor: 'green', padding: '0.5vh' };
       case 'processing_stage':
         // return { backgroundColor: 'blue', padding: 4 };
         return {
           padding: 0,
         };
       case 'error_stage':
-        return { backgroundColor: 'red', padding: 4 };
+        return { backgroundColor: 'red', padding: '0.5vh' };
       default:
-        return { padding: 4 };
+        return { padding: '0.5vh' };
     }
   };
 
@@ -175,6 +178,7 @@ class Stages extends Component {
                         key={index}
                         title={`Camera ${this.props.arm}${index}`}
                         placement="top"
+                        style={styles.stepToolt}
                       >
                         <TableRow
                           hover
@@ -191,9 +195,9 @@ class Stages extends Component {
                               <TableCell
                                 key={stg}
                                 style={{
-                                  fontSize: this.state.columnHeight,
-                                  height: this.state.columnHeight,
-                                  padding: 4,
+                                  fontSize: 0,
+                                  height: 0,
+                                  padding: 0,
                                   ...this.getColor(row[stg]),
                                 }}
                               >

@@ -13,12 +13,17 @@ import ConfirmDialog from '../../../../components/dialog/dialog';
 const styles = {
   controls: {
     minWidth: '5em',
-    width: '25vw',
+    width: '30vw',
     marginLeft: '1vw',
     display: 'flex',
     alignItems: 'center',
   },
-  button: { fontSize: '1.34vw', marginRight: 12, padding: 2, minHeight: 0 },
+  button: {
+    fontSize: '1.2vw',
+    marginRight: 12,
+    padding: '0 1vw',
+    minHeight: 0,
+  },
   green: { backgroundColor: 'green', color: 'white' },
   red: { backgroundColor: 'red', color: 'white' },
   clearButtons: { fontSize: 12, padding: 12, minHeight: 0 },
