@@ -41,7 +41,7 @@ const styles = {
   gridRow: {
     display: 'grid',
     gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 135px)',
+    height: 'calc(100vh - 180px)',
   },
   viewer: {
     width: 'calc(100vw - 280px)',
