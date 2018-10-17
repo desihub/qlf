@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import FormLabel from '@material-ui/core/FormLabel';
 
 const apiUrl = process.env.REACT_APP_API;
 
 const styles = {
   iframe: {
-    height: 'calc(100vh - 151px)',
+    height: 'calc(100vh - 200px)',
     width: 'calc(100vw - 280px)',
   },
   preview: {
@@ -34,6 +33,7 @@ class ObservingViewer extends React.Component {
     arm: PropTypes.string,
     amp: PropTypes.string,
     spectrograph: PropTypes.array,
+    xaxis: PropTypes.string,
     yaxis: PropTypes.string,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
@@ -90,12 +90,7 @@ class ObservingViewer extends React.Component {
 
   render() {
     const { classes } = this.props;
-    return (
-      <div className={classes.preview}>
-        <FormLabel component="legend">Preview:</FormLabel>
-        {this.renderImage()}
-      </div>
-    );
+    return <div className={classes.preview}>{this.renderImage()}</div>;
   }
 }
 
