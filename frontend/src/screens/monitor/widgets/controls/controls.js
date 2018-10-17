@@ -13,17 +13,28 @@ import ConfirmDialog from '../../../../components/dialog/dialog';
 const styles = {
   controls: {
     minWidth: '5em',
-    width: '12vw',
+    width: '30vw',
     marginLeft: '1vw',
     display: 'flex',
     alignItems: 'center',
   },
-  button: { fontSize: 12, marginRight: 12, padding: 2, minHeight: 0 },
+  button: {
+    fontSize: '1.2vw',
+    marginRight: 12,
+    padding: '0 1vw',
+    minHeight: 0,
+  },
   green: { backgroundColor: 'green', color: 'white' },
   red: { backgroundColor: 'red', color: 'white' },
-  clearButtons: { fontSize: 12, padding: 12, minHeight: 0 },
-  clearButton: { fontSize: 12, marginTop: 8 },
-  checkbox: { height: 26 },
+  clearButtons: { fontSize: '1.2vw', padding: '1.2vw', minHeight: 0 },
+  clearButton: { fontSize: '1.2vw', marginTop: '0.8vh' },
+  checkbox: { height: '2.8vh' },
+  titleText: {
+    fontSize: '1.25vw',
+  },
+  text: {
+    fontSize: '1.1vw',
+  },
 };
 
 class Controls extends Component {
@@ -142,7 +153,12 @@ class Controls extends Component {
       >
         <div className={classes.clearButtons}>
           <FormControl component="fieldset">
-            <FormLabel component="legend">Delete Files</FormLabel>
+            <FormLabel
+              classes={{ root: this.props.classes.titleText }}
+              component="legend"
+            >
+              Delete Files
+            </FormLabel>
             <FormGroup>
               {/* <FormControlLabel
                 control={
@@ -170,6 +186,7 @@ class Controls extends Component {
                     onChange={() => this.handleChangeCheckbox('reduced')}
                   />
                 }
+                classes={{ label: this.props.classes.text }}
                 label="Reduced"
               />
               <FormControlLabel
@@ -184,6 +201,7 @@ class Controls extends Component {
                     onChange={() => this.handleChangeCheckbox('log')}
                   />
                 }
+                classes={{ label: this.props.classes.text }}
                 label="Logs"
               />
             </FormGroup>

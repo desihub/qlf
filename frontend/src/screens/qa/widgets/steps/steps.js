@@ -44,13 +44,13 @@ const styles = {
   },
   arm: {
     fontWeight: 'bold',
-    fontSize: '14px',
+    fontSize: '1.2vw',
     textAlign: 'center',
     flex: 1,
   },
   step: {
     width: 100,
-    fontSize: '12px',
+    fontSize: '1.2vw',
     textAlign: 'center',
     cursor: 'pointer',
   },
@@ -76,61 +76,70 @@ const styles = {
     top: '1px',
     left: '1px',
     cursor: 'pointer',
+    fontSize: '2.5vh',
   },
   green: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#008000',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
   },
   yellow: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#ffff00',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
   },
   red: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#ff0000',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
   },
   lightgray: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#d3d3d3',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
   },
   black: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '10px',
-    height: '10px',
+    width: '0.8vw',
+    height: '1.05vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#000000',
-    fontSize: 0,
+    fontSize: '0.3vw',
     textIndent: '-9999em',
+    marginTop: '0.25vh',
+  },
+  tooltipText: {
+    fontSize: '1.5vh',
   },
 };
 
@@ -147,6 +156,7 @@ class Steps extends Component {
     processId: PropTypes.number,
     monitor: PropTypes.bool,
     flavor: PropTypes.string,
+    classes: PropTypes.object,
   };
 
   state = {
@@ -240,7 +250,11 @@ class Steps extends Component {
 
   renderTooltipContent = () => {
     const message = this.state.message.split('\n').map((msg, i) => {
-      return <p key={i}>{msg}</p>;
+      return (
+        <p style={styles.tooltipText} key={i}>
+          {msg}
+        </p>
+      );
     });
     return message;
   };
@@ -298,7 +312,11 @@ class Steps extends Component {
   renderTitles = (step, index) => {
     return (
       <div key={`ì${index}`} style={styles.gridItem}>
-        <Tooltip title={step.display_name} placement="top">
+        <Tooltip
+          classes={{ tooltip: this.props.classes.tooltipText }}
+          title={step.display_name}
+          placement="top"
+        >
           <span style={styles.step}>Step {index + 1}</span>
         </Tooltip>
       </div>
@@ -315,7 +333,11 @@ class Steps extends Component {
         <Card style={styles.card}>
           <div style={styles.container}>
             <div style={styles.containerLegend}>
-              <Tooltip title={this.renderLegendColor()} placement="bottom">
+              <Tooltip
+                classes={{ tooltip: this.props.classes.tooltipText }}
+                title={this.renderLegendColor()}
+                placement="bottom"
+              >
                 <Icon style={styles.icon}>info</Icon>
               </Tooltip>
             </div>

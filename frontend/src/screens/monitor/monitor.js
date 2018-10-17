@@ -15,8 +15,10 @@ const styles = {
   grid: {
     display: 'grid',
     gridTemplateColumns: '50vw 50vw',
-    gridTemplateRows: 'auto 32vh',
-    height: 'calc(100vh - 160px)',
+    gridTemplateRows:
+      '47vh calc(100vh - 38px - 28px - 1.2vw - 8px - 2.5vh - 1vh - 2vh - 40px - 47vh)',
+    height:
+      'calc(100vh - 38px - 28px - 1.2vw - 8px - 2.5vh - 1vh - 2vh - 40px)',
   },
   gridItem: {
     paddingTop: '1vh',
@@ -37,7 +39,7 @@ const styles = {
     flexDirection: 'column',
     padding: '0vh 1vw',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingBottom: '1vh',
   },
 };
@@ -212,7 +214,7 @@ export default class Monitor extends Component {
               arms={this.state.arms}
               spectrographs={this.state.spectrographs}
               petalSizeFactor={22}
-              monitor={true}
+              monitor={false}
               flavor={this.props.flavor}
             />
           </div>
