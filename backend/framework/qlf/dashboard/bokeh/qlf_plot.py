@@ -506,16 +506,21 @@ def plot_amp(dz, refexp, mapper, name=""):
 
     cmap_tooltip = """
         <div>
-            <div>
-                <span style="font-size: 1vw; font-weight: bold; color: #303030;">counts: </span>
-                <span style="font-size: 1vw; color: #515151">@z</span>
-            </div>
+
             <div>
                 <span style="font-size: 1vw; font-weight: bold; color: #303030;">AMP: </span>
-                <span style="font-size: 1vw; color: #515151;">@amp</span>
+                <span style="font-size: 1vw; color: #515151;">@amp_number</span>
             </div>
-        </div>
-    """.replace("counts:", name+":")
+            <div>
+                <span style="font-size: 1vw; font-weight: bold; color: #303030;">counts: </span>
+                <span style="font-size: 1vw; color: #515151">@ztext</span>
+            </div>
+            <div>
+                <span style="font-size: 1vw; font-weight: bold; color: #303030;">Reference Value: </span>
+                <span style="font-size: 1vw; color: #515151;">@ref</span>
+            </div>
+         </div>
+    """.replace("counts:", name.replace("_AMP","")+":")
     hover = HoverTool(tooltips=cmap_tooltip)
 
     p = Figure(title=name, tools=[hover],
@@ -534,19 +539,22 @@ def plot_amp(dz, refexp, mapper, name=""):
     p.xaxis.minor_tick_line_color = None
     p.yaxis.major_tick_line_color = None
     p.yaxis.minor_tick_line_color = None
+    p.yaxis.visible = False
+    p.xaxis.visible = False
 
     zvalid=[x if x>-999 else np.nan for x in dz]
     source = ColumnDataSource(
         data=dict(
-# <<<<<<< HEAD
             x = dx,
             y = dy,
             z = dz,
             zvalid = zvalid,
+            ref=["{:.2f}".format(x) for x in refexp],
             zdiff = np.array(zvalid) -np.array(refexp),
             y_offset1 = [i+0.15 for i in dy],
-            y_offset2 = [i-0.05 for i in dy],
+            y_offset2 = [i-0.10 for i in dy],
             amp = ['AMP %s'%i for i in range(1,5) ] ,
+            amp_number = ['%s'%i for i in range(1,5) ] ,
             ztext = ztext,
             )
         )
@@ -564,10 +572,10 @@ def plot_amp(dz, refexp, mapper, name=""):
     p.rect("x", "y", .98, .98, 0, source=source,
            fill_color={'field': 'zdiff', 'transform': mapper}, fill_alpha=0.9)
 
-    p.text(x="x", y="y_offset2", text="ztext",
-           text_font_style="bold", text_font_size="1.1vw", **text_props)
     p.text(x="x", y="y_offset1", text="amp",
-            text_font_size="1vw", **text_props)
+            text_font_size="2vw", **text_props)
+    p.text(x="x", y="y_offset2", text="ztext",
+           text_font_style="bold", text_font_size="2.5vw", **text_props)
     
 
     return p
