@@ -35,41 +35,52 @@ class RMS:
 
         nrg = check_ccds['PARAMS']['NOISE_AMP_NORMAL_RANGE']
         wrg = check_ccds['PARAMS']['NOISE_AMP_WARN_RANGE']
+        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['NOISE_AMP_REF']
 
-        Reds = get_palette('Reds')
+        cmap = get_palette('RdBu_r')
+
 
         # amp 1
         dz = getrms['NOISE_AMP']
         name = 'NOISE_AMP'
 
-        mapper = LinearColorMapper(palette=Reds, low=min(dz), high=max(dz))
+        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
+            nan_color='lightgray')
+        
+        dzdiff = np.array(dz)-np.array(refexp)
 
-        ztext, cbarformat = set_amp(getrms['NOISE_AMP'])
-        p = plot_amp(dz, mapper, name=name)
+        ztext, cbarformat = set_amp(dz)
+        p = plot_amp(dz, refexp, mapper, name=name)
 
         p.xaxis.axis_label = "NOISE per Amp"
 
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="", title_text_baseline="alphabetic")
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
+                             title_text_baseline="alphabetic",)
         p.add_layout(color_bar, 'right')
+
+
 
         # amp 2
         dz = getrms['NOISE_OVERSCAN_AMP']
         name = 'NOISE_OVERSCAN_AMP'
 
-        mapper = LinearColorMapper(palette=Reds, low=min(dz), high=max(dz))
+        mapper = LinearColorMapper(palette=cmap,  low=wrg[0], high=wrg[1],
+            nan_color='lightgray')
 
-        ztext, cbarformat = set_amp(dz)
-        p2 = plot_amp(dz, mapper, name=name)
+        dzdiff = np.array(dz)-np.array(refexp)
+        ztext, cbarformat = set_amp( dz)
+        p2 = plot_amp(dz, refexp, mapper, name=name)
 
         p2.xaxis.axis_label = "NOISE Overscan per Amp"
 
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="", title_text_baseline="alphabetic")
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
+                              title_text_baseline="alphabetic",)
         p2.add_layout(color_bar, 'right')
 
         tb = html_table(nrng=nrg, wrng=wrg)
@@ -85,7 +96,8 @@ class RMS:
 
         # Prepare tables
         comments = 'value of RMS for each amplifier read directly from the header of the pre processed image'
-        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
+        # metric_txt = mtable('getrms', mergedqa, comments)
+        # refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
         metric_txt = mtable('getbias', mergedqa)
         metric_tb = Div(text=metric_txt)
 

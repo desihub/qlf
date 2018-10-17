@@ -385,13 +385,16 @@ class Xwsigma:
                              text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
+
+        # amp 1
         dz = xw_amp[0]  # xwsigma['XWSIGMA_AMP'][0]
         name = 'XSIGMA AMP'
-        Reds = get_palette('Reds')
-        mapper = LinearColorMapper(palette=Reds, low=min(dz), high=max(dz))
+        cmap = get_palette('RdBu_r')
+        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
+                 nan_color='darkgray')
 
         ztext, cbarformat = set_amp(dz)
-        xamp = plot_amp(dz, mapper, name=name)
+        xamp = plot_amp(dz, [xw_ref[0]]*4, mapper, name=name)
 
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
@@ -400,13 +403,14 @@ class Xwsigma:
         xamp.height = 400
         xamp.add_layout(color_bar, 'right')
 
+        # amp 2
         dz = xw_amp[1]  # xwsigma['XWSIGMA_AMP'][1]
         name = 'WSIGMA AMP'
-        Reds = get_palette('Reds')
-        mapper = LinearColorMapper(palette=Reds, low=min(dz), high=max(dz))
+        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
+            nan_color='gray')
 
         ztext, cbarformat = set_amp(dz)
-        wamp = plot_amp(dz, mapper, name=name)
+        wamp = plot_amp(dz, [xw_ref[1]]*4, mapper, name=name)
 
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
