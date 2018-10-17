@@ -176,36 +176,21 @@ def write_info(qa_name, params):
 def write_description(qa_name):
     """Descriptions to be displayed in QA plots."""
 
-    info_dic2 = {'countbins': ["Count Spectral Bins", "Number of bins above a threshold per spectrum."],
-                 'skycont': ["Sky Continuum", "Mean sky continuum after fiber flattening"],
-                 'countpix': ["Count Pixels", "Fraction of pixels lit after pre processing"],
-                 'skypeak': ["Sky Peaks",
-                             "This QA for QuickLook includes the calculation of the counts and RMS at peak sky wavelengths in a 1D spectrum."],  # "Count for Sky Fiber after ApplyFiberFlat QL"],
-                 'getbias': ["Bias From Overscan", "Bias from overscan region after pre processing"],
-                 'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
-                 'getrms': ["Get RMS", " NOISE image counts per amplifier"],
-                 'snr': ["Calculate SNR", "Signal-to-Noise ratio after sky substraction"],
-                 # Total integrals of STD spectra SkySub QL"
-                 'integ': ["Integrate Spectrum", "Integral counts for standard stars"],
-                 'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
-                 'checkHDUs': ['', '']}
-
-    info_dic = {'countbins': ["Count Spectral Bins", "Number of bins above a threshold per spectrum."],
-                'skycont': ["Sky Continuum", "Mean sky continuum after fiber flattening"],
-                'countpix': ["Count Pixels", "Fraction of pixels lit after pre processing"],
-                # "Count for Sky Fiber after ApplyFiberFlat QL"],
-                'skypeak': ["Sky Peaks", "Sky level at peak sky wavelengths in a 1D spectrum"],
-                'getbias': ["Bias From Overscan", "Bias from overscan region after pre processing"],
-                'skyresid': ["Sky Residual", "Randomly Selected sky substracted, fiber flattened spectra"],
-                'getrms': ["Get RMS", " NOISE image counts per amplifier"],
-                'snr': ["Calculate SNR", "Signal-to-Noise ratio after sky substraction"],
-                # Total integrals of STD spectra SkySub QL"
-                'integ': ["Integrate Spectrum", "Integral counts for standard stars"],
-                'xwsigma': ["XWSigma", "X & W sigma over sky peaks"],
-                'checkHDUs': ['', '']}
-
-    text = """<body><p  style="text-align:left; color:#262626; font-size:20px;">
-            <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0], info_dic[qa_name][1])
+    info_dic ={ 'countbins': ["Count Spectral Bins", 'Number of fibers with a nonzero number of bins above highest threshold'],
+                'skycont': ["Sky Continuum", 'Sky continuum in all configured continuum areas averaged over all sky fibers'],
+                'countpix': ["Count Pixels", 'Fraction of the pixels per amp that are above CUTPIX = 5sigmas '],
+                'skypeak': ["Sky Peaks", 'Sky continuum in all configured continuum areas averaged over all sky fibers'],
+                'getbias': ["Bias From Overscan", 'Value of bias averaged over each amplifier'],
+                'skyresid': ["Sky Residual", 'Median of residuals over all sky fibers'],
+                'getrms': ["Get RMS", 'Value of RMS for each amplifier read directly from the header of the pre processed image'],
+                'snr': ["Calculate SNR", 'List of average Signal-To-Noise for the N target type'],
+                'integ': ["Integrate Spectrum", 'List of the average fiber magnitude for each of N target types in this camera'],
+                'xwsigma': ["XWSigma", 'Fitted X and W SIGMA averaged over isolated bright sky wavelengths'],
+                'checkHDUs': ['','']
+              }
+    
+    text="""<body><p  style="text-align:left; color:#262626; font-size:1.5vw;">
+            <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0],info_dic[qa_name][1])
     return text
 
 

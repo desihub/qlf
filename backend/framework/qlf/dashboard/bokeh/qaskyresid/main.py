@@ -238,21 +238,15 @@ class Skyresid:
 
         width_tb, height_tb = 400, 140
 
-        alert = alert_table(nrg, wrg)
-        tb_alert = Div(text=alert, width=width_tb, height=height_tb)
-
-        info = metric_table('Sky Residuals', 'comments', 'keyname')
-        tb_metric = Div(text=info, width=width_tb, height=height_tb)
-
        # Prepare tables
         comments = 'Median of residuals over all sky fibers'
-        metric_txt = mtable('skyresid', mergedqa, comments)
+        metric_txt = mtable('skyresid', mergedqa)
         metric_tb = Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt, width=350)
 
         layout = column([widgetbox(info_col, css_classes=["header"]), Div(),
-                            widgetbox(metric_tb), widgetbox(alert_tb)]
+                         widgetbox(metric_tb), widgetbox(alert_tb)]
                         + [p2]
                         + p_s, css_classes=['display-grid-skyresid'])
 

@@ -181,7 +181,7 @@ class TimeSeries():
         ]
 
         hover = HoverTool(tooltips=TOOLTIPS)
- 
+
         self.p = figure(
             sizing_mode='scale_width',
             toolbar_location='above',
@@ -189,6 +189,7 @@ class TimeSeries():
             x_axis_label='Date',
             y_axis_label=axis_data['display'],
             plot_width=700, plot_height=300,
+            active_drag="box_zoom",
             tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
         )
 
