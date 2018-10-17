@@ -78,7 +78,7 @@ class ObservingViewer extends React.Component {
       }`;
     else {
       if (
-        this.props.plot === 'timeseries' &&
+        this.props.plot === 'regression' &&
         this.props.yaxis !== '' &&
         this.props.xaxis !== '' &&
         this.props.startDate !== '' &&

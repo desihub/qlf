@@ -245,15 +245,15 @@ def load_series(request):
     end = request.GET.get('end')
     amp = request.GET.get('amp')
 
-    try:
-        if plot == 'timeseries':
-            series_html = TimeSeries(yaxis, start, end, camera, amp).render()
-        elif plot == 'regression':
-            series_html = Regression(xaxis, yaxis, start, end, camera).render()
-        else:
-            series_html = "Couldn't load plot"
-    except Exception as err:
-        series_html = "Can't load QA: {}".format(err)
+    # try:
+    if plot == 'timeseries':
+        series_html = TimeSeries(yaxis, start, end, camera, amp).render()
+    elif plot == 'regression':
+        series_html = Regression(xaxis, yaxis, start, end, camera).render()
+    else:
+        series_html = "Couldn't load plot"
+    # except Exception as err:
+    #     series_html = "Can't load QA: {}".format(err)
 
     context = {'image': series_html}
     response = HttpResponse(template.render(context, request))
