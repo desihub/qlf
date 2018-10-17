@@ -289,14 +289,14 @@ class TrendAnalysis extends React.Component {
       (this.state.tab === 'Time Series' &&
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
+        this.state.spectrograph.length !== 0 &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
         this.state.endDate !== '') ||
       (this.state.tab === 'Regression' &&
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
+        this.state.spectrograph.length !== 0 &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
         this.state.startDate !== '' &&
