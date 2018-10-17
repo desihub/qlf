@@ -320,7 +320,7 @@ class TrendAnalysis extends React.Component {
       return (
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
+        this.state.spectrograph.length !== 0 &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
         this.state.endDate !== ''
@@ -331,7 +331,7 @@ class TrendAnalysis extends React.Component {
       return (
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
+        this.state.spectrograph.length !== 0 &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
         this.state.startDate !== '' &&
