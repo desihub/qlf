@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from bokeh.plotting import ColumnDataSource, figure
 from bokeh.models import HoverTool, Legend, Spacer
-from bokeh.layouts import column, row
+from bokeh.layouts import gridplot
 
 from bokeh.models.widgets import Div, Select, RangeSlider
 from bokeh.resources import CDN
@@ -51,31 +51,20 @@ class Regression():
             camera=cameras
         ))
 
-        tooltip = """
-                    <div>
-                        <div>
-                            <span style="font-size: 12px; font-weight: bold; color: #303030;">Exposure: </span>
-                            <span style="font-size: 13px; color: #515151;">@exposure</span>
-                        </div>
-                        <div>
-                            <span style="font-size: 12px; font-weight: bold; color: #303030;">Camera: </span>
-                            <span style="font-size: 13px; color: #515151;">@camera</span>
-                        </div>
-                        <div>
-                            <span style="font-size: 12px; font-weight: bold; color: #303030;">{}: </span>
-                            <span style="font-size: 13px; color: #515151">@x</span>
-                        </div>
-                        <div>
-                            <span style="font-size: 12px; font-weight: bold; color: #303030;">{}: </span>
-                            <span style="font-size: 13px; color: #515151;">@y</span>
-                        </div>
-                    </div>
-                """.format(x_data['display'], y_data['display'])
+        TOOLTIPS = [
+            (y_data['display'], "@y"),
+            (x_data['display'], "@x"),
+            ("Exposure", "@exposure"),
+        ]
 
-        hover = HoverTool(tooltips=tooltip)
+        hover = HoverTool(tooltips=TOOLTIPS)
 
-        plot = figure(toolbar_location='above', active_drag="box_zoom",
-                      x_axis_label=x_data['display'], y_axis_label=y_data['display'],
+        plot = figure(toolbar_location='above',
+                      active_drag="box_zoom",
+                      plot_height=300,
+                    #   plot_width=500,
+                      x_axis_label=x_data['display'],
+                      y_axis_label=y_data['display'],
                       tools=[hover, 'box_zoom,pan,wheel_zoom,box_select,reset'])
 
         q = plot.circle('x', 'y', source=source, size=8,
@@ -87,12 +76,12 @@ class Regression():
 
         ph = figure(active_drag='box_zoom',
                     tools='box_zoom,pan,wheel_zoom,reset',
+                    plot_height=220,
                     toolbar_location='left',
-                    plot_width=plot.plot_width,
-                    plot_height=200,
                     x_range=plot.x_range,
                     y_range=(-0.1*hmax, hmax),
-                    min_border=10, min_border_left=50, y_axis_location="right")
+                    y_axis_location="right",
+                    min_border=10, min_border_left=50)
 
         ph.xgrid.grid_line_color = None
         ph.yaxis.major_label_orientation = 0
@@ -108,10 +97,8 @@ class Regression():
         pv = figure(active_drag='box_zoom',
                     tools='box_zoom,pan,wheel_zoom,reset',
                     toolbar_location='above',
-                    plot_width=200,
-                    plot_height=plot.plot_height,
-                    x_range=(-0.1*vmax, vmax),
-                    y_range=plot.y_range, min_border=10, y_axis_location="right")
+                    plot_height=310,
+                    min_border=10, min_border_left=50)
         pv.ygrid.grid_line_color = None
         pv.xaxis.major_label_orientation = -np.pi/2
         pv.background_fill_color = "#fafafa"
@@ -119,8 +106,11 @@ class Regression():
         qv = pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:],
                      right=vhist, color="#a7bae1", line_color="black")
 
-        self.layout = column(
-            row(column(row(plot, pv), row(ph, Spacer(width=pv.width, height=ph.height)))), sizing_mode='scale_width')
+        info = "<h3>Camera: {}<h3>".format(self.camera)
+        info_col = Div(text=info)
+        self.layout = gridplot([[info_col, None],
+                                [plot, pv],
+                                [ph, None]], sizing_mode='scale_width')
 
     def render(self):
         y_data = plots[self.yaxis]
@@ -144,19 +134,6 @@ class Regression():
             if val['value']:
                 x_values.append(val['value'])
 
-        TOOLTIPS = [
-            ("Camera", "@camera"),
-            (y_data['display'], "@y"),
-            (x_data['display'], "@x"),
-            ("Exposure", "@exposure"),
-        ]
-
-        hover = HoverTool(tooltips=TOOLTIPS)
-
-        info = "<h3>Camera: {}<h3>".format(self.camera)
         self.render_plot(exposures, x_values, y_values, cameras)
 
-        info_col = Div(text=info)
-        layout = column(info_col, self.layout, sizing_mode='scale_width')
-
-        return file_html(layout, CDN, "Regression")
+        return file_html(self.layout, CDN, "Regression")
