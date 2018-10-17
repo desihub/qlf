@@ -47,16 +47,16 @@ class Skycont:
         skc_tooltips = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">SKY CONT: </span>
-                    <span style="font-size: 13px; color: #515151;">@skycont</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">SKY CONT: </span>
+                    <span style="font-size: 1vw; color: #515151;">@skycont</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@ra</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1vw; color: #515151;">@ra</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@dec</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1vw; color: #515151;">@dec</span>
                 </div>
             </div>
         """
@@ -129,23 +129,33 @@ class Skycont:
 
         # infos
         info, nlines = write_info('skycont', check_spectra['PARAMS'])
-        txt = PreText(text=info, height=nlines*20, width=p2.plot_width)
-        info_col = Div(text=write_description('skycont'), width=p2.plot_width)
+        txt = PreText(text=info, height=nlines*20)
+        info_col = Div(text=write_description('skycont'))
 
         tb = html_table(names=['Sky continuum averaged over sky fibers'], vals=[
             '{:.3f}'.format(skycont['SKYCONT'])], nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
+        tbinfo = Div(text=tb)
 
        # Prepare tables
         comments = 'Sky continuum in all configured continuum areas averaged over all sky fibers'
-        metric_txt = mtable('skycont', mergedqa, comments)
+        metric_txt = mtable('skycont', mergedqa)
         metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
+        font_size = "1vw"
+        for plot in [p2]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
+
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
-                        p2,
+                        column(p2, sizing_mode='scale_both',
+                               css_classes=["main-one"]),
                         css_classes=["display-grid"])
 
         # End of Bokeh Block
