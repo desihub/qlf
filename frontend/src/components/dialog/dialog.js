@@ -6,6 +6,19 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = {
+  title: {
+    fontSize: '2.2vh',
+  },
+  subTitle: {
+    fontSize: '1.25vw',
+  },
+  btn: {
+    fontSize: '1.1vw',
+  },
+};
 
 class ConfirmDialog extends React.Component {
   static propTypes = {
@@ -14,6 +27,7 @@ class ConfirmDialog extends React.Component {
     onConfirm: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
+    classes: PropTypes.object,
   };
 
   handleConfirmation = () => {
@@ -24,16 +38,36 @@ class ConfirmDialog extends React.Component {
   render() {
     return (
       <div>
-        <Dialog open={this.props.open} onClose={this.handleClose}>
-          <DialogTitle>{this.props.title}</DialogTitle>
+        <Dialog
+          open={this.props.open}
+          onClose={this.handleClose}
+          fullWidth={true}
+        >
+          <DialogTitle
+            disableTypography={true}
+            classes={{ root: this.props.classes.title }}
+          >
+            {this.props.title}
+          </DialogTitle>
           <DialogContent>
-            <DialogContentText>{this.props.subtitle}</DialogContentText>
+            <DialogContentText classes={{ root: this.props.classes.subTitle }}>
+              {this.props.subtitle}
+            </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.props.handleClose} color="primary">
+            <Button
+              classes={{ label: this.props.classes.btn }}
+              onClick={this.props.handleClose}
+              color="primary"
+            >
               Cancel
             </Button>
-            <Button onClick={this.handleConfirmation} color="primary" autoFocus>
+            <Button
+              classes={{ label: this.props.classes.btn }}
+              onClick={this.handleConfirmation}
+              color="primary"
+              autoFocus
+            >
               Yes
             </Button>
           </DialogActions>
@@ -43,4 +77,4 @@ class ConfirmDialog extends React.Component {
   }
 }
 
-export default ConfirmDialog;
+export default withStyles(styles)(ConfirmDialog);
