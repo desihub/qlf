@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import { FadeLoader } from 'halogenium';
@@ -11,11 +14,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import ObservingViewer from './observing-viewer/observing-viewer';
 import SelectDate from '../../components/select-date/select-date';
-import moment from 'moment';
 import Petals from '../../components/petals/petals';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
+import moment from 'moment';
 
 const styles = {
   controlsContainer: {
@@ -26,10 +26,6 @@ const styles = {
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
     paddingBottom: '5px',
-  },
-  controlsContainerInner: {
-    display: 'flex',
-    flexDirection: 'row',
   },
   column: {
     display: 'flex',
@@ -138,6 +134,7 @@ class ObservingConditions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      tab: 'Time Series',
       loading: false,
       firstLoad: false,
       spectrograph: [],
@@ -146,6 +143,7 @@ class ObservingConditions extends React.Component {
       startDate: '',
       endDate: '',
       datePeriod: '',
+      selectXaxis: '',
       selectYaxis: '',
       selectStartDate: '',
       selectEndDate: '',
@@ -226,6 +224,7 @@ class ObservingConditions extends React.Component {
 
   handleSubmit = () => {
     if (
+      this.state.selectXais !== this.state.xaxis ||
       this.state.selectYaxis !== this.state.yaxis ||
       this.state.selectStartDate !== this.state.startDate ||
       this.state.selectEndDate !== this.state.endDate ||
@@ -233,6 +232,7 @@ class ObservingConditions extends React.Component {
       this.state.selectArm !== this.state.arm
     ) {
       this.setState({
+        selectXaxis: this.state.xaxis,
         selectYaxis: this.state.yaxis,
         selectStartDate: this.state.startDate,
         selectEndDate: this.state.endDate,
@@ -289,7 +289,7 @@ class ObservingConditions extends React.Component {
       this.state.startDate !== '' &&
       this.state.endDate !== '' &&
       this.state.arm !== '' &&
-      this.state.spectrograph !== ''
+      this.state.spectrograph.length !== 0
     );
   };
 
@@ -338,10 +338,10 @@ class ObservingConditions extends React.Component {
             input={<Input />}
             displayEmpty
           >
-            <MenuItem value={'snr'}>SNR</MenuItem>
+            {/* <MenuItem value={'snr'}>SNR</MenuItem> */}
             <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
-            <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
-            <MenuItem value={'psf'}>PSF FWHM</MenuItem>
+            {/* <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem> */}
+            {/* <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
             <MenuItem value={'airmass'}>AIRMASS</MenuItem>
           </Select>
         </FormControl>
