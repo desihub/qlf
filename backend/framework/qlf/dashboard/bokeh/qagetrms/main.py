@@ -88,8 +88,6 @@ class RMS:
         refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
         metric_txt = mtable('getrms', mergedqa, comments)
         metric_tb = Div(text=metric_txt)
-        with open("dbgtb.html", 'w') as f:
-            f.write(metric_txt)
 
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
