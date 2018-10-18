@@ -13,6 +13,7 @@ from log import get_logger
 import os
 from qlf_models import QLFModels
 from datetime import datetime, timedelta
+from astropy.time import Time
 
 qlf_root = os.environ.get('QLF_ROOT')
 
@@ -165,6 +166,7 @@ class TimeSeries():
         values = list()
         exposures = list()
         dateobs = list()
+        mjds=list()
         for idx,val in enumerate(outputs):
             if val['value']:
                 dates.append(val['dateobs'] - timedelta(minutes=20*idx))
@@ -172,6 +174,8 @@ class TimeSeries():
                 exposures.append(val['exposure_id'])
                 cameras.append(self.camera)
                 values.append(val['value'])
+                date_time=(val['dateobs'] - timedelta(minutes=20*idx)).strftime('%Y-%m-%d %H:%M:%S')
+                mjds.append(Time(date_time, format='iso', scale='utc').mjd)
 
         TOOLTIPS = [
             ("Camera", "@camera"),
@@ -185,8 +189,8 @@ class TimeSeries():
         self.p = figure(
             sizing_mode='scale_width',
             toolbar_location='above',
-            x_axis_type="datetime",
-            x_axis_label='Date',
+            # x_axis_type="datetime",
+            x_axis_label='Date (mjd)',
             y_axis_label=axis_data['display'],
             plot_width=700, plot_height=300,
             active_drag="box_zoom",
@@ -195,14 +199,14 @@ class TimeSeries():
 
         info = "<h3>Camera: {}<h3>".format(self.camera)
         if self.yaxis in ['skybrightness', 'airmass']:
-            self.single_value(dates, values, exposures, cameras, dateobs)
+            self.single_value(mjds, values, exposures, cameras, dateobs)
         elif self.yaxis in ['traceshifts', 'psf']:
-            self.double_value(dates, values, exposures, cameras, dateobs)
+            self.double_value(mjds, values, exposures, cameras, dateobs)
         elif self.yaxis in ['noise', 'bias']:
             info = "<h3>Camera: {}<h3>".format(self.camera)
-            self.quadruple_values(dates, values, exposures, cameras, dateobs)
+            self.quadruple_values(mjds, values, exposures, cameras, dateobs)
         elif self.yaxis in ['snr']:
-            self.quadruple_values(dates, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
+            self.quadruple_values(mjds, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
 
         info_col = Div(text=info)
         layout = column(info_col, self.p, sizing_mode='scale_width')
