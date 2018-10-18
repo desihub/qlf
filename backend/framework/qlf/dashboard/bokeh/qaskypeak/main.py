@@ -185,7 +185,7 @@ class Skypeak:
 
        # Prepare tables
         comments = 'Sky continuum in all configured continuum areas averaged over all sky fibers'
-        metric_txt = mtable('skypeak', mergedqa)
+        metric_txt = mtable('skypeak', mergedqa, comments)
         metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)

@@ -142,13 +142,13 @@ class Countpix:
         info_col = Div(text=write_description('countpix'))
 
         # Prepare tables
-        comments = 'Fraction of the pixels per amp that are above CUTPIX = 5sigmas '
+        comments = 'Fraction of the pixels per Amp that are above CUTPIX = 5 sigma '
         metricname = 'LITFRAC_AMP'
         keyname = 'countpix'
         curexp = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
         # mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_REF']
         refexp = 'N/A'
-        metric_txt = mtable('countpix', mergedqa)
+        metric_txt = mtable('countpix', mergedqa, comments)
 
         metric_tb = Div(text=metric_txt)
 

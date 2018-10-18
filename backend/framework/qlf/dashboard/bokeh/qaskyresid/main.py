@@ -240,7 +240,7 @@ class Skyresid:
 
        # Prepare tables
         comments = 'Median of residuals over all sky fibers'
-        metric_txt = mtable('skyresid', mergedqa)
+        metric_txt = mtable('skyresid', mergedqa, comments)
         metric_tb = Div(text=metric_txt, width=350)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt, width=350)

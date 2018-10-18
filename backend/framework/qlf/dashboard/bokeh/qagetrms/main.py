@@ -84,10 +84,12 @@ class RMS:
         info_col = Div(text=write_description('getrms'))
 
         # Prepare tables
-        comments = 'value of RMS for each amplifier read directly from the header of the pre processed image'
+        comments = 'Value of RMS for each amplifier read directly from the header of the pre processed image'
         refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
-        metric_txt = mtable('getbias', mergedqa)
+        metric_txt = mtable('getbias', mergedqa, comments)
         metric_tb = Div(text=metric_txt)
+        with open("dbgtb.html", 'w') as f:
+            f.write(metric_txt)
 
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)

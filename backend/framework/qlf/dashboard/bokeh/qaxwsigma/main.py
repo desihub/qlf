@@ -421,11 +421,11 @@ class Xwsigma:
         pwh = column(pw, whist, p_hist_w, wamp)
 
         curexp, refexp = '%3.2f' % xwsigma[0], '%3.2f' % xw_ref[0]  # 'xx..xx'
-        comments = 'fitted X SIGMA averaged over isolated bright sky wavelengths'
+        comments = 'Fitted X SIGMA averaged over isolated bright sky wavelengths'
         info = metric_table('X sigma', comments, 'xsigma', curexp, refexp)
         tb_x = Div(text=info)
 
-        comments = 'fitted W SIGMA averaged over isolated bright sky wavelengths'
+        comments = 'Fitted W SIGMA averaged over isolated bright sky wavelengths'
 
         curexp, refexp = '%3.2f' % xwsigma[1], '%3.2f' % xw_ref[1]
         info = metric_table('W sigma', comments, 'wsigma', curexp, refexp)

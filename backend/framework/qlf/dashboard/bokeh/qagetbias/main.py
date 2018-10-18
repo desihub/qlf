@@ -154,7 +154,7 @@ class Bias:
         keyname='getbias'
         curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
         refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
-        metric_txt=mtable('getbias', mergedqa)
+        metric_txt=mtable('getbias', mergedqa, comments)
         metric_tb=Div(text=metric_txt)
 
         alert_txt = alert_table(nrg,wrg)
