@@ -90,7 +90,7 @@ class Regression():
                      top=hhist, color="#a7bae1", line_color="black")
 
         # create the vertical histogram
-        vhist, vedges = np.histogram(source.data['y'], bins='auto')
+        vhist, vedges = np.histogram(source.data['y'], bins='sqrt')
         vzeros = np.zeros(len(vedges)-1)
         vmax = max(vhist)*1.1
 
