@@ -41,8 +41,7 @@ const styles = {
   gridRow: {
     display: 'grid',
     gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 200px)',
-    paddingTop: '16px',
+    height: 'calc(100vh - 130px)',
   },
   viewer: {
     width: 'calc(100vw - 280px)',
@@ -603,10 +602,10 @@ class TrendAnalysis extends React.Component {
           centered
         >
           <Tab label="Time Series" value={'Time Series'} />
-          {/* <Tab label="Regression" value={'Regression'} /> */}
+          <Tab label="Regression" value={'Regression'} />
         </Tabs>
         {tab === 'Time Series' ? this.renderTimeSeries() : null}
-        {/* {tab === 'Regression' ? this.renderRegression() : null} */}
+        {tab === 'Regression' ? this.renderRegression() : null}
       </div>
     );
   };
@@ -615,7 +614,7 @@ class TrendAnalysis extends React.Component {
     const { classes } = this.props;
     return (
       <Paper elevation={4} className={classes.main}>
-        {this.renderTabs()}
+        {this.renderTimeSeries()}
       </Paper>
     );
   }
