@@ -83,6 +83,8 @@ class RMS:
                               title_text_baseline="alphabetic",)
         p2.add_layout(color_bar, 'right')
 
+
+
         tb = html_table(nrng=nrg, wrng=wrg)
         tbinfo = Div(text=tb, width=400)
 
@@ -94,24 +96,14 @@ class RMS:
         txt = Div(text=info, width=p.plot_width)
         info_col = Div(text=write_description('getrms'))
 
+
         # Prepare tables
         comments = 'value of RMS for each amplifier read directly from the header of the pre processed image'
-        # metric_txt = mtable('getrms', mergedqa, comments)
-        # refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
         metric_txt = mtable('getbias', mergedqa)
         metric_tb = Div(text=metric_txt)
 
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
-
-        # font_size = "1.4vw"
-        # for plot in [p, p2]:
-        #     plot.xaxis.major_label_text_font_size = '0pt' #font_size
-        #     plot.yaxis.major_label_text_font_size = font_size
-        #     plot.xaxis.axis_label_text_font_size = font_size
-        #     plot.yaxis.axis_label_text_font_size = font_size
-        #     plot.legend.label_text_font_size = font_size
-        #     plot.title.text_font_size = font_size
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),

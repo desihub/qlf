@@ -129,8 +129,8 @@ class Xwsigma:
         wfiber = np.arange(len(wsigma))
 
         source = ColumnDataSource(data={
-            'x1': ra,  # xwsigma['RA'][c1:c2],
-            'y1': dec,  # xwsigma['DEC'][c1:c2],
+            'x1': ra,  
+            'y1': dec, 
             'xsigma': xsigma,
             'wsigma': wsigma,
             'xfiber': xfiber,
@@ -387,7 +387,7 @@ class Xwsigma:
 
 
         # amp 1
-        dz = xw_amp[0]  # xwsigma['XWSIGMA_AMP'][0]
+        dz = xw_amp[0]  
         name = 'XSIGMA AMP'
         cmap = get_palette('RdBu_r')
         mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
@@ -408,7 +408,7 @@ class Xwsigma:
         xamp.add_layout(color_bar, 'right')
 
         # amp 2
-        dz = xw_amp[1]  # xwsigma['XWSIGMA_AMP'][1]
+        dz = xw_amp[1]  
         name = 'WSIGMA AMP'
         mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
             nan_color='gray')
@@ -447,14 +447,6 @@ class Xwsigma:
         tb_alert_x = Div(text=alert_x)
         tb_alert_w = Div(text=alert_w)
 
-        # font_size = "1.2vw"
-        # for plot in [px, pw, xhist, whist, p_hist_x, p_hist_w, xamp, wamp]:
-        #     plot.xaxis.major_label_text_font_size = font_size
-        #     plot.yaxis.major_label_text_font_size = font_size
-        #     plot.xaxis.axis_label_text_font_size = font_size
-        #     plot.yaxis.axis_label_text_font_size = font_size
-        #     plot.legend.label_text_font_size = font_size
-        #     plot.title.text_font_size = font_size
 
         layout = column(
             widgetbox(info_col, css_classes=["header"]),

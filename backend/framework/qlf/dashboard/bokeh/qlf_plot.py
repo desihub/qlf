@@ -474,7 +474,6 @@ def set_amp(z_value):
     ''' Setup for AMP plots
     '''
     import numpy as np
-#<<<<<<< HEAD
     dz=z_value
 
     # removing NaN in ranges
@@ -486,9 +485,6 @@ def set_amp(z_value):
         cbarformat = "%2.1e"
     elif np.log10(dzmin)>0:
         ztext = ['{:5.2f}'.format(i) for i in dz_valid]
-# =======
-#     dz = z_value
-#     dzmax, dzmin = max(dz), min(dz)
         cbarformat = "%4.2f"
     else:
         ztext = ['{:6.2f}'.format(i) for i in dz_valid]
