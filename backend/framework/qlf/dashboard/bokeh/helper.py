@@ -183,7 +183,7 @@ def write_description(qa_name):
                 'getbias': ["Bias From Overscan", 'Value of bias averaged over each amplifier'],
                 'skyresid': ["Sky Residual", 'Median of residuals over all sky fibers'],
                 'getrms': ["Get RMS", 'Value of RMS for each amplifier read directly from the header of the pre processed image'],
-                'snr': ["Calculate SNR", 'List of average Signal-To-Noise for the N target type'],
+                'snr': ["Calculate SNR", 'List of average signal to noise ratio (SNR) for the N target type'],
                 'integ': ["Integrate Spectrum", 'List of the average fiber magnitude for each of N target types in this camera'],
                 'xwsigma': ["XWSigma", 'Fitted X and W SIGMA averaged over isolated bright sky wavelengths'],
                 'checkHDUs': ['','']
