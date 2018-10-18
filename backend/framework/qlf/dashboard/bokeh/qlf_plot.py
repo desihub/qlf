@@ -60,7 +60,7 @@ def alert_table(nrg, wrg):
     return style + header + tblines + end
 
 
-def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', objtype=['XXELG', 'XXSTAR']):
+def metric_table(metricname, keyname,  curexp='xxx', refexp='xxx', objtype=['XXELG', 'XXSTAR']):
     """ Create metric tables
     """
 
@@ -161,7 +161,7 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
     return style + title + header + tblines + end
 
 
-def mtable(qa, data, comments, objtype=['OTYPE ?', 'OTYPE ?']):
+def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     import numpy as np
     qa_metrics = {}
     qa_metrics['countpix'] = 'LITFRAC_AMP'

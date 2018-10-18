@@ -173,8 +173,7 @@ class Countbins:
             plot.title.text_font_size = font_size
 
        # Prepare tables
-        comments = 'Number of fibers with a nonzero number of bins above highest threshold'
-        metric_txt = mtable('countbins', mergedqa, comments)
+        metric_txt = mtable('countbins', mergedqa)
         metric_tb = Div(text=metric_txt)
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
