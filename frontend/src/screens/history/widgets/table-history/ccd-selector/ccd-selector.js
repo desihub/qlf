@@ -53,7 +53,7 @@ class CCDSelector extends React.Component {
         >
           Fibers
         </Typography>
-        <Typography
+        {/* <Typography
           className={classes.typography}
           onClick={() => this.openViewer('focus')}
         >
@@ -64,7 +64,7 @@ class CCDSelector extends React.Component {
           onClick={() => this.openViewer('snr')}
         >
           SNR
-        </Typography>
+        </Typography> */}
       </Popover>
     );
   }

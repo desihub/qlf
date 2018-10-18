@@ -338,10 +338,10 @@ class ObservingConditions extends React.Component {
             input={<Input />}
             displayEmpty
           >
-            <MenuItem value={'snr'}>SNR</MenuItem>
+            {/* <MenuItem value={'snr'}>SNR</MenuItem> */}
             <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
-            <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
-            <MenuItem value={'psf'}>PSF FWHM</MenuItem>
+            {/* <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
+            <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
             <MenuItem value={'airmass'}>AIRMASS</MenuItem>
           </Select>
         </FormControl>

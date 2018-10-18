@@ -193,13 +193,13 @@ class TimeSeries():
             tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
         )
 
-        info = "<h3>Camera: {} | Y Axis: {}<h3>".format(self.camera, self.yaxis)
+        info = "<h3>Camera: {}<h3>".format(self.camera)
         if self.yaxis in ['skybrightness', 'airmass']:
             self.single_value(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['traceshifts', 'psf']:
             self.double_value(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['noise', 'bias']:
-            info = "<h3>Camera: {} | Amp: {} | Y Axis: {}<h3>".format(self.camera, self.amp, self.yaxis)
+            info = "<h3>Camera: {}<h3>".format(self.camera)
             self.quadruple_values(dates, values, exposures, cameras, dateobs)
         elif self.yaxis in ['snr']:
             self.quadruple_values(dates, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
