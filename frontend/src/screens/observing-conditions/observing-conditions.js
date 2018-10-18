@@ -45,6 +45,7 @@ const styles = {
   },
   viewer: {
     width: 'calc(100vw - 280px)',
+    height: 'calc(100vh - 180px)',
   },
   fadeLoaderFull: {
     position: 'absolute',

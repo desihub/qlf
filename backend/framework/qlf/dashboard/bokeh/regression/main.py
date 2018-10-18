@@ -76,7 +76,7 @@ class Regression():
 
         ph = figure(active_drag='box_zoom',
                     tools='box_zoom,pan,wheel_zoom,reset',
-                    plot_height=220,
+                    plot_height=250,
                     toolbar_location='left',
                     x_range=plot.x_range,
                     y_range=(-0.1*hmax, hmax),
