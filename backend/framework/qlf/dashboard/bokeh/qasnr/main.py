@@ -382,7 +382,7 @@ class SNR:
             fill_color = 'lightgray'
         else:
             dy = (rmax - rmin)*0.1
-            mapper = LinearColorMapper(palette=my_palette, nan_color='lightgray',
+            mapper = LinearColorMapper(palette=my_palette, nan_color='darkgray',
                                        low=rmin - dy, high=rmax+dy)
             fill_color = {'field': 'resid_snr', 'transform': mapper}
 
