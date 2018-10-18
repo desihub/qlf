@@ -86,7 +86,7 @@ class RMS:
         # Prepare tables
         comments = 'Value of RMS for each amplifier read directly from the header of the pre processed image'
         refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
-        metric_txt = mtable('getbias', mergedqa, comments)
+        metric_txt = mtable('getrms', mergedqa, comments)
         metric_tb = Div(text=metric_txt)
         with open("dbgtb.html", 'w') as f:
             f.write(metric_txt)
