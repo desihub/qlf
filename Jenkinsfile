@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh './configure.sh ci'
+                // sh './configure.sh ci'
                 // dir('backend'){
                 //     sh 'docker-compose down'
                 // }
