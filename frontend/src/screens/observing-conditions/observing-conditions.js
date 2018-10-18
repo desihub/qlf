@@ -268,7 +268,7 @@ class ObservingConditions extends React.Component {
       this.state.startDate !== '' &&
       this.state.endDate !== '' &&
       this.state.arm !== '' &&
-      this.state.spectrograph !== ''
+      this.state.spectrograph.length !== 0
     ) {
       return (
         <div className={this.props.classes.loading}>
@@ -289,7 +289,7 @@ class ObservingConditions extends React.Component {
       this.state.startDate !== '' &&
       this.state.endDate !== '' &&
       this.state.arm !== '' &&
-      this.state.spectrograph !== ''
+      this.state.spectrograph.length !== 0
     );
   };
 
