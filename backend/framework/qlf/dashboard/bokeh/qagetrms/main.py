@@ -45,14 +45,14 @@ class RMS:
         name = 'NOISE_AMP'
 
         mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
-            nan_color='lightgray')
+            nan_color='darkgray')
         
         dzdiff = np.array(dz)-np.array(refexp)
 
         ztext, cbarformat = set_amp(dz)
         p = plot_amp(dz, refexp, mapper, name=name)
 
-        p.xaxis.axis_label = "NOISE per Amp"
+        p.xaxis.axis_label = "NOISE per Amp (photon counts)"
 
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
@@ -68,13 +68,13 @@ class RMS:
         name = 'NOISE_OVERSCAN_AMP'
 
         mapper = LinearColorMapper(palette=cmap,  low=wrg[0], high=wrg[1],
-            nan_color='lightgray')
+            nan_color='darkgray')
 
         dzdiff = np.array(dz)-np.array(refexp)
         ztext, cbarformat = set_amp( dz)
         p2 = plot_amp(dz, refexp, mapper, name=name)
 
-        p2.xaxis.axis_label = "NOISE Overscan per Amp"
+        p2.xaxis.axis_label = "NOISE Overscan per Amp (photon counts)"
 
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
@@ -104,14 +104,14 @@ class RMS:
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
-        font_size = "1vw"
-        for plot in [p, p2]:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
+        # font_size = "1.4vw"
+        # for plot in [p, p2]:
+        #     plot.xaxis.major_label_text_font_size = '0pt' #font_size
+        #     plot.yaxis.major_label_text_font_size = font_size
+        #     plot.xaxis.axis_label_text_font_size = font_size
+        #     plot.yaxis.axis_label_text_font_size = font_size
+        #     plot.legend.label_text_font_size = font_size
+        #     plot.title.text_font_size = font_size
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),

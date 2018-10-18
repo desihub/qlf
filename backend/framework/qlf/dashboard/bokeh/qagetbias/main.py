@@ -136,7 +136,8 @@ class Bias:
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="", title_text_baseline="alphabetic")
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
+                              title_text_baseline="alphabetic")
         p.add_layout(color_bar, 'right')
 
         #<<<<<<<
@@ -177,14 +178,14 @@ class Bias:
         alert_tb = Div(text=alert_txt)
         p.sizing_mode = "scale_width"
 
-        font_size = "1vw"
-        for plot in [p]:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
+        # font_size = "1vw"
+        # for plot in [p]:
+        #     plot.xaxis.major_label_text_font_size = font_size
+        #     plot.yaxis.major_label_text_font_size = font_size
+        #     plot.xaxis.axis_label_text_font_size = font_size
+        #     plot.yaxis.axis_label_text_font_size = font_size
+        #     plot.legend.label_text_font_size = font_size
+        #     plot.title.text_font_size = font_size
 
         ptxt = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb),widgetbox(alert_tb),

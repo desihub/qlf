@@ -399,8 +399,12 @@ class Xwsigma:
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="", title_text_baseline="alphabetic")
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
+                              title_text_baseline="alphabetic")
         xamp.height = 400
+
+        xamp.xaxis.axis_label = "X standard deviation per Amp (number of pixels)"
+
         xamp.add_layout(color_bar, 'right')
 
         # amp 2
@@ -415,8 +419,11 @@ class Xwsigma:
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="", title_text_baseline="alphabetic")
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15, title_text_baseline="alphabetic")
         wamp.height = 400
+
+        wamp.xaxis.axis_label = "W standard deviation per Amp (number of pixels)"
+
         wamp.add_layout(color_bar, 'right')
 
         # -------------------------------------------------------------------------
@@ -440,14 +447,14 @@ class Xwsigma:
         tb_alert_x = Div(text=alert_x)
         tb_alert_w = Div(text=alert_w)
 
-        font_size = "1vw"
-        for plot in [px, pw, xhist, whist, p_hist_x, p_hist_w, xamp, wamp]:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
+        # font_size = "1.2vw"
+        # for plot in [px, pw, xhist, whist, p_hist_x, p_hist_w, xamp, wamp]:
+        #     plot.xaxis.major_label_text_font_size = font_size
+        #     plot.yaxis.major_label_text_font_size = font_size
+        #     plot.xaxis.axis_label_text_font_size = font_size
+        #     plot.yaxis.axis_label_text_font_size = font_size
+        #     plot.legend.label_text_font_size = font_size
+        #     plot.title.text_font_size = font_size
 
         layout = column(
             widgetbox(info_col, css_classes=["header"]),
