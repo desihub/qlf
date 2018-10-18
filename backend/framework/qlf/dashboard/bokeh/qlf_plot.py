@@ -89,11 +89,9 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
               <col width="100">
               <col width="90">
               <col width="90">
-        <tr><td colspan=3> {} </td>
-        </tr>
         <tr>
           <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
-        </tr>""".format(comments)
+        </tr>"""
 
     end = """</table> </div> """
 
@@ -217,12 +215,10 @@ def mtable(qa, data, comments, objtype=['OTYPE ?', 'OTYPE ?']):
               <col width="120">
               <col width="90">
               <col width="90">
-        <tr><td colspan="3"> {}
-            </td>
         </tr>
         <tr>
             <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
-        </tr>""".format(comments)
+        </tr>"""
 
     end = """</table> </div> """
 
