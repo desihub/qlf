@@ -41,8 +41,7 @@ const styles = {
   gridRow: {
     display: 'grid',
     gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 200px)',
-    paddingTop: '16px',
+    height: 'calc(100vh - 130px)',
   },
   viewer: {
     width: 'calc(100vw - 280px)',
@@ -143,7 +142,7 @@ class TrendAnalysis extends React.Component {
     this.state = {
       tab: 'Time Series',
       spectrograph: [],
-      arm: null,
+      arm: '',
       amp: '',
       loading: false,
       firstLoad: false,
@@ -152,7 +151,7 @@ class TrendAnalysis extends React.Component {
       startDate: '',
       endDate: '',
       datePeriod: '',
-      selectArm: null,
+      selectArm: '',
       selectAmp: '',
       selectXaxis: '',
       selectYaxis: '',
@@ -289,18 +288,18 @@ class TrendAnalysis extends React.Component {
       (this.state.tab === 'Time Series' &&
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
-        this.state.endDate !== '') ||
+        this.state.endDate !== '' &&
+        this.state.spectrograph.length !== 0) ||
       (this.state.tab === 'Regression' &&
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
         this.state.startDate !== '' &&
-        this.state.endDate !== '')
+        this.state.endDate !== '' &&
+        this.state.spectrograph.length !== 0)
     ) {
       return (
         <div className={this.props.classes.loading}>
@@ -320,10 +319,10 @@ class TrendAnalysis extends React.Component {
       return (
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
-        this.state.endDate !== ''
+        this.state.endDate !== '' &&
+        this.state.spectrograph.length !== 0
       );
     }
 
@@ -331,11 +330,11 @@ class TrendAnalysis extends React.Component {
       return (
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
         this.state.startDate !== '' &&
-        this.state.endDate !== ''
+        this.state.endDate !== '' &&
+        this.state.spectrograph.length !== 0
       );
     }
   };
@@ -603,10 +602,10 @@ class TrendAnalysis extends React.Component {
           centered
         >
           <Tab label="Time Series" value={'Time Series'} />
-          {/* <Tab label="Regression" value={'Regression'} /> */}
+          <Tab label="Regression" value={'Regression'} />
         </Tabs>
         {tab === 'Time Series' ? this.renderTimeSeries() : null}
-        {/* {tab === 'Regression' ? this.renderRegression() : null} */}
+        {tab === 'Regression' ? this.renderRegression() : null}
       </div>
     );
   };
@@ -615,7 +614,7 @@ class TrendAnalysis extends React.Component {
     const { classes } = this.props;
     return (
       <Paper elevation={4} className={classes.main}>
-        {this.renderTabs()}
+        {this.renderTimeSeries()}
       </Paper>
     );
   }
