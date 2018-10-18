@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import FormLabel from '@material-ui/core/FormLabel';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -246,14 +245,7 @@ class SurveyViewer extends React.Component {
 
   render() {
     const { classes } = this.props;
-    return (
-      <div className={classes.preview}>
-        <FormLabel component="legend" className={classes.legend}>
-          Preview:
-        </FormLabel>
-        {this.renderImage()}
-      </div>
-    );
+    return <div className={classes.preview}>{this.renderImage()}</div>;
   }
 }
 
