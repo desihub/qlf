@@ -1,7 +1,7 @@
 from ui_channel.camera_status import CameraStatus
 from dashboard.models import Process, Job
 from clients import get_exposure_monitoring
-from dashboard.utils import get_date
+from astropy.time import Time
 import io
 import os
 import json
@@ -127,7 +127,8 @@ class QLFState:
             self.flavor = self.current_process.exposure.flavor
             self.stages = self.flavor_stages[self.flavor]
             self.current_process_id = self.current_process.id
-            date = get_date(self.exposure_id)
+            date = Time(
+                str(self.current_process.exposure.dateobs), format='iso', scale='utc')
             self.date_time = date.value if date else ''
             self.mjd = date.mjd if date else ''
             self.camera_status = self.camera_status_generator.get_camera_status()
