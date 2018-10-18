@@ -142,7 +142,7 @@ class TrendAnalysis extends React.Component {
     this.state = {
       tab: 'Time Series',
       spectrograph: [],
-      arm: null,
+      arm: '',
       amp: '',
       loading: false,
       firstLoad: false,
@@ -151,7 +151,7 @@ class TrendAnalysis extends React.Component {
       startDate: '',
       endDate: '',
       datePeriod: '',
-      selectArm: null,
+      selectArm: '',
       selectAmp: '',
       selectXaxis: '',
       selectYaxis: '',
@@ -288,18 +288,18 @@ class TrendAnalysis extends React.Component {
       (this.state.tab === 'Time Series' &&
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
-        this.state.endDate !== '') ||
+        this.state.endDate !== '' &&
+        this.state.spectrograph.length !== 0) ||
       (this.state.tab === 'Regression' &&
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
         this.state.startDate !== '' &&
-        this.state.endDate !== '')
+        this.state.endDate !== '' &&
+        this.state.spectrograph.length !== 0)
     ) {
       return (
         <div className={this.props.classes.loading}>
@@ -319,10 +319,10 @@ class TrendAnalysis extends React.Component {
       return (
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
-        this.state.endDate !== ''
+        this.state.endDate !== '' &&
+        this.state.spectrograph.length !== 0
       );
     }
 
@@ -330,11 +330,11 @@ class TrendAnalysis extends React.Component {
       return (
         this.state.amp !== '' &&
         this.state.arm !== '' &&
-        this.state.spectrograph !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
         this.state.startDate !== '' &&
-        this.state.endDate !== ''
+        this.state.endDate !== '' &&
+        this.state.spectrograph.length !== 0
       );
     }
   };
