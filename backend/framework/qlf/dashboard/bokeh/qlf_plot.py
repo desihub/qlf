@@ -497,7 +497,7 @@ def set_amp(z_value):
     return ztext, cbarformat
 
 
-def plot_amp(dz, refexp, mapper, name=""):
+def plot_amp(dz, refexp, mapper, name="", font_size="1.2vw"):
     ''' Initializing AMP plot
     '''
     ztext, cbarformat = set_amp(dz)
@@ -516,7 +516,7 @@ def plot_amp(dz, refexp, mapper, name=""):
                 <span style="font-size: 1vw; color: #515151">@ztext</span>
             </div>
             <div>
-                <span style="font-size: 1vw; font-weight: bold; color: #303030;">Reference Value: </span>
+                <span style="font-size: 1vw; font-weight: bold; color: #303030;">Reference: </span>
                 <span style="font-size: 1vw; color: #515151;">@ref</span>
             </div>
          </div>
@@ -528,19 +528,27 @@ def plot_amp(dz, refexp, mapper, name=""):
                y_range=list([-0.5, 1.5]),
                plot_width=450, plot_height=400)
 
+
+    p.xaxis.axis_label_text_font_size = font_size
+    p.legend.label_text_font_size = font_size
+    p.title.text_font_size = font_size
+
     p.grid.grid_line_color = None
     p.outline_line_color = None
     p.axis.clear
     p.axis.minor_tick_line_color = None
 
-    p.xaxis.major_label_text_font_size = '0pt'
+    p.axis.major_label_text_font_size = '0pt'
     p.yaxis.major_label_text_font_size = '0pt'
+    #p.xaxis.axis_label_text_font_size = "0pt"
     p.xaxis.major_tick_line_color = None
     p.xaxis.minor_tick_line_color = None
     p.yaxis.major_tick_line_color = None
     p.yaxis.minor_tick_line_color = None
     p.yaxis.visible = False
-    p.xaxis.visible = False
+    p.xaxis.visible = True
+
+
 
     zvalid=[x if x>-999 else np.nan for x in dz]
     source = ColumnDataSource(
