@@ -60,7 +60,7 @@ def alert_table(nrg, wrg):
     return style + header + tblines + end
 
 
-def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', objtype=['XXELG', 'XXSTAR']):
+def metric_table(metricname, keyname,  curexp='xxx', refexp='xxx', objtype=['XXELG', 'XXSTAR']):
     """ Create metric tables
     """
 
@@ -161,7 +161,7 @@ def metric_table(metricname, comments, keyname,  curexp='xxx', refexp='xxx', obj
     return style + title + header + tblines + end
 
 
-def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
+def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     import numpy as np
     qa_metrics = {}
     qa_metrics['countpix'] = 'LITFRAC_AMP'
@@ -193,7 +193,7 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
 
     style = """    <style>        table {
             font-family: arial, sans-serif;
-            font-size: 1vw;
+            font-size: 1.3vw;
             border-collapse: collapse;
             width: 100%;
             }
@@ -215,6 +215,7 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
               <col width="120">
               <col width="90">
               <col width="90">
+        </tr>
         <tr>
             <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
         </tr>"""
@@ -224,7 +225,7 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
     title = """<h2 align=center style="text-align:center;">  {} </h2>""".format(
         qa)
 
-    if qa == 'countpix':
+    if qa == 'NAcountpix':
         ref = ['N/A']*4
         nrows = 4
     else:
@@ -246,10 +247,10 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
         cur_tb, ref_tb = [], []
         for i in list(range(nrows)):
             x = curexp[i]
-            ref_tb.append(ref[i])
+            ref_tb.append('%.2f'%ref[i])
 
             if isinstance(x, float) and x > -999:
-                xstr = '%4.3f' % (x)
+                xstr = '%.2f' % (x)
             elif isinstance(x, float) and (x <= -999 or x == np.nan):
                 xstr = 'NaN'
             elif isinstance(x, int):
@@ -260,11 +261,14 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
             cur_tb.append(xstr)
     elif nrows == 1:
         if isinstance(curexp, float):
-            cur_tb = '%4.3f' % curexp
-            ref_tb = '%2.1f' % ref[0]
+            cur_tb = '%.2f' % curexp
+            ref_tb = '%.2f' % ref[0]
         elif isinstance(curexp, int):
             cur_tb = '%d' % curexp
-            ref_tb = ref
+            try:
+                ref_tb = '%d'%ref[0]
+            except:
+                ref_tb=ref
         else:
             cur_tb = curexp
             ref_tb = ref
@@ -281,7 +285,7 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
 
     elif qa in ['countpix', 'getbias', 'getrms']:
         # per AMP
-        key_tb = [qa_metrics[qa] + ' (AMP %d)' % (i+1)
+        key_tb = [qa_metrics[qa] 
                   for i in list(range(nrows))]
 
     elif qa in ['xwsigma']:
@@ -298,23 +302,25 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
         if nrows == 1:
             tblines = tblines +\
                 """<tr>
-                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td>
+                <td>{}</td> <td>{}</td> <td>{}</td>
                 </tr>
-                """.format(nrows, key, cur_tb, ref_tb)
+                """.format(key, cur_tb, ref_tb)
+                #                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td>
         elif i == 0:
             tblines = tblines +\
                 """<tr>
-                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td>
+                <td>{}</td> <td>{}</td> <td>{}</td>
                 </tr>
-                """.format(nrows, key_tb[i], cur_tb[i], ref_tb[i])
+                """.format(key_tb[i], cur_tb[i], ref_tb[i])
         else:
             tblines = tblines +\
                 """<tr>
-                <td>{}</td> <td>{}</td>
+                <td>{}</td> <td>{}</td> <td>{}</td>
                 </tr>
                 """.format(key_tb[i], cur_tb[i], ref_tb[i])
 
     return style + header + tblines + end
+
 
 
 def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0, 0],  wrng=[0, 0], nlines=None, align='center'):

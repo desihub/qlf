@@ -142,7 +142,6 @@ class Countpix:
         info_col = Div(text=write_description('countpix'))
 
         # Prepare tables
-        comments = 'Fraction of the pixels per amp that are above CUTPIX = 5sigmas '
         metricname = 'LITFRAC_AMP'
         keyname = 'countpix'
         curexp = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
