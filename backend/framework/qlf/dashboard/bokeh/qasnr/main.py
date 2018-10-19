@@ -8,7 +8,7 @@ from bokeh.models.widgets import PreText, Div
 from bokeh.models import Spacer
 from dashboard.bokeh.helper import write_description, write_info
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import html_table, sort_obj, mtable, alert_table
+from dashboard.bokeh.qlf_plot import sort_obj, mtable, alert_table
 from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import metric_table
 from bokeh.resources import CDN
@@ -483,8 +483,6 @@ class SNR:
         names = ['FIDSNR %s' % i for i in avobj]
         vals = ['NaN' if isnr == -
                 9999 else '{:.3f}'.format(isnr) for isnr in snr['FIDSNR_TGT']]
-        tb = html_table(names=names, vals=vals,  nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb)
 
         width_tb, height_tb = 500, 140
 

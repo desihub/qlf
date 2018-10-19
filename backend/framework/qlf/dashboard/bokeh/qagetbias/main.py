@@ -69,11 +69,6 @@ class Bias:
             info_hist = """"""
         txt = Div(text=info_hist)
 
-        from dashboard.bokeh.qlf_plot import html_table
-
-        tb = html_table(nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb)
-
         info_col = Div(text=write_description('getbias'))
 
         # Prepare tables

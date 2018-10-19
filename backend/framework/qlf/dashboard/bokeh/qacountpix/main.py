@@ -4,7 +4,6 @@ from bokeh.layouts import column, widgetbox
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import LinearColorMapper, ColorBar
-from dashboard.bokeh.qlf_plot import html_table
 
 import numpy as np
 
@@ -72,8 +71,6 @@ class Countpix:
         txt = PreText(text=info, height=nlines*20, width=2*p.plot_width)
 
 
-        tb = html_table(nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
 
         info_col = Div(text=write_description('countpix'))
 

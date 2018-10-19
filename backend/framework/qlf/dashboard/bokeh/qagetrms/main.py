@@ -5,7 +5,7 @@ from bokeh.models.widgets import Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
+from dashboard.bokeh.qlf_plot import mtable, alert_table
 
 import numpy as np
 
@@ -82,11 +82,6 @@ class RMS:
                              formatter=formatter, title="(Val-Ref)", title_standoff=15,
                               title_text_baseline="alphabetic",)
         p2.add_layout(color_bar, 'right')
-
-
-
-        tb = html_table(nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
 
         info, nlines = write_info('getrms', check_ccds['PARAMS'])
         info = """<div> 
