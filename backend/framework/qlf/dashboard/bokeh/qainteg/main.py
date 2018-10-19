@@ -4,7 +4,7 @@ from bokeh.layouts import column, widgetbox
 from bokeh.models.widgets import Div
 
 from bokeh.models import HoverTool, ColumnDataSource
-from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
+from dashboard.bokeh.qlf_plot import mtable, alert_table
 
 import numpy as np
 
@@ -71,11 +71,6 @@ class Integ:
         fiber_hist.yaxis.axis_label = "Integral (counts)"
 
         info_col = Div(text=write_description('integ'))
-
-        # List of mag diff b/w the fibermag and the imaging mag from the fibermap
-        tb = html_table(names=['DELTAMAG (Mean)'], vals=[
-                        '{:.3f}'.format(np.mean(fiber_mag))], nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb)
 
         # Reading obj_type
         try:

@@ -5,7 +5,7 @@ from bokeh.models.widgets import Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
+from dashboard.bokeh.qlf_plot import mtable, alert_table
 
 import numpy as np
 
@@ -35,45 +35,53 @@ class RMS:
 
         nrg = check_ccds['PARAMS']['NOISE_AMP_NORMAL_RANGE']
         wrg = check_ccds['PARAMS']['NOISE_AMP_WARN_RANGE']
+        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['NOISE_AMP_REF']
 
-        Reds = get_palette('Reds')
+        cmap = get_palette('RdBu_r')
+
 
         # amp 1
         dz = getrms['NOISE_AMP']
         name = 'NOISE_AMP'
 
-        mapper = LinearColorMapper(palette=Reds, low=min(dz), high=max(dz))
+        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
+            nan_color='darkgray')
+        
+        dzdiff = np.array(dz)-np.array(refexp)
 
-        ztext, cbarformat = set_amp(getrms['NOISE_AMP'])
-        p = plot_amp(dz, mapper, name=name)
+        ztext, cbarformat = set_amp(dz)
+        p = plot_amp(dz, refexp, mapper, name=name)
 
-        p.xaxis.axis_label = "NOISE per Amp"
+        p.xaxis.axis_label = "NOISE per Amp (photon counts)"
 
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="", title_text_baseline="alphabetic")
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
+                             title_text_baseline="alphabetic",)
         p.add_layout(color_bar, 'right')
+
+
 
         # amp 2
         dz = getrms['NOISE_OVERSCAN_AMP']
         name = 'NOISE_OVERSCAN_AMP'
 
-        mapper = LinearColorMapper(palette=Reds, low=min(dz), high=max(dz))
+        mapper = LinearColorMapper(palette=cmap,  low=wrg[0], high=wrg[1],
+            nan_color='darkgray')
 
-        ztext, cbarformat = set_amp(dz)
-        p2 = plot_amp(dz, mapper, name=name)
+        dzdiff = np.array(dz)-np.array(refexp)
+        ztext, cbarformat = set_amp( dz)
+        p2 = plot_amp(dz, refexp, mapper, name=name)
 
-        p2.xaxis.axis_label = "NOISE Overscan per Amp"
+        p2.xaxis.axis_label = "NOISE Overscan per Amp (photon counts)"
 
         formatter = PrintfTickFormatter(format=cbarformat)
         color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
                              major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="", title_text_baseline="alphabetic")
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
+                              title_text_baseline="alphabetic",)
         p2.add_layout(color_bar, 'right')
-
-        tb = html_table(nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
 
         info, nlines = write_info('getrms', check_ccds['PARAMS'])
         info = """<div> 
@@ -83,22 +91,15 @@ class RMS:
         txt = Div(text=info, width=p.plot_width)
         info_col = Div(text=write_description('getrms'))
 
+
         # Prepare tables
-        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
-        metric_txt = mtable('getrms', mergedqa, )
+
+        comments = 'value of RMS for each amplifier read directly from the header of the pre processed image'
+        metric_txt = mtable('getrms', mergedqa)
         metric_tb = Div(text=metric_txt)
 
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
-
-        font_size = "1vw"
-        for plot in [p, p2]:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
