@@ -517,7 +517,6 @@ class SNR:
             plot_snr.append(Spacer(width=pltxy_w, height=pltxy_h))
 
        # Prepare tables
-        comments = 'List of average SNR for the N target type'
         metric_txt = mtable('snr', mergedqa, objtype=objlist)
         metric_tb = Div(text=metric_txt)
 

@@ -149,14 +149,12 @@ class Bias:
         info_col = Div(text=write_description('getbias'))
 
         # Prepare tables
-        comments = 'Value of bias averaged over each amplifier'
-        metricname = 'BIAS_AMP'
-        keyname = 'getbias'
-        curexp = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
-        metric_txt = mtable('getbias', mergedqa, comments)
-        metric_tb = Div(text=metric_txt)
+        metricname='BIAS_AMP'
+        keyname='getbias'
+        metric_txt=mtable('getbias', mergedqa)
+        metric_tb=Div(text=metric_txt)
 
-        alert_txt = alert_table(nrg, wrg)
+        alert_txt = alert_table(nrg,wrg)
         alert_tb = Div(text=alert_txt)
         p.sizing_mode = "scale_width"
 
