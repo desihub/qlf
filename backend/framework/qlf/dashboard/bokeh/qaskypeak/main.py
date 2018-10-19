@@ -7,7 +7,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import html_table, sort_obj, mtable, alert_table
+from dashboard.bokeh.qlf_plot import sort_obj, mtable, alert_table
 
 from dashboard.bokeh.helper import write_description, get_palette
 
@@ -179,9 +179,6 @@ class Skypeak:
 
         nrg = par['PEAKCOUNT_NORMAL_RANGE']
         wrg = par['PEAKCOUNT_WARN_RANGE']
-        tb = html_table(names=['Peakcount noise'], vals=[
-                        '{:.3f}'.format(skypeak['PEAKCOUNT_NOISE'])], nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb)
 
        # Prepare tables
         metric_txt = mtable('skypeak', mergedqa)

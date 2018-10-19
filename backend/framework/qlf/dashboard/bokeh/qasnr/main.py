@@ -8,9 +8,8 @@ from bokeh.models.widgets import PreText, Div
 from bokeh.models import Spacer
 from dashboard.bokeh.helper import write_description, write_info
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import html_table, sort_obj, mtable, alert_table
+from dashboard.bokeh.qlf_plot import sort_obj, mtable, alert_table
 from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import metric_table
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
@@ -295,8 +294,6 @@ class SNR:
 
         # infos
         key_name = 'snr'
-        # ['FIDMAG', 'FIDSNR_TGT_REF', 'FIDSNR_WARN_RANGE', 'FIDSNR_NORMAL_RANGE']
-        # tests[key_name])
         info, nlines = write_info(key_name, check_spectra['PARAMS'])
         txt = PreText(text=info, height=nlines*20)
         info_col = Div(text=write_description('snr'))  # *star_plot.plot_width)
@@ -382,7 +379,7 @@ class SNR:
             fill_color = 'lightgray'
         else:
             dy = (rmax - rmin)*0.1
-            mapper = LinearColorMapper(palette=my_palette, nan_color='lightgray',
+            mapper = LinearColorMapper(palette=my_palette, nan_color='darkgray',
                                        low=rmin - dy, high=rmax+dy)
             fill_color = {'field': 'resid_snr', 'transform': mapper}
 
@@ -396,8 +393,11 @@ class SNR:
         left, right = xmin - xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
-        p = Figure(title='Residual SNR'+name_warn, active_drag="box_zoom", x_axis_label='RA', y_axis_label='DEC', plot_width=380, plot_height=380, tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"]
-                   )  # ,x_range=(left,right), y_range=(bottom, top) )
+        p = Figure(title='Residual SNR'+name_warn, active_drag="box_zoom",
+                    x_axis_label='RA', y_axis_label='DEC',
+                    plot_width=380, plot_height=380,
+                    tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"],)
+                    # ,x_range=(left,right), y_range=(bottom, top) )
 
         # Color Map
         p.circle('x1', 'y1', source=source, name="data", radius=radius,
@@ -482,8 +482,6 @@ class SNR:
         names = ['FIDSNR %s' % i for i in avobj]
         vals = ['NaN' if isnr == -
                 9999 else '{:.3f}'.format(isnr) for isnr in snr['FIDSNR_TGT']]
-        tb = html_table(names=names, vals=vals,  nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb)
 
         width_tb, height_tb = 500, 140
 

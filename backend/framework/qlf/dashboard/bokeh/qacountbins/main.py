@@ -7,7 +7,7 @@ from bokeh.models import LinearColorMapper, ColorBar
 
 from dashboard.bokeh.helper import write_description,\
     get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import html_table, sort_obj,\
+from dashboard.bokeh.qlf_plot import  sort_obj,\
     mtable, alert_table
 
 import numpy as np
@@ -157,9 +157,6 @@ class Countbins:
 
         ngood = countbins['NGOODFIB']
         fracgood = ngood/500. - 1.
-        tb = html_table(names=['NGOODFIB', 'FRACTION BAD'], vals=[ngood, str(fracgood*100)+' %'],
-                        nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb)
 
         info_col = Div(text=write_description('countbins'))
 

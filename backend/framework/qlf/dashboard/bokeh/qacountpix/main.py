@@ -11,7 +11,8 @@ from dashboard.bokeh.helper import write_description, write_info, \
     get_merged_qa_scalar_metrics
 
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import alert_table, mtable
+from dashboard.bokeh.qlf_plot import alert_table, mtable, \
+    set_amp, plot_amp
 import numpy as np
 import logging
 from bokeh.resources import CDN
@@ -33,111 +34,43 @@ class Countpix:
 
         countpix = mergedqa['TASKS']['CHECK_CCDs']['METRICS']
         tests = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
+
         nrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_NORMAL_RANGE']
         wrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_WARN_RANGE']
+        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_REF']
 
-        # ============================================
-        # THIS: Given the set up in the block above,
-        #       we have the bokeh plots
+        cmap = get_palette("RdBu_r")
+
 
         name = 'LITFRAC_AMP'
-        metr = countpix
 
-        dx = [0, 1, 0, 1]
-        dy = [1, 1, 0, 0]
-        dz = metr[name]
-        Reds = get_palette("Reds")
-        mapper = LinearColorMapper(palette=Reds, low=min(dz), high=max(dz))
+        dz = countpix["LITFRAC_AMP"]
 
-        dzmax, dzmin = max(dz), min(dz)
-        if np.log10(dzmax) > 4 or np.log10(dzmin) < -3:
-            ztext = ['{:3.2e}'.format(i) for i in dz]
-            cbarformat = "%2.1e"
-        elif np.log10(dzmin) > 0:
-            ztext = ['{:4.3f}'.format(i) for i in dz]
-            cbarformat = "%4.2f"
-        else:
-            ztext = ['{:5.4f}'.format(i) for i in dz]
-            cbarformat = "%5.4f"
+        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
+            nan_color="darkgray")
 
-        source = ColumnDataSource(
-            data=dict(
-                x=dx,
-                y=dy,
-                y_offset1=[i+0.15 for i in dy],
-                y_offset2=[i-0.05 for i in dy],
 
-                z=dz,
-                amp=['AMP %s' % i for i in range(1, 5)],
-                ztext=ztext  # ['{:3.2e}'.format(i) for i in dz]
-            )
-        )
+        dzdiff = np.array(dz)-np.array(refexp)
 
-        cmap_tooltip = """
-            <div>
-                <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">counts: </span>
-                    <span style="font-size: 1vw; color: #515151">@z</span>
-                </div>
-                <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">AMP: </span>
-                    <span style="font-size: 1vw; color: #515151;">@amp</span>
-                </div>
-            </div>
-        """.replace("counts:", name+":")
-
-        hover = HoverTool(tooltips=cmap_tooltip)
-
-        p = Figure(title=name, tools=[hover],
-                   x_range=list([-0.5, 1.5]),           # length = 18
-                   y_range=list([-0.5, 1.5]),  # numeros romanos
-                   plot_width=450, plot_height=400, css_classes=["plot-bokeh"]
-                   )
-
-        p.grid.grid_line_color = None
-        p.outline_line_color = None
-        p.axis.clear
-
-        text_props = {
-            "source": source,
-            "angle": 0,
-            "color": "black",
-            "text_color": "black",
-            "text_align": "center",
-            "text_baseline": "middle"
-        }
-
-        p.rect("x", "y", .98, .98, 0, source=source,
-               fill_color={'field': 'z', 'transform': mapper}, fill_alpha=0.9)  # , color="color")
-        p.axis.minor_tick_line_color = None
-
-        p.text(x="x", y="y_offset2", text="ztext",
-               text_font_style="bold", text_font_size="1vw", **text_props)
-        p.text(x="x", y="y_offset1", text="amp",
-               text_font_size="1vw", **text_props)
-        formatter = PrintfTickFormatter(format=cbarformat)  # format='%2.1e')
-        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0), formatter=formatter, title="", title_text_baseline="alphabetic")
+        ztext, cbarformat = set_amp(dz)
+        p = plot_amp(dz, refexp, mapper, name=name)
 
         p.xaxis.axis_label = "Fraction over 5 sigma read noise (per Amp)"
+
+        formatter = PrintfTickFormatter(format=cbarformat)
+        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
+                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
+                             title_text_baseline="alphabetic",)
         p.add_layout(color_bar, 'right')
 
-        p.xaxis.major_label_text_font_size = '0pt'
-        p.yaxis.major_label_text_font_size = '0pt'
-        p.xaxis.major_tick_line_color = None
-        p.xaxis.minor_tick_line_color = None
 
-        p.yaxis.major_tick_line_color = None
-        p.yaxis.minor_tick_line_color = None
 
         # infos
         info, nlines = write_info('countpix', tests)
         txt = PreText(text=info, height=nlines*20, width=2*p.plot_width)
 
-        from dashboard.bokeh.qlf_plot import html_table
 
-        tb = html_table(nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb, width=400)
 
         info_col = Div(text=write_description('countpix'))
 
@@ -145,23 +78,12 @@ class Countpix:
         metricname = 'LITFRAC_AMP'
         keyname = 'countpix'
         curexp = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
-        # mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_REF']
-        refexp = 'N/A'
         metric_txt = mtable('countpix', mergedqa)
 
         metric_tb = Div(text=metric_txt)
 
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
-
-        font_size = "1vw"
-        for plot in [p]:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
