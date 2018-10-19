@@ -10,7 +10,6 @@ from dashboard.bokeh.helper import write_description, write_info
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import sort_obj, mtable, alert_table
 from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import metric_table
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np

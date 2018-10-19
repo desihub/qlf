@@ -9,7 +9,7 @@ import numpy as np
 
 from dashboard.bokeh.helper import write_description, write_info,\
                      get_merged_qa_scalar_metrics, get_palette
-from dashboard.bokeh.qlf_plot import alert_table, metric_table,\
+from dashboard.bokeh.qlf_plot import alert_table,\
     mtable, set_amp, plot_amp
 
 import logging
