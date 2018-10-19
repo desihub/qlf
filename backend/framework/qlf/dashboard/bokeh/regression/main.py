@@ -51,11 +51,22 @@ class Regression():
             camera=cameras
         ))
 
-        TOOLTIPS = [
-            (y_data['display'], "@y"),
-            (x_data['display'], "@x"),
-            ("Exposure", "@exposure"),
-        ]
+        TOOLTIPS = """
+            <div>
+                <div>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">{}: </span>
+                    <span style="font-size: 1vw; color: #515151">@y</span>
+                </div>
+                <div>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">{}: </span>
+                    <span style="font-size: 1vw; color: #515151;">@x</span>
+                </div>
+                <div>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Exposure: </span>
+                    <span style="font-size: 1vw; color: #515151;">@exposure</span>
+                </div>
+            </div>
+        """.format(y_data['display'], x_data['display'])
 
         hover = HoverTool(tooltips=TOOLTIPS)
 
@@ -107,6 +118,15 @@ class Regression():
 
         qv = pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:],
                      right=vhist, color="#a7bae1", line_color="black")
+
+        font_size = "1.2vw"
+        for p in [plot, pv, ph]:
+            p.xaxis.major_label_text_font_size = font_size
+            p.yaxis.major_label_text_font_size = font_size
+            p.xaxis.axis_label_text_font_size = font_size
+            p.yaxis.axis_label_text_font_size = font_size
+            p.legend.label_text_font_size = font_size
+            p.title.text_font_size = font_size
 
         info = "<h3>Camera: {}<h3>".format(self.camera)
         info_col = Div(text=info)
