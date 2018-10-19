@@ -98,8 +98,9 @@ class RMS:
 
 
         # Prepare tables
+
         comments = 'value of RMS for each amplifier read directly from the header of the pre processed image'
-        metric_txt = mtable('getbias', mergedqa)
+        metric_txt = mtable('getrms', mergedqa)
         metric_tb = Div(text=metric_txt)
 
         alert_txt = alert_table(nrg, wrg)

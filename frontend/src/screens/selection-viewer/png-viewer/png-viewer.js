@@ -1,7 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import FormLabel from '@material-ui/core/FormLabel';
 
 const apiUrl = process.env.REACT_APP_API;
 
@@ -85,12 +84,7 @@ class PNGViewer extends React.Component {
 
   render() {
     const { classes } = this.props;
-    return (
-      <div className={classes.preview}>
-        <FormLabel component="legend">Preview:</FormLabel>
-        {this.renderImage()}
-      </div>
-    );
+    return <div className={classes.preview}>{this.renderImage()}</div>;
   }
 }
 
