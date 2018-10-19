@@ -568,8 +568,6 @@ def plot_amp(dz, refexp, mapper, name="", font_size="1.2vw"):
             ztext = ztext,
             )
         )
-    with open('dbg','w') as f:
-            f.write(str([ z-ref for z in zvalid for ref in refexp]))
 
     text_props = {
         "source": source,
