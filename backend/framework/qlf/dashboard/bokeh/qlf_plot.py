@@ -221,16 +221,18 @@ def mtable(qa, data, objtype=['XXELG', 'XXSTAR']):
 
     end = """</table> </div> """
 
-    title = """<h2 align=center style="text-align:center;">  {} </h2>""".format(
-        qa)
-
-    if qa == 'countpix':
-        ref = ['N/A']*4
-        nrows = 4
+    if qa=='countpix':
+        ref=['N/A']*4
+        nrows=4
     else:
-        ref = par[key+'_REF']
-        if isinstance(ref, list):
-            nrows = len(ref)
+        if data['FLAVOR'].upper() == 'SCIENCE':
+            program = data['GENERAL_INFO']['PROGRAM'].upper()
+            program_prefix = '_'+program
+        else:
+            program_prefix = ''
+        ref=par[key+program_prefix+'_REF']
+        if isinstance(ref,list):
+            nrows=len(ref)
         else:
             nrows = 1
 
