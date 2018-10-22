@@ -139,7 +139,7 @@ class TimeSeries():
                     dateobs=dateobs
                 ))
                 line=self.p.line('x', 'y', source=source, line_color=color)
-                circle=self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color)
+                circle=self.p.circle('x', 'y', source=source, size=6, line_color=None, fill_color=color)
                 legends.append(('AMP {}'.format(idx), [line, circle]))
         else:
             source = ColumnDataSource(data=dict(
@@ -177,12 +177,22 @@ class TimeSeries():
                 date_time=(val['dateobs'] - timedelta(minutes=20*idx)).strftime('%Y-%m-%d %H:%M:%S')
                 mjds.append(Time(date_time, format='iso', scale='utc').mjd)
 
-        TOOLTIPS = [
-            ("Camera", "@camera"),
-            ("Value", "@y"),
-            ("Exposure ID", "@exposure"),
-            ("Date", "@dateobs"),
-        ]
+        TOOLTIPS = """
+            <div>
+                <div>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">{}: </span>
+                    <span style="font-size: 1vw; color: #515151;">@y</span>
+                </div>
+                <div>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Exposure: </span>
+                    <span style="font-size: 1vw; color: #515151;">@exposure</span>
+                </div>
+                <div>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Date: </span>
+                    <span style="font-size: 1vw; color: #515151;">@dateobs</span>
+                </div>
+            </div>
+        """.format(axis_data['display'])
 
         hover = HoverTool(tooltips=TOOLTIPS)
 
@@ -207,6 +217,14 @@ class TimeSeries():
             self.quadruple_values(mjds, values, exposures, cameras, dateobs)
         elif self.yaxis in ['snr']:
             self.quadruple_values(mjds, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
+
+        font_size = "1.2vw"
+        self.p.xaxis.major_label_text_font_size = font_size
+        self.p.yaxis.major_label_text_font_size = font_size
+        self.p.xaxis.axis_label_text_font_size = font_size
+        self.p.yaxis.axis_label_text_font_size = font_size
+        self.p.legend.label_text_font_size = font_size
+        self.p.title.text_font_size = font_size
 
         info_col = Div(text=info)
         layout = column(info_col, self.p, sizing_mode='scale_width')
