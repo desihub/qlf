@@ -186,7 +186,8 @@ def write_description(qa_name):
                 'snr': ["Calculate SNR", 'List of average signal to noise ratio (SNR) for the N target type'],
                 'integ': ["Integrate Spectrum", 'List of the average fiber magnitude for each of N target types in this camera'],
                 'xwsigma': ["XWSigma", 'Fitted X and W SIGMA averaged over isolated bright sky wavelengths'],
-                'checkHDUs': ['','']
+                'checkHDUs': ['',''],
+                'fiberflat':["Check Fiber Flat", "Examine fiber flat and test for stability and consistency"],
               }
     
     text="""<body><p  style="text-align:left; color:#262626; font-size:1.5vw;">

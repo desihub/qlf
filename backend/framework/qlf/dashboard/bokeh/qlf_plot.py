@@ -163,7 +163,6 @@ def metric_table(metricname, keyname,  curexp='xxx', refexp='xxx', objtype=['XXE
 
 
 def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
-    import numpy as np
     qa_metrics = {}
     qa_metrics['countpix'] = 'LITFRAC_AMP'
     qa_metrics['getbias'] = 'BIAS_AMP'
@@ -175,6 +174,7 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     qa_metrics['integ'] = 'DELTAMAG_TGT'
     qa_metrics['skyresid'] = 'MED_RESID'
     qa_metrics['snr'] = 'FIDSNR_TGT'
+    qa_metrics['fiberflat']= 'CHECKFLAT'
 
     qa_step = {
         'countpix': 'CHECK_CCDs',
@@ -186,7 +186,8 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         'skypeak': 'CHECK_SPECTRA',
         'integ': 'CHECK_SPECTRA',
         'skyresid': 'CHECK_SPECTRA',
-        'snr': 'CHECK_SPECTRA'}
+        'snr': 'CHECK_SPECTRA',
+        'fiberflat': "CHECK_FIBERFLAT",}
 
     met = data['TASKS'][qa_step[qa]]['METRICS']
     par = data['TASKS'][qa_step[qa]]['PARAMS']
