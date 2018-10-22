@@ -64,7 +64,6 @@ class Fits2png:
             # p.image(image=[img_data.data], x=0, y=0, dw=img_data.data.shape[0] -
             #         1, dh=img_data.data.shape[1]-1, palette="Greys256")
 
-
             img_data = img[1].data
 
             if np.amin(img_data)==0: min=np.amax(img_data)/1.e4
