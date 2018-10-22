@@ -2,6 +2,7 @@ import React from 'react';
 import Proptypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   container: {
@@ -19,10 +20,14 @@ const styles = {
     backgroundColor: 'white',
     border: '1px solid lightgrey',
     padding: 1,
+    // fontSize: '0.9vw',
+  },
+  textField: {
+    fontSize: '1vw',
   },
 };
 
-export default class SelectDate extends React.Component {
+class SelectDate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,6 +42,7 @@ export default class SelectDate extends React.Component {
     startDate: Proptypes.string.isRequired,
     endDate: Proptypes.string.isRequired,
     setHistoryRangeDate: Proptypes.func.isRequired,
+    classes: Proptypes.object.isRequired,
   };
 
   componentWillMount() {
@@ -99,12 +105,14 @@ export default class SelectDate extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <div style={styles.container}>
         <div style={styles.fieldDate}>
           <TextField
             id="start"
             label="Start Date"
+            className={classes.textField}
             type="date"
             value={this.formatFilterDate(this.state.selectedStartDate)}
             onChange={this.changeStart}
@@ -122,6 +130,7 @@ export default class SelectDate extends React.Component {
           <TextField
             id="end"
             label="End Date"
+            className={classes.textField}
             type="date"
             value={this.formatFilterDate(this.state.selectedEndDate)}
             onChange={this.changeEnd}
@@ -139,3 +148,5 @@ export default class SelectDate extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(SelectDate);

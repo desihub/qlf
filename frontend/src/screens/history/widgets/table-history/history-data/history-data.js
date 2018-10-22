@@ -2,6 +2,7 @@ import React from 'react';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Checkbox from '@material-ui/core/Checkbox';
 import Icon from '@material-ui/core/Icon';
@@ -28,9 +29,15 @@ const styles = {
   statusNormal: {
     color: 'green',
   },
+  text: {
+    fontSize: '1.2vw',
+  },
+  ico: {
+    fontSize: '2vw',
+  },
 };
 
-export default class HistoryData extends React.Component {
+class HistoryData extends React.Component {
   static muiName = 'TableRow';
   static propTypes = {
     processId: PropTypes.string,
@@ -50,6 +57,7 @@ export default class HistoryData extends React.Component {
     pipelineRunning: PropTypes.string,
     openLogViewer: PropTypes.func,
     setAnchorEl: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
   };
 
   formatDate = dateString => {
@@ -137,6 +145,7 @@ export default class HistoryData extends React.Component {
         : 'chat_bubble_outline';
     }
 
+    const { classes } = this.props;
     const status = !row.runtime
       ? processing ? 'pending' : 'aborted'
       : this.qaSuccess() ? 'normal' : 'failed';
@@ -146,6 +155,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {row[id]}
           </TableCell>
@@ -155,6 +165,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {isNotProcessingHistory ? row[id] : row.exposure[id]}
           </TableCell>
@@ -164,6 +175,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {this.formatDate(
               isNotProcessingHistory ? row[id] : row.exposure[id]
@@ -175,6 +187,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {this.formatDate(row[id])}
           </TableCell>
@@ -184,6 +197,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {this.formatTime(
               isNotProcessingHistory ? row.dateobs : row.exposure.dateobs
@@ -195,6 +209,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {row.datemjd.toFixed(3)}
           </TableCell>
@@ -204,10 +219,12 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             <Icon
               onClick={evt => this.props.setAnchorEl(evt, processId)}
               style={styles.notificationsIcon}
+              classes={{ root: classes.ico }}
             >
               pageview
             </Icon>
@@ -218,10 +235,12 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             <Icon
               onClick={() => this.props.handleCommentModalOpen(processId)}
               style={styles.notificationsIcon}
+              classes={{ root: classes.ico }}
             >
               {comment}
             </Icon>
@@ -232,6 +251,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`EXPV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {!row.runtime && !processing ? '' : row.runtime}
           </TableCell>
@@ -241,6 +261,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`EXPV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {this.renderStatus(status)}
           </TableCell>
@@ -253,6 +274,7 @@ export default class HistoryData extends React.Component {
             <TableCell
               key={`EXPV${key}`}
               style={{ ...styles.tableCell, ...lastProcessed }}
+              classes={{ root: classes.text }}
             >
               {!processed && processId ? (
                 <span
@@ -271,6 +293,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             {this.renderViewQA(processing, row.runtime)}
           </TableCell>
@@ -280,10 +303,12 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           >
             <Icon
               onClick={() => this.props.openLogViewer(processId)}
               style={styles.notificationsIcon}
+              classes={{ root: classes.ico }}
             >
               event_note
             </Icon>
@@ -294,6 +319,7 @@ export default class HistoryData extends React.Component {
           <TableCell
             key={`PROCV${key}`}
             style={{ ...styles.tableCell, ...lastProcessed }}
+            classes={{ root: classes.text }}
           />
         );
     }
@@ -363,3 +389,5 @@ export default class HistoryData extends React.Component {
       : this.renderObservingHistory();
   }
 }
+
+export default withStyles(styles)(HistoryData);

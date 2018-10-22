@@ -233,6 +233,7 @@ class TableHistory extends Component {
   };
 
   renderPagination = () => {
+    const { classes } = this.props;
     if (!this.props.rowsCount) return;
     return (
       <TablePagination
@@ -248,11 +249,16 @@ class TableHistory extends Component {
         }}
         onChangePage={this.handleChangePage}
         onChangeRowsPerPage={this.handleChangeRowsPerPage}
+        classes={{
+          caption: classes.text,
+          input: classes.text,
+        }}
       />
     );
   };
 
   renderColumnsModal = () => {
+    const { classes } = this.props;
     const availableColumns =
       this.props.type === 'process' ? processColumns : exposureColumns;
     return (
@@ -263,7 +269,9 @@ class TableHistory extends Component {
       >
         <div className={this.props.classes.modalBody}>
           <FormControl component="fieldset">
-            <FormLabel component="legend">Avaiable Columns</FormLabel>
+            <FormLabel className={classes.text} component="legend">
+              Avaiable Columns
+            </FormLabel>
             <FormGroup className={this.props.classes.columnsFormGroup}>
               {availableColumns.map(column => (
                 <FormControlLabel
@@ -279,6 +287,7 @@ class TableHistory extends Component {
                     />
                   }
                   label={column.name}
+                  classes={{ label: classes.text }}
                 />
               ))}
             </FormGroup>
@@ -445,6 +454,10 @@ const styles = {
   },
   modalColumnsButtonClose: {
     float: 'right',
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1.2vw',
   },
 };
 

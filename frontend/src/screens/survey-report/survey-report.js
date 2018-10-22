@@ -53,6 +53,7 @@ const styles = {
   button: {
     float: 'right',
     margin: '10px 0',
+    fontSize: '1.2vw',
   },
   buttonGreen: {
     backgroundColor: 'green',
@@ -65,6 +66,12 @@ const styles = {
     margin: '16px',
     padding: '16px',
     height: 'calc(100vh - 135px)',
+  },
+  title: {
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1.1vw',
   },
 };
 
@@ -247,10 +254,13 @@ class SurveyReport extends React.Component {
   );
 
   renderDatePeriodSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Date Period</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Date Period
+          </InputLabel>
           <Select
             value={this.state.datePeriod}
             onChange={this.handleChangeDatePeriod}
@@ -258,11 +268,21 @@ class SurveyReport extends React.Component {
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.text }}>
+              All
+            </MenuItem>
+            <MenuItem value={'night'} classes={{ root: classes.text }}>
+              Night
+            </MenuItem>
+            <MenuItem value={'week'} classes={{ root: classes.text }}>
+              Week
+            </MenuItem>
+            <MenuItem value={'month'} classes={{ root: classes.text }}>
+              Month
+            </MenuItem>
+            <MenuItem value={'year'} classes={{ root: classes.text }}>
+              Year
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -290,10 +310,13 @@ class SurveyReport extends React.Component {
   };
 
   renderProgramSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Program</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Program
+          </InputLabel>
           <Select
             value={this.state.program}
             onChange={this.handleChangeProgram}
@@ -301,10 +324,18 @@ class SurveyReport extends React.Component {
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'bright'}>Bright</MenuItem>
-            <MenuItem value={'dark'}>Dark</MenuItem>
-            <MenuItem value={'gray'}>Gray</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.text }}>
+              All
+            </MenuItem>
+            <MenuItem value={'bright'} classes={{ root: classes.text }}>
+              Bright
+            </MenuItem>
+            <MenuItem value={'dark'} classes={{ root: classes.text }}>
+              Dark
+            </MenuItem>
+            <MenuItem value={'gray'} classes={{ root: classes.text }}>
+              Gray
+            </MenuItem>
           </Select>
         </FormControl>
       </div>

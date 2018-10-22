@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import TableHistory from './widgets/table-history/table-history';
 import SelectDate from './widgets/select-date/select-date';
 import SelectNight from './widgets/select-night/select-night';
@@ -33,9 +34,12 @@ const styles = {
     cursor: ' pointer',
   },
   historyContainer: { WebkitAppRegion: 'no-drag' },
+  tabItem: {
+    fontSize: '1.2vw',
+  },
 };
 
-export default class History extends Component {
+class History extends Component {
   static propTypes = {
     getHistory: PropTypes.func.isRequired,
     navigateToQA: PropTypes.func.isRequired,
@@ -51,6 +55,7 @@ export default class History extends Component {
     pipelineRunning: PropTypes.string.isRequired,
     openCCDViewer: PropTypes.func.isRequired,
     openLogViewer: PropTypes.func,
+    classes: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -357,6 +362,7 @@ export default class History extends Component {
 
   renderTabs = () => {
     const { tab } = this.state;
+    const { classes } = this.props;
     return (
       <div>
         <Tabs
@@ -367,8 +373,16 @@ export default class History extends Component {
           fullWidth
           centered
         >
-          <Tab label="Most Recent" value={'last'} />
-          <Tab label="History" value={'history'} />
+          <Tab
+            label="Most Recent"
+            value={'last'}
+            classes={{ label: classes.tabItem }}
+          />
+          <Tab
+            label="History"
+            value={'history'}
+            classes={{ label: classes.tabItem }}
+          />
         </Tabs>
         {tab === 'last' ? this.renderLast() : null}
         {tab === 'history' ? this.renderHistory() : null}
@@ -409,3 +423,5 @@ export default class History extends Component {
     );
   }
 }
+
+export default withStyles(styles)(History);

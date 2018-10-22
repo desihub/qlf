@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import { ArrowDropDown, ArrowDropUp } from 'material-ui-icons';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
@@ -24,13 +25,16 @@ const styles = {
     textAlign: 'center',
   },
   itemText: {
-    fontSize: '12px',
+    fontSize: '1.1vw',
   },
   listIcon: { fontSize: 20, cursor: 'pointer', paddingRight: '8px' },
   listItem: { padding: '8px' },
+  text: {
+    fontSize: '1.2vw',
+  },
 };
 
-export default class HistoryHeader extends React.Component {
+class HistoryHeader extends React.Component {
   static muiName = 'TableHead';
 
   constructor(props) {
@@ -57,6 +61,7 @@ export default class HistoryHeader extends React.Component {
     tableColumns: PropTypes.array.isRequired,
     openColumnsModal: PropTypes.func.isRequired,
     addStatusFilter: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
   };
 
   componentWillMount() {
@@ -273,12 +278,17 @@ export default class HistoryHeader extends React.Component {
   };
 
   renderProcessingHistoryHeader = () => {
+    const { classes } = this.props;
     return (
       <TableHead>
         <TableRow>
           {this.props.tableColumns.map((column, id) => {
             return (
-              <TableCell key={`PROCESS${id}`} style={styles.tableCell}>
+              <TableCell
+                key={`PROCESS${id}`}
+                style={styles.tableCell}
+                classes={{ root: classes.text }}
+              >
                 {this.renderHeader(column.key, column.name)}
               </TableCell>
             );
@@ -300,6 +310,7 @@ export default class HistoryHeader extends React.Component {
   };
 
   renderObservingHistoryHeader = () => {
+    const { classes } = this.props;
     return (
       <TableHead>
         <TableRow>
@@ -310,7 +321,11 @@ export default class HistoryHeader extends React.Component {
             .filter(column => column.key !== null)
             .map((column, id) => {
               return (
-                <TableCell key={`EXP${id}`} style={styles.tableCell}>
+                <TableCell
+                  key={`EXP${id}`}
+                  style={styles.tableCell}
+                  classes={{ root: classes.text }}
+                >
                   {this.renderHeader(column.key, column.name)}
                 </TableCell>
               );
@@ -326,3 +341,5 @@ export default class HistoryHeader extends React.Component {
       : this.renderObservingHistoryHeader();
   }
 }
+
+export default withStyles(styles)(HistoryHeader);

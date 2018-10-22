@@ -49,6 +49,7 @@ const styles = {
   },
   button: {
     float: 'right',
+    fontSize: '1.2vw',
   },
   spectrographLabel: {
     paddingBottom: 10,
@@ -57,6 +58,12 @@ const styles = {
     margin: '16px',
     padding: '16px',
     height: 'calc(100vh - 135px)',
+  },
+  title: {
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1.1vw',
   },
 };
 
@@ -143,12 +150,14 @@ class SelectionViewer extends React.Component {
   };
 
   renderSpectrographSelection = () => {
+    const { classes } = this.props;
     if (this.props.spectrograph)
       return (
         <div>
           <FormLabel
             className={this.props.classes.spectrographLabel}
             component="legend"
+            classes={{ root: classes.title }}
           >
             Spectrograph:
           </FormLabel>
@@ -162,19 +171,37 @@ class SelectionViewer extends React.Component {
   };
 
   renderArmSelection = () => {
+    const { classes } = this.props;
     if (this.props.arm)
       return (
         <div className={this.props.classes.selection}>
-          <FormLabel component="legend">Arm:</FormLabel>
+          <FormLabel component="legend" classes={{ root: classes.title }}>
+            Arm:
+          </FormLabel>
           <div className={this.props.classes.row}>
             <RadioGroup
               className={this.props.classes.column}
               value={this.state.arm}
               onChange={this.handleChangeArm}
             >
-              <FormControlLabel value="b" control={<Radio />} label="b" />
-              <FormControlLabel value="r" control={<Radio />} label="r" />
-              <FormControlLabel value="z" control={<Radio />} label="z" />
+              <FormControlLabel
+                value="b"
+                control={<Radio />}
+                label="b"
+                classes={{ label: classes.title }}
+              />
+              <FormControlLabel
+                value="r"
+                control={<Radio />}
+                label="r"
+                classes={{ label: classes.title }}
+              />
+              <FormControlLabel
+                value="z"
+                control={<Radio />}
+                label="z"
+                classes={{ label: classes.title }}
+              />
             </RadioGroup>
           </div>
         </div>
@@ -182,19 +209,28 @@ class SelectionViewer extends React.Component {
   };
 
   renderProcessingSelection = () => {
+    const { classes } = this.props;
     if (this.props.processing)
       return (
         <div className={this.props.classes.selection}>
-          <FormLabel component="legend">Processing:</FormLabel>
+          <FormLabel component="legend" classes={{ root: classes.title }}>
+            Processing:
+          </FormLabel>
           <RadioGroup
             value={this.state.processing}
             onChange={this.handleChangeProcessing}
           >
-            <FormControlLabel value="raw" control={<Radio />} label="raw" />
+            <FormControlLabel
+              value="raw"
+              control={<Radio />}
+              label="raw"
+              classes={{ label: classes.title }}
+            />
             <FormControlLabel
               value="reduced"
               control={<Radio />}
               label="reduced"
+              classes={{ label: classes.title }}
             />
           </RadioGroup>
         </div>

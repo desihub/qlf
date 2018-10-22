@@ -49,6 +49,10 @@ const styles = {
   },
   primaryText: {
     wordBreak: 'break-word',
+    fontSize: '1.2vw',
+  },
+  secondaryText: {
+    fontSize: '1vw',
   },
   commentControls: {
     display: 'flex',
@@ -62,9 +66,17 @@ const styles = {
   deleteTitle: {
     color: 'red',
     paddingBottom: 10,
+    fontSize: '1.2vw',
   },
   deleteBody: {
     wordBreak: 'break-word',
+    fontSize: '1.2vw',
+  },
+  button: {
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1.2vw',
   },
 };
 
@@ -85,7 +97,7 @@ class CommentModal extends React.Component {
   }
 
   static propTypes = {
-    classes: PropTypes.object,
+    classes: PropTypes.object.isRequired,
     handleClose: PropTypes.func.isRequired,
     processId: PropTypes.string.isRequired,
     readOnly: PropTypes.bool.isRequired,
@@ -221,10 +233,16 @@ class CommentModal extends React.Component {
         onChange={this.handleChange('editedComment')}
         fullWidth
         onKeyPress={this.handleEnterPressedUpdateComment}
+        inputProps={{
+          style: styles.text,
+        }}
       />
     ) : (
       <ListItemText
-        classes={{ primary: classes.primaryText }}
+        classes={{
+          primary: classes.primaryText,
+          secondary: classes.secondaryText,
+        }}
         primary={comment.text}
         secondary={comment.date}
       />
@@ -325,6 +343,9 @@ class CommentModal extends React.Component {
           onChange={this.handleChange('comment')}
           fullWidth
           onKeyPress={this.handleEnterPressedAddComment}
+          inputProps={{
+            style: styles.text,
+          }}
         />
         <Icon className={classes.icon} onClick={this.addComment}>
           send
