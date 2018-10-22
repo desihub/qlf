@@ -9,6 +9,7 @@ from dashboard.bokeh.qaskypeak.main import Skypeak
 from dashboard.bokeh.qainteg.main import Integ
 from dashboard.bokeh.qaskyresid.main import Skyresid
 from dashboard.bokeh.qasnr.main import SNR
+from dashboard.bokeh.qacheckflat.main import Flat
 from dashboard.bokeh.globalfiber.main import GlobalFiber
 from dashboard.bokeh.globalfocus.main import GlobalFocus
 from dashboard.bokeh.footprint.main import Footprint
@@ -215,7 +216,7 @@ def load_qa(request):
         elif qa == 'qahdu':
             qa_html = 'No Drill Down'
         elif qa == 'qacheckflat':
-            qa_html = 'No Drill Down'
+            qa_html = Flat(process_id, arm,spectrograph).load_qa() #'No Drill Down'
         elif qa == 'qacheckarc':
             qa_html = 'No Drill Down'
         elif qa == 'qaxyshifts':
