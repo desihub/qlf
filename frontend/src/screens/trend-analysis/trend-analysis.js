@@ -243,9 +243,9 @@ class TrendAnalysis extends React.Component {
     if (
       this.state.selectArm !== this.state.arm ||
       this.state.selectAmp !== this.state.amp ||
-      this.state.selectXais !== this.state.xaxis ||
-      this.state.selectYais !== this.state.yaxis ||
-      this.state.selectSpectrograph !== this.state.spectrograph ||
+      this.state.selectXaxis !== this.state.xaxis ||
+      this.state.selectYaxis !== this.state.yaxis ||
+      this.state.selectSpectrograph.length !== this.state.spectrograph.length ||
       this.state.selectStartDate !== this.state.startDate ||
       this.state.selectEndDate !== this.state.endDate
     ) {
