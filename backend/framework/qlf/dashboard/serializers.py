@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap
-from .utils import get_date
 from clients import get_exposure_monitoring
+from astropy.time import Time
 
 qlf = get_exposure_monitoring()
 
@@ -184,7 +184,7 @@ class ProcessingHistorySerializer(DynamicFieldsModelSerializer):
             return None
 
     def get_datemjd(self, obj):
-        time = get_date(obj.exposure_id)
+        time = Time(str(obj.exposure.dateobs), format='iso', scale='utc')
         if time is None:
             return None
         else:
@@ -223,7 +223,7 @@ class ObservingHistorySerializer(DynamicFieldsModelSerializer):
         )
 
     def get_datemjd(self, obj):
-        time = get_date(obj.pk)
+        time = Time(str(obj.dateobs), format='iso', scale='utc')
         if time is None:
             return None
         else:

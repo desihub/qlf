@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import FormLabel from '@material-ui/core/FormLabel';
 
 const apiUrl = process.env.REACT_APP_API;
 
 const styles = {
   iframe: {
-    height: 'calc(100vh - 215px)',
+    height: 'calc(100vh - 151px)',
     width: 'calc(100vw - 280px)',
   },
   preview: {
@@ -35,6 +34,7 @@ class ObservingViewer extends React.Component {
     amp: PropTypes.string,
     spectrograph: PropTypes.array,
     yaxis: PropTypes.string,
+    xaxis: PropTypes.string,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
     classes: PropTypes.object,
@@ -75,6 +75,24 @@ class ObservingViewer extends React.Component {
       )}&end=${this.formatDate(this.props.endDate)}&camera=${this.props.arm}${
         this.props.spectrograph[0]
       }`;
+    else {
+      if (
+        this.props.plot === 'regression' &&
+        this.props.yaxis !== '' &&
+        this.props.xaxis !== '' &&
+        this.props.startDate !== '' &&
+        this.props.arm !== '' &&
+        this.props.spectrograph.length !== 0 &&
+        this.props.endDate !== ''
+      )
+        url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&yaxis=${
+          this.props.yaxis
+        }&xaxis=${this.props.xaxis}&amp=${
+          this.props.amp
+        }&start=${this.formatDate(this.props.startDate)}&end=${this.formatDate(
+          this.props.endDate
+        )}&camera=${this.props.arm}${this.props.spectrograph[0]}`;
+    }
 
     if (url !== '')
       return (
@@ -90,12 +108,7 @@ class ObservingViewer extends React.Component {
 
   render() {
     const { classes } = this.props;
-    return (
-      <div className={classes.preview}>
-        <FormLabel component="legend">Preview:</FormLabel>
-        {this.renderImage()}
-      </div>
-    );
+    return <div className={classes.preview}>{this.renderImage()}</div>;
   }
 }
 

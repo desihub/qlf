@@ -1,15 +1,12 @@
-from django.shortcuts import render
 from rest_framework import (
     authentication, permissions, viewsets, filters,
     status, views
 )
-from django.views.decorators.csrf import csrf_exempt
 import json
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
 from django.db.models import Max, Min
-# from django.db.models import Q
 
 from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap
 from .serializers import (
@@ -23,12 +20,6 @@ from .serializers import (
 
 from datetime import datetime, timedelta
 
-from django.http import HttpResponseRedirect
-from django.conf import settings
-
-from bokeh.embed import server_document
-from django.template import loader
-from django.http import HttpResponse
 from django.http import JsonResponse
 
 from .filters import ProcessingHistoryFilter
@@ -38,7 +29,6 @@ import os
 
 from clients import get_exposure_monitoring
 
-from django.contrib import messages
 import logging
 
 qlf = get_exposure_monitoring()
@@ -384,67 +374,6 @@ class ProcessCommentViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelVie
     serializer_class = ProcessCommentSerializer
     permission_classes = [permissions.AllowAny]
     filter_fields = ('process',)
-
-
-def start(request):
-    qlf.start()
-    return HttpResponseRedirect('dashboard/monitor')
-
-
-def stop(request):
-    qlf.stop()
-
-    return HttpResponseRedirect('dashboard/monitor')
-
-
-def reset(request):
-    qlf.reset()
-    return HttpResponseRedirect('dashboard/monitor')
-
-
-def daemon_status(request):
-    ql_status = True
-
-    run_auto = qlf.get_status()
-    # run_manual = qlf_manual.get_status()
-    run_manual = None
-
-    if run_auto:
-        message = "Please stop the automatic execution before executing the manual processing."
-    elif run_manual:
-        message = "There is already a sequence of exposures being processed."
-    elif qlf.is_running():
-        message = "Wait for processing to complete."
-    else:
-        message = "Ok"
-        ql_status = False
-
-    return JsonResponse({'status': ql_status, 'message': message})
-
-
-def run_manual_mode(request):
-
-    qlf_auto_status = qlf.get_status()
-
-    if qlf_auto_status:
-        return JsonResponse({
-            "success": False,
-            "message": "Please stop the automatic execution before executing the manual processing."
-        })
-
-    exposures = request.GET.getlist('exposures[]')
-    logger.info(exposures)
-
-    # qlf_manual.start(exposures)
-
-    return JsonResponse({
-        "success": True,
-        "message": "Processing in background."
-    })
-
-
-def index(request):
-    return render(request, 'dashboard/index.html')
 
 
 def send_ticket_email(request):

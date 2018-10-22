@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import FormLabel from '@material-ui/core/FormLabel';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Resizable from 're-resizable';
+// import Resizable from 're-resizable';
 import QlfApi from '../../../containers/offline/connection/qlf-api';
 
 const apiUrl = process.env.REACT_APP_API;
@@ -26,7 +25,7 @@ const styles = {
   previewContent: {
     width: '100%',
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
+    gridTemplateColumns: 'auto',
     height: 'calc(100vh - 161px)',
     overflowY: 'auto',
   },
@@ -104,6 +103,9 @@ class SurveyViewer extends React.Component {
       total: [],
       good: [],
       bad: [],
+      startDate: '',
+      endDate: '',
+      program: '',
     };
   }
   static propTypes = {
@@ -120,9 +122,9 @@ class SurveyViewer extends React.Component {
 
   // componentWillReceiveProps(nextProps) {
   //   if (
-  //     nextProps.startDate !== '' &&
-  //     nextProps.endDate !== '' &&
-  //     nextProps.program !== ''
+  //     nextProps.startDate !== this.state.startDate &&
+  //     nextProps.endDate !== this.state.endDate &&
+  //     nextProps.program !== this.state.program
   //   ) {
   //     this.fetchObjects(
   //       this.formatDate(nextProps.startDate),
@@ -133,12 +135,24 @@ class SurveyViewer extends React.Component {
   // }
 
   fetchObjects = async (startDate, endDate, program) => {
+    this.setState({
+      objects: [],
+      total: [],
+      good: [],
+      bad: [],
+      startDate: '',
+      endDate: '',
+      program: '',
+    });
     const rows = await QlfApi.getObjectData(startDate, endDate, program);
     this.setState({
       objects: rows.objects,
       total: rows.total,
       good: rows.good,
       bad: rows.bad,
+      startDate,
+      endDate,
+      program,
     });
   };
 
@@ -166,22 +180,22 @@ class SurveyViewer extends React.Component {
 
     return (
       <div className={classes.previewContent}>
-        <Resizable
+        {/* <Resizable
           className={classes.previewResize}
           defaultSize={{
             width: 'auto',
             height: 'auto',
           }}
-        >
-          <iframe
-            title="image-modal"
-            className={classes.iframe}
-            frameBorder="0"
-            src={url}
-            onLoad={this.props.loadEnd}
-          />
-        </Resizable>
-        {this.renderTable()}
+        > */}
+        <iframe
+          title="image-modal"
+          className={classes.iframe}
+          frameBorder="0"
+          src={url}
+          onLoad={this.props.loadEnd}
+        />
+        {/* </Resizable> */}
+        {/* {this.renderTable()} */}
       </div>
     );
   };
@@ -231,14 +245,7 @@ class SurveyViewer extends React.Component {
 
   render() {
     const { classes } = this.props;
-    return (
-      <div className={classes.preview}>
-        <FormLabel component="legend" className={classes.legend}>
-          Preview:
-        </FormLabel>
-        {this.renderImage()}
-      </div>
-    );
+    return <div className={classes.preview}>{this.renderImage()}</div>;
   }
 }
 

@@ -1,26 +1,15 @@
 import astropy
 from astropy.table import Table
 from astropy import units as u
-from astropy.coordinates import SkyCoord, EarthLocation, AltAz
-from astropy.time import Time
+from astropy.coordinates import SkyCoord
 
 from bokeh.plotting import figure
-from bokeh.layouts import widgetbox, row, column
-from bokeh.models import Div, Panel, Tabs
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import os
 
 from dashboard.models import Exposure
 
-# from log import get_logger
-
-# qlf_root = os.environ.get('QLF_ROOT')
-
-# logger = get_logger(
-#     "qlf.bokeh",
-#     os.path.join(qlf_root, "logs", "bokeh.log")
-# )
 
 class Footprint():
     def footprint(self, coords, visibles):
@@ -31,9 +20,12 @@ class Footprint():
         vx = visibles.ra*u.hour
         vy = visibles.dec*u.deg
 
-        plot = figure(tools='pan,wheel_zoom,reset,lasso_select,crosshair')
+        plot = figure(
+            tools='box_zoom,pan,wheel_zoom,reset,lasso_select,crosshair',
+            active_drag="box_zoom"
+        )
 
-        plot.circle(x, y, fill_color='blue', alpha=0.5)
+        plot.circle(x, y, fill_color='black', alpha=0.1)
 
         plot.circle(vx, vy, fill_color='red', size=5, alpha=0.7)
 
@@ -44,7 +36,8 @@ class Footprint():
 
     def render(self, exposures_radec):
         qlf_root = os.environ.get('QLF_ROOT', '/app')
-        pointings_file = os.path.join(qlf_root, 'framework/qlf/dashboard/bokeh/footprint/noconstraints.dat')
+        pointings_file = os.path.join(
+            qlf_root, 'framework/qlf/dashboard/bokeh/footprint/noconstraints.dat')
 
         # you need to edit the original file to comment the header and join hourangle
         pointings = Table.read(pointings_file, format='ascii.commented_header')
