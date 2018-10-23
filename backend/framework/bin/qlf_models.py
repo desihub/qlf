@@ -263,6 +263,17 @@ class QLFModels(object):
 
         return exposure
 
+    def get_last_exposure_by_flavor(self, flavor):
+        """ Get last processed exposures by flavor """
+
+        try:
+            exposure = Exposure.objects.filter(process_exposure__isnull=False)
+            exposure = exposure.filter(flavor=flavor).latest('pk')
+        except Exposure.DoesNotExist:
+            exposure = None
+
+        return exposure
+
     def get_last_process_by_flavor(self, flavor):
         """Get last process by flavor
         

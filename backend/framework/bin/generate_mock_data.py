@@ -71,9 +71,10 @@ import random
 
 qlf_models = QLFModels()
 
+
 def generate_processes_by_exposure(exposure, loop=1):
-    """ """        
-        
+    """ """
+
     flavor = exposure.flavor
 
     process = qlf_models.get_last_process_by_flavor(flavor)
@@ -90,6 +91,7 @@ def generate_processes_by_exposure(exposure, loop=1):
         process.exposure_id = exposure.exposure_id
         process.save()
 
+
 def generate_new_exposure(flavor, night):
     """ """
 
@@ -101,14 +103,16 @@ def generate_new_exposure(flavor, night):
             'There is no exposure with {} flavor.'.format(flavor)
         )
 
-    exposure.exposure_id += 1
+    exposure.exposure_id = last_exp.exposure_id + 1
     exposure.night = night
     tdate = datetime.datetime.strptime(night, "%Y%m%d")
-    tdate += datetime.timedelta(hours=random.randint(1,23))
+    tdate += datetime.timedelta(hours=random.randint(1, 23))
     exposure.dateobs = tdate
     exposure.save()
 
     return exposure
 
-new_exposure = generate_new_exposure('science', '2018-10-01')
-generate_processes_by_exposure(new_exposure)
+
+new_exposure = generate_new_exposure('science', '20181001')
+print(new_exposure)
+# generate_processes_by_exposure(new_exposure)
