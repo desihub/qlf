@@ -1,10 +1,11 @@
 from bokeh.plotting import figure
-from bokeh.layouts import row
+from bokeh.layouts import row, column
 from bokeh.models import HoverTool, ColumnDataSource, Range1d, TapTool
 from bokeh.models.callbacks import CustomJS
 from dashboard.models import Process, Fibermap, Job
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
-
+from bokeh.layouts import widgetbox
+from bokeh.models.widgets import Button
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import os
@@ -113,7 +114,7 @@ class Spectra():
         radius = 0.017
         radius_hover = 0.018
 
-        xrange = Range1d(start=ra_center + 2, end=ra_center-2)
+        xrange = Range1d(start=ra_center + 3, end=ra_center-3)
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
 
         p = figure(title='FIBERS (ARM %s)' % (wedge_arm),
@@ -151,7 +152,7 @@ class Spectra():
 
         return p
 
-    def load_qa(self):
+    def load_spectra(self):
         fmap = Fibermap.objects.filter(exposure=self.exposure)[0]
 
         src = self.data_source(fmap)
@@ -249,4 +250,13 @@ class Spectra():
             plot.legend.label_text_font_size = font_size
             plot.title.text_font_size = font_size
 
-        return file_html(p_spec, CDN, "Spectra")
+        callback = CustomJS(code="""
+                    data={'back': true}
+                    window.parent.postMessage(data, '*');
+                """)
+
+        button = Button(label="Back", button_type="warning", callback=callback)
+
+
+        layout = column(p_spec, widgetbox(button), sizing_mode='scale_width')
+        return file_html(layout, CDN, "Spectra")

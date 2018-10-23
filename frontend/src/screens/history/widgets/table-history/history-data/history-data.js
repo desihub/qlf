@@ -140,6 +140,9 @@ export default class HistoryData extends React.Component {
     const status = !row.runtime
       ? processing ? 'pending' : 'aborted'
       : this.qaSuccess() ? 'normal' : 'failed';
+    const flavor = isNotProcessingHistory
+      ? row['flavor']
+      : row.exposure['flavor'];
     switch (type) {
       case 'parent':
         return (
@@ -206,7 +209,7 @@ export default class HistoryData extends React.Component {
             style={{ ...styles.tableCell, ...lastProcessed }}
           >
             <Icon
-              onClick={evt => this.props.setAnchorEl(evt, processId)}
+              onClick={evt => this.props.setAnchorEl(evt, processId, flavor)}
               style={styles.notificationsIcon}
             >
               pageview

@@ -7,7 +7,7 @@ const apiUrl = process.env.REACT_APP_API;
 const styles = {
   iframe: {
     height: 'calc(100vh - 135px)',
-    width: 'calc(100vw - 220px)',
+    width: 'calc(100vw - 300px)',
   },
   preview: {
     display: 'flex',
@@ -73,11 +73,17 @@ class SpectraViewer extends React.Component {
         fiber: message.data['fiber'],
       });
     }
+
+    if (message.data['back']) {
+      this.setState({
+        screen: 'spectra',
+      });
+    }
   };
 
   renderImage = () => {
     const { classes } = this.props;
-    const url = `${apiUrl}dashboard/load_qa/?qa=${
+    const url = `${apiUrl}dashboard/load_spectra/?spectra=${
       this.state.screen
     }&process_id=${this.state.processId}&arm=${this.props.arm}&spectrograph=${
       this.state.spectrograph

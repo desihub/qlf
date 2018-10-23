@@ -186,7 +186,6 @@ def load_qa(request):
     spectrograph = request.GET.get('spectrograph')
     process_id = request.GET.get('process_id')
     arm = request.GET.get('arm')
-    fiber = request.GET.get('fiber')
     try:
         if qa == 'qacountpix':
             qa_html = Countpix(process_id, arm, spectrograph).load_qa()
@@ -214,10 +213,6 @@ def load_qa(request):
             qa_html = GlobalFocus(process_id, arm).load_qa()
         elif qa == 'globalsnr':
             qa_html = GlobalSnr(process_id, arm).load_qa()
-        elif qa == 'spectra':
-            qa_html = Spectra(process_id, arm).load_qa()
-        elif qa == 'spectra_fib':
-            qa_html = Spectra(process_id, arm).render_spectra(fiber, spectrograph)
         elif qa == 'qahdu':
             qa_html = 'No Drill Down'
         elif qa == 'qacheckflat':
@@ -234,6 +229,27 @@ def load_qa(request):
         qa_html = "Can't load QA: {}".format(err)
 
     context = {'image': qa_html}
+    response = HttpResponse(template.render(context, request))
+
+    return response
+
+def load_spectra(request):
+    template = loader.get_template('dashboard/spectra.html')
+    # Generate Image
+    spectra = request.GET.get('spectra')
+    spectrograph = request.GET.get('spectrograph')
+    process_id = request.GET.get('process_id')
+    arm = request.GET.get('arm')
+    fiber = request.GET.get('fiber')
+    try:
+        if spectra == 'spectra':
+            spectra_html = Spectra(process_id, arm).load_spectra()
+        elif spectra == 'spectra_fib':
+            spectra_html = Spectra(process_id, arm).render_spectra(fiber, spectrograph)
+    except Exception as err:
+        spectra_html = "Can't load spectra: {}".format(err)
+
+    context = {'image': spectra_html}
     response = HttpResponse(template.render(context, request))
 
     return response
