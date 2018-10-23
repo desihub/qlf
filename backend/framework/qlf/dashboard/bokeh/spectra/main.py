@@ -143,11 +143,13 @@ class Spectra():
             const selected = source.selected['1d']['indices'][0];
             const fiber = source.data['fiber'][selected]
             const camera = source.data['cam'][selected]
+            const color = source.data['color'][selected]
             const data = {
                 "fiber": fiber,
                 "camera": camera
             };
-            window.parent.postMessage(data, '*');
+            if (color !== 'lightgray')
+              window.parent.postMessage(data, '*');
         """)
 
         return p
