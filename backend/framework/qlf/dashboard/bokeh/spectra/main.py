@@ -134,7 +134,7 @@ class Spectra():
         src = self.data_source(fmap)
 
         p = self.wedge_plot(self.selected_arm, fmap, common_source=src)
-        layout = row(p, css_classes=["container"])
+        layout = row(p, css_classes=["xwsigma-center"])
 
         return file_html(layout, CDN, "Spectra")
 

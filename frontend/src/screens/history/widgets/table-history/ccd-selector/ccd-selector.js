@@ -53,6 +53,12 @@ class CCDSelector extends React.Component {
         >
           Fibers
         </Typography>
+        <Typography
+          className={classes.typography}
+          onClick={() => this.openViewer('spectra')}
+        >
+          Spectra
+        </Typography>
         {/* <Typography
           className={classes.typography}
           onClick={() => this.openViewer('focus')}
