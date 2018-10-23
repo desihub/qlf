@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^dashboard/get_footprint',
         views_bokeh.get_footprint, name='get_footprint'),
     url(r'^dashboard/fits_to_png', views_bokeh.fits_to_png, name='fits_to_png'),
+    url(r'^dashboard/load_spectra', views_bokeh.load_spectra, name='load_spectra'),
     url(r'^dashboard/load_series', views_bokeh.load_series, name='load_series'),
     url(r'^dashboard/footprint_object_type_count', views_bokeh.footprint_object_type_count, name='footprint_object_type_count'),
     url(r'^dashboard/load_qa', views_bokeh.load_qa, name='load_qa'),

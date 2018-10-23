@@ -16,6 +16,7 @@ from dashboard.bokeh.footprint.object_count import ObjectStatistics
 from dashboard.bokeh.globalsnr.main import GlobalSnr
 from dashboard.bokeh.timeseries.main import TimeSeries
 from dashboard.bokeh.regression.main import Regression
+from dashboard.bokeh.spectra.main import Spectra
 import datetime
 
 from .models import Process, Exposure
@@ -232,6 +233,12 @@ def load_qa(request):
 
     return response
 
+def load_spectra(request):
+    template = loader.get_template('dashboard/series.html')
+    context = {'image': Spectra('b0').render()}
+    response = HttpResponse(template.render(context, request))
+
+    return response
 
 def load_series(request):
     """Generates and render series"""
