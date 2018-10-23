@@ -77,6 +77,7 @@ class SelectionViewer extends React.Component {
       spectrograph: [],
       processing: '',
       loading: false,
+      preview: false,
     };
   }
 
@@ -88,15 +89,23 @@ class SelectionViewer extends React.Component {
   };
 
   handleChangeSpectrograph = spectrograph => {
-    this.setState({ spectrograph: [spectrograph] });
+    this.setState({
+      spectrograph: [spectrograph],
+      preview: false,
+      loading: false,
+    });
   };
 
   handleChangeArm = evt => {
-    this.setState({ arm: evt.target.value });
+    this.setState({ arm: evt.target.value, preview: false, loading: false });
   };
 
   handleChangeProcessing = evt => {
-    this.setState({ processing: evt.target.value });
+    this.setState({
+      processing: evt.target.value,
+      preview: false,
+      loading: false,
+    });
   };
 
   loadStart = () => {
@@ -131,6 +140,7 @@ class SelectionViewer extends React.Component {
       selectProcessing: this.state.processing,
       selectSpectrograph: this.state.spectrograph,
       selectArm: this.state.arm,
+      preview: true,
     });
     this.loadStart();
   };
@@ -256,6 +266,7 @@ class SelectionViewer extends React.Component {
   };
 
   renderViewer = () => {
+    if (!this.state.preview) return;
     switch (window.location.pathname) {
       case '/ccd-viewer':
         return (

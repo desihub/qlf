@@ -1,6 +1,7 @@
 from bokeh.plotting import figure
 from bokeh.layouts import row
-from bokeh.models import HoverTool, ColumnDataSource, Range1d, OpenURL, TapTool
+from bokeh.models import HoverTool, ColumnDataSource, Range1d, TapTool
+from bokeh.models.callbacks import CustomJS
 from dashboard.models import Process, Fibermap, Job
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 
@@ -21,6 +22,7 @@ qlf_root = os.environ.get('QLF_ROOT')
 
 class Spectra():
     def __init__(self, process_id, arm):
+        self.selected_process_id=process_id
         process = Process.objects.get(pk=process_id)
         exposure = process.exposure
         self.exposure = exposure
@@ -42,14 +44,26 @@ class Spectra():
         dec_tile = fmap.fiber_dec
         otype_tile = fmap.objtype
 
+        process_id = self.selected_process_id
+        joblist = [entry.camera.camera for entry in Job.objects.filter(
+            process_id=process_id)]
+
         y = []
         color = []
         cam_inst = []
         for spec in list(range(10)):
             cam = self.selected_arm+str(spec)
+            if cam in joblist:
+                mergedqa = get_merged_qa_scalar_metrics(
+                    self.selected_process_id, cam)
+                countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
+                y = y + list(range(500))
+                color = color + ['green' if idx ==
+                                 1 else 'red' for idx in countbins]
+            else:
+                y = y + list(range(500))
+                color = color + ['lightgray']*500
 
-            y = y + list(range(500))
-            color = color + ['lightgray']*500
             cam_inst = cam_inst + [cam]*500
 
             data_model['fiber'] = y
@@ -99,7 +113,7 @@ class Spectra():
         radius = 0.017
         radius_hover = 0.018
 
-        xrange = Range1d(start=ra_center + 3, end=ra_center-3)
+        xrange = Range1d(start=ra_center + 2, end=ra_center-2)
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
 
         p = figure(title='FIBERS (ARM %s)' % (wedge_arm),
@@ -124,7 +138,16 @@ class Spectra():
 
         url = "/@fiber/"
         taptool = p.select(type=TapTool)
-        taptool.callback = OpenURL(url=url)
+        taptool.callback = CustomJS(args=dict(source=source), code="""
+            const selected = source.selected['1d']['indices'][0];
+            const fiber = source.data['fiber'][selected]
+            const camera = source.data['cam'][selected]
+            const data = {
+                "fiber": fiber,
+                "camera": camera
+            };
+            window.parent.postMessage(data, '*');
+        """)
 
         return p
 
@@ -134,7 +157,7 @@ class Spectra():
         src = self.data_source(fmap)
 
         p = self.wedge_plot(self.selected_arm, fmap, common_source=src)
-        layout = row(p, css_classes=["xwsigma-center"])
+        layout = row(p, css_classes=["container"])
 
         return file_html(layout, CDN, "Spectra")
 

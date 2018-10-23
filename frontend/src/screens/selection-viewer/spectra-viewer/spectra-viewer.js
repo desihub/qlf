@@ -33,6 +33,8 @@ class SpectraViewer extends React.Component {
     this.state = {
       processId: null,
       screen: 'spectra',
+      fiber: '',
+      spectrograph: '',
     };
   }
 
@@ -45,7 +47,7 @@ class SpectraViewer extends React.Component {
 
   componentWillMount() {
     document.title = 'Spectra Viewer';
-
+    window.addEventListener('message', this.handleIframeMessage, false);
     if (window.location.search.includes('process=')) {
       this.setState({
         processId: window.location.search.split('process=')[1],
@@ -54,16 +56,32 @@ class SpectraViewer extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.arm && nextProps.arm !== this.props.arm) {
-      this.props.loadStart();
+    if (nextProps.arm === '') {
+      this.setState({
+        screen: 'spectra',
+        fiber: '',
+        spectrograph: '',
+      });
     }
   }
+
+  handleIframeMessage = message => {
+    if (message.data['fiber'] && message.data['camera']) {
+      this.setState({
+        screen: 'spectra_fib',
+        spectrograph: message.data['camera'][1],
+        fiber: message.data['fiber'],
+      });
+    }
+  };
 
   renderImage = () => {
     const { classes } = this.props;
     const url = `${apiUrl}dashboard/load_qa/?qa=${
       this.state.screen
-    }&process_id=${this.state.processId}&arm=${this.props.arm}`;
+    }&process_id=${this.state.processId}&arm=${this.props.arm}&spectrograph=${
+      this.state.spectrograph
+    }&fiber=${this.state.fiber}`;
 
     if (this.props.arm)
       return (

@@ -113,7 +113,7 @@ class GlobalFiber:
         radius = 0.017
         radius_hover = 0.018
 
-        xrange = Range1d(start=ra_center + 3, end=ra_center-3)
+        xrange = Range1d(start=ra_center + 2, end=ra_center-2)
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
 
         p = Figure(title='FIBERS (ARM %s)' % (wedge_arm), x_axis_label='RA', y_axis_label='DEC', plot_width=600, plot_height=600, tools=[hover, "box_zoom,pan,wheel_zoom,reset,lasso_select,crosshair"], active_drag="box_zoom", x_range=xrange, y_range=yrange
