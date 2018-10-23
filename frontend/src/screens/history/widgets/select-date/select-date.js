@@ -18,10 +18,10 @@ const styles = {
     backgroundColor: 'white',
     border: '1px solid lightgrey',
     padding: 1,
-    fontSize: '1.3vw',
+    fontSize: '1.2vw',
   },
   text: {
-    fontSize: '1.2vw',
+    fontSize: '1.1vw',
   },
 };
 

@@ -75,6 +75,9 @@ const styles = {
   button: {
     fontSize: '1.2vw',
   },
+  subTitle: {
+    fontSize: '1vw',
+  },
   text: {
     fontSize: '1.2vw',
   },
@@ -233,6 +236,9 @@ class CommentModal extends React.Component {
         onChange={this.handleChange('editedComment')}
         fullWidth
         onKeyPress={this.handleEnterPressedUpdateComment}
+        InputLabelProps={{
+          style: styles.subTitle,
+        }}
         inputProps={{
           style: styles.text,
         }}
@@ -343,6 +349,9 @@ class CommentModal extends React.Component {
           onChange={this.handleChange('comment')}
           fullWidth
           onKeyPress={this.handleEnterPressedAddComment}
+          InputLabelProps={{
+            style: styles.text,
+          }}
           inputProps={{
             style: styles.text,
           }}

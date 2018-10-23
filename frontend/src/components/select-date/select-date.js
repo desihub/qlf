@@ -21,10 +21,11 @@ const styles = {
     border: '1px solid lightgrey',
     padding: 1,
     fontSize: '0.92vw',
+    marginTop: '3px',
   },
-  // textField: {
-  //   fontSize: '1vw',
-  // },
+  title: {
+    fontSize: '1.2vw',
+  },
 };
 
 class SelectDate extends React.Component {
@@ -105,19 +106,18 @@ class SelectDate extends React.Component {
   };
 
   render() {
-    // const { classes } = this.props;
     return (
       <div style={styles.container}>
         <div style={styles.fieldDate}>
           <TextField
             id="start"
             label="Start Date"
-            // className={classes.textField}
             type="date"
             value={this.formatFilterDate(this.state.selectedStartDate)}
             onChange={this.changeStart}
             InputLabelProps={{
               shrink: true,
+              style: styles.title,
             }}
             inputProps={{
               style: styles.dateField,
@@ -130,12 +130,12 @@ class SelectDate extends React.Component {
           <TextField
             id="end"
             label="End Date"
-            // className={classes.textField}
             type="date"
             value={this.formatFilterDate(this.state.selectedEndDate)}
             onChange={this.changeEnd}
             InputLabelProps={{
               shrink: true,
+              style: styles.title,
             }}
             inputProps={{
               style: styles.dateField,
