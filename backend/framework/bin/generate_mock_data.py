@@ -60,6 +60,55 @@ class MockData():
             )
             new_job.save()
 
-MockData().generate_exposure()
+#MockData().generate_exposure()
 # for i in range(100):
 #     MockData().generate_process(3)
+
+from qlf_models import QLFModels
+from copy import copy
+import datetime
+import random
+
+qlf_models = QLFModels()
+
+def generate_processes_by_exposure(exposure, loop=1):
+    """ """        
+        
+    flavor = exposure.flavor
+
+    process = qlf_models.get_last_process_by_flavor(flavor)
+
+    if not process:
+        raise ValueError(
+            'There is no process with {} flavor.'.format(flavor)
+        )
+
+    origin_process = copy(process)
+
+    for item in range(loop):
+        del process.id
+        process.exposure_id = exposure.exposure_id
+        process.save()
+
+def generate_new_exposure(flavor, night):
+    """ """
+
+    last_exp = qlf_models.get_last_exposure()
+    exposure = qlf_models.get_last_exposure_by_flavor(flavor)
+
+    if not exposure:
+        raise ValueError(
+            'There is no exposure with {} flavor.'.format(flavor)
+        )
+
+    exposure.exposure_id += 1
+    exposure.night = night
+    tdate = datetime.datetime.strptime(night, "%Y%m%d")
+    tdate += datetime.timedelta(hours=random.randint(1,23))
+    exposure.dateobs = tdate
+    exposure.save()
+
+    return exposure
+
+new_exposure = generate_new_exposure('science', '2018-10-01')
+generate_processes_by_exposure(new_exposure)

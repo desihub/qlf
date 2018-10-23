@@ -253,7 +253,7 @@ class QLFModels(object):
         return exposure
 
     def get_last_exposure_by_program(self, program):
-        """ Gets last processed exposures by program """
+        """ Get last processed exposures by program """
 
         try:
             exposure = Exposure.objects.filter(process_exposure__isnull=False)
@@ -263,8 +263,24 @@ class QLFModels(object):
 
         return exposure
 
+    def get_last_process_by_flavor(self, flavor):
+        """Get last process by flavor
+        
+        Arguments:
+            flavor {str} -- flavor exposure
+        """
+
+        try:
+            process = Process.objects.filter(
+                exposure__flavor=flavor
+            ).latest('exposure__flavor')
+        except Process.DoesNotExist:
+            process = None
+
+        return process
+
     def get_job(self, job_id):
-        """ Gets last processed exposures """
+        """ Get last processed exposures """
 
         try:
             exposure = Job.objects.filter(id=job_id)
