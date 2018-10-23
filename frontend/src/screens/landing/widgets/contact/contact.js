@@ -17,6 +17,10 @@ const styles = {
     overflowY: 'auto',
     margin: '16px',
     padding: '16px',
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1.2vw',
   },
 };
 
@@ -85,18 +89,21 @@ export default class ContactUs extends React.Component {
             fullWidth={true}
             floatingLabelText="Name"
             errorText={this.state.nameError}
+            style={styles.text}
           />
           <TextField
             ref={ref => this.storeEmailRef(ref)}
             fullWidth={true}
             floatingLabelText="Email"
             errorText={this.state.emailError}
+            style={styles.text}
           />
           <TextField
             ref={ref => this.storeSubjectRef(ref)}
             fullWidth={true}
             floatingLabelText="Subject"
             errorText={this.state.subjectError}
+            style={styles.text}
           />
           <TextField
             ref={ref => this.storeMessageRef(ref)}
@@ -105,6 +112,7 @@ export default class ContactUs extends React.Component {
             rows={4}
             fullWidth={true}
             errorText={this.state.messageError}
+            style={styles.text}
           />
           <Recaptcha
             sitekey={process.env.REACT_APP_CAPTCHA_KEY}
@@ -113,7 +121,7 @@ export default class ContactUs extends React.Component {
           />
           <RaisedButton
             label="submit"
-            labelStyle={{ color: 'white' }}
+            labelStyle={{ color: 'white', fontSize: '1.1vw' }}
             backgroundColor={'#00C853'}
             fullWidth={true}
             onClick={this.sendEmail}

@@ -12,7 +12,7 @@ const styles = {
     overflowY: 'auto',
     hyphens: 'auto',
     wordWrap: 'break-word',
-    fontSize: 16,
+    fontSize: '1.2vw',
     lineHeight: 1.5,
     fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',
     fontWeight: 400,
