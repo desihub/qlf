@@ -41,7 +41,7 @@ const styles = {
   gridRow: {
     display: 'grid',
     gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 130px)',
+    height: 'calc(100vh - 135px)',
   },
   viewer: {
     width: 'calc(100vw - 280px)',
@@ -74,6 +74,7 @@ const styles = {
   button: {
     float: 'right',
     margin: '10px 0',
+    fontSize: '1.2vw',
   },
   buttonGreen: {
     backgroundColor: 'green',
@@ -133,6 +134,12 @@ const styles = {
     position: 'absolute',
     top: '126px',
     left: '0',
+  },
+  title: {
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1vw',
   },
 };
 
@@ -353,10 +360,13 @@ class TrendAnalysis extends React.Component {
   };
 
   renderDatePeriodSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Date Period</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Date Period
+          </InputLabel>
           <Select
             value={this.state.datePeriod}
             onChange={this.handleChangeDatePeriod}
@@ -364,11 +374,21 @@ class TrendAnalysis extends React.Component {
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.text }}>
+              All
+            </MenuItem>
+            <MenuItem value={'night'} classes={{ root: classes.text }}>
+              Night
+            </MenuItem>
+            <MenuItem value={'week'} classes={{ root: classes.text }}>
+              Week
+            </MenuItem>
+            <MenuItem value={'month'} classes={{ root: classes.text }}>
+              Month
+            </MenuItem>
+            <MenuItem value={'year'} classes={{ root: classes.text }}>
+              Year
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -376,19 +396,26 @@ class TrendAnalysis extends React.Component {
   };
 
   renderXaxisSelection = () => {
+    const { classes } = this.props;
     if (this.state.tab !== 'Time Series')
       return (
         <div className={this.props.classes.selection}>
           <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink>Xaxis</InputLabel>
+            <InputLabel shrink classes={{ root: classes.title }}>
+              Xaxis
+            </InputLabel>
             <Select
               value={this.state.xaxis}
               onChange={this.handleChangeXaxis}
               input={<Input />}
               displayEmpty
             >
-              <MenuItem value={'noise'}>Noise</MenuItem>
-              <MenuItem value={'bias'}>Bias</MenuItem>
+              <MenuItem value={'noise'} classes={{ root: classes.text }}>
+                Noise
+              </MenuItem>
+              <MenuItem value={'bias'} classes={{ root: classes.text }}>
+                Bias
+              </MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -396,18 +423,25 @@ class TrendAnalysis extends React.Component {
   };
 
   renderYaxisSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Yaxis</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Yaxis
+          </InputLabel>
           <Select
             value={this.state.yaxis}
             onChange={this.handleChangeYaxis}
             input={<Input />}
             displayEmpty
           >
-            <MenuItem value={'noise'}>Noise</MenuItem>
-            <MenuItem value={'bias'}>Bias</MenuItem>
+            <MenuItem value={'noise'} classes={{ root: classes.text }}>
+              Noise
+            </MenuItem>
+            <MenuItem value={'bias'} classes={{ root: classes.text }}>
+              Bias
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -415,20 +449,48 @@ class TrendAnalysis extends React.Component {
   };
 
   renderAmpSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selectionRadio}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Amp</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Amp
+          </InputLabel>
           <RadioGroup
             className={this.props.classes.column}
             value={this.state.amp}
             onChange={this.handleChangeAmp}
           >
-            <FormControlLabel value="all" control={<Radio />} label="All" />
-            <FormControlLabel value="0" control={<Radio />} label="0" />
-            <FormControlLabel value="1" control={<Radio />} label="1" />
-            <FormControlLabel value="2" control={<Radio />} label="2" />
-            <FormControlLabel value="3" control={<Radio />} label="3" />
+            <FormControlLabel
+              value="all"
+              control={<Radio />}
+              label="All"
+              classes={{ label: classes.text }}
+            />
+            <FormControlLabel
+              value="0"
+              control={<Radio />}
+              label="0"
+              classes={{ label: classes.text }}
+            />
+            <FormControlLabel
+              value="1"
+              control={<Radio />}
+              label="1"
+              classes={{ label: classes.text }}
+            />
+            <FormControlLabel
+              value="2"
+              control={<Radio />}
+              label="2"
+              classes={{ label: classes.text }}
+            />
+            <FormControlLabel
+              value="3"
+              control={<Radio />}
+              label="3"
+              classes={{ label: classes.text }}
+            />
           </RadioGroup>
         </FormControl>
       </div>
@@ -436,6 +498,7 @@ class TrendAnalysis extends React.Component {
   };
 
   renderArmSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selectionRadio}>
         <div className={this.props.classes.selectionRadioInner}>
@@ -443,15 +506,32 @@ class TrendAnalysis extends React.Component {
           <span className={this.props.classes.bulletR}>red</span>
           <span className={this.props.classes.bulletZ}>pink</span>
           <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink>Arm</InputLabel>
+            <InputLabel shrink classes={{ root: classes.title }}>
+              Arm
+            </InputLabel>
             <RadioGroup
               className={this.props.classes.column}
               value={this.state.arm}
               onChange={this.handleChangeArm}
             >
-              <FormControlLabel value="b" control={<Radio />} label="b" />
-              <FormControlLabel value="r" control={<Radio />} label="r" />
-              <FormControlLabel value="z" control={<Radio />} label="z" />
+              <FormControlLabel
+                value="b"
+                control={<Radio />}
+                label="b"
+                classes={{ label: classes.text }}
+              />
+              <FormControlLabel
+                value="r"
+                control={<Radio />}
+                label="r"
+                classes={{ label: classes.text }}
+              />
+              <FormControlLabel
+                value="z"
+                control={<Radio />}
+                label="z"
+                classes={{ label: classes.text }}
+              />
             </RadioGroup>
           </FormControl>
         </div>
@@ -460,12 +540,14 @@ class TrendAnalysis extends React.Component {
   };
 
   renderSpectrographSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.SpectroGraph}>
         <InputLabel
           shrink
           className={this.props.classes.spectrographLabel}
           component="legend"
+          classes={{ root: classes.title }}
         >
           Spectrograph
         </InputLabel>

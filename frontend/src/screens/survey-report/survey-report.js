@@ -71,7 +71,7 @@ const styles = {
     fontSize: '1.2vw',
   },
   text: {
-    fontSize: '1.1vw',
+    fontSize: '1vw',
   },
 };
 

@@ -75,6 +75,7 @@ const styles = {
   button: {
     float: 'right',
     margin: '10px 0',
+    fontSize: '1.2vw',
   },
   buttonGreen: {
     backgroundColor: 'green',
@@ -134,6 +135,12 @@ const styles = {
     position: 'absolute',
     top: '126px',
     left: '0',
+  },
+  title: {
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1vw',
   },
 };
 
@@ -317,10 +324,13 @@ class ObservingConditions extends React.Component {
   };
 
   renderDatePeriodSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Date Period</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Date Period
+          </InputLabel>
           <Select
             value={this.state.datePeriod}
             onChange={this.handleChangeDatePeriod}
@@ -328,11 +338,21 @@ class ObservingConditions extends React.Component {
             displayEmpty
             className={this.props.classes.selectEmpty}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.text }}>
+              All
+            </MenuItem>
+            <MenuItem value={'night'} classes={{ root: classes.text }}>
+              Night
+            </MenuItem>
+            <MenuItem value={'week'} classes={{ root: classes.text }}>
+              Week
+            </MenuItem>
+            <MenuItem value={'month'} classes={{ root: classes.text }}>
+              Month
+            </MenuItem>
+            <MenuItem value={'year'} classes={{ root: classes.text }}>
+              Year
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -340,22 +360,38 @@ class ObservingConditions extends React.Component {
   };
 
   renderXaxisSelection = () => {
+    const { classes } = this.props;
     if (this.state.tab !== 'Time Series')
       return (
         <div className={this.props.classes.selection}>
           <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink>Xaxis</InputLabel>
+            <InputLabel shrink classes={{ root: classes.title }}>
+              Xaxis
+            </InputLabel>
             <Select
               value={this.state.xaxis}
               onChange={this.handleChangeXaxis}
               input={<Input />}
               displayEmpty
             >
-              {/* <MenuItem value={'snr'}>SNR</MenuItem> */}
-              <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
-              {/* <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
-            <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
-              <MenuItem value={'airmass'}>AIRMASS</MenuItem>
+              {/* <MenuItem value={'snr'} classes={{ root: classes.text }}>
+                SNR
+              </MenuItem> */}
+              <MenuItem
+                value={'skybrightness'}
+                classes={{ root: classes.text }}
+              >
+                SKY BRIGHTNESS
+              </MenuItem>
+              {/* <MenuItem value={'traceshifts'} classes={{ root: classes.text }}>
+                TRACE SHIFTS
+              </MenuItem>
+              <MenuItem value={'psf'} classes={{ root: classes.text }}>
+                PSF FWHM
+              </MenuItem> */}
+              <MenuItem value={'airmass'} classes={{ root: classes.text }}>
+                AIRMASS
+              </MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -363,21 +399,32 @@ class ObservingConditions extends React.Component {
   };
 
   renderYaxisSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Yaxis</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Yaxis
+          </InputLabel>
           <Select
             value={this.state.yaxis}
             onChange={this.handleChangeYaxis}
             input={<Input />}
             displayEmpty
           >
-            {/* <MenuItem value={'snr'}>SNR</MenuItem> */}
-            <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
-            {/* <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
+            {/* <MenuItem value={'snr'} classes={{ root: classes.text }}>
+              SNR
+            </MenuItem> */}
+            <MenuItem value={'skybrightness'} classes={{ root: classes.text }}>
+              SKY BRIGHTNESS
+            </MenuItem>
+            {/* <MenuItem value={'traceshifts'} classes={{ root: classes.text }}>
+              TRACE SHIFTS
+            </MenuItem>
             <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
-            <MenuItem value={'airmass'}>AIRMASS</MenuItem>
+            <MenuItem value={'airmass'} classes={{ root: classes.text }}>
+              AIRMASS
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -385,12 +432,14 @@ class ObservingConditions extends React.Component {
   };
 
   renderSpectrographSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.SpectroGraph}>
         <InputLabel
           shrink
           className={this.props.classes.spectrographLabel}
           component="legend"
+          classes={{ root: classes.title }}
         >
           Spectrograph
         </InputLabel>
@@ -404,6 +453,7 @@ class ObservingConditions extends React.Component {
   };
 
   renderArmSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selectionRadio}>
         <div className={this.props.classes.selectionRadioInner}>
@@ -411,15 +461,32 @@ class ObservingConditions extends React.Component {
           <span className={this.props.classes.bulletR}>red</span>
           <span className={this.props.classes.bulletZ}>pink</span>
           <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink>Arm</InputLabel>
+            <InputLabel shrink classes={{ root: classes.title }}>
+              Arm
+            </InputLabel>
             <RadioGroup
               className={this.props.classes.column}
               value={this.state.arm}
               onChange={this.handleChangeArm}
             >
-              <FormControlLabel value="b" control={<Radio />} label="b" />
-              <FormControlLabel value="r" control={<Radio />} label="r" />
-              <FormControlLabel value="z" control={<Radio />} label="z" />
+              <FormControlLabel
+                value="b"
+                control={<Radio />}
+                label="b"
+                classes={{ label: classes.text }}
+              />
+              <FormControlLabel
+                value="r"
+                control={<Radio />}
+                label="r"
+                classes={{ label: classes.text }}
+              />
+              <FormControlLabel
+                value="z"
+                control={<Radio />}
+                label="z"
+                classes={{ label: classes.text }}
+              />
             </RadioGroup>
           </FormControl>
         </div>
@@ -536,6 +603,7 @@ class ObservingConditions extends React.Component {
 
   renderTabs = () => {
     const { tab } = this.state;
+    const { classes } = this.props;
     return (
       <div>
         <Tabs
@@ -546,8 +614,16 @@ class ObservingConditions extends React.Component {
           fullWidth
           centered
         >
-          <Tab label="Time Series" value={'Time Series'} />
-          <Tab label="Regression" value={'Regression'} />
+          <Tab
+            label="Time Series"
+            value={'Time Series'}
+            classes={{ label: classes.title }}
+          />
+          <Tab
+            label="Regression"
+            value={'Regression'}
+            classes={{ label: classes.title }}
+          />
         </Tabs>
         {tab === 'Time Series' ? this.renderTimeSeries() : null}
         {tab === 'Regression' ? this.renderRegression() : null}
