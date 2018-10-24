@@ -35,7 +35,13 @@ class RMS:
 
         nrg = check_ccds['PARAMS']['NOISE_AMP_NORMAL_RANGE']
         wrg = check_ccds['PARAMS']['NOISE_AMP_WARN_RANGE']
-        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['NOISE_AMP_REF']
+        if mergedqa['FLAVOR'].upper() == 'SCIENCE':
+            program = mergedqa['GENERAL_INFO']['PROGRAM'].upper()
+            program_prefix = '_'+program
+        else:
+            program_prefix = ''
+        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['NOISE_AMP' +
+                                                           program_prefix+'_REF']
 
         cmap = get_palette('RdBu_r')
 
