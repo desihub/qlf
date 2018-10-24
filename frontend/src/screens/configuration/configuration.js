@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   container: {
@@ -13,11 +14,15 @@ const styles = {
     height: '85vh',
     width: 'calc(100vw - 2em)',
   },
+  title: {
+    fontSize: '1.2vw',
+  },
 };
 
-export default class Configuration extends React.Component {
+class Configuration extends React.Component {
   static propTypes = {
     daemonRunning: PropTypes.bool.isRequired,
+    classes: PropTypes.object.isRequired,
   };
 
   state = {
@@ -49,6 +54,7 @@ export default class Configuration extends React.Component {
 
   renderScience = () => {
     const { qlScienceTab, qlTab } = this.state;
+    const { classes } = this.props;
     if (qlTab !== 0) return null;
     return (
       <div>
@@ -60,9 +66,9 @@ export default class Configuration extends React.Component {
           fullWidth
           centered
         >
-          <Tab label="Dark" value={0} />
-          <Tab label="Bright" value={1} />
-          <Tab label="Gray" value={2} />
+          <Tab label="Dark" value={0} classes={{ label: classes.title }} />
+          <Tab label="Bright" value={1} classes={{ label: classes.title }} />
+          <Tab label="Gray" value={2} classes={{ label: classes.title }} />
         </Tabs>
         {qlScienceTab === 0 ? <Display config={'darksurvey'} /> : null}
         {qlScienceTab === 1 ? <Display config={'brightsurvey'} /> : null}
@@ -73,6 +79,7 @@ export default class Configuration extends React.Component {
 
   renderCalibration = () => {
     const { qlCalibrationTab, qlTab } = this.state;
+    const { classes } = this.props;
     if (qlTab !== 1) return null;
     return (
       <div>
@@ -84,10 +91,14 @@ export default class Configuration extends React.Component {
           fullWidth
           centered
         >
-          <Tab label="Flat" value={0} />
-          <Tab label="Dark Current" value={1} />
-          <Tab label="Bias" value={2} />
-          <Tab label="ARC" value={3} />
+          <Tab label="Flat" value={0} classes={{ label: classes.title }} />
+          <Tab
+            label="Dark Current"
+            value={1}
+            classes={{ label: classes.title }}
+          />
+          <Tab label="Bias" value={2} classes={{ label: classes.title }} />
+          <Tab label="ARC" value={3} classes={{ label: classes.title }} />
         </Tabs>
         {qlCalibrationTab === 0 ? <Display config={'flat'} /> : null}
         {qlCalibrationTab === 1 ? <Display config={'darkcurrent'} /> : null}
@@ -99,6 +110,7 @@ export default class Configuration extends React.Component {
 
   renderTabs = () => {
     const { qlTab } = this.state;
+    const { classes } = this.props;
     return (
       <div>
         <Tabs
@@ -109,8 +121,12 @@ export default class Configuration extends React.Component {
           fullWidth
           centered
         >
-          <Tab label="SCIENCE" value={0} />
-          <Tab label="Calibration" value={1} />
+          <Tab label="SCIENCE" value={0} classes={{ root: classes.title }} />
+          <Tab
+            label="Calibration"
+            value={1}
+            classes={{ root: classes.title }}
+          />
         </Tabs>
         {qlTab === 0 ? this.renderScience() : null}
         {qlTab === 1 ? this.renderCalibration() : null}
@@ -120,6 +136,7 @@ export default class Configuration extends React.Component {
 
   render() {
     const { tab } = this.state;
+    const { classes } = this.props;
     return (
       <div>
         <Paper style={styles.container} elevation={4}>
@@ -131,8 +148,8 @@ export default class Configuration extends React.Component {
             fullWidth
             centered
           >
-            <Tab label="QLF" value={0} />
-            <Tab label="QL" value={1} />
+            <Tab label="QLF" value={0} classes={{ label: classes.title }} />
+            <Tab label="QL" value={1} classes={{ label: classes.title }} />
           </Tabs>
           {tab === 0 ? <Form daemonRunning={this.props.daemonRunning} /> : null}
           {tab === 1 ? this.renderTabs() : null}
@@ -141,3 +158,5 @@ export default class Configuration extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(Configuration);

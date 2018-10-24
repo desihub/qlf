@@ -41,11 +41,11 @@ const styles = {
   gridRow: {
     display: 'grid',
     gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 180px)',
+    height: 'calc(100vh - 183px)',
   },
   viewer: {
     width: 'calc(100vw - 280px)',
-    height: 'calc(100vh - 180px)',
+    height: 'calc(100vh - 183px)',
   },
   fadeLoaderFull: {
     position: 'absolute',
@@ -446,7 +446,7 @@ class ObservingConditions extends React.Component {
         <Petals
           selected={this.state.spectrograph}
           onClick={this.handleChangeSpectrograph}
-          size={100}
+          size={22}
         />
       </div>
     );

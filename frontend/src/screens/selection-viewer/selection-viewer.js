@@ -164,7 +164,7 @@ class SelectionViewer extends React.Component {
           <Petals
             selected={this.state.spectrograph}
             onClick={this.handleChangeSpectrograph}
-            size={100}
+            size={22}
           />
         </div>
       );
