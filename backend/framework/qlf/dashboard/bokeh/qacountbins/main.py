@@ -35,10 +35,11 @@ class Countbins:
 
         countbins = check_fibers['METRICS']
         flavor=mergedqa["FLAVOR"]
+        with open("dbg", 'w') as f: f.write(flavor)
         nrg = check_fibers['PARAMS']['NGOODFIB_NORMAL_RANGE']
         wrg = check_fibers['PARAMS']['NGOODFIB_WARN_RANGE']
 
-        if flavor in ['dark','gray','bright']:     
+        if flavor == "science":     
             ra = gen_info['RA']
             dec = gen_info['DEC']
         else:
@@ -106,7 +107,7 @@ class Countbins:
 
         # ----------------
         # Wedge
-        if flavor in ['dark','gray','bright']:
+        if flavor == "science":
      
             if ra is None or dec is None:
                 return 'Missing RA and DEC'
@@ -175,7 +176,7 @@ class Countbins:
 
         font_size = "1.2vw"
 
-        if flavor in ["dark", "gray", "bright"]:
+        if flavor == "science":
             plist=[p, p2]
         else:
             plist=[p]
