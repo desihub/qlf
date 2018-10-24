@@ -1,75 +1,17 @@
-import sys
-import os
-import django
-
-BASE_DIR = os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))
-)
-
-sys.path.append(os.path.join(BASE_DIR, "qlf"))
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
-
-django.setup()
-
-from dashboard.models import Job, Process, Exposure
-import random
-from datetime import datetime
-
-class MockData():
-    def generate_exposure(self):
-        last_exposure = Exposure.objects.last()
-        new_exposure = Exposure(
-            exposure_id=last_exposure.pk+1,
-            telra=random.randint(1, 10000)/100,
-            teldec=random.randint(1, 10000)/100,
-            tile=last_exposure.tile,
-            dateobs=last_exposure.dateobs,
-            flavor=last_exposure.flavor,
-            night=last_exposure.night,
-            airmass=last_exposure.airmass,
-            program=last_exposure.program,
-            exptime=last_exposure.exptime
-        )
-        new_exposure.save()
-        return new_exposure.exposure_id
-
-    def generate_process(self, base):
-        self.base_process = Process.objects.get(pk=base)
-        new_process = Process(
-            start=datetime.now().replace(microsecond=0),
-            end=datetime.now().replace(microsecond=0),
-            status=self.base_process.status,
-            exposure=self.base_process.exposure,
-            qa_tests=self.base_process.qa_tests
-        )
-        new_process.save()
-        self.generate_jobs(new_process)
-
-    def generate_jobs(self, process):
-        for job in self.base_process.process_jobs.all():
-            new_job = Job(
-                camera=job.camera,
-                process=process,
-                end=datetime.now().replace(microsecond=0),
-                start=datetime.now().replace(microsecond=0),
-                output=job.output,
-                status=job.status,
-                logname=job.logname,
-                version=job.version
-            )
-            new_job.save()
-
-#MockData().generate_exposure()
-# for i in range(100):
-#     MockData().generate_process(3)
-
 from qlf_models import QLFModels
 from copy import copy
+import collections
+import numpy
 import datetime
 import random
 
 qlf_models = QLFModels()
+
+FLAVORS = {
+    'science': 1.0,
+    'flat': 0.1,
+    'arc': 0.1
+}
 
 
 def generate_processes_by_exposure(exposure, loop=1):
@@ -84,13 +26,21 @@ def generate_processes_by_exposure(exposure, loop=1):
             'There is no process with {} flavor.'.format(flavor)
         )
 
-    origin_process = copy(process)
+    process.exposure_id = exposure.exposure_id
+
+    processes = list()
 
     for item in range(loop):
-        del process.id
-        process.exposure_id = exposure.exposure_id
+        print('Starting {} process simulation...'.format(item + 1))
+        process.id = None
+        tdate = datetime.datetime.now()
+        tdate += datetime.timedelta(minutes=random.randint(1, 5))
+        process.end = tdate
         process.save()
+        print('End {}: process ID {}'.format(item + 1, process.id))
+        processes.append(copy(process))
 
+    return processes
 
 def generate_new_exposure(flavor, night):
     """ """
@@ -108,11 +58,90 @@ def generate_new_exposure(flavor, night):
     tdate = datetime.datetime.strptime(night, "%Y%m%d")
     tdate += datetime.timedelta(hours=random.randint(1, 23))
     exposure.dateobs = tdate
+    exposure.telra += random.randint(-20, 20)
+    exposure.teldec += random.randint(-20, 20)
     exposure.save()
 
     return exposure
 
+METRICS = {
+    'CHECK_SPECTRA': ['FIBER_MAG', 'SNR_MAG_TGT', 'SKYCONT_FIBER', 'DELTAMAG_TGT', 'PEAKCOUNT_FIB', 'PEAKCOUNT', 'DELTAMAG'],
+    'CHECK_CCDs': ['BIAS_AMP', 'NOISE_AMP', 'XWSIGMA_FIB', 'NOISE_OVERSCAN_AMP', 'XWSIGMA_AMP', 'XWSIGMA']
+}
 
-new_exposure = generate_new_exposure('science', '20181001')
-print(new_exposure)
-# generate_processes_by_exposure(new_exposure)
+def generate_jobs_by_process(process):
+    """ """
+
+    main_process = qlf_models.get_last_process_by_flavor(
+        process.exposure.flavor,
+        jobs_isnull=False
+    )
+
+    jobs = qlf_models.get_jobs_by_process_id(main_process.id)
+
+    for job in jobs:
+        job.id = None
+        job.process_id = process.id
+
+        for m in METRICS:
+            if m in job.output['TASKS'].keys():
+                for item in job.output['TASKS'][m]['METRICS']:
+                    if item in METRICS[m]:
+                        try:
+                            out = job.output['TASKS'][m]['METRICS'][item]
+                            out = simulate_output(out, -6.0, 6.0)
+                            job.output['TASKS'][m]['METRICS'][item] = out
+                        except:
+                            print('Error in {}/{} simulation.'.format(m, item))
+
+        job.output = simulate_output(job.output)
+        job.save()
+
+
+def simulate_output(output, ini=-6.0, end=6.0):
+    """ """
+
+    def update(data):
+        if type(data) == numpy.ndarray:
+            data = data.tolist()
+        if isinstance(data, list):
+            for item in data:
+                data[data.index(item)] = update(item)
+        if isinstance(data, dict):
+            for item in data:
+                data[item] = update(data[item])
+        if isinstance(data, (int, float,)):
+            data += random.uniform(ini, end)
+
+        return data
+
+    return update(output)
+
+
+def simulate(night_base, num_days=30, num_exp=40):
+
+    base = datetime.datetime.strptime(night_base, "%Y%m%d")
+
+    flavors = list(qlf_models.get_flavors())
+    weights = list()
+
+    for idx, val in enumerate(flavors):
+        weights.append(FLAVORS[val]) 
+
+    print(flavors)
+    print(weights)
+
+    for x in range(0, num_days):
+        nbase = base + datetime.timedelta(days=x)
+        nbase = nbase.strftime("%Y%m%d")
+
+        for exp in range(0, num_exp):
+            flavor = random.choices(flavors, weights)
+            new_exposure = generate_new_exposure(flavor.pop(), nbase)
+            new_processes = generate_processes_by_exposure(new_exposure)
+
+            for process in new_processes:
+                generate_jobs_by_process(process)
+
+
+simulate('20181001', num_days=2, num_exp=4)
