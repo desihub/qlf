@@ -13,6 +13,7 @@ const styles = {
     overflow: 'auto',
     height: '85vh',
     width: 'calc(100vw - 2em)',
+    fontSize: '1.2vw',
   },
   title: {
     fontSize: '1.2vw',
@@ -121,11 +122,11 @@ class Configuration extends React.Component {
           fullWidth
           centered
         >
-          <Tab label="SCIENCE" value={0} classes={{ root: classes.title }} />
+          <Tab label="SCIENCE" value={0} classes={{ label: classes.title }} />
           <Tab
             label="Calibration"
             value={1}
-            classes={{ root: classes.title }}
+            classes={{ label: classes.title }}
           />
         </Tabs>
         {qlTab === 0 ? this.renderScience() : null}
