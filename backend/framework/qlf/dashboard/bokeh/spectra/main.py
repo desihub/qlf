@@ -12,14 +12,8 @@ import os
 
 from astropy.io import fits
 
-# ----------------------------
-# READ FROM INTERFACE:
-# Instance of fiber_ID & spectrograph:
-fid=2 
-spectrograph="0"
-selected_arm=['b']
-
 qlf_root = os.environ.get('QLF_ROOT')
+
 
 class Spectra():
     def __init__(self, process_id, arms):
@@ -51,12 +45,12 @@ class Spectra():
         for spec in list(range(10)):
             cam = self.selected_arm[0]+str(spec)
             sframe_exists = os.path.isfile("{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
-                                qlf_root,
-                                self.exposure.night,
-                                str(self.exposure.exposure_id).zfill(8),
-                                cam,
-                                str(self.exposure.exposure_id).zfill(8),
-                            ))
+                qlf_root,
+                self.exposure.night,
+                str(self.exposure.exposure_id).zfill(8),
+                cam,
+                str(self.exposure.exposure_id).zfill(8),
+            ))
             if sframe_exists:
                 y = y + list(range(500))
                 color = color + ['green']*500
@@ -109,15 +103,16 @@ class Spectra():
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
 
         p = figure(title='FIBERS (ARM %s)' % (','.join(wedge_arm)),
-        x_axis_label='RA',
-        y_axis_label='DEC',
-        plot_width=600,
-        plot_height=600,
-        tools=[hover,"box_zoom,pan,wheel_zoom,reset,lasso_select,crosshair,tap"],
-        active_drag="box_zoom",
-        sizing_mode='scale_width',
-        x_range=xrange,
-        y_range=yrange)
+                   x_axis_label='RA',
+                   y_axis_label='DEC',
+                   plot_width=600,
+                   plot_height=600,
+                   tools=[
+                       hover, "box_zoom,pan,wheel_zoom,reset,lasso_select,crosshair,tap"],
+                   active_drag="box_zoom",
+                   sizing_mode='scale_width',
+                   x_range=xrange,
+                   y_range=yrange)
         p.title.align = 'center'
 
         p.circle('ra', 'dec', source=source, name="data", radius=radius,
@@ -157,17 +152,17 @@ class Spectra():
 
     def load_frame(self, fiber_id, arm):
         try:
-            frame=fits.open(
+            frame = fits.open(
                 "{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
                     qlf_root,
                     self.exposure.night,
                     str(self.exposure.exposure_id).zfill(8),
                     arm+self.spectrograph,
                     str(self.exposure.exposure_id).zfill(8),
-                    ))
+                ))
         except:
             return None
-        flux =frame["FLUX"].data
+        flux = frame["FLUX"].data
         wl = frame["WAVELENGTH"].data
         otype = frame['FIBERMAP'].data['OBJTYPE']
         fmap = frame["FIBERMAP"].data
@@ -181,12 +176,12 @@ class Spectra():
             brick=fmap['BRICKNAME'][fiber_id],)
 
     def render_spectra(self, fiber, spectrograph):
-        fiber=int(fiber)
-        self.spectrograph=spectrograph
+        fiber = int(fiber)
+        self.spectrograph = spectrograph
         # -----------------------
         # Bokeh pre-configuration:
-        color={'b':"dodgerblue","r":"red", "z":"magenta"}
-        hover_color={'b':"red","r":"darkblue", "z":"darkblue"}
+        color = {'b': "dodgerblue", "r": "red", "z": "magenta"}
+        hover_color = {'b': "red", "r": "darkblue", "z": "darkblue"}
         spec_tooltip = """
                         <div>
                             <div>
@@ -199,46 +194,45 @@ class Spectra():
                             </div>
                         </div>
                     """
-        spec_hover = HoverTool(tooltips=spec_tooltip, mode='vline', names=['bar'])
-
+        spec_hover = HoverTool(tooltips=spec_tooltip,
+                               mode='vline', names=['bar'])
 
         # -------------------
         # Saving ploting data:
         fluxes = {}
         for arm in self.selected_arm:
-            fl=self.load_frame(fiber, arm)
+            fl = self.load_frame(fiber, arm)
             if fl:
-                fluxes.update({arm:fl})
+                fluxes.update({arm: fl})
 
         for arm in [list(fluxes.keys())[0]]:
-            brick= fluxes[arm]['brick']
-            obj_name= fluxes[arm]['otype']
-
+            brick = fluxes[arm]['brick']
+            obj_name = fluxes[arm]['otype']
 
         # ------------
         # Bokeh Plots:
         p_spec = figure(title="Brick name: "+brick+',  Fiber ID: %d' % fiber,
-                        x_axis_label= 'Wavelength (A)', 
-                        y_axis_label= obj_name+' Flux (counts)',
+                        x_axis_label='Wavelength (A)',
+                        y_axis_label=obj_name+' Flux (counts)',
                         plot_width=800, plot_height=340,
                         active_drag="box_zoom",
                         tools=[spec_hover, "pan,box_zoom,reset,crosshair, wheel_zoom"], sizing_mode='scale_width')
 
         for arm in fluxes.keys():
-            spec_source=ColumnDataSource(data={'wlength': fluxes[arm]['wl'],
-                                            'spec': fluxes[arm]['flux'],
-                                            })
+            spec_source = ColumnDataSource(data={'wlength': fluxes[arm]['wl'],
+                                                 'spec': fluxes[arm]['flux'],
+                                                 })
 
             p_spec.line('wlength', 'spec', color=color[arm],
                         source=spec_source,)
             p_spec.vbar('wlength', top='spec',
                         width=1., source=spec_source,
                         name="bar",
-                        color=None,hover_color=hover_color[arm])
+                        color=None, hover_color=hover_color[arm])
 
-        # -----------    
-        # Formatting:    
-        font_size="1.1vw"
+        # -----------
+        # Formatting:
+        font_size = "1.1vw"
         for plot in [p_spec]:
             plot.xaxis.major_label_text_font_size = font_size
             plot.yaxis.major_label_text_font_size = font_size
@@ -253,7 +247,6 @@ class Spectra():
                 """)
 
         button = Button(label="Back", button_type="warning", callback=callback)
-
 
         layout = column(p_spec, widgetbox(button), sizing_mode='scale_width')
         return file_html(layout, CDN, "Spectra")
