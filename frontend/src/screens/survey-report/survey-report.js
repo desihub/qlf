@@ -72,7 +72,7 @@ class SurveyReport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      datePeriod: '',
+      datePeriod: 'all',
       startDate: '',
       endDate: '',
       program: '',

@@ -113,8 +113,8 @@ export default class SelectDate extends React.Component {
             }}
             inputProps={{
               style: styles.dateField,
-              // min: this.formatFilterDate(this.state.rangeStartDate),
-              // max: this.formatFilterDate(this.state.selectedEndDate),
+              min: this.formatFilterDate(this.state.rangeStartDate),
+              max: this.formatFilterDate(this.state.selectedEndDate),
             }}
           />
         </div>
@@ -130,8 +130,8 @@ export default class SelectDate extends React.Component {
             }}
             inputProps={{
               style: styles.dateField,
-              // min: this.formatFilterDate(this.state.selectedStartDate, true),
-              // max: this.formatFilterDate(this.state.rangeEndDate),
+              min: this.formatFilterDate(this.state.selectedStartDate, true),
+              max: this.formatFilterDate(this.state.rangeEndDate),
             }}
           />
         </div>
