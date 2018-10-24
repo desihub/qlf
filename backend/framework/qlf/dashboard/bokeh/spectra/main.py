@@ -96,11 +96,7 @@ class Spectra():
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
                     <span style="font-size: 1.1vw; color: #515151;">@dec</span>
                 </div>
-                <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">CAM: </span>
-                    <span style="font-size: 1.1vw; color: #515151;">@cam_</span>
-                </div>
-        """.replace('@cam_', '@cam')
+        """
 
         hover = HoverTool(tooltips=fiber_tooltip)
 
@@ -112,7 +108,7 @@ class Spectra():
         xrange = Range1d(start=ra_center + 2, end=ra_center-2)
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
 
-        p = figure(title='FIBERS (ARM %s)' % (wedge_arm),
+        p = figure(title='FIBERS (ARM %s)' % (','.join(wedge_arm)),
         x_axis_label='RA',
         y_axis_label='DEC',
         plot_width=600,
