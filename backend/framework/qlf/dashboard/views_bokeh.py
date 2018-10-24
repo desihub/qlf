@@ -241,13 +241,18 @@ def load_spectra(request):
     process_id = request.GET.get('process_id')
     arm = request.GET.get('arm')
     fiber = request.GET.get('fiber')
-    try:
-        if spectra == 'spectra':
-            spectra_html = Spectra(process_id, arm).load_spectra()
-        elif spectra == 'spectra_fib':
-            spectra_html = Spectra(process_id, arm).render_spectra(fiber, spectrograph)
-    except Exception as err:
-        spectra_html = "Can't load spectra: {}".format(err)
+    if arm == 'all':
+        arms=['b', 'r', 'z']
+    else:
+        arms=[arm]
+    # try:
+    if spectra == 'spectra':
+        spectra_html = Spectra(process_id, arms).load_spectra()
+    elif spectra == 'spectra_fib':
+        spectra_html = Spectra(process_id, arms).render_spectra(
+            fiber, spectrograph)
+    # except Exception as err:
+    #     spectra_html = "Can't load spectra: {}".format(err)
 
     context = {'image': spectra_html}
     response = HttpResponse(template.render(context, request))

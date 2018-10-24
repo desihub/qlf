@@ -84,6 +84,7 @@ class SelectionViewer extends React.Component {
   static propTypes = {
     classes: PropTypes.object,
     spectrograph: PropTypes.bool,
+    armAll: PropTypes.bool,
     arm: PropTypes.bool,
     processing: PropTypes.bool,
   };
@@ -187,6 +188,9 @@ class SelectionViewer extends React.Component {
               value={this.state.arm}
               onChange={this.handleChangeArm}
             >
+              {this.props.armAll ? (
+                <FormControlLabel value="all" control={<Radio />} label="All" />
+              ) : null}
               <FormControlLabel value="b" control={<Radio />} label="b" />
               <FormControlLabel value="r" control={<Radio />} label="r" />
               <FormControlLabel value="z" control={<Radio />} label="z" />

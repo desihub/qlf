@@ -22,12 +22,12 @@ selected_arm=['b']
 qlf_root = os.environ.get('QLF_ROOT')
 
 class Spectra():
-    def __init__(self, process_id, arm):
+    def __init__(self, process_id, arms):
         self.selected_process_id = process_id
         process = Process.objects.get(pk=process_id)
         exposure = process.exposure
         self.exposure = exposure
-        self.selected_arm = arm
+        self.selected_arm = arms
 
     def data_source(self, fmap):
         """ Creating data source for plots
@@ -45,22 +45,21 @@ class Spectra():
         dec_tile = fmap.fiber_dec
         otype_tile = fmap.objtype
 
-        process_id = self.selected_process_id
-        joblist = [entry.camera.camera for entry in Job.objects.filter(
-            process_id=process_id)]
-
         y = []
         color = []
         cam_inst = []
         for spec in list(range(10)):
-            cam = self.selected_arm+str(spec)
-            if cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
-                    self.selected_process_id, cam)
-                countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
+            cam = self.selected_arm[0]+str(spec)
+            sframe_exists = os.path.isfile("{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
+                                qlf_root,
+                                self.exposure.night,
+                                str(self.exposure.exposure_id).zfill(8),
+                                cam,
+                                str(self.exposure.exposure_id).zfill(8),
+                            ))
+            if sframe_exists:
                 y = y + list(range(500))
-                color = color + ['green' if idx ==
-                                 1 else 'red' for idx in countbins]
+                color = color + ['green']*500
             else:
                 y = y + list(range(500))
                 color = color + ['lightgray']*500
@@ -98,14 +97,10 @@ class Spectra():
                     <span style="font-size: 1.1vw; color: #515151;">@dec</span>
                 </div>
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 1.1vw; color: #515151;">@OBJ_TYPE</span>
-                </div>
-                <div>
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">CAM: </span>
                     <span style="font-size: 1.1vw; color: #515151;">@cam_</span>
                 </div>
-        """.replace('@status', '@status').replace('@cam_', '@cam')
+        """.replace('@cam_', '@cam')
 
         hover = HoverTool(tooltips=fiber_tooltip)
 
@@ -164,15 +159,18 @@ class Spectra():
 
         return file_html(layout, CDN, "Spectra")
 
-    def load_frame(self, fiber_id):
-        frame=fits.open(
-            "{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
-                qlf_root,
-                self.exposure.night,
-                str(self.exposure.exposure_id).zfill(8),
-                self.selected_arm+self.spectrograph,
-                str(self.exposure.exposure_id).zfill(8),
-                ))
+    def load_frame(self, fiber_id, arm):
+        try:
+            frame=fits.open(
+                "{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
+                    qlf_root,
+                    self.exposure.night,
+                    str(self.exposure.exposure_id).zfill(8),
+                    arm+self.spectrograph,
+                    str(self.exposure.exposure_id).zfill(8),
+                    ))
+        except:
+            return None
         flux =frame["FLUX"].data
         wl = frame["WAVELENGTH"].data
         otype = frame['FIBERMAP'].data['OBJTYPE']
@@ -211,9 +209,10 @@ class Spectra():
         # -------------------
         # Saving ploting data:
         fluxes = {}
-        for arm in selected_arm:
-            fl=self.load_frame(fiber)
-            fluxes.update({arm:fl})
+        for arm in self.selected_arm:
+            fl=self.load_frame(fiber, arm)
+            if fl:
+                fluxes.update({arm:fl})
 
         for arm in [list(fluxes.keys())[0]]:
             brick= fluxes[arm]['brick']
