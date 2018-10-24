@@ -266,6 +266,9 @@ class SelectionViewer extends React.Component {
     if (this.props.spectrograph) {
       valid = valid && this.state.spectrograph.length !== 0;
     }
+    if (this.props.processing) {
+      valid = valid && this.state.processing !== '';
+    }
     return valid;
   };
 
