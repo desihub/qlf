@@ -249,7 +249,7 @@ def load_series(request):
         if plot == 'timeseries':
             series_html = TimeSeries(yaxis, start, end, camera, amp).render()
         elif plot == 'regression':
-            series_html = Regression(xaxis, yaxis, start, end).render()
+            series_html = Regression(xaxis, yaxis, start, end, camera).render()
         else:
             series_html = "Couldn't load plot"
     except Exception as err:

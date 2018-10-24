@@ -7,7 +7,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import write_info, get_palette,\
     get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import html_table, mtable, alert_table
+from dashboard.bokeh.qlf_plot import mtable, alert_table
 
 from dashboard.bokeh.helper import write_description
 
@@ -132,9 +132,6 @@ class Skycont:
         txt = PreText(text=info, height=nlines*20)
         info_col = Div(text=write_description('skycont'))
 
-        tb = html_table(names=['Sky continuum averaged over sky fibers'], vals=[
-            '{:.3f}'.format(skycont['SKYCONT'])], nrng=nrg, wrng=wrg)
-        tbinfo = Div(text=tb)
 
        # Prepare tables
         metric_txt = mtable('skycont', mergedqa)
