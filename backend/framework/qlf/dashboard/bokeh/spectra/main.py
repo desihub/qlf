@@ -23,7 +23,7 @@ qlf_root = os.environ.get('QLF_ROOT')
 
 class Spectra():
     def __init__(self, process_id, arm):
-        self.selected_process_id=process_id
+        self.selected_process_id = process_id
         process = Process.objects.get(pk=process_id)
         exposure = process.exposure
         self.exposure = exposure
@@ -86,24 +86,24 @@ class Spectra():
         fiber_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">FIBER: </span>
-                    <span style="font-size: 13px; color: #515151">@fiber</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER: </span>
+                    <span style="font-size: 1.1vw; color: #515151">@fiber</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">RA: </span>
-                    <span style="font-size: 13px; color: #515151;">@ra</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">RA: </span>
+                    <span style="font-size: 1.1vw; color: #515151;">@ra</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">DEC: </span>
-                    <span style="font-size: 13px; color: #515151;">@dec</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DEC: </span>
+                    <span style="font-size: 1.1vw; color: #515151;">@dec</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Obj Type: </span>
-                    <span style="font-size: 13px; color: #515151;">@OBJ_TYPE</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
+                    <span style="font-size: 1.1vw; color: #515151;">@OBJ_TYPE</span>
                 </div>
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: #303030;">CAM: </span>
-                    <span style="font-size: 13px; color: #515151;">@cam_</span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">CAM: </span>
+                    <span style="font-size: 1.1vw; color: #515151;">@cam_</span>
                 </div>
         """.replace('@status', '@status').replace('@cam_', '@cam')
 
@@ -114,7 +114,7 @@ class Spectra():
         radius = 0.017
         radius_hover = 0.018
 
-        xrange = Range1d(start=ra_center + 3, end=ra_center-3)
+        xrange = Range1d(start=ra_center + 2, end=ra_center-2)
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
 
         p = figure(title='FIBERS (ARM %s)' % (wedge_arm),
@@ -124,6 +124,7 @@ class Spectra():
         plot_height=600,
         tools=[hover,"box_zoom,pan,wheel_zoom,reset,lasso_select,crosshair,tap"],
         active_drag="box_zoom",
+        sizing_mode='scale_width',
         x_range=xrange,
         y_range=yrange)
         p.title.align = 'center'
@@ -137,7 +138,6 @@ class Spectra():
                  hover_fill_color={'field': 'color'}, fill_color=None,
                  line_color=None, line_width=3, hover_line_color='red')
 
-        url = "/@fiber/"
         taptool = p.select(type=TapTool)
         taptool.callback = CustomJS(args=dict(source=source), code="""
             const selected = source.selected['1d']['indices'][0];
@@ -160,7 +160,7 @@ class Spectra():
         src = self.data_source(fmap)
 
         p = self.wedge_plot(self.selected_arm, fmap, common_source=src)
-        layout = row(p, css_classes=["container"])
+        layout = row(p, sizing_mode='scale_width')
 
         return file_html(layout, CDN, "Spectra")
 
@@ -196,12 +196,12 @@ class Spectra():
         spec_tooltip = """
                         <div>
                             <div>
-                                <span style="font-size: 12px; font-weight: bold; color: #303030;">Wavelength: </span>
-                                <span style="font-size: 13px; color: #515151">@wlength &#8491</span>
+                                <span style="font-size: 1vw; font-weight: bold; color: #303030;">Wavelength: </span>
+                                <span style="font-size: 1.1vw; color: #515151">@wlength &#8491</span>
                             </div>
                             <div>
-                                <span style="font-size: 12px; font-weight: bold; color: #303030;">Counts: </span>
-                                <span style="font-size: 13px; color: #515151;">@spec</span>
+                                <span style="font-size: 1vw; font-weight: bold; color: #303030;">Counts: </span>
+                                <span style="font-size: 1.1vw; color: #515151;">@spec</span>
                             </div>
                         </div>
                     """
