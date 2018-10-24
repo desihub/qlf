@@ -149,7 +149,7 @@ class ObservingConditions extends React.Component {
       yaxis: '',
       startDate: '',
       endDate: '',
-      datePeriod: '',
+      datePeriod: 'all',
       selectYaxis: '',
       selectXaxis: '',
       selectStartDate: '',

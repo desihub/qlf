@@ -150,7 +150,7 @@ class TrendAnalysis extends React.Component {
       yaxis: '',
       startDate: '',
       endDate: '',
-      datePeriod: '',
+      datePeriod: 'all',
       selectArm: '',
       selectAmp: '',
       selectXaxis: '',
