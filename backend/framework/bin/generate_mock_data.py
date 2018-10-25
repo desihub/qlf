@@ -19,7 +19,8 @@ def generate_processes_by_exposure(exposure, loop=1):
 
     flavor = exposure.flavor
 
-    process = qlf_models.get_last_process_by_flavor(flavor)
+    process = qlf_models.get_last_process_by_flavor(
+        flavor, jobs_isnull=False)
 
     if not process:
         raise ValueError(
