@@ -150,7 +150,7 @@ class TrendAnalysis extends React.Component {
       yaxis: '',
       startDate: '',
       endDate: '',
-      datePeriod: '',
+      datePeriod: 'all',
       selectArm: '',
       selectAmp: '',
       selectXaxis: '',
@@ -439,9 +439,6 @@ class TrendAnalysis extends React.Component {
     return (
       <div className={this.props.classes.selectionRadio}>
         <div className={this.props.classes.selectionRadioInner}>
-          <span className={this.props.classes.bulletB}>blue</span>
-          <span className={this.props.classes.bulletR}>red</span>
-          <span className={this.props.classes.bulletZ}>pink</span>
           <FormControl className={this.props.classes.formControl}>
             <InputLabel shrink>Arm</InputLabel>
             <RadioGroup
