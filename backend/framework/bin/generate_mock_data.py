@@ -59,8 +59,13 @@ def generate_new_exposure(flavor, night):
     tdate = datetime.datetime.strptime(night, "%Y%m%d")
     tdate += datetime.timedelta(hours=random.randint(1, 23))
     exposure.dateobs = tdate
-    exposure.telra += random.randint(-20, 20)
-    exposure.teldec += random.randint(-20, 20)
+
+    if exposure.telra:
+        exposure.telra += random.randint(-20, 20)
+
+    if exposure.teldec:
+        exposure.teldec += random.randint(-20, 20)
+
     exposure.save()
 
     return exposure
