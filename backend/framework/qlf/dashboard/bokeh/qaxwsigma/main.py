@@ -1,4 +1,4 @@
-from bokeh.plotting import figure
+from bokeh.plotting import Figure
 from bokeh.layouts import column, widgetbox, gridplot
 
 from bokeh.models import Span, Label
@@ -162,7 +162,7 @@ class Xwsigma:
         radius = 0.013  # 0.015
         radius_hover = 0.015  # 0.0165
 
-        px = figure(title='XSIGMA',
+        px = Figure(title='XSIGMA',
             x_axis_label='RA',
             y_axis_label='DEC',
             plot_height=350,
@@ -208,7 +208,7 @@ class Xwsigma:
 
         # ======
         # WSIGMA
-        pw = figure(title='WSIGMA',
+        pw = Figure(title='WSIGMA',
                 x_axis_label='RA',
                 y_axis_label='DEC',
                 plot_height=350,
@@ -299,7 +299,7 @@ class Xwsigma:
 
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
 
-        p_hist_x = figure(sizing_mode='scale_width', title='', tools=[hover, "box_zoom,wheel_zoom,pan,reset"], active_drag="box_zoom", plot_height=300,
+        p_hist_x = Figure(sizing_mode='scale_width', title='', tools=[hover, "box_zoom,wheel_zoom,pan,reset"], active_drag="box_zoom", plot_height=300,
                           y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale, y_range=yrange, x_range=hist_rg
                           )
 
@@ -341,7 +341,7 @@ class Xwsigma:
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
         yrangew = yrange
 
-        p_hist_w = figure(sizing_mode='scale_width', title='', tools=[hover, "box_zoom, pan,wheel_zoom,reset"], active_drag="box_zoom",
+        p_hist_w = Figure(sizing_mode='scale_width', title='', tools=[hover, "box_zoom, pan,wheel_zoom,reset"], active_drag="box_zoom",
                           y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", plot_height=300, x_axis_type="auto",    y_axis_type=yscale, y_range=yrange, x_range=hist_rg)  # , y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
 
         p_hist_w.quad(top=histval, bottom=bottomval, left='left', right='right',

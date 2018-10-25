@@ -74,7 +74,8 @@ export default class SelectDate extends React.Component {
   };
 
   formatFilterDate = (date, addOneDay) => {
-    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
+    const month =
+      (date.getMonth() + 1 <= 10 ? '0' : '') + (date.getMonth() + 1);
     let day;
     if (addOneDay) {
       day = (date.getDate() + 1 < 10 ? '0' : '') + (date.getDate() + 1);
