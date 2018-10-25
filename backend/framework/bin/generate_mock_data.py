@@ -13,9 +13,31 @@ FLAVORS = {
     'arc': 0.1
 }
 
+METRICS = {
+    'CHECK_SPECTRA': [
+        'FIBER_MAG', 'SNR_MAG_TGT', 'SKYCONT_FIBER', 'PEAKCOUNT',
+        'PEAKCOUNT_FIB', 'DELTAMAG_TGT' , 'DELTAMAG'
+    ],
+    'CHECK_CCDs': [
+        'BIAS_AMP', 'NOISE_AMP', 'XWSIGMA_FIB',
+        'NOISE_OVERSCAN_AMP', 'XWSIGMA_AMP', 'XWSIGMA'
+    ]
+}
 
-def generate_processes_by_exposure(exposure, loop=1):
-    """ """
+
+def generate_processes_by_exposure(exposure):
+    """ Creates a simulated process based on an exposure.
+    
+    Arguments:
+        exposure {object} -- Exposure model
+    
+    Raises:
+        ValueError -- returns when there is no processing
+        with a respective exposure.
+    
+    Returns:
+        object -- Process model
+    """
 
     flavor = exposure.flavor
 
@@ -29,22 +51,30 @@ def generate_processes_by_exposure(exposure, loop=1):
 
     process.exposure_id = exposure.exposure_id
 
-    processes = list()
+    process.id = None
+    tdate = datetime.datetime.now()
+    tdate += datetime.timedelta(minutes=random.randint(1, 5))
+    process.end = tdate
+    process.save()
+     
+    return process
 
-    for item in range(loop):
-        print('Starting {} process simulation...'.format(item + 1))
-        process.id = None
-        tdate = datetime.datetime.now()
-        tdate += datetime.timedelta(minutes=random.randint(1, 5))
-        process.end = tdate
-        process.save()
-        print('End {}: process ID {}'.format(item + 1, process.id))
-        processes.append(copy(process))
-
-    return processes
 
 def generate_new_exposure(flavor, night):
-    """ """
+    """ Creates a simulated exposure.
+    
+    Arguments:
+        flavor {str} -- Flavor (ex: 'science', 'flat' or 'arc')
+        night {str} -- Night simlulated (ex: 20190101)
+    
+    Raises:
+        ValueError -- Returns when there is no exposure with 
+        a respective flavor.
+    
+    Returns:
+        object -- Exposure model
+    """
+
 
     last_exp = qlf_models.get_last_exposure()
     exposure = qlf_models.get_last_exposure_by_flavor(flavor)
@@ -70,13 +100,14 @@ def generate_new_exposure(flavor, night):
 
     return exposure
 
-METRICS = {
-    'CHECK_SPECTRA': ['FIBER_MAG', 'SNR_MAG_TGT', 'SKYCONT_FIBER', 'DELTAMAG_TGT', 'PEAKCOUNT_FIB', 'PEAKCOUNT', 'DELTAMAG'],
-    'CHECK_CCDs': ['BIAS_AMP', 'NOISE_AMP', 'XWSIGMA_FIB', 'NOISE_OVERSCAN_AMP', 'XWSIGMA_AMP', 'XWSIGMA']
-}
 
 def generate_jobs_by_process(process):
-    """ """
+    """ Creates simulated jobs based on a process.
+    
+    Arguments:
+        process {object} -- Process model
+    """
+
 
     main_process = qlf_models.get_last_process_by_flavor(
         process.exposure.flavor,
@@ -105,7 +136,18 @@ def generate_jobs_by_process(process):
 
 
 def simulate_output(output, ini=-6.0, end=6.0):
-    """ """
+    """ Simulates random values in QA output.
+    
+    Arguments:
+        output {dict} -- QA output
+    
+    Keyword Arguments:
+        ini {float} -- start range random (default: {-6.0})
+        end {float} -- end range random (default: {6.0})
+    
+    Returns:
+        dict -- QA output with simulated values 
+    """
 
     def update(data):
         if type(data) == numpy.ndarray:
@@ -124,7 +166,17 @@ def simulate_output(output, ini=-6.0, end=6.0):
     return update(output)
 
 
-def simulate(night_base, num_days=30, num_exp=40):
+def simulate(night_base, num_days=3, num_exp=40):
+    """ Simulates the nights processing.
+    
+    Arguments:
+        night_base {str} -- Night initial (ex: 20190101)
+    
+    Keyword Arguments:
+        num_days {int} -- Number of simulated nights (default: {3})
+        num_exp {int} -- Number of exposures per night (default: {40})
+    """
+
 
     base = datetime.datetime.strptime(night_base, "%Y%m%d")
 
@@ -134,9 +186,6 @@ def simulate(night_base, num_days=30, num_exp=40):
     for idx, val in enumerate(flavors):
         weights.append(FLAVORS[val]) 
 
-    print(flavors)
-    print(weights)
-
     for x in range(0, num_days):
         nbase = base + datetime.timedelta(days=x)
         nbase = nbase.strftime("%Y%m%d")
@@ -144,10 +193,21 @@ def simulate(night_base, num_days=30, num_exp=40):
         for exp in range(0, num_exp):
             flavor = random.choices(flavors, weights)
             new_exposure = generate_new_exposure(flavor.pop(), nbase)
-            new_processes = generate_processes_by_exposure(new_exposure)
-
-            for process in new_processes:
-                generate_jobs_by_process(process)
+            process = generate_processes_by_exposure(new_exposure)
+            generate_jobs_by_process(process)
 
 
-simulate('20181001', num_days=2, num_exp=4)
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("night", help="Simulation start date. ex: 20180101")
+    parser.add_argument("--days", help="Number of simulated nights", type=int, default=3)
+    parser.add_argument("--exps", help="Number of exposures per night", type=int, default=40)
+
+    args = parser.parse_args()
+
+    basenight = args.night
+    num_days = args.days  
+    num_exp = args.exps
+
+    simulate(basenight, num_days=num_days, num_exp=num_exp)
