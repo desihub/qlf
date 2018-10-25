@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Checkbox from '@material-ui/core/Checkbox';
 import Icon from '@material-ui/core/Icon';
+import moment from 'moment';
 
 const styles = {
   link: {
@@ -52,20 +53,12 @@ export default class HistoryData extends React.Component {
     setAnchorEl: PropTypes.func.isRequired,
   };
 
-  formatDate = dateString => {
-    const date = new Date(dateString);
-    const month =
-      (date.getMonth() + 1 <= 10 ? '0' : '') + (date.getMonth() + 1);
-    const day = (date.getDate() + 1 <= 10 ? '0' : '') + date.getDate();
-    return date.getFullYear() + month + day;
+  formatDate = date => {
+    return moment(date).format('YYYYMMDD');
   };
 
   formatTime = dateString => {
-    const time = new Date(dateString);
-    const hour = (time.getHours() + 1 < 10 ? '0' : '') + time.getHours();
-    const minutes = (time.getMinutes() + 1 < 10 ? '0' : '') + time.getMinutes();
-    const seconds = (time.getSeconds() + 1 < 10 ? '0' : '') + time.getDate();
-    return hour + ':' + minutes + ':' + seconds;
+    return moment(dateString).format('hh:mm:ss');
   };
 
   qaSuccess = () => {
