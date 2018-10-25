@@ -91,10 +91,10 @@ def generate_new_exposure(flavor, night):
     exposure.dateobs = tdate
 
     if exposure.telra:
-        exposure.telra += random.randint(-20, 20)
+        exposure.telra += random.randint(1, 20)
 
     if exposure.teldec:
-        exposure.teldec += random.randint(-20, 20)
+        exposure.teldec += random.randint(1, 20)
 
     exposure.save()
 
