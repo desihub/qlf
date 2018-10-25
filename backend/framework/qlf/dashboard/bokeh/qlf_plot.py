@@ -163,7 +163,6 @@ def metric_table(metricname, keyname,  curexp='xxx', refexp='xxx', objtype=['XXE
 
 
 def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
-    import numpy as np
     qa_metrics = {}
     qa_metrics['countpix'] = 'LITFRAC_AMP'
     qa_metrics['getbias'] = 'BIAS_AMP'
@@ -175,6 +174,10 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     qa_metrics['integ'] = 'DELTAMAG_TGT'
     qa_metrics['skyresid'] = 'MED_RESID'
     qa_metrics['snr'] = 'FIDSNR_TGT'
+    qa_metrics['fiberflat']= 'CHECKFLAT'
+    qa_metrics['arc']= 'CHECKARC'
+    qa_metrics['xyshifts']= 'XYSHIFTS'
+    qa_metrics['skyR']= 'SKYRBAND'
 
     qa_step = {
         'countpix': 'CHECK_CCDs',
@@ -186,7 +189,11 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         'skypeak': 'CHECK_SPECTRA',
         'integ': 'CHECK_SPECTRA',
         'skyresid': 'CHECK_SPECTRA',
-        'snr': 'CHECK_SPECTRA'}
+        'snr': 'CHECK_SPECTRA',
+        'fiberflat': "CHECK_FIBERFLAT",
+        'arc': "CHECK_ARC",
+        'xyshifts': "CHECK_FIBERS",
+        'skyR': "CHECK_SPECTRA",}
 
     met = data['TASKS'][qa_step[qa]]['METRICS']
     par = data['TASKS'][qa_step[qa]]['PARAMS']
@@ -248,7 +255,10 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         cur_tb, ref_tb = [], []
         for i in list(range(nrows)):
             x = curexp[i]
-            ref_tb.append('%.2f'%ref[i])
+            if qa=='arc':
+                ref_tb.append('%d'%ref[i])
+            else:
+                ref_tb.append('%.2f'%ref[i])
 
             if isinstance(x, float) and x > -999:
                 xstr = '%.2f' % (x)
@@ -279,8 +289,6 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         if objtype is not None:
             objtype_tb = ['STAR' if i == 'STD' else i for i in objtype]
             key_tb = [qa_metrics[qa]] * nrows
-            # key_tb = [qa_metrics[qa] + ' ( %s)' % objtype_tb[i]
-            #   for i in list(range(nrows))]
         else:
             key_tb = [qa_metrics[qa]] * nrows
 
@@ -293,6 +301,12 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         # per axis x or w
         key_tb = [qa_metrics[qa] + [' (x)', ' (w)'][i]
                   for i in list(range(nrows))]
+
+    elif qa in ['arc']:
+        key_tb = [qa_metrics[qa]+ " ( P%d)"%i for i in range(3)]
+    elif qa in ['xyshifts']:
+        key_tb = [qa_metrics[qa]+ " ( %s)"%i for i in ['X','Y'] ]
+
     else:
         key_tb = key
         # cur_tb=curexp

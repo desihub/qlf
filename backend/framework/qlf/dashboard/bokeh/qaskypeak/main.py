@@ -129,8 +129,6 @@ class Skypeak:
         try:
             info_col = Div(text=write_description('skypeak'))
         except Exception as err:
-            f = open('dbg', 'w')
-            f.write(str(err))
             info_col = Div(text="""""")
 
         # ================================
