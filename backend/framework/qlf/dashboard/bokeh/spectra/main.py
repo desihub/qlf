@@ -200,10 +200,14 @@ class Spectra():
         # -------------------
         # Saving ploting data:
         fluxes = {}
+        ra_obs=''
+        dec_obs=''
         for arm in self.selected_arm:
             fl = self.load_frame(fiber, arm)
             if fl:
                 fluxes.update({arm: fl})
+                ra_obs=fl['ra']
+                dec_obs=fl['dec']
 
         for arm in [list(fluxes.keys())[0]]:
             brick = fluxes[arm]['brick']
@@ -211,9 +215,9 @@ class Spectra():
 
         # ------------
         # Bokeh Plots:
-        p_spec = figure(title="Brick name: "+brick+',  Fiber ID: %d' % fiber,
-                        x_axis_label='Wavelength (A)',
-                        y_axis_label=obj_name+' Flux (counts)',
+        p_spec = figure(title="Brick name: "+brick+',  Fiber ID: %d, RA: %.2f, DEC: %.2f' % (fiber, ra_obs, dec_obs),
+                        x_axis_label= 'Wavelength (A)', 
+                        y_axis_label= obj_name+' Flux (counts)',
                         plot_width=800, plot_height=340,
                         active_drag="box_zoom",
                         tools=[spec_hover, "pan,box_zoom,reset,crosshair, wheel_zoom"], sizing_mode='scale_width')
