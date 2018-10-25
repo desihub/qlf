@@ -35,7 +35,6 @@ class Countbins:
 
         countbins = check_fibers['METRICS']
         flavor=mergedqa["FLAVOR"]
-        with open("dbg", 'w') as f: f.write(flavor)
         nrg = check_fibers['PARAMS']['NGOODFIB_NORMAL_RANGE']
         wrg = check_fibers['PARAMS']['NGOODFIB_WARN_RANGE']
 
