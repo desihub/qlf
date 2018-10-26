@@ -52,7 +52,6 @@ const styles = {
     width: 100,
     fontSize: '1.2vw',
     textAlign: 'center',
-    cursor: 'pointer',
   },
   space: {
     width: '1vw',
@@ -312,13 +311,7 @@ class Steps extends Component {
   renderTitles = (step, index) => {
     return (
       <div key={`ì${index}`} style={styles.gridItem}>
-        <Tooltip
-          classes={{ tooltip: this.props.classes.tooltipText }}
-          title={step.display_name}
-          placement="top"
-        >
-          <span style={styles.step}>Step {index + 1}</span>
-        </Tooltip>
+        <span style={styles.step}>{step.display_name}</span>
       </div>
     );
   };
