@@ -169,12 +169,12 @@ class TimeSeries():
         mjds=list()
         for idx,val in enumerate(outputs):
             if val['value']:
-                dates.append(val['dateobs'] - timedelta(minutes=20*idx))
+                dates.append(val['dateobs'])
                 dateobs.append(val['dateobs'].strftime('%Y-%m-%d'))
                 exposures.append(val['exposure_id'])
                 cameras.append(self.camera)
                 values.append(val['value'])
-                date_time=(val['dateobs'] - timedelta(minutes=20*idx)).strftime('%Y-%m-%d %H:%M:%S')
+                date_time=(val['dateobs']).strftime('%Y-%m-%d %H:%M:%S')
                 mjds.append(Time(date_time, format='iso', scale='utc').mjd)
 
         TOOLTIPS = """
@@ -197,6 +197,7 @@ class TimeSeries():
         hover = HoverTool(tooltips=TOOLTIPS)
 
         self.p = figure(
+            title="Camera: {}".format(self.camera),
             sizing_mode='scale_width',
             toolbar_location='above',
             # x_axis_type="datetime",
@@ -207,13 +208,11 @@ class TimeSeries():
             tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
         )
 
-        info = "<h3>Camera: {}<h3>".format(self.camera)
         if self.yaxis in ['skybrightness', 'airmass']:
             self.single_value(mjds, values, exposures, cameras, dateobs)
         elif self.yaxis in ['traceshifts', 'psf']:
             self.double_value(mjds, values, exposures, cameras, dateobs)
         elif self.yaxis in ['noise', 'bias']:
-            info = "<h3>Camera: {}<h3>".format(self.camera)
             self.quadruple_values(mjds, values, exposures, cameras, dateobs)
         elif self.yaxis in ['snr']:
             self.quadruple_values(mjds, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
@@ -226,9 +225,7 @@ class TimeSeries():
         self.p.legend.label_text_font_size = font_size
         self.p.title.text_font_size = font_size
 
-        info_col = Div(text=info)
-        layout = column(info_col, self.p, sizing_mode='scale_width')
-        return file_html(layout, CDN, "Time Series")
+        return file_html(self.p, CDN, "Time Series")
 
 if __name__ == "__main__":
     ts = TimeSeries("test", "20191001", "20191001", "b0")

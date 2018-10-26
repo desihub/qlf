@@ -513,6 +513,7 @@ class TrendAnalysis extends React.Component {
 
   setHistoryRangeDate = (startDate, endDate) => {
     this.setState({
+      datePeriod: '',
       startDate,
       endDate,
     });
