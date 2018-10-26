@@ -27,7 +27,7 @@ const styles = {
   itemText: {
     fontSize: '1.1vw',
   },
-  listIcon: { fontSize: 20, cursor: 'pointer', paddingRight: '8px' },
+  listIcon: { fontSize: '1vw', cursor: 'pointer', paddingRight: '8px' },
   listItem: { padding: '8px' },
   text: {
     fontSize: '1.2vw',
@@ -224,6 +224,7 @@ class HistoryHeader extends React.Component {
   };
 
   renderStatusRadioGroup = () => {
+    const { classes } = this.props;
     return (
       <RadioGroup
         name="flavor"
@@ -231,10 +232,30 @@ class HistoryHeader extends React.Component {
         value={this.state.selectedStatus}
         onChange={this.handleStatusRadioChange}
       >
-        <FormControlLabel value="abort" control={<Radio />} label="Abort" />
-        <FormControlLabel value="fail" control={<Radio />} label="Fail" />
-        <FormControlLabel value="normal" control={<Radio />} label="Normal" />
-        <FormControlLabel value="all" control={<Radio />} label="All" />
+        <FormControlLabel
+          value="abort"
+          control={<Radio />}
+          label="Abort"
+          classes={{ label: classes.itemText }}
+        />
+        <FormControlLabel
+          value="fail"
+          control={<Radio />}
+          label="Fail"
+          classes={{ label: classes.itemText }}
+        />
+        <FormControlLabel
+          value="normal"
+          control={<Radio />}
+          label="Normal"
+          classes={{ label: classes.itemText }}
+        />
+        <FormControlLabel
+          value="all"
+          control={<Radio />}
+          label="All"
+          classes={{ label: classes.itemText }}
+        />
       </RadioGroup>
     );
   };

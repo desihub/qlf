@@ -17,7 +17,7 @@ const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
-    width: 200,
+    width: '12vw',
     justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
@@ -28,11 +28,11 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
+    gridTemplateColumns: '12vw calc(100vh - 15vw)',
     height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: 'calc(100vw - 280px)',
+    width: 'calc(100vw - 15vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',

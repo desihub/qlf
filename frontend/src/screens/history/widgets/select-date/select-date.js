@@ -18,10 +18,12 @@ const styles = {
     backgroundColor: 'white',
     border: '1px solid lightgrey',
     padding: 1,
-    fontSize: '1.2vw',
+    fontSize: '1.1vw',
+    marginTop: '1.05vh',
   },
   text: {
-    fontSize: '1.1vw',
+    fontSize: '1vw',
+    paddingTop: '5px',
   },
 };
 

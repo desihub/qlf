@@ -23,11 +23,11 @@ const styles = {
   },
   tableBody: {
     overflow: 'auto',
-    height: 'calc(100vh - 160px)',
+    height: 'calc(100vh - 2.4vw - 4.8vh - 38px - 28px)',
   },
   tableBodyHistory: {
     overflow: 'auto',
-    height: 'calc(100vh - 216px)',
+    height: 'calc(100vh - 2.4vw - 10.5vh - 38px - 28px)',
   },
   submit: {
     paddingLeft: '16px',
@@ -36,6 +36,24 @@ const styles = {
   historyContainer: { WebkitAppRegion: 'no-drag' },
   tabItem: {
     fontSize: '1.2vw',
+  },
+  toolbar: {
+    height: '5.7vh',
+  },
+  tabsH: {
+    minHeight: '4.8vh',
+  },
+  tabWH: {
+    minWidth: '11vw',
+    minHeight: '4.8vh',
+  },
+  ico: {
+    fontSize: '1.2vw',
+    paddingLeft: '1.25vw',
+  },
+  divisor: {
+    height: '3.4vh',
+    marginLeft: '1.25vw',
   },
 };
 
@@ -270,25 +288,28 @@ class History extends Component {
   };
 
   renderToolbar = () => {
+    // const { classes } = this.props;
     return (
-      <Toolbar>
+      <Toolbar style={styles.toolbar}>
         <ToolbarGroup firstChild={true}>
           <FontIcon
             className="material-icons"
             title="Clear QA"
             onClick={() => this.props.navigateToQA(0)}
+            style={styles.ico}
           >
             clear_all
           </FontIcon>
-          <ToolbarSeparator />
+          <ToolbarSeparator style={styles.divisor} />
           <FontIcon
             className="material-icons"
             title="Refresh"
             onClick={this.refreshRows}
+            style={styles.ico}
           >
             refresh
           </FontIcon>
-          <ToolbarSeparator />
+          <ToolbarSeparator style={styles.divisor} />
           {this.renderSelectDate()}
         </ToolbarGroup>
         {!this.state.renderTabs ? null : this.renderReprocessButton()}
@@ -372,16 +393,17 @@ class History extends Component {
           textColor="primary"
           fullWidth
           centered
+          style={styles.tabsH}
         >
           <Tab
             label="Most Recent"
             value={'last'}
-            classes={{ label: classes.tabItem }}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
           />
           <Tab
             label="History"
             value={'history'}
-            classes={{ label: classes.tabItem }}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
           />
         </Tabs>
         {tab === 'last' ? this.renderLast() : null}

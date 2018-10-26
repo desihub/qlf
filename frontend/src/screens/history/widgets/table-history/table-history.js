@@ -459,6 +459,9 @@ const styles = {
   text: {
     fontSize: '1.2vw',
   },
+  iconCheck: {
+    fontSize: '1.2vw',
+  },
 };
 
 export default withStyles(styles)(TableHistory);

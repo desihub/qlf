@@ -9,6 +9,7 @@ const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
     margin: '0.5vh 0.5vw',
+    height: '15vh',
   },
   headerMetrics: {
     display: 'grid',
@@ -21,32 +22,43 @@ const styles = {
     paddingLeft: '1vw',
   },
   title: {
-    fontSize: '14px',
+    fontSize: '1.2vw',
     color: 'rgba(0, 0, 0, 0.54)',
   },
   buttons: {
     display: 'grid',
     gridTemplateAreas: "'button button' 'button button'",
+    gridTemplateRows: '3vh 3vh 3vh',
     justifyContent: 'space-around',
-    fontSize: '14px',
+    fontSize: '1.2vw',
   },
   selected: {
     fontWeight: 'bold',
   },
   metricLabel: {
-    fontSize: '14px',
+    fontSize: '1.2vw',
   },
   failure: {
     color: 'red',
+    fontSize: '1.2vw',
+    height: '46px',
+    lineHeight: '46px',
   },
   normal: {
     color: 'green',
+    fontSize: '1.2vw',
+    height: '46px',
+    lineHeight: '46px',
   },
   warning: {
     color: '#EFD469',
+    fontSize: '1.2vw',
+    height: '46px',
+    lineHeight: '46px',
   },
   back: {
     color: 'red',
+    fontSize: '1.2vw',
   },
 };
 

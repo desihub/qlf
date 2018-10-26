@@ -21,7 +21,8 @@ const styles = {
     border: '1px solid lightgrey',
     padding: 1,
     fontSize: '0.92vw',
-    marginTop: '3px',
+    // marginTop: '3px',
+    marginTop: '1.05vh',
   },
   title: {
     fontSize: '1.2vw',

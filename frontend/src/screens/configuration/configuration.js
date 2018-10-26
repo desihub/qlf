@@ -15,8 +15,15 @@ const styles = {
     width: 'calc(100vw - 2em)',
     fontSize: '1.2vw',
   },
-  title: {
+  tabItem: {
     fontSize: '1.2vw',
+  },
+  tabsH: {
+    minHeight: '4.8vh',
+  },
+  tabWH: {
+    minWidth: '11vw',
+    minHeight: '4.8vh',
   },
 };
 
@@ -66,10 +73,23 @@ class Configuration extends React.Component {
           textColor="primary"
           fullWidth
           centered
+          style={styles.tabsH}
         >
-          <Tab label="Dark" value={0} classes={{ label: classes.title }} />
-          <Tab label="Bright" value={1} classes={{ label: classes.title }} />
-          <Tab label="Gray" value={2} classes={{ label: classes.title }} />
+          <Tab
+            label="Dark"
+            value={0}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
+          <Tab
+            label="Bright"
+            value={1}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
+          <Tab
+            label="Gray"
+            value={2}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
         </Tabs>
         {qlScienceTab === 0 ? <Display config={'darksurvey'} /> : null}
         {qlScienceTab === 1 ? <Display config={'brightsurvey'} /> : null}
@@ -91,15 +111,28 @@ class Configuration extends React.Component {
           textColor="primary"
           fullWidth
           centered
+          style={styles.tabsH}
         >
-          <Tab label="Flat" value={0} classes={{ label: classes.title }} />
+          <Tab
+            label="Flat"
+            value={0}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
           <Tab
             label="Dark Current"
             value={1}
-            classes={{ label: classes.title }}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
           />
-          <Tab label="Bias" value={2} classes={{ label: classes.title }} />
-          <Tab label="ARC" value={3} classes={{ label: classes.title }} />
+          <Tab
+            label="Bias"
+            value={2}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
+          <Tab
+            label="ARC"
+            value={3}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
         </Tabs>
         {qlCalibrationTab === 0 ? <Display config={'flat'} /> : null}
         {qlCalibrationTab === 1 ? <Display config={'darkcurrent'} /> : null}
@@ -121,12 +154,17 @@ class Configuration extends React.Component {
           textColor="primary"
           fullWidth
           centered
+          style={styles.tabsH}
         >
-          <Tab label="SCIENCE" value={0} classes={{ label: classes.title }} />
+          <Tab
+            label="SCIENCE"
+            value={0}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
           <Tab
             label="Calibration"
             value={1}
-            classes={{ label: classes.title }}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
           />
         </Tabs>
         {qlTab === 0 ? this.renderScience() : null}
@@ -148,9 +186,18 @@ class Configuration extends React.Component {
             textColor="primary"
             fullWidth
             centered
+            style={styles.tabsH}
           >
-            <Tab label="QLF" value={0} classes={{ label: classes.title }} />
-            <Tab label="QL" value={1} classes={{ label: classes.title }} />
+            <Tab
+              label="QLF"
+              value={0}
+              classes={{ root: classes.tabWH, label: classes.tabItem }}
+            />
+            <Tab
+              label="QL"
+              value={1}
+              classes={{ root: classes.tabWH, label: classes.tabItem }}
+            />
           </Tabs>
           {tab === 0 ? <Form daemonRunning={this.props.daemonRunning} /> : null}
           {tab === 1 ? this.renderTabs() : null}
