@@ -185,7 +185,7 @@ export default class Monitor extends Component {
           <div style={styles.column}>
             <Stages
               status={this.state.camerasStages.b}
-              arm={'b'}
+              arm={'g'}
               openDialog={this.openDialog}
               renderHeader={true}
               pipelineRunning={this.props.pipelineRunning}

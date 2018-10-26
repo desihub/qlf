@@ -48,7 +48,7 @@ class ObjectStatistics:
         col_nstar = []
 
         # Creating columns for snr df
-        for cam in [arm+str(spec) for arm in ['b', 'r', 'z'] for spec in list(range(10))]:
+        for cam in [arm+str(spec) for arm in ['g', 'r', 'z'] for spec in list(range(10))]:
             arm = int(cam[-1])
             col_ntgt.append(objects[arm*500: (arm+1)*500].count('TGT'))
             col_nstar.append(objects[arm*500: (arm+1)*500].count('STAR'))
@@ -61,7 +61,7 @@ class ObjectStatistics:
             else:
                 col_stat.append('n/a')
 
-        df = pd.DataFrame({'cam': [arm+str(spec) for arm in ['b', 'r', 'z'] for spec in list(range(10))],
+        df = pd.DataFrame({'cam': [arm+str(spec) for arm in ['g', 'r', 'z'] for spec in list(range(10))],
                            'snr_status': col_stat,
                            'TGT': col_ntgt,
                            'STAR': col_nstar})
@@ -72,7 +72,7 @@ class ObjectStatistics:
             if qarm == None:
                 obj_statistics = df.loc[df[qa] == qstatus][qtype]
                 return obj_statistics.sum()
-            elif qarm in ['b', 'r', 'z']:
+            elif qarm in ['g', 'r', 'z']:
                 armlist = [qarm+str(spec) for spec in list(range(10))]
                 obj_statistics = df.loc[(df[qa] == qstatus)
                                         & (df['cam'].isin(armlist))][qtype]
@@ -90,7 +90,7 @@ class ObjectStatistics:
 
         # SNR classification per EACH arm:
         snr_class_arm = {}
-        for arm in ['b', 'r', 'z']:
+        for arm in ['g', 'r', 'z']:
             status_class = {}
             for j in ['NORMAL', 'WARN', 'ALARM', 'n/a']:
                 obj_class = {}
@@ -103,8 +103,8 @@ class ObjectStatistics:
         # ===================
         #       Fiber df
 
-        col_fiber = {'b': [], 'r': [], 'z': []}
-        for arm in ['b', 'r', 'z']:
+        col_fiber = {'g': [], 'r': [], 'z': []}
+        for arm in ['g', 'r', 'z']:
             arm_col = []
             for spec in list(range(10)):
                 cam = arm+str(spec)
@@ -126,7 +126,7 @@ class ObjectStatistics:
 
             # SNR classification per EACH arm:
             snr_class_arm = {}
-            for arm in ['b', 'r', 'z']:
+            for arm in ['g', 'r', 'z']:
                 status_class = {}
                 for j in ['NORMAL', 'WARN', 'ALARM', 'n/a']:
                     obj_class = {}
@@ -139,8 +139,8 @@ class ObjectStatistics:
             # ===================
             #       Fiber df
 
-            col_fiber = {'b': [], 'r': [], 'z': []}
-            for arm in ['b', 'r', 'z']:
+            col_fiber = {'g': [], 'r': [], 'z': []}
+            for arm in ['g', 'r', 'z']:
                 arm_col = []
                 for spec in list(range(10)):
                     cam = arm+str(spec)
@@ -172,12 +172,12 @@ class ObjectStatistics:
 
                 if qarm == None:
                     count = 0
-                    for i in ['b', 'r', 'z']:
+                    for i in ['g', 'r', 'z']:
                         obj_statistics = df_fiber.loc[(
                             df_fiber[i] == stat)]['object']
                         count += list(obj_statistics).count(qtype)
                     return count
-                if qarm in ['b', 'r', 'z']:
+                if qarm in ['g', 'r', 'z']:
                     obj_statistics = df_fiber.loc[(
                         df_fiber[qarm] == stat)]['object']
                     return list(obj_statistics).count(qtype)
@@ -202,12 +202,12 @@ class ObjectStatistics:
 
             if qarm == None:
                 count = 0
-                for i in ['b', 'r', 'z']:
+                for i in ['g', 'r', 'z']:
                     obj_statistics = df_fiber.loc[(
                         df_fiber[i] == stat)]['object']
                     count += list(obj_statistics).count(qtype)
                 return count
-            if qarm in ['b', 'r', 'z']:
+            if qarm in ['g', 'r', 'z']:
                 obj_statistics = df_fiber.loc[(
                     df_fiber[qarm] == stat)]['object']
                 return list(obj_statistics).count(qtype)
@@ -224,7 +224,7 @@ class ObjectStatistics:
 
         # Fiber classification per EACH arm:
         fiber_class_arm = {}
-        for arm in ['b', 'r', 'z']:
+        for arm in ['g', 'r', 'z']:
             status_class = {}
             for j in ['GOOD', 'BAD', 'n/a']:
                 obj_class = {}

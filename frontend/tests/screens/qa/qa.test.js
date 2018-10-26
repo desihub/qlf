@@ -13,23 +13,23 @@ configure({ adapter: new Adapter() });
 
 const status = {
   exposureId: '3',
-  availableCameras: ['b0', 'b1', 'r0', 'r1', 'z0', 'z1'],
+  availableCameras: ['g0', 'b1', 'r0', 'r1', 'z0', 'z1'],
   mjd: '',
   time: '',
   flavor: '',
   date: '',
-  arms: ['b', 'r'],
+  arms: ['g', 'r'],
   spectrographs: [0, 1, 2],
 };
 
 const qaTests = [
   {
-    camera: 'b0',
+    camera: 'g0',
     qa_tests:
       "{'fiberfl': {'steps_status': ['FAILURE', 'FAILURE', 'FAILURE', 'FAILURE'], 'color': 'magenta'}, 'skysubs': {'steps_status': ['FAILURE'], 'color': 'magenta'}, 'extract': {'steps_status': ['FAILURE'], 'color': 'magenta'}, 'preproc': {'steps_status': ['FAILURE', 'NORMAL', 'FAILURE', 'FAILURE'], 'color': 'magenta'}}",
     spectrograph: '0',
     links: { self: 'http://localhost:8000/dashboard/api/camera/b0/' },
-    arm: 'b',
+    arm: 'g',
   },
   {
     camera: 'b1',
@@ -37,7 +37,7 @@ const qaTests = [
       "{'fiberfl': {'steps_status': ['FAILURE', 'FAILURE', 'FAILURE', 'FAILURE'], 'color': 'magenta'}, 'skysubs': {'steps_status': ['FAILURE'], 'color': 'magenta'}, 'extract': {'steps_status': ['FAILURE'], 'color': 'magenta'}, 'preproc': {'steps_status': ['FAILURE', 'NORMAL', 'FAILURE', 'FAILURE'], 'color': 'magenta'}}",
     spectrograph: '1',
     links: { self: 'http://localhost:8000/dashboard/api/camera/b1/' },
-    arm: 'b',
+    arm: 'g',
   },
   {
     camera: 'r0',
@@ -209,7 +209,7 @@ describe('QA', () => {
   //       .find('Control')
   //       .at(2)
   //       .props().value
-  //   ).toBe('b');
+  //   ).toBe('g');
   //   wrapper
   //     .find('FlatButton')
   //     .at(8)
@@ -229,7 +229,7 @@ describe('QA', () => {
   //       .find('Control')
   //       .at(2)
   //       .props().value
-  //   ).toBe('b');
+  //   ).toBe('g');
   // });
 
   it('resizes', async () => {

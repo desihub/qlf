@@ -7,7 +7,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import _ from 'lodash';
 
-const arms = ['b', 'r', 'z'];
+const arms = ['g', 'r', 'z'];
 const spectrographs = _.range(0, 10);
 configure({ adapter: new Adapter() });
 

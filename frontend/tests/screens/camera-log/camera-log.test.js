@@ -8,7 +8,7 @@ configure({ adapter: new Adapter() });
 describe('CameraLog', () => {
   let cameraLog;
   beforeEach(() => {
-    cameraLog = <CameraLog cameraIndex={1} arm={'b'} lines={[]} />;
+    cameraLog = <CameraLog cameraIndex={1} arm={'g'} lines={[]} />;
   });
 
   it('mounts', () => {

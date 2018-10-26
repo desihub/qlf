@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import flavors from '../../../../../flavors';
 
-const arms = ['b', 'r', 'z'];
+const arms = ['g', 'r', 'z'];
 
 export default class PieChart extends Component {
   static propTypes = {

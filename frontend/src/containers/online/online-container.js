@@ -17,7 +17,7 @@ import CameraLog from '../../screens/camera-log/camera-log';
 
 import _ from 'lodash';
 
-const arms = ['b', 'r', 'z'];
+const arms = ['g', 'r', 'z'];
 const spectrographs = _.range(0, 10);
 
 class OnlineContainer extends Component {

@@ -25,7 +25,7 @@ import TrendAnalysis from '../../screens/trend-analysis/trend-analysis';
 import SurveyReport from '../../screens/survey-report/survey-report';
 import ObservingConditions from '../../screens/observing-conditions/observing-conditions';
 
-const arms = ['b', 'r', 'z'];
+const arms = ['g', 'r', 'z'];
 const spectrographs = _.range(0, 10);
 
 const styles = {

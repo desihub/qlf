@@ -18,7 +18,7 @@ describe('Metric Controls', () => {
         <MetricSelect
           step={'Pre Processing'}
           selectQA={selectQA}
-          camera={'b0'}
+          camera={'g0'}
           qaTests={[]}
           stepsQa={['Pre Processing']}
         />

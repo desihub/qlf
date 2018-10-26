@@ -80,7 +80,7 @@ class CameraTest(APITestCase):
         self.camera = Camera.objects.create(
             camera="b3",
             spectrograph="3",
-            arm="b",
+            arm="g",
         )
 
     def test_get_camera(self):
@@ -89,7 +89,7 @@ class CameraTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['results'][0]['camera'], 'b3')
         self.assertEqual(response.data['results'][0]['spectrograph'], '3')
-        self.assertEqual(response.data['results'][0]['arm'], 'b')
+        self.assertEqual(response.data['results'][0]['arm'], 'g')
 
 
 class JobTest(APITestCase):

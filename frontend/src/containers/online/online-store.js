@@ -131,7 +131,7 @@ function getUnique(availableCameras, index) {
 
   if (!index) {
     const orderedArms = [];
-    if (arms.includes('b')) orderedArms.push('b');
+    if (arms.includes('g')) orderedArms.push('g');
     if (arms.includes('r')) orderedArms.push('r');
     if (arms.includes('z')) orderedArms.push('z');
     return orderedArms;

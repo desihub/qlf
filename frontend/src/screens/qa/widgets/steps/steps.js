@@ -9,7 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
 import flavors from '../../../../flavors';
 
-const arms = ['b', 'r', 'z'];
+const arms = ['g', 'r', 'z'];
 
 const styles = {
   container: {

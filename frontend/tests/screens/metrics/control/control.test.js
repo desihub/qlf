@@ -16,7 +16,7 @@ describe('Metric Controls', () => {
     changeArm = sinon.spy();
     controls = (
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-        <Control change={changeArm} title={'Arm'} value={'b'} />
+        <Control change={changeArm} title={'Arm'} value={'g'} />
       </MuiThemeProvider>
     );
   });

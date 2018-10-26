@@ -226,7 +226,7 @@ class Form extends React.Component {
             Arms / Spectrographs to process
           </FormLabel>
           <FormGroup style={styles.formGroup}>
-            {['b', 'r', 'z'].map(arm => (
+            {['g', 'r', 'z'].map(arm => (
               <div key={arm} style={styles.formDiv}>
                 <Petals
                   selected={
