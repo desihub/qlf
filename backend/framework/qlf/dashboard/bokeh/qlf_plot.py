@@ -233,7 +233,11 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     title = """<h2 align=center style="text-align:center;">  {} </h2>""".format(
         qa)
 
-    ref_sufix=['_{}_REF'.format(data['GENERAL_INFO']['PROGRAM']) if qa=='skypeak' else '_REF'][0]
+    # transition desispec 0.24 to 0.25
+    try:
+        ref_sufix=['_{}_REF'.format(data['GENERAL_INFO']['PROGRAM']) if qa=='skypeak' else '_REF'][0]
+    except: 
+        ref_sufix='REF'
 
     if qa == 'NAcountpix':
         ref = ['N/A']*4

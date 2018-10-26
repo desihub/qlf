@@ -32,8 +32,6 @@ class Skypeak:
         par = mergedqa['TASKS']['CHECK_SPECTRA']['PARAMS']
 
         gen_info = mergedqa['GENERAL_INFO']
-        import json
-        with open('dbg2.json','w') as f: json.dump(mergedqa, f)
 
         # ============================================
         # values to plot:
@@ -72,7 +70,7 @@ class Skypeak:
         c1, c2 = 0, 500
         qlf_fiberid = np.arange(0, 500)  # [c1:c2]
 
-        with open('dbg','w') as f: f.write(str(gen_info.keys()))
+        # To be abandoned:
         obj_type = sort_obj(gen_info)
         # ---------------------------------
 
