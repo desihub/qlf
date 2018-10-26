@@ -29,6 +29,18 @@ const styles = {
   statusNormal: {
     color: 'green',
   },
+  normalTick: {
+    color: 'green',
+    textShadow: '0.5px 0.5px 0 gray, 0 0 0.5px gray, 0 0 0 gray',
+  },
+  errorTick: {
+    color: 'red',
+    textShadow: '0.5px 0.5px 0 gray, 0 0 0.5px gray, 0 0 0 gray',
+  },
+  warningTick: {
+    color: '#ffeb3b',
+    textShadow: '0.5px 0.5px 0 gray, 0 0 0.5px gray, 0 0 0 gray',
+  },
 };
 
 export default class HistoryData extends React.Component {
@@ -70,21 +82,29 @@ export default class HistoryData extends React.Component {
         : null;
     if (!Array.isArray(qaTests)) return null;
     if (qaTests) {
-      const testsFailed =
-        !JSON.stringify(qaTests).includes('None') &&
-        !JSON.stringify(qaTests).includes('ALARM') &&
-        !JSON.stringify(qaTests).includes('FAIL');
-      return testsFailed;
+      if (
+        JSON.stringify(qaTests).includes('None') &&
+        JSON.stringify(qaTests).includes('ALARM') &&
+        JSON.stringify(qaTests).includes('FAIL')
+      )
+        return 0;
+      if (JSON.stringify(qaTests).includes('WARNING')) {
+        return 1;
+      }
+      return 2;
     }
-    return false;
+    return 0;
   };
 
   renderQAStatus = status => {
-    return status ? (
-      <span style={{ color: 'green' }}>✓</span>
-    ) : (
-      <span style={{ color: 'red' }}>✖︎</span>
-    );
+    switch (status) {
+      case 0:
+        return <span style={styles.errorTick}>✖︎</span>;
+      case 1:
+        return <span style={styles.warningTick}>✖︎</span>;
+      default:
+        return <span style={styles.normalTick}>✓</span>;
+    }
   };
 
   renderViewQA = (processing, runtime) => {
@@ -108,8 +128,21 @@ export default class HistoryData extends React.Component {
         return <span style={styles.statusAbort}>Failed</span>;
       case 'pending':
         return <span style={styles.statusPending}>Pending</span>;
+      case 'warning':
+        return <span style={styles.statusPending}>Warning</span>;
       default:
         return <span style={styles.statusNormal}>Normal</span>;
+    }
+  };
+
+  qaState = () => {
+    switch (this.qaSuccess()) {
+      case 0:
+        return 'failed';
+      case 1:
+        return 'warning';
+      default:
+        return 'normal';
     }
   };
 
@@ -133,7 +166,7 @@ export default class HistoryData extends React.Component {
 
     const status = !row.runtime
       ? processing ? 'pending' : 'aborted'
-      : this.qaSuccess() ? 'normal' : 'failed';
+      : this.qaState();
     switch (type) {
       case 'parent':
         return (
