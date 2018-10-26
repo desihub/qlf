@@ -15,7 +15,7 @@ def sort_obj(gen_info):
     obj_type = ['']*500
     for key in ['LRG', 'ELG', 'QSO', 'STAR', 'SKY']:
         if gen_info.get(key+'_FIBERID', None):
-            for i in gen_info[key+'_FIBERID']:
+            for i, v in enumerate( gen_info[key+'_FIBERID']):
                 obj_type[i] = key
         else:
             pass
@@ -233,11 +233,13 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     title = """<h2 align=center style="text-align:center;">  {} </h2>""".format(
         qa)
 
+    ref_sufix=['_{}_REF'.format(data['GENERAL_INFO']['PROGRAM']) if qa=='skypeak' else '_REF'][0]
+
     if qa == 'NAcountpix':
         ref = ['N/A']*4
         nrows = 4
     else:
-        ref = par[key+'_REF']
+        ref = par[key+ ref_sufix]#'_REF']
         if isinstance(ref, list):
             nrows = len(ref)
         else:
