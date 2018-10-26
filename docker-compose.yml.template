@@ -64,7 +64,7 @@ services:
       - PYRO_PORT=56006
       - PYRO_SERIALIZERS_ACCEPTED=pickle
       # Pipeline Configuration
-      - PIPELINE_ARMS=b # e.g. b,r,z
+      - PIPELINE_ARMS=g # e.g. g,r,z
       - PIPELINE_SPECTROGRAPHS=0 # e.g. 0,1,2,3,4,5,6,7,8,9
       - PIPELINE_LOGLEVEL=INFO # e.g. DEBUG, INFO, WARNING or ERROR
       - PIPELINE_MAX_WORKERS=0 # maximum workers running at the same time (0 for unlimited)
