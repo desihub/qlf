@@ -164,17 +164,15 @@ class Steps extends Component {
   };
 
   componentWillMount() {
-    if (!this.props.monitor)
-      window.addEventListener('resize', this.updatePetalSize);
+    window.addEventListener('resize', this.updatePetalSize);
   }
 
   componentDidMount() {
-    if (!this.props.monitor) this.updatePetalSize();
+    this.updatePetalSize();
   }
 
   componentWillUnmount() {
-    if (!this.props.monitor)
-      window.removeEventListener('resize', this.updatePetalSize);
+    window.removeEventListener('resize', this.updatePetalSize);
   }
 
   updatePetalSize = () => {
