@@ -71,7 +71,12 @@ const styles = {
     fontSize: '1.2vw',
   },
   text: {
+    fontSize: '1.1vw',
+  },
+  selectEmpty: {
     fontSize: '1vw',
+    marginTop: '1vh',
+    lineHeight: '2.5vh',
   },
 };
 
@@ -266,23 +271,13 @@ class SurveyReport extends React.Component {
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            className={this.props.classes.selectEmpty}
+            classes={{ root: classes.selectEmpty }}
           >
-            <MenuItem value={'all'} classes={{ root: classes.text }}>
-              All
-            </MenuItem>
-            <MenuItem value={'night'} classes={{ root: classes.text }}>
-              Night
-            </MenuItem>
-            <MenuItem value={'week'} classes={{ root: classes.text }}>
-              Week
-            </MenuItem>
-            <MenuItem value={'month'} classes={{ root: classes.text }}>
-              Month
-            </MenuItem>
-            <MenuItem value={'year'} classes={{ root: classes.text }}>
-              Year
-            </MenuItem>
+            <MenuItem value={'all'}>All</MenuItem>
+            <MenuItem value={'night'}>Night</MenuItem>
+            <MenuItem value={'week'}>Week</MenuItem>
+            <MenuItem value={'month'}>Month</MenuItem>
+            <MenuItem value={'year'}>Year</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -322,20 +317,12 @@ class SurveyReport extends React.Component {
             onChange={this.handleChangeProgram}
             input={<Input />}
             displayEmpty
-            className={this.props.classes.selectEmpty}
+            classes={{ root: classes.selectEmpty }}
           >
-            <MenuItem value={'all'} classes={{ root: classes.text }}>
-              All
-            </MenuItem>
-            <MenuItem value={'bright'} classes={{ root: classes.text }}>
-              Bright
-            </MenuItem>
-            <MenuItem value={'dark'} classes={{ root: classes.text }}>
-              Dark
-            </MenuItem>
-            <MenuItem value={'gray'} classes={{ root: classes.text }}>
-              Gray
-            </MenuItem>
+            <MenuItem value={'all'}>All</MenuItem>
+            <MenuItem value={'bright'}>Bright</MenuItem>
+            <MenuItem value={'dark'}>Dark</MenuItem>
+            <MenuItem value={'gray'}>Gray</MenuItem>
           </Select>
         </FormControl>
       </div>

@@ -23,11 +23,13 @@ const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
-    width: '200px',
-    justifyContent: 'space-evenly',
+    width: '12vw',
+    // justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
     paddingBottom: '5px',
+    paddingRight: '10px',
+    boxSizung: 'border-box',
   },
   controlsContainerInner: {
     display: 'flex',
@@ -40,11 +42,11 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
+    gridTemplateColumns: '12vw calc(100vh - 15vw)',
     height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: 'calc(100vw - 280px)',
+    width: 'calc(100vw - 15vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',
@@ -63,10 +65,6 @@ const styles = {
   selectionRadio: {
     width: '50%',
     paddingBottom: '2.5vh',
-  },
-  selectionRadioInner: {
-    position: 'relative',
-    paddingLeft: '15px',
   },
   formControl: {
     width: '100%',
@@ -93,53 +91,20 @@ const styles = {
     padding: '16px',
     height: 'calc(100vh - 135px)',
   },
-  bulletB: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'dodgerblue',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '30px',
-    left: '0',
-  },
-  bulletR: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'red',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '78px',
-    left: '0',
-  },
-  bulletZ: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'fuchsia',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '126px',
-    left: '0',
-  },
   title: {
     fontSize: '1.2vw',
   },
   text: {
     fontSize: '1vw',
+  },
+  selectEmpty: {
+    fontSize: '1vw',
+    marginTop: '1vh',
+    lineHeight: '2.5vh',
+  },
+  radioGroup: {
+    fontSize: '1vw',
+    marginTop: '2vh',
   },
 };
 
@@ -372,23 +337,13 @@ class TrendAnalysis extends React.Component {
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            className={this.props.classes.selectEmpty}
+            classes={{ root: classes.selectEmpty }}
           >
-            <MenuItem value={'all'} classes={{ root: classes.text }}>
-              All
-            </MenuItem>
-            <MenuItem value={'night'} classes={{ root: classes.text }}>
-              Night
-            </MenuItem>
-            <MenuItem value={'week'} classes={{ root: classes.text }}>
-              Week
-            </MenuItem>
-            <MenuItem value={'month'} classes={{ root: classes.text }}>
-              Month
-            </MenuItem>
-            <MenuItem value={'year'} classes={{ root: classes.text }}>
-              Year
-            </MenuItem>
+            <MenuItem value={'all'}>All</MenuItem>
+            <MenuItem value={'night'}>Night</MenuItem>
+            <MenuItem value={'week'}>Week</MenuItem>
+            <MenuItem value={'month'}>Month</MenuItem>
+            <MenuItem value={'year'}>Year</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -409,13 +364,10 @@ class TrendAnalysis extends React.Component {
               onChange={this.handleChangeXaxis}
               input={<Input />}
               displayEmpty
+              classes={{ root: classes.selectEmpty }}
             >
-              <MenuItem value={'noise'} classes={{ root: classes.text }}>
-                Noise
-              </MenuItem>
-              <MenuItem value={'bias'} classes={{ root: classes.text }}>
-                Bias
-              </MenuItem>
+              <MenuItem value={'noise'}>Noise</MenuItem>
+              <MenuItem value={'bias'}>Bias</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -435,13 +387,10 @@ class TrendAnalysis extends React.Component {
             onChange={this.handleChangeYaxis}
             input={<Input />}
             displayEmpty
+            classes={{ root: classes.selectEmpty }}
           >
-            <MenuItem value={'noise'} classes={{ root: classes.text }}>
-              Noise
-            </MenuItem>
-            <MenuItem value={'bias'} classes={{ root: classes.text }}>
-              Bias
-            </MenuItem>
+            <MenuItem value={'noise'}>Noise</MenuItem>
+            <MenuItem value={'bias'}>Bias</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -460,10 +409,11 @@ class TrendAnalysis extends React.Component {
             className={this.props.classes.column}
             value={this.state.amp}
             onChange={this.handleChangeAmp}
+            classes={{ root: classes.radioGroup }}
           >
             <FormControlLabel
               value="all"
-              control={<Radio />}
+              control={<Radio classes={{ label: classes.text }} />}
               label="All"
               classes={{ label: classes.text }}
             />
@@ -500,41 +450,37 @@ class TrendAnalysis extends React.Component {
   renderArmSelection = () => {
     const { classes } = this.props;
     return (
-      <div className={this.props.classes.selectionRadio}>
-        <div className={this.props.classes.selectionRadioInner}>
-          <span className={this.props.classes.bulletB}>blue</span>
-          <span className={this.props.classes.bulletR}>red</span>
-          <span className={this.props.classes.bulletZ}>pink</span>
-          <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink classes={{ root: classes.title }}>
-              Arm
-            </InputLabel>
-            <RadioGroup
-              className={this.props.classes.column}
-              value={this.state.arm}
-              onChange={this.handleChangeArm}
-            >
-              <FormControlLabel
-                value="b"
-                control={<Radio />}
-                label="b"
-                classes={{ label: classes.text }}
-              />
-              <FormControlLabel
-                value="r"
-                control={<Radio />}
-                label="r"
-                classes={{ label: classes.text }}
-              />
-              <FormControlLabel
-                value="z"
-                control={<Radio />}
-                label="z"
-                classes={{ label: classes.text }}
-              />
-            </RadioGroup>
-          </FormControl>
-        </div>
+      <div className={classes.selectionRadio}>
+        <FormControl className={classes.formControl}>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Arm
+          </InputLabel>
+          <RadioGroup
+            className={classes.column}
+            value={this.state.arm}
+            onChange={this.handleChangeArm}
+            classes={{ root: classes.radioGroup }}
+          >
+            <FormControlLabel
+              value="b"
+              control={<Radio />}
+              label="b"
+              classes={{ label: classes.text }}
+            />
+            <FormControlLabel
+              value="r"
+              control={<Radio />}
+              label="r"
+              classes={{ label: classes.text }}
+            />
+            <FormControlLabel
+              value="z"
+              control={<Radio />}
+              label="z"
+              classes={{ label: classes.text }}
+            />
+          </RadioGroup>
+        </FormControl>
       </div>
     );
   };

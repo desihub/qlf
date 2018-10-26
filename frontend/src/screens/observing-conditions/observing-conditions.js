@@ -23,11 +23,13 @@ const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
-    width: '200px',
-    justifyContent: 'space-evenly',
+    width: '12vw',
+    // justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
     paddingBottom: '5px',
+    paddingRight: '10px',
+    boxSizung: 'border-box',
   },
   controlsContainerInner: {
     display: 'flex',
@@ -40,12 +42,12 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 183px)',
+    gridTemplateColumns: '12vw calc(100vh - 15vw)',
+    height: 'calc(100vh - 38px - 28px - 16px - 16px - 33px - 4.8vh)',
   },
   viewer: {
-    width: 'calc(100vw - 280px)',
-    height: 'calc(100vh - 183px)',
+    width: 'calc(100vw - 15vw)',
+    // height: 'calc(100vh - 183px)',
   },
   fadeLoaderFull: {
     position: 'absolute',
@@ -64,10 +66,6 @@ const styles = {
   selectionRadio: {
     width: '50%',
     paddingBottom: '2.5vh',
-  },
-  selectionRadioInner: {
-    position: 'relative',
-    paddingLeft: '15px',
   },
   formControl: {
     width: '100%',
@@ -92,55 +90,32 @@ const styles = {
   main: {
     margin: '16px',
     padding: '16px',
-    height: 'calc(100vh - 135px)',
-  },
-  bulletB: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'dodgerblue',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '30px',
-    left: '0',
-  },
-  bulletR: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'red',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '78px',
-    left: '0',
-  },
-  bulletZ: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'fuchsia',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '126px',
-    left: '0',
+    height: 'calc(100vh - 130px)',
   },
   title: {
     fontSize: '1.2vw',
   },
   text: {
     fontSize: '1vw',
+  },
+  tabItem: {
+    fontSize: '1.2vw',
+  },
+  tabsH: {
+    minHeight: '4.8vh',
+  },
+  tabWH: {
+    minWidth: '11vw',
+    minHeight: '4.8vh',
+  },
+  selectEmpty: {
+    fontSize: '1vw',
+    marginTop: '1vh',
+    lineHeight: '2.5vh',
+  },
+  radioGroup: {
+    fontSize: '1vw',
+    marginTop: '2vh',
   },
 };
 
@@ -336,7 +311,7 @@ class ObservingConditions extends React.Component {
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            className={this.props.classes.selectEmpty}
+            classes={{ root: classes.selectEmpty }}
           >
             <MenuItem value={'all'} classes={{ root: classes.text }}>
               All
@@ -373,6 +348,7 @@ class ObservingConditions extends React.Component {
               onChange={this.handleChangeXaxis}
               input={<Input />}
               displayEmpty
+              classes={{ root: classes.selectEmpty }}
             >
               {/* <MenuItem value={'snr'} classes={{ root: classes.text }}>
                 SNR
@@ -411,6 +387,7 @@ class ObservingConditions extends React.Component {
             onChange={this.handleChangeYaxis}
             input={<Input />}
             displayEmpty
+            classes={{ root: classes.selectEmpty }}
           >
             {/* <MenuItem value={'snr'} classes={{ root: classes.text }}>
               SNR
@@ -456,40 +433,36 @@ class ObservingConditions extends React.Component {
     const { classes } = this.props;
     return (
       <div className={this.props.classes.selectionRadio}>
-        <div className={this.props.classes.selectionRadioInner}>
-          <span className={this.props.classes.bulletB}>blue</span>
-          <span className={this.props.classes.bulletR}>red</span>
-          <span className={this.props.classes.bulletZ}>pink</span>
-          <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink classes={{ root: classes.title }}>
-              Arm
-            </InputLabel>
-            <RadioGroup
-              className={this.props.classes.column}
-              value={this.state.arm}
-              onChange={this.handleChangeArm}
-            >
-              <FormControlLabel
-                value="b"
-                control={<Radio />}
-                label="b"
-                classes={{ label: classes.text }}
-              />
-              <FormControlLabel
-                value="r"
-                control={<Radio />}
-                label="r"
-                classes={{ label: classes.text }}
-              />
-              <FormControlLabel
-                value="z"
-                control={<Radio />}
-                label="z"
-                classes={{ label: classes.text }}
-              />
-            </RadioGroup>
-          </FormControl>
-        </div>
+        <FormControl className={this.props.classes.formControl}>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Arm
+          </InputLabel>
+          <RadioGroup
+            className={this.props.classes.column}
+            value={this.state.arm}
+            onChange={this.handleChangeArm}
+            classes={{ root: classes.radioGroup }}
+          >
+            <FormControlLabel
+              value="b"
+              control={<Radio />}
+              label="b"
+              classes={{ label: classes.text }}
+            />
+            <FormControlLabel
+              value="r"
+              control={<Radio />}
+              label="r"
+              classes={{ label: classes.text }}
+            />
+            <FormControlLabel
+              value="z"
+              control={<Radio />}
+              label="z"
+              classes={{ label: classes.text }}
+            />
+          </RadioGroup>
+        </FormControl>
       </div>
     );
   };
@@ -613,16 +586,17 @@ class ObservingConditions extends React.Component {
           textColor="primary"
           fullWidth
           centered
+          style={styles.tabsH}
         >
           <Tab
             label="Time Series"
             value={'Time Series'}
-            classes={{ label: classes.title }}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
           />
           <Tab
             label="Regression"
             value={'Regression'}
-            classes={{ label: classes.title }}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
           />
         </Tabs>
         {tab === 'Time Series' ? this.renderTimeSeries() : null}
