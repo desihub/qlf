@@ -86,7 +86,9 @@ export default class Metrics extends Component {
       flavors[this.props.flavor].step_list.map(step => {
         steps.push(step.name);
         stepsQa[step.name] = step.qa_list.map(qa => {
-          return qa.display_name;
+          const qaDict = {};
+          qaDict[qa.name] = qa.display_name;
+          return qaDict;
         });
         return null;
       });
