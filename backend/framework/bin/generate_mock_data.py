@@ -90,10 +90,10 @@ def generate_new_exposure(flavor, night):
     tdate += datetime.timedelta(hours=random.randint(1, 23))
     exposure.dateobs = tdate
 
-    if exposure.telra:
+    if exposure.telra or exposure.telra == 0:
         exposure.telra = random.randint(0, 360)
 
-    if exposure.teldec:
+    if exposure.teldec or exposure.teldec == 0:
         exposure.teldec = random.randint(-20, 90)
 
     exposure.save()
