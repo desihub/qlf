@@ -94,7 +94,7 @@ def generate_new_exposure(flavor, night):
         exposure.telra = random.randint(0, 360)
 
     if exposure.teldec:
-        exposure.teldec = random.randint(-90, 90)
+        exposure.teldec = random.randint(-20, 90)
 
     exposure.save()
 
