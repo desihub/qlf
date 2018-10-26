@@ -1,6 +1,7 @@
 import React from 'react';
 import Proptypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
+import moment from 'moment';
 
 const styles = {
   container: {
@@ -74,15 +75,13 @@ export default class SelectDate extends React.Component {
   };
 
   formatFilterDate = (date, addOneDay) => {
-    const month =
-      (date.getMonth() + 1 <= 10 ? '0' : '') + (date.getMonth() + 1);
-    let day;
     if (addOneDay) {
-      day = (date.getDate() + 1 < 10 ? '0' : '') + (date.getDate() + 1);
+      return moment(date)
+        .add(1, 'days')
+        .format('YYYY-MM-DD');
     } else {
-      day = (date.getDate() + 1 < 10 ? '0' : '') + date.getDate();
+      return moment(date).format('YYYY-MM-DD');
     }
-    return date.getFullYear() + '-' + month + '-' + day;
   };
 
   render() {
