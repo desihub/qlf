@@ -169,12 +169,12 @@ class TimeSeries():
         mjds=list()
         for idx,val in enumerate(outputs):
             if val['value']:
-                dates.append(val['dateobs'] - timedelta(minutes=20*idx))
+                dates.append(val['dateobs'])
                 dateobs.append(val['dateobs'].strftime('%Y-%m-%d'))
                 exposures.append(val['exposure_id'])
                 cameras.append(self.camera)
                 values.append(val['value'])
-                date_time=(val['dateobs'] - timedelta(minutes=20*idx)).strftime('%Y-%m-%d %H:%M:%S')
+                date_time=(val['dateobs']).strftime('%Y-%m-%d %H:%M:%S')
                 mjds.append(Time(date_time, format='iso', scale='utc').mjd)
 
         TOOLTIPS = """
