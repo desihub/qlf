@@ -13,7 +13,8 @@ const styles = {
   main: {
     maxWidth: '70vw',
     flexDirection: 'column',
-    maxHeight: '65vh',
+    // maxHeight: '65vh',
+    height: 'calc(100vh - 223px)',
     overflowY: 'auto',
     margin: '16px',
     padding: '16px',
@@ -21,6 +22,13 @@ const styles = {
   },
   text: {
     fontSize: '1.2vw',
+    marginBottom: '20px',
+  },
+  button: {
+    backgroundColor: 'rgb(0, 200, 83)',
+    fontSize: '1.1vw',
+    color: '#fff',
+    marginTop: '20px',
   },
 };
 
@@ -114,6 +122,7 @@ export default class ContactUs extends React.Component {
             color="primary"
             fullWidth={true}
             onClick={this.sendEmail}
+            style={styles.button}
           >
             Submit
           </Button>

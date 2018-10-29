@@ -8,7 +8,8 @@ const styles = {
   },
   main: {
     maxWidth: '70vw',
-    maxHeight: '65vh',
+    // maxHeight: '65vh',
+    height: 'calc(100vh - 223px)',
     overflowY: 'auto',
     hyphens: 'auto',
     wordWrap: 'break-word',

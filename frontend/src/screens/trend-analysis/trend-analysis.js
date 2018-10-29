@@ -96,6 +96,7 @@ const styles = {
   },
   text: {
     fontSize: '1vw',
+    marginLeft: '0.5vw',
   },
   selectEmpty: {
     fontSize: '1vw',
