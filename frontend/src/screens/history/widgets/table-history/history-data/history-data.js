@@ -83,8 +83,8 @@ export default class HistoryData extends React.Component {
     if (!Array.isArray(qaTests)) return null;
     if (qaTests) {
       if (
-        JSON.stringify(qaTests).includes('None') &&
-        JSON.stringify(qaTests).includes('ALARM') &&
+        JSON.stringify(qaTests).includes('None') ||
+        JSON.stringify(qaTests).includes('ALARM') ||
         JSON.stringify(qaTests).includes('FAIL')
       )
         return 0;
