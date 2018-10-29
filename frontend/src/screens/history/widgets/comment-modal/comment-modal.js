@@ -62,6 +62,7 @@ const styles = {
   },
   icon: {
     cursor: 'pointer',
+    fontSize: '1.2vw',
   },
   deleteTitle: {
     color: 'red',

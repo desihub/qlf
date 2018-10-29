@@ -26,7 +26,7 @@ const styles = {
     width: '100%',
     display: 'grid',
     gridTemplateColumns: 'auto',
-    height: 'calc(100vh - 161px)',
+    height: 'calc(100vh - 135px)',
     overflowY: 'auto',
   },
   previewResize: {

@@ -42,12 +42,11 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: '12vw calc(100vh - 15vw)',
-    height: 'calc(100vh - 38px - 28px - 16px - 16px - 33px - 4.8vh)',
+    gridTemplateColumns: '12vw calc(100vw - 19vw)',
+    height: 'calc(100vh - 130px - 1.2vw - 4.8vh)',
   },
   viewer: {
-    width: 'calc(100vw - 15vw)',
-    // height: 'calc(100vh - 183px)',
+    width: 'calc(100vw - 16vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',

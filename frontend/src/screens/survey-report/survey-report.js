@@ -28,11 +28,11 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: '12vw calc(100vh - 15vw)',
+    gridTemplateColumns: '12vw calc(100vw - 19vw)',
     height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: 'calc(100vw - 15vw)',
+    width: 'calc(100vw - 17vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',

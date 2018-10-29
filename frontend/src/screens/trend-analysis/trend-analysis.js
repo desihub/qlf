@@ -46,7 +46,7 @@ const styles = {
     height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: 'calc(100vw - 15vw)',
+    width: 'calc(100vw - 16vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',

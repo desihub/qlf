@@ -8,7 +8,10 @@ import { Card } from 'material-ui/Card';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 import FontIcon from 'material-ui/FontIcon';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+// import FlatButton from 'material-ui/FlatButton';
+import Button from '@material-ui/core/Button';
 import QlfApi from '../../containers/offline/connection/qlf-api';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -23,15 +26,16 @@ const styles = {
   },
   tableBody: {
     overflow: 'auto',
-    height: 'calc(100vh - 2.4vw - 4.8vh - 38px - 28px)',
+    height: 'calc(100vh - 2.4vw - 10vh - 38px - 28px)',
   },
   tableBodyHistory: {
     overflow: 'auto',
-    height: 'calc(100vh - 2.4vw - 10.5vh - 38px - 28px)',
+    height: 'calc(100vh - 2.4vw - 15vh - 38px - 28px)',
   },
   submit: {
     paddingLeft: '16px',
     cursor: ' pointer',
+    fontSize: '1.2vw',
   },
   historyContainer: { WebkitAppRegion: 'no-drag' },
   tabItem: {
@@ -54,6 +58,12 @@ const styles = {
   divisor: {
     height: '3.4vh',
     marginLeft: '1.25vw',
+  },
+  button: {
+    fontSize: '1.1vw',
+  },
+  text: {
+    fontSize: '1.2vw',
   },
 };
 
@@ -413,19 +423,36 @@ class History extends Component {
   };
 
   render() {
+    const { classes } = this.props;
     const actions = [
-      <FlatButton
+      // <FlatButton
+      //   key={0}
+      //   label="Cancel"
+      //   primary={true}
+      //   onClick={this.handleCloseDialog}
+      // />,
+      // <FlatButton
+      //   key={1}
+      //   label="Submit"
+      //   primary={true}
+      //   onClick={this.reprocessExposure}
+      // />,
+      <Button
         key={0}
-        label="Cancel"
         primary={true}
         onClick={this.handleCloseDialog}
-      />,
-      <FlatButton
+        style={styles.button}
+      >
+        Cancel
+      </Button>,
+      <Button
         key={1}
-        label="Submit"
         primary={true}
         onClick={this.reprocessExposure}
-      />,
+        style={styles.button}
+      >
+        Submit
+      </Button>,
     ];
 
     return (
@@ -435,8 +462,14 @@ class History extends Component {
           modal={false}
           open={this.state.confirmDialog}
           onRequestClose={this.handleClose}
+          // style={styles.text}
+          // classes={{ container: classes.text }}
         >
-          Reprocess {this.exposuresToReprocess()}?
+          <DialogContent>
+            <DialogContentText classes={{ root: classes.text }}>
+              Reprocess {this.exposuresToReprocess()}?
+            </DialogContentText>
+          </DialogContent>
         </Dialog>
         <Card style={styles.card}>
           {!this.state.renderTabs ? this.renderHistory() : this.renderTabs()}

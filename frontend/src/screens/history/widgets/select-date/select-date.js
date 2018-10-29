@@ -19,7 +19,8 @@ const styles = {
     border: '1px solid lightgrey',
     padding: 1,
     fontSize: '1.1vw',
-    marginTop: '1.05vh',
+    marginTop: '1vh',
+    lineHeight: 1,
   },
   text: {
     fontSize: '1vw',
