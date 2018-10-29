@@ -6,6 +6,8 @@ import os
 import sys
 from datetime import datetime, timedelta
 
+from astropy.io import fits
+
 import django
 import numpy
 
@@ -20,7 +22,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 django.setup()
 
 from dashboard.models import (
-    Camera, Configuration, Exposure, Job, Process, Fibermap
+    Camera, Configuration, Exposure, Job, Process, Fibermap, Product
 )
 from django.db.models import F
 
@@ -181,19 +183,54 @@ class QLFModels(object):
             )
         )
 
+        sframe_path = os.path.join(
+            output_path, 'sframe-%s-%s.fits' % (
+                camera,
+                str(exposure_id).zfill(8)
+            )
+        )
+
         ql_merged = {}
 
         if os.path.isfile(merged_path):
             with open(merged_path, 'r') as merged_file:
-                ql_merged = jsonify(json.load(merged_file))
+                merged_qa_product = jsonify(json.load(merged_file))
                 merged_file.close()
+
+        if os.path.isfile(sframe_path):
+            frame = fits.open(sframe_path)
+            flux = frame["FLUX"].data
+            wavelength = frame["WAVELENGTH"].data
+            fibermap = frame["FIBERMAP"].data
+            sframe_product = jsonify(dict(
+                flux=flux,
+                wavelength=wavelength,
+                fibermap=fibermap,
+            ))
 
         try:
             Job.objects.filter(id=job_id).update(
                 end=end,
-                output=ql_merged,
+                output=merged_qa_product,
                 status=status
             )
+
+            job = Job.objects.get(id=job_id)
+
+            sframe = Product(
+                job=job,
+                name='sframe',
+                value=sframe_product
+            )
+            sframe.save()
+
+            merged = Product(
+                job=job,
+                name='merged_qa',
+                value=merged_qa_product
+            )
+
+            merged.save()
 
             logger.info('Job {} updated.'.format(job_id))
         except Exception as err:

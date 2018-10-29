@@ -183,6 +183,18 @@ class Job(models.Model):
         return str(self.name)
 
 
+class Product(models.Model):
+    job = models.ForeignKey(Job, related_name='product_job')
+    name = models.CharField(
+        max_length=45,
+        help_text='Name of the product'
+    )
+    value = JSONField(
+        help_text='JSON structure with a job result',
+        null=True
+    )
+
+
 class Fibermap(models.Model):
     """Fibermap information"""
     fiber_ra = ArrayField(models.FloatField())
