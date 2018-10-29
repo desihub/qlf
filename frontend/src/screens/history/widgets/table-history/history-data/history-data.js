@@ -170,7 +170,7 @@ export default class HistoryData extends React.Component {
     const flavor = isNotProcessingHistory
       ? row['flavor']
       : row.exposure['flavor'];
- 
+
     switch (type) {
       case 'parent':
         return (
