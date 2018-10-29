@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import Card from '@material-ui/core/Card';
-import FlatButton from 'material-ui/FlatButton';
+import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 
 const styles = {
   card: {
@@ -116,28 +115,28 @@ export default class MetricSelect extends Component {
             buttonsStatus[index].toUpperCase() === 'NORMAL' ? ' ✓' : ' ✖︎'
           );
         return (
-          <FlatButton
+          <Button
             key={index}
-            labelStyle={{ ...selected, ...styles.metricLabel }}
+            labelstyle={{ ...selected, ...styles.metricLabel }}
             onClick={() => this.props.selectQA('qa' + qa)}
             fullWidth
             style={labelColor}
-            label={label}
-            // primary={buttonsStatus[index]}
-            secondary={!buttonsStatus[index]}
-          />
+          >
+            {label}
+          </Button>
         );
       } else {
         return (
-          <FlatButton
+          <Button
             key={index}
-            labelStyle={{ ...selected, ...styles.metricLabel }}
+            labelstyle={{ ...selected, ...styles.metricLabel }}
             onClick={() => this.props.selectQA('qa' + qa)}
             fullWidth
             style={styles.failure}
-            label={qa.toUpperCase() + ' ✖︎'}
             disabled={true}
-          />
+          >
+            {qa.toUpperCase() + ' ✖︎'}
+          </Button>
         );
       }
     });

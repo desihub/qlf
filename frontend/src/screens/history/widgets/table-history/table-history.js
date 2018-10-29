@@ -246,6 +246,10 @@ class TableHistory extends Component {
         }}
         nextIconButtonProps={{
           'aria-label': 'Next Page',
+          classes: {
+            root: classes.text,
+            label: classes.text,
+          },
         }}
         onChangePage={this.handleChangePage}
         onChangeRowsPerPage={this.handleChangeRowsPerPage}

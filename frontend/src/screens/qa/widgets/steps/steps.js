@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PieChart from './piechart/piechart';
-import { Card } from 'material-ui/Card';
+import Card from '@material-ui/core/Card';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import Status from '../../../../components/status/status';

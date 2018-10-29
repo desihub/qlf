@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import FlatButton from 'material-ui/FlatButton';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import PropTypes from 'prop-types';
@@ -62,23 +61,8 @@ class Control extends Component {
           <Typography variant="body2" style={styles.title}>
             {this.props.title}
           </Typography>
-          {/* <FlatButton
-            style={styles.button}
-            className="control"
-            label="<"
-            primary={true}
-            onClick={() => this.props.change('prev')}
-          />
-          <span style={styles.value}>{this.props.value}</span>
-          <FlatButton
-            style={styles.button}
-            label=">"
-            primary={true}
-            onClick={() => this.props.change('next')}
-          /> */}
           <Button
             style={styles.button}
-            primary={true}
             onClick={() => this.props.change('prev')}
             classes={{ raised: classes.text }}
             variant="raised"
@@ -88,7 +72,6 @@ class Control extends Component {
           <span style={styles.value}>{this.props.value}</span>
           <Button
             style={styles.button}
-            primary={true}
             onClick={() => this.props.change('next')}
             classes={{ raised: classes.text }}
             variant="raised"

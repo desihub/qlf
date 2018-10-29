@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { ArrowDropDown, ArrowDropUp } from 'material-ui-icons';
+import Icon from '@material-ui/core/Icon';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
-import Icon from '@material-ui/core/Icon';
 import QlfApi from '../../../../../containers/offline/connection/qlf-api';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -80,9 +79,9 @@ class HistoryHeader extends React.Component {
   renderArrow = id => {
     if (this.props.ordering === id) {
       if (this.props.asc) {
-        return <ArrowDropUp />;
+        return <Icon>arrow_upward</Icon>;
       } else {
-        return <ArrowDropDown />;
+        return <Icon>arrow_downward</Icon>;
       }
     }
   };

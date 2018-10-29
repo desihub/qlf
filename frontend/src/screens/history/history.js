@@ -4,14 +4,13 @@ import { withStyles } from '@material-ui/core/styles';
 import TableHistory from './widgets/table-history/table-history';
 import SelectDate from './widgets/select-date/select-date';
 import SelectNight from './widgets/select-night/select-night';
-import { Card } from 'material-ui/Card';
-import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
-import FontIcon from 'material-ui/FontIcon';
-import Dialog from 'material-ui/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-// import FlatButton from 'material-ui/FlatButton';
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import Toolbar from '@material-ui/core/Toolbar';
+import Icon from '@material-ui/core/Icon';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogContent from '@material-ui/core/DialogContent';
 import QlfApi from '../../containers/offline/connection/qlf-api';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -301,27 +300,23 @@ class History extends Component {
     // const { classes } = this.props;
     return (
       <Toolbar style={styles.toolbar}>
-        <ToolbarGroup firstChild={true}>
-          <FontIcon
-            className="material-icons"
-            title="Clear QA"
-            onClick={() => this.props.navigateToQA(0)}
-            style={styles.ico}
-          >
-            clear_all
-          </FontIcon>
-          <ToolbarSeparator style={styles.divisor} />
-          <FontIcon
-            className="material-icons"
-            title="Refresh"
-            onClick={this.refreshRows}
-            style={styles.ico}
-          >
-            refresh
-          </FontIcon>
-          <ToolbarSeparator style={styles.divisor} />
-          {this.renderSelectDate()}
-        </ToolbarGroup>
+        <Icon
+          className="material-icons"
+          title="Clear QA"
+          onClick={() => this.props.navigateToQA(0)}
+          style={styles.ico}
+        >
+          clear_all
+        </Icon>
+        <Icon
+          className="material-icons"
+          title="Refresh"
+          onClick={this.refreshRows}
+          style={styles.ico}
+        >
+          refresh
+        </Icon>
+        {this.renderSelectDate()}
         {!this.state.renderTabs ? null : this.renderReprocessButton()}
       </Toolbar>
     );
@@ -340,16 +335,13 @@ class History extends Component {
   renderReprocessButton = () => {
     if (this.state.selectedExposures.length < 1) return;
     return (
-      <ToolbarGroup>
-        <ToolbarSeparator />
-        <span
-          style={styles.submit}
-          title="Reprocess"
-          onClick={this.handleOpenDialog}
-        >
-          Submit
-        </span>
-      </ToolbarGroup>
+      <span
+        style={styles.submit}
+        title="Reprocess"
+        onClick={this.handleOpenDialog}
+      >
+        Submit
+      </span>
     );
   };
 
