@@ -26,6 +26,11 @@
           "display_name": "LITFRAC AMP",
           "status_key": "LITFRAC_AMP_STATUS",
           "name": "countpix"
+        },
+        {
+          "display_name": "XWSIGMA",
+          "status_key": "XWSIGMA_STATUS",
+          "name": "xwsigma"
         }
       ]
     },

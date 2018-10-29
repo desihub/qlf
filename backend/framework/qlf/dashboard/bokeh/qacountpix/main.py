@@ -37,7 +37,13 @@ class Countpix:
 
         nrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_NORMAL_RANGE']
         wrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_WARN_RANGE']
-        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_REF']
+        if mergedqa['FLAVOR'].upper() == 'SCIENCE':
+            program = mergedqa['GENERAL_INFO']['PROGRAM'].upper()
+            program_prefix = '_'+program
+        else:
+            program_prefix = ''
+        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP' +
+                                                           program_prefix+'_REF']
 
         cmap = get_palette("RdBu_r")
 

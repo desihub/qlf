@@ -52,7 +52,13 @@ class Xwsigma:
 
         nrg = check_ccds['PARAMS']['XWSIGMA_NORMAL_RANGE']
         wrg = check_ccds['PARAMS']['XWSIGMA_WARN_RANGE']
-        xw_ref = check_ccds['PARAMS']['XWSIGMA_REF']
+
+        if mergedqa['FLAVOR'].upper() == 'SCIENCE':
+            program = mergedqa['GENERAL_INFO']['PROGRAM'].upper()
+            program_prefix = '_'+program
+        else:
+            program_prefix = ''
+        xw_ref = check_ccds['PARAMS']['XWSIGMA'+program_prefix+'_REF']
 
         xsigma = xw_fib[0]
         wsigma = xw_fib[1]

@@ -90,7 +90,7 @@ class SNR:
         try:
             sort_idx = [snrlen.index(fiberlen[i]) for i in range(len(avobj))]
         except:
-            logger.info('Inconsistence in FIBERID and SNR lenght')
+            return 'Inconsistence in FIBERID and SNR lenght'
 
         idx = 0
         if (objst['ELG']):

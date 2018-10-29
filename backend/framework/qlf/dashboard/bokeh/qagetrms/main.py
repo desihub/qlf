@@ -35,7 +35,13 @@ class RMS:
 
         nrg = check_ccds['PARAMS']['NOISE_AMP_NORMAL_RANGE']
         wrg = check_ccds['PARAMS']['NOISE_AMP_WARN_RANGE']
-        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['NOISE_AMP_REF']
+        if mergedqa['FLAVOR'].upper() == 'SCIENCE':
+            program = mergedqa['GENERAL_INFO']['PROGRAM'].upper()
+            program_prefix = '_'+program
+        else:
+            program_prefix = ''
+        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['NOISE_AMP' +
+                                                           program_prefix+'_REF']
 
         cmap = get_palette('RdBu_r')
 
@@ -93,9 +99,8 @@ class RMS:
 
 
         # Prepare tables
+        metric_txt = mtable('getrms', mergedqa, )
 
-        comments = 'value of RMS for each amplifier read directly from the header of the pre processed image'
-        metric_txt = mtable('getrms', mergedqa)
         metric_tb = Div(text=metric_txt)
 
         alert_txt = alert_table(nrg, wrg)

@@ -64,9 +64,9 @@ export default class Configuration extends React.Component {
           <Tab label="Bright" value={1} />
           <Tab label="Gray" value={2} />
         </Tabs>
-        {qlScienceTab === 0 ? <Display config={'darksurvey'} /> : null}
-        {qlScienceTab === 1 ? <Display config={'brightsurvey'} /> : null}
-        {qlScienceTab === 2 ? <Display config={'graysurvey'} /> : null}
+        {qlScienceTab === 0 ? <Display config={'science'} /> : null}
+        {qlScienceTab === 1 ? <Display config={'science'} /> : null}
+        {qlScienceTab === 2 ? <Display config={'science'} /> : null}
       </div>
     );
   };
@@ -92,7 +92,7 @@ export default class Configuration extends React.Component {
         {qlCalibrationTab === 0 ? <Display config={'flat'} /> : null}
         {qlCalibrationTab === 1 ? <Display config={'darkcurrent'} /> : null}
         {qlCalibrationTab === 2 ? <Display config={'bias'} /> : null}
-        {qlCalibrationTab === 3 ? <Display config={'arcs'} /> : null}
+        {qlCalibrationTab === 3 ? <Display config={'arc'} /> : null}
       </div>
     );
   };
