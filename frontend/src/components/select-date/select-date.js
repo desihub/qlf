@@ -78,20 +78,20 @@ class SelectDate extends React.Component {
   }
 
   changeStart = evt => {
-    const selectedStartDate = new Date(evt.target.value);
+    const selectedStartDate = moment(evt.target.value).format('YYYY-MM-DD');
     if (selectedStartDate.toString() !== 'Invalid Date')
       this.setState({ selectedStartDate }, this.selectRange);
   };
 
   changeEnd = evt => {
-    const selectedEndDate = new Date(evt.target.value);
+    const selectedEndDate = moment(evt.target.value).format('YYYY-MM-DD');
     if (selectedEndDate.toString() !== 'Invalid Date')
       this.setState({ selectedEndDate }, this.selectRange);
   };
 
   selectRange = () => {
     this.props.setHistoryRangeDate(
-      this.formatFilterDate(this.state.selectedStartDate),
+      this.formatFilterDate(this.state.selectedStartDate, true),
       this.formatFilterDate(this.state.selectedEndDate, true)
     );
   };
@@ -122,8 +122,8 @@ class SelectDate extends React.Component {
             }}
             inputProps={{
               style: styles.dateField,
-              // min: this.formatFilterDate(this.state.rangeStartDate),
-              // max: this.formatFilterDate(this.state.selectedEndDate),
+              min: this.formatFilterDate(this.state.rangeStartDate),
+              max: this.formatFilterDate(this.state.selectedEndDate),
             }}
           />
         </div>
@@ -140,8 +140,8 @@ class SelectDate extends React.Component {
             }}
             inputProps={{
               style: styles.dateField,
-              // min: this.formatFilterDate(this.state.selectedStartDate, true),
-              // max: this.formatFilterDate(this.state.rangeEndDate),
+              min: this.formatFilterDate(this.state.selectedStartDate, true),
+              max: this.formatFilterDate(this.state.rangeEndDate),
             }}
           />
         </div>

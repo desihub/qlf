@@ -122,7 +122,7 @@ class TrendAnalysis extends React.Component {
       yaxis: '',
       startDate: '',
       endDate: '',
-      datePeriod: '',
+      datePeriod: 'all',
       selectArm: '',
       selectAmp: '',
       selectXaxis: '',
@@ -544,6 +544,7 @@ class TrendAnalysis extends React.Component {
 
   setHistoryRangeDate = (startDate, endDate) => {
     this.setState({
+      datePeriod: '',
       startDate,
       endDate,
     });

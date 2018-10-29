@@ -130,7 +130,7 @@ class ObservingConditions extends React.Component {
       yaxis: '',
       startDate: '',
       endDate: '',
-      datePeriod: '',
+      datePeriod: 'all',
       selectYaxis: '',
       selectXaxis: '',
       selectStartDate: '',
@@ -504,6 +504,7 @@ class ObservingConditions extends React.Component {
 
   setHistoryRangeDate = (startDate, endDate) => {
     this.setState({
+      datePeriod: '',
       startDate,
       endDate,
     });

@@ -61,13 +61,6 @@ const styles = {
   },
 };
 
-// const stepsQa = {
-//   preproc: ['countpix', 'getbias', 'getrms', 'xwsigma'],
-//   extract: ['countbins'],
-//   fiberfl: ['skycont', 'skypeak'],
-//   skysubs: ['integ', 'skyresid', 'snr'],
-// };
-
 export default class MetricSelect extends Component {
   static propTypes = {
     step: PropTypes.string.isRequired,
@@ -98,8 +91,10 @@ export default class MetricSelect extends Component {
 
     if (!this.props.stepsQa[step]) return;
     return this.props.stepsQa[step].map((qa, index) => {
+      const qaName = Object.keys(qa)[0];
+      const qaDisplay = qa[qaName];
       const selected =
-        this.props.selectedQA && this.props.selectedQA.includes(qa)
+        this.props.selectedQA && this.props.selectedQA.includes(qaName)
           ? styles.selected
           : null;
       if (buttonsStatus && buttonsStatus[index]) {
@@ -109,7 +104,7 @@ export default class MetricSelect extends Component {
             : buttonsStatus[index] === 'WARNING'
               ? styles.warning
               : styles.failure;
-        const label = qa
+        const label = qaDisplay
           .toUpperCase()
           .concat(
             buttonsStatus[index].toUpperCase() === 'NORMAL' ? ' ✓' : ' ✖︎'
@@ -118,7 +113,7 @@ export default class MetricSelect extends Component {
           <Button
             key={index}
             labelstyle={{ ...selected, ...styles.metricLabel }}
-            onClick={() => this.props.selectQA('qa' + qa)}
+            onClick={() => this.props.selectQA('qa' + qaName)}
             fullWidth
             style={labelColor}
           >
@@ -130,7 +125,7 @@ export default class MetricSelect extends Component {
           <Button
             key={index}
             labelstyle={{ ...selected, ...styles.metricLabel }}
-            onClick={() => this.props.selectQA('qa' + qa)}
+            onClick={() => this.props.selectQA('qa' + qaName)}
             fullWidth
             style={styles.failure}
             disabled={true}

@@ -34,7 +34,13 @@ class Bias:
         nrg = check_ccds['PARAMS']['BIAS_AMP_NORMAL_RANGE']
         wrg = check_ccds['PARAMS']['BIAS_AMP_WARN_RANGE']
         tests = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
-        refexp=mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP_REF']
+        if mergedqa['FLAVOR'].upper() == 'SCIENCE':
+            program = mergedqa['GENERAL_INFO']['PROGRAM'].upper()
+            program_prefix = '_'+program
+        else:
+            program_prefix = ''
+        refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['BIAS_AMP' +
+                                                           program_prefix+'_REF']
 
 
         # amp
@@ -74,7 +80,6 @@ class Bias:
         # Prepare tables
         metricname='BIAS_AMP'
         keyname='getbias'
-        curexp=mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
         metric_txt=mtable('getbias', mergedqa)
         metric_tb=Div(text=metric_txt)
 

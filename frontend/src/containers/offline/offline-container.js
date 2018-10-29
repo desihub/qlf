@@ -101,7 +101,6 @@ class OfflineContainer extends Component {
   componentWillMount() {
     this.props.getHistoryDateRange();
     if (window.location.pathname === '/qa') {
-      this.props.toggleHeader();
       if (window.location.search.includes('process_id=')) {
         const processId = window.location.search.split('process_id=')[1];
         this.searchQA(processId);

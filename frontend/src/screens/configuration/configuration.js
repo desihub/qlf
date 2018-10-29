@@ -91,9 +91,9 @@ class Configuration extends React.Component {
             classes={{ root: classes.tabWH, label: classes.tabItem }}
           />
         </Tabs>
-        {qlScienceTab === 0 ? <Display config={'darksurvey'} /> : null}
-        {qlScienceTab === 1 ? <Display config={'brightsurvey'} /> : null}
-        {qlScienceTab === 2 ? <Display config={'graysurvey'} /> : null}
+        {qlScienceTab === 0 ? <Display config={'science'} /> : null}
+        {qlScienceTab === 1 ? <Display config={'science'} /> : null}
+        {qlScienceTab === 2 ? <Display config={'science'} /> : null}
       </div>
     );
   };
@@ -137,7 +137,7 @@ class Configuration extends React.Component {
         {qlCalibrationTab === 0 ? <Display config={'flat'} /> : null}
         {qlCalibrationTab === 1 ? <Display config={'darkcurrent'} /> : null}
         {qlCalibrationTab === 2 ? <Display config={'bias'} /> : null}
-        {qlCalibrationTab === 3 ? <Display config={'arcs'} /> : null}
+        {qlCalibrationTab === 3 ? <Display config={'arc'} /> : null}
       </div>
     );
   };

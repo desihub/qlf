@@ -100,14 +100,9 @@ class Stages extends Component {
         <TableRow style={{ height: this.state.columnHeight }}>
           {flavors[flavor].step_list.map((step, idx) => {
             return (
-              <Tooltip
-                key={`stageHeader${idx}`}
-                title={step.display_name}
-                placement="bottom"
-                classes={{ tooltip: this.props.classes.tooltipText }}
-              >
-                <TableCell style={styles.header}>Step {idx + 1}</TableCell>
-              </Tooltip>
+              <TableCell key={`stageHeader${idx}`} style={styles.header}>
+                {step.display_name}
+              </TableCell>
             );
           })}
         </TableRow>

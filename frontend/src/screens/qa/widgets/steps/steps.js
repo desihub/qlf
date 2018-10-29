@@ -52,7 +52,6 @@ const styles = {
     width: 100,
     fontSize: '1.2vw',
     textAlign: 'center',
-    cursor: 'pointer',
   },
   space: {
     width: '1vw',
@@ -165,17 +164,15 @@ class Steps extends Component {
   };
 
   componentWillMount() {
-    if (!this.props.monitor)
-      window.addEventListener('resize', this.updatePetalSize);
+    window.addEventListener('resize', this.updatePetalSize);
   }
 
   componentDidMount() {
-    if (!this.props.monitor) this.updatePetalSize();
+    this.updatePetalSize();
   }
 
   componentWillUnmount() {
-    if (!this.props.monitor)
-      window.removeEventListener('resize', this.updatePetalSize);
+    window.removeEventListener('resize', this.updatePetalSize);
   }
 
   updatePetalSize = () => {
@@ -312,13 +309,7 @@ class Steps extends Component {
   renderTitles = (step, index) => {
     return (
       <div key={`ì${index}`} style={styles.gridItem}>
-        <Tooltip
-          classes={{ tooltip: this.props.classes.tooltipText }}
-          title={step.display_name}
-          placement="top"
-        >
-          <span style={styles.step}>Step {index + 1}</span>
-        </Tooltip>
+        <span style={styles.step}>{step.display_name}</span>
       </div>
     );
   };

@@ -15,9 +15,9 @@ if not qlf_root:
 program_mapping = {
     'flat': 'flat',  # flat_preproc
     'arc': 'arc',
-    'dark': 'darksurvey',
-    'gray': 'graysurvey',
-    'bright': 'brightsurvey'
+    'dark': 'science',
+    'gray': 'science',
+    'bright': 'science'
 }
 
 
@@ -31,7 +31,7 @@ def get_ql_config_file(program):
         str -- config file path that will be used
     """
 
-    program_file = program_mapping.get(program, 'darksurvey')
+    program_file = program_mapping.get(program, 'science')
 
     return '{}/qlconfig_{}.yaml'.format(os.environ.get('QL_CONFIG_DIR'), program_file)
 
