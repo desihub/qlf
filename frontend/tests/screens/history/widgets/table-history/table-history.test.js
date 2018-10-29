@@ -247,7 +247,7 @@ describe('TableHistory Controls', () => {
         .find('span')
         .at(0)
         .text()
-    ).toBe('✖︎');
+    ).toBe('✓');
     expect(navigateToQA).toBeCalledWith('70');
   });
 

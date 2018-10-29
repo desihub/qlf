@@ -70,69 +70,29 @@ class Regression():
 
         hover = HoverTool(tooltips=TOOLTIPS)
 
-        plot = figure(toolbar_location='above',
+        plot = figure(title="Camera: {}".format(self.camera),
+                      toolbar_location='above',
                       active_drag="box_zoom",
                       plot_height=300,
                     #   plot_width=500,
                       x_axis_label=x_data['display'],
                       y_axis_label=y_data['display'],
-                      tools=[hover, 'box_zoom,pan,wheel_zoom,box_select,reset'])
+                      tools=[hover, 'box_zoom,pan,wheel_zoom,box_select,reset'],
+                      sizing_mode='scale_width')
 
         q = plot.circle('x', 'y', source=source, size=8,
                         fill_color='dodgerblue',
                         hover_fill_color='blue', line_color='black')
 
-        hhist, hedges = np.histogram(source.data['x'], bins='sqrt')
-        hmax = max(hhist)*1.1
-
-        ph = figure(active_drag='box_zoom',
-                    tools='box_zoom,pan,wheel_zoom,reset',
-                    plot_height=250,
-                    toolbar_location='left',
-                    x_range=plot.x_range,
-                    y_range=(-0.1*hmax, hmax),
-                    y_axis_location="right",
-                    min_border=10, min_border_left=50)
-
-        ph.xgrid.grid_line_color = None
-        ph.yaxis.major_label_orientation = 0
-
-        qh = ph.quad(bottom=0, left=hedges[:-1], right=hedges[1:],
-                     top=hhist, color="#a7bae1", line_color="black")
-
-        # create the vertical histogram
-        vhist, vedges = np.histogram(source.data['y'], bins='sqrt')
-        vzeros = np.zeros(len(vedges)-1)
-        vmax = max(vhist)*1.1
-
-        pv = figure(active_drag='box_zoom',
-                    tools='box_zoom,pan,wheel_zoom,reset',
-                    toolbar_location='above',
-                    plot_height=310,
-                    y_range=plot.y_range,
-                    x_range=(-0.1*vmax, vmax),
-                    min_border=10, min_border_left=50)
-        pv.ygrid.grid_line_color = None
-        pv.xaxis.major_label_orientation = -np.pi/2
-        pv.background_fill_color = "#fafafa"
-
-        qv = pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:],
-                     right=vhist, color="#a7bae1", line_color="black")
-
         font_size = "1.2vw"
-        for p in [plot, pv, ph]:
-            p.xaxis.major_label_text_font_size = font_size
-            p.yaxis.major_label_text_font_size = font_size
-            p.xaxis.axis_label_text_font_size = font_size
-            p.yaxis.axis_label_text_font_size = font_size
-            p.legend.label_text_font_size = font_size
-            p.title.text_font_size = font_size
+        plot.xaxis.major_label_text_font_size = font_size
+        plot.yaxis.major_label_text_font_size = font_size
+        plot.xaxis.axis_label_text_font_size = font_size
+        plot.yaxis.axis_label_text_font_size = font_size
+        plot.legend.label_text_font_size = font_size
+        plot.title.text_font_size = font_size
 
-        info = "<h3>Camera: {}<h3>".format(self.camera)
-        info_col = Div(text=info)
-        self.layout = gridplot([[info_col, None],
-                                [plot, pv],
-                                [ph, None]], sizing_mode='scale_width')
+        self.layout = plot
 
     def render(self):
         y_data = plots[self.yaxis]
