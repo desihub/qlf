@@ -8,14 +8,18 @@ from rest_framework.pagination import LimitOffsetPagination
 
 from django.db.models import Max, Min
 
-from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap
+from .models import Job, Exposure,\
+    Camera, Process,\
+    Configuration, ProcessComment,\
+    Fibermap, Product
 from .serializers import (
     JobSerializer, ExposureSerializer, CameraSerializer,
     ProcessSerializer, ConfigurationSerializer,
     ProcessJobsSerializer, ProcessingHistorySerializer,
     ObservingHistorySerializer, ExposuresDateRangeSerializer,
     ExposureFlavorSerializer, ProcessCommentSerializer,
-    ExposureNightSerializer, FibermapSerializer
+    ExposureNightSerializer, FibermapSerializer,
+    ProductSerializer
 )
 
 from datetime import datetime, timedelta
@@ -365,6 +369,12 @@ class CameraViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Camera.objects.order_by('camera')
     serializer_class = CameraSerializer
+
+class ProductViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for listing Products"""
+
+    queryset = Product.objects.order_by('job')
+    serializer_class = ProductSerializer
 
 
 class ProcessCommentViewSet(DynamicFieldsMixin, DefaultsMixin, viewsets.ModelViewSet):

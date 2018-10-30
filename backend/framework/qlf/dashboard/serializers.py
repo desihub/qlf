@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap
+from .models import Job, Exposure,\
+        Camera, Process,\
+        Configuration, ProcessComment,\
+        Fibermap, Product
 from clients import get_exposure_monitoring
 from astropy.time import Time
 
@@ -271,3 +274,8 @@ class ProcessCommentSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = ProcessComment
         fields = ('id', 'text', 'user', 'date', 'process')
+
+class ProductSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('job','value', 'name')

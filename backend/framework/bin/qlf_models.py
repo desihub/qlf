@@ -190,7 +190,8 @@ class QLFModels(object):
             )
         )
 
-        ql_merged = {}
+        merged_qa_product = {}
+        sframe_product = {}
 
         if os.path.isfile(merged_path):
             with open(merged_path, 'r') as merged_file:
@@ -202,11 +203,17 @@ class QLFModels(object):
             flux = frame["FLUX"].data
             wavelength = frame["WAVELENGTH"].data
             fibermap = frame["FIBERMAP"].data
-            sframe_product = jsonify(dict(
-                flux=flux,
-                wavelength=wavelength,
-                fibermap=fibermap,
-            ))
+            fibermap_dict = dict(
+                ra=jsonify(fibermap['RA_OBS']),
+                dec=jsonify(fibermap['DEC_OBS']),
+                otype=jsonify(fibermap['OBJTYPE']),
+                brick=jsonify(fibermap['BRICKNAME'])
+            )
+            sframe_product = dict(
+                flux=jsonify(flux),
+                wavelength=jsonify(wavelength),
+                fibermap=fibermap_dict,
+            )
 
         try:
             Job.objects.filter(id=job_id).update(
@@ -217,18 +224,20 @@ class QLFModels(object):
 
             job = Job.objects.get(id=job_id)
 
-            sframe = Product(
-                job=job,
-                name='sframe',
-                value=sframe_product
-            )
-            sframe.save()
+            if os.path.isfile(sframe_path):
+                sframe = Product(
+                    job=job,
+                    name='sframe',
+                    value=sframe_product
+                )
+                sframe.save()
 
-            merged = Product(
-                job=job,
-                name='merged_qa',
-                value=merged_qa_product
-            )
+            if os.path.isfile(merged_path):
+                merged = Product(
+                    job=job,
+                    name='merged_qa',
+                    value=merged_qa_product
+                )
 
             merged.save()
 
@@ -435,6 +444,8 @@ class QLFModels(object):
 def jsonify(data):
     """ Make a dictionary with numpy arrays JSON serializable """
     if type(data) == numpy.ndarray:
+        data = data.tolist()
+    if type(data) == numpy.chararray:
         data = data.tolist()
     if isinstance(data, list):
         for item in data:
