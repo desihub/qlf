@@ -37,10 +37,9 @@ class SNR:
             process_id=process_id)]
         exposure = process.exposure
         fmap = Fibermap.objects.filter(exposure=exposure)
+       
+        objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
 
-        otype_tile = fmap[0].objtype
-
-        objlist = sorted(set(otype_tile))
         if 'SKY' in objlist:
             objlist.remove('SKY')
 

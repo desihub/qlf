@@ -120,6 +120,7 @@ def generate_jobs_by_process(process):
         job.id = None
         job.process_id = process.id
 
+        # Modifying for the metrics that I 
         for m in METRICS:
             if m in job.output['TASKS'].keys():
                 for item in job.output['TASKS'][m]['METRICS']:
@@ -131,7 +132,8 @@ def generate_jobs_by_process(process):
                         except:
                             print('Error in {}/{} simulation.'.format(m, item))
 
-        job.output = simulate_output(job.output)
+        # 
+        # job.output = simulate_output(job.output)
         job.save()
 
 
