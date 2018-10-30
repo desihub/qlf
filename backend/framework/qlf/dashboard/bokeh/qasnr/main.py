@@ -38,9 +38,15 @@ class SNR:
         exposure = process.exposure
         fmap = Fibermap.objects.filter(exposure=exposure)
 
-        otype_tile = fmap[0].objtype
+        #otype_tile = fmap[0].objtype
 
-        objlist = sorted(set(otype_tile))
+        # Load data from Sframe fits:
+        #rame = load_fits(self.selected_process_id, cam)
+        #objlist = set(frame["FIBERMAP"].data["OBJTYPE"])
+        objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
+
+
+        #objlist = sorted(set(otype_tile))
         if 'SKY' in objlist:
             objlist.remove('SKY')
 
