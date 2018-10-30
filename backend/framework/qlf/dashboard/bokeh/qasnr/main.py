@@ -43,6 +43,7 @@ class SNR:
         # Load data from Sframe fits:
         frame = load_fits(self.selected_process_id, cam)
         objlist = set(frame["FIBERMAP"].data["OBJTYPE"])
+        objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
 
 
         #objlist = sorted(set(otype_tile))
@@ -147,6 +148,7 @@ class SNR:
             'ra': [],
             'dec': []
         }
+
         elg_fit = ColumnDataSource(data=data_fit.copy())
         lrg_fit = ColumnDataSource(data=data_fit.copy())
         qso_fit = ColumnDataSource(data=data_fit.copy())
@@ -521,18 +523,18 @@ class SNR:
         star_plot.plot_height = pltxy_h
         star_plot.plot_width = pltxy_w
 
-        # Prepare for bokeh.layout:
-        plot_snr = []
-        if objst['ELG']:
-            plot_snr.append(elg_plot)
-        if objst['LRG']:
-            plot_snr.append(lrg_plot)
-        if objst['QSO']:
-            plot_snr.append(qso_plot)
-        if objst['STAR']:
-            plot_snr.append(star_plot)
-        for i in list(range(4-len(plot_snr))):
-            plot_snr.append(Spacer(width=pltxy_w, height=pltxy_h))
+        # # Prepare for bokeh.layout:
+        # plot_snr = []
+        # if objst['ELG']:
+        #     plot_snr.append(elg_plot)
+        # if objst['LRG']:
+        #     plot_snr.append(lrg_plot)
+        # if objst['QSO']:
+        #     plot_snr.append(qso_plot)
+        # if objst['STAR']:
+        #     plot_snr.append(star_plot)
+        # for i in list(range(4-len(plot_snr))):
+        #     plot_snr.append(Spacer(width=pltxy_w, height=pltxy_h))
 
        # Prepare tables
         metric_txt = mtable('snr', mergedqa, objtype=objlist)
