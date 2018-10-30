@@ -15,7 +15,7 @@ def sort_obj(gen_info):
     obj_type = ['']*500
     for key in ['LRG', 'ELG', 'QSO', 'STAR', 'SKY']:
         if gen_info.get(key+'_FIBERID', None):
-            for i, v in enumerate( gen_info[key+'_FIBERID']):
+            for i in gen_info[key+'_FIBERID']:
                 obj_type[i] = key
         else:
             pass
@@ -233,32 +233,27 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     title = """<h2 align=center style="text-align:center;">  {} </h2>""".format(
         qa)
 
-    # transition desispec 0.24 to 0.25
-    try:
-        ref_sufix=['_{}_REF'.format(data['GENERAL_INFO']['PROGRAM']) if qa=='skypeak' else '_REF'][0]
-    except: 
-        ref_sufix='REF'
-
     if qa == 'NAcountpix':
         ref = ['N/A']*4
         nrows = 4
     else:
-#<<<<<<< HEAD
-#        ref = par[key+ ref_sufix]#'_REF']
-#        if isinstance(ref, list):
-#            nrows = len(ref)
-#=======
         if data['FLAVOR'].upper() == 'SCIENCE':
             program = data['GENERAL_INFO']['PROGRAM'].upper()
             program_prefix = '_'+program
         else:
             program_prefix = ''
-        ref=par[key+program_prefix+'_REF']
-        if isinstance(ref,list):
+        try:
+            ref=par[key+program_prefix+'_REF']
+        except:
+            if qa =='xyshifts':
+                ref=[np.NaN]*2
+        if qa =='snr':
+            nrows=len(met['OBJLIST'])
+        elif isinstance(ref,list):
             nrows=len(ref)
-#>>>>>>> master
         else:
             nrows = 1
+
 
     try:
         curexp = met[key]
@@ -274,6 +269,9 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
             x = curexp[i]
             if qa=='arc':
                 ref_tb.append('%d'%ref[i])
+            elif (qa=='snr') & (nrows != len(ref)):
+                try: ref_tb.append('%.2f'%ref[i])
+                except: ref_tb.append('')
             else:
                 ref_tb.append('%.2f'%ref[i])
 
@@ -305,7 +303,9 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         # per_TGT
         if objtype is not None:
             objtype_tb = ['STAR' if i == 'STD' else i for i in objtype]
-            key_tb = [qa_metrics[qa]] * nrows
+            key_tb = [qa_metrics[qa]+" (%s)"%x for x in objtype_tb ]# * nrows
+            # key_tb = [qa_metrics[qa] + ' ( %s)' % objtype_tb[i]
+            #   for i in list(range(nrows))]
         else:
             key_tb = [qa_metrics[qa]] * nrows
 
