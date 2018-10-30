@@ -9,7 +9,8 @@ from bokeh.models import Spacer
 from dashboard.bokeh.helper import write_description, write_info
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import sort_obj, mtable, alert_table
-from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics,\
+    load_fits
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
@@ -37,12 +38,17 @@ class SNR:
             process_id=process_id)]
         exposure = process.exposure
         fmap = Fibermap.objects.filter(exposure=exposure)
-
         otype_tile = fmap[0].objtype
 
-        objlist = sorted(set(otype_tile))
+        # Load data from Sframe fits:
+        frame = load_fits(self.selected_process_id, cam)
+        objlist = set(frame["FIBERMAP"].data["OBJTYPE"])
+
+
+        #objlist = sorted(set(otype_tile))
         if 'SKY' in objlist:
             objlist.remove('SKY')
+
 
         gen_info = mergedqa['GENERAL_INFO']
 
@@ -57,12 +63,14 @@ class SNR:
 
         obj_type = sort_obj(gen_info)  # [""]*500
 
+        
+
         try:
             exptime = gen_info['EXPTIME']
             name_warn = ''
         except:
             exptime = 1000
-            name_warn = ' (exptime fixed)'
+            name_warn = ' (exptime fixed in 1000)'
 
         qlf_obj = ['ELG', 'LRG', 'QSO', 'STAR']
         keys_snr = list(snr.keys())
@@ -90,7 +98,8 @@ class SNR:
         try:
             sort_idx = [snrlen.index(fiberlen[i]) for i in range(len(avobj))]
         except:
-            return 'Inconsistence in FIBERID and SNR lenght'
+            logger.info('Inconsistence in FIBERID and SNR lenght')
+
 
         idx = 0
         if (objst['ELG']):
@@ -119,9 +128,10 @@ class SNR:
         data_model = {
             'x': [],
             'y': [],
+            'y2': [],            
             'fiber_id': [],
             'ra': [],
-            'dec': []
+            'dec': [],
         }
 
         elg = ColumnDataSource(data=data_model.copy())
@@ -132,6 +142,7 @@ class SNR:
         data_fit = {
             'x': [],
             'y': [],
+            'y2': [],           
             'fiber_id': [],
             'ra': [],
             'dec': []
@@ -144,7 +155,8 @@ class SNR:
         idx = 0
         if objst['ELG']:
             elg.data['x'] = elg_snr[1]
-            elg.data['y'] = np.array(elg_snr[0])**2
+            elg.data['y'] = np.array(elg_snr[0])
+            elg.data['y2'] = np.array(elg_snr[0])**2           
             elg.data['fiber_id'] = gen_info['ELG_FIBERID']
             elg.data['ra'] = [ra[i] for i in gen_info['ELG_FIBERID']]
             elg.data['dec'] = [dec[i] for i in gen_info['ELG_FIBERID']]
@@ -153,14 +165,17 @@ class SNR:
                 elg_snr[1], 	snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx += 1
             elg_fit.data['x'] = xfit
-            elg_fit.data['y'] = np.array(yfit)**2
+            elg_fit.data['y'] = np.array(yfit)
+            elg_fit.data['y2'] = np.array(yfit)**2
+
             for key in ['fiber_id', 'ra', 'dec']:
                 elg_fit.data[key] = ['']*len(yfit)
 
         # 2#'''
         if objst['LRG']:
             lrg.data['x'] = lrg_snr[1]
-            lrg.data['y'] = np.array(lrg_snr[0])**2
+            lrg.data['y'] = np.array(lrg_snr[0])
+            lrg.data['y2'] = np.array(lrg_snr[0])**2
             lrg.data['fiber_id'] = gen_info['LRG_FIBERID']
             lrg.data['ra'] = [ra[i] for i in gen_info['LRG_FIBERID']]
             lrg.data['dec'] = [dec[i] for i in gen_info['LRG_FIBERID']]
@@ -169,13 +184,15 @@ class SNR:
                 lrg_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx += 1
             lrg_fit.data['x'] = xfit
-            lrg_fit.data['y'] = np.array(yfit)**2
+            lrg_fit.data['y'] = np.array(yfit)
+            lrg_fit.data['y2'] = np.array(yfit)**2            
             for key in ['fiber_id', 'ra', 'dec']:
                 lrg_fit.data[key] = ['']*len(yfit)
 
         if objst['QSO']:
             qso.data['x'] = qso_snr[1]
-            qso.data['y'] = np.array(qso_snr[0])**2
+            qso.data['y'] = np.array(qso_snr[0])
+            qso.data['y2'] = np.array(qso_snr[0])**2
             qso.data['fiber_id'] = gen_info['QSO_FIBERID']
             qso.data['ra'] = [ra[i] for i in gen_info['QSO_FIBERID']]
             qso.data['dec'] = [dec[i] for i in gen_info['QSO_FIBERID']]
@@ -184,13 +201,15 @@ class SNR:
                 qso_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             idx += 1
             qso_fit.data['x'] = xfit
-            qso_fit.data['y'] = np.array(yfit)**2
+            qso_fit.data['y'] = np.array(yfit)
+            qso_fit.data['y2'] = np.array(yfit)**2
             for key in ['fiber_id', 'ra', 'dec']:
                 qso_fit.data[key] = ['']*len(yfit)
 
         if objst['STAR']:
             star.data['x'] = star_snr[1]
-            star.data['y'] = np.array(star_snr[0])**2
+            star.data['y'] = np.array(star_snr[0])
+            star.data['y2'] = np.array(star_snr[0])**2
             star.data['fiber_id'] = gen_info['STAR_FIBERID']
             star.data['ra'] = [ra[i] for i in gen_info['STAR_FIBERID']]
             star.data['dec'] = [dec[i] for i in gen_info['STAR_FIBERID']]
@@ -199,7 +218,8 @@ class SNR:
                 star_snr[1], snr['FITCOEFF_TGT'][sort_idx[idx]])
             # 2#xfit, yfit = fit_func( star_snr[1], snr['FITCOEFF_TGT'][sort_idx[1]])
             star_fit.data['x'] = xfit
-            star_fit.data['y'] = np.array(yfit)**2
+            star_fit.data['y'] = np.array(yfit)
+            star_fit.data['y2'] = np.array(yfit)**2
             for key in ['fiber_id', 'ra', 'dec']:
                 star_fit.data[key] = ['']*len(yfit)
 
@@ -207,7 +227,7 @@ class SNR:
         html_tooltip = """
             <div>
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">SNR^2: </span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">SNR: </span>
                     <span style="font-size: 1vw; color: #515151;">@y</span>
                 </div>
                 <div>
@@ -232,7 +252,7 @@ class SNR:
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
         lw = 1.5
-        y_plot = 'y'
+        y_plot = 'y2'
         plt_scale = 'log'
 
         hover = HoverTool(tooltips=html_tooltip)
@@ -521,8 +541,8 @@ class SNR:
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
-        font_size = "1vw"
-        for plot in [elg_plot, star_plot, p_m, p]:
+        font_size = "1.4vw"
+        for plot in [elg_plot, star_plot, lrg_plot,qso_plot, p_m, p]:
             plot.xaxis.major_label_text_font_size = font_size
             plot.yaxis.major_label_text_font_size = font_size
             plot.xaxis.axis_label_text_font_size = font_size
@@ -534,6 +554,8 @@ class SNR:
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
                         column(elg_plot, sizing_mode='scale_both'),
+                        column(lrg_plot, sizing_mode='scale_both'),
+                        column(qso_plot, sizing_mode='scale_both'),
                         column(star_plot, sizing_mode='scale_both'),
                         column(p_m, sizing_mode='scale_both'),
                         column(p, sizing_mode='scale_both'),
