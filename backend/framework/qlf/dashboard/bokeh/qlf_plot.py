@@ -304,8 +304,6 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         if objtype is not None:
             objtype_tb = ['STAR' if i == 'STD' else i for i in objtype]
             key_tb = [qa_metrics[qa]+" (%s)"%x for x in objtype_tb ]# * nrows
-            # key_tb = [qa_metrics[qa] + ' ( %s)' % objtype_tb[i]
-            #   for i in list(range(nrows))]
         else:
             key_tb = [qa_metrics[qa]] * nrows
 
