@@ -20,6 +20,7 @@ from dashboard.bokeh.footprint.object_count import ObjectStatistics
 from dashboard.bokeh.globalsnr.main import GlobalSnr
 from dashboard.bokeh.timeseries.main import TimeSeries
 from dashboard.bokeh.regression.main import Regression
+from dashboard.bokeh.spectra.main import Spectra
 import datetime
 
 from .models import Process, Exposure
@@ -236,6 +237,31 @@ def load_qa(request):
 
     return response
 
+def load_spectra(request):
+    template = loader.get_template('dashboard/spectra.html')
+    # Generate Image
+    spectra = request.GET.get('spectra')
+    spectrograph = request.GET.get('spectrograph')
+    process_id = request.GET.get('process_id')
+    arm = request.GET.get('arm')
+    fiber = request.GET.get('fiber')
+    if arm == 'all':
+        arms=['b', 'r', 'z']
+    else:
+        arms=[arm]
+    # try:
+    if spectra == 'spectra':
+        spectra_html = Spectra(process_id, arms).load_spectra()
+    elif spectra == 'spectra_fib':
+        spectra_html = Spectra(process_id, arms).render_spectra(
+            fiber, spectrograph)
+    # except Exception as err:
+    #     spectra_html = "Can't load spectra: {}".format(err)
+
+    context = {'image': spectra_html}
+    response = HttpResponse(template.render(context, request))
+
+    return response
 
 def load_series(request):
     """Generates and render series"""

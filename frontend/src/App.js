@@ -180,6 +180,8 @@ class App extends React.Component {
         return '- Log Viewer';
       case '/fiber-viewer':
         return '- Fiber Viewer';
+      case '/spectra-viewer':
+        return '- Spectra Viewer';
       case '/under-construction':
         return '- Under Construction';
       case '/focus-viewer':

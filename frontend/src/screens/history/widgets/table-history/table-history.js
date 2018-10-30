@@ -58,6 +58,7 @@ class TableHistory extends Component {
       openColumnsModal: false,
       openCommentModal: false,
       currentProcessId: 1,
+      flavor: '',
     };
   }
 
@@ -94,7 +95,7 @@ class TableHistory extends Component {
     this.props.navigateToQA(pk);
   };
 
-  setAnchorEl = (event, processId) => {
+  setAnchorEl = (event, processId, flavor) => {
     if (!event) {
       this.setState({
         anchorEl: null,
@@ -103,6 +104,7 @@ class TableHistory extends Component {
       this.setState({
         anchorEl: event.currentTarget,
         currentProcessId: processId,
+        flavor: flavor,
       });
     }
   };
@@ -390,6 +392,7 @@ class TableHistory extends Component {
           <CCDSelector
             anchorEl={this.state.anchorEl}
             handleClose={() => this.setAnchorEl(null)}
+            flavor={this.state.flavor}
             openCCDViewer={viewer =>
               this.props.openCCDViewer(viewer, this.state.currentProcessId)
             }

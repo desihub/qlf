@@ -140,6 +140,10 @@ class OfflineContainer extends Component {
       <div>
         {this.renderLoading()}
         <Route
+          path="/spectra-viewer"
+          render={() => <SelectionViewer arm={true} armAll={true} />}
+        />
+        <Route
           path="/fiber-viewer"
           render={() => <SelectionViewer arm={true} />}
         />

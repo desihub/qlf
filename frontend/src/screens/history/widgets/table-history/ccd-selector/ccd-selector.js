@@ -17,6 +17,7 @@ class CCDSelector extends React.Component {
     classes: PropTypes.object.isRequired,
     handleClose: PropTypes.func.isRequired,
     openCCDViewer: PropTypes.func.isRequired,
+    flavor: PropTypes.string,
   };
 
   openViewer = viewer => {
@@ -47,12 +48,24 @@ class CCDSelector extends React.Component {
         >
           CCD
         </Typography>
-        <Typography
-          className={classes.typography}
-          onClick={() => this.openViewer('fiber')}
-        >
-          Fibers
-        </Typography>
+        {this.props.flavor === 'science'
+          ? [
+              <Typography
+                key="fiber"
+                className={classes.typography}
+                onClick={() => this.openViewer('fiber')}
+              >
+                Fibers
+              </Typography>,
+              <Typography
+                key="spectra"
+                className={classes.typography}
+                onClick={() => this.openViewer('spectra')}
+              >
+                Spectra
+              </Typography>,
+            ]
+          : null}
         {/* <Typography
           className={classes.typography}
           onClick={() => this.openViewer('focus')}
