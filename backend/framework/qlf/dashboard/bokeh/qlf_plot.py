@@ -243,9 +243,20 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         ref = ['N/A']*4
         nrows = 4
     else:
-        ref = par[key+ ref_sufix]#'_REF']
-        if isinstance(ref, list):
-            nrows = len(ref)
+#<<<<<<< HEAD
+#        ref = par[key+ ref_sufix]#'_REF']
+#        if isinstance(ref, list):
+#            nrows = len(ref)
+#=======
+        if data['FLAVOR'].upper() == 'SCIENCE':
+            program = data['GENERAL_INFO']['PROGRAM'].upper()
+            program_prefix = '_'+program
+        else:
+            program_prefix = ''
+        ref=par[key+program_prefix+'_REF']
+        if isinstance(ref,list):
+            nrows=len(ref)
+#>>>>>>> master
         else:
             nrows = 1
 
