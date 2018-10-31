@@ -32,12 +32,12 @@ class SNR:
 
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
-        process_id = self.selected_process_id
-        process = Process.objects.get(pk=process_id)
-        joblist = [entry.camera.camera for entry in Job.objects.filter(
-            process_id=process_id)]
-        exposure = process.exposure
-        fmap = Fibermap.objects.filter(exposure=exposure)
+        # process_id = self.selected_process_id
+        # process = Process.objects.get(pk=process_id)
+        # joblist = [entry.camera.camera for entry in Job.objects.filter(
+        #     process_id=process_id)]
+        # exposure = process.exposure
+        # fmap = Fibermap.objects.filter(exposure=exposure)
        
         # list of available object in petal
         objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
@@ -68,10 +68,6 @@ class SNR:
                 obj_idx.update({o:avobj.index(o)})
             except:
                 obj_idx.update({o:None})
-
-
-        with open('dbg','w') as f: f.write(str(obj_idx))
-
         
 
         try:
@@ -81,32 +77,6 @@ class SNR:
             exptime = 1000
             name_warn = ' (exptime fixed)'
 
-
-        keys_snr = list(gen_info.keys())
-
-        objst = {}
-        for obj in qlf_obj:
-            if gen_info[obj+'_FIBERID'] is not None:
-                objst.update({obj: True})
-            else:
-                objst.update({obj: False})
-
-
-        # # sort the correct vector:
-        # fiberlen = []
-        # snrlen = []
-        # for i, key in enumerate(avobj):
-        #     if objst[key]:
-        #         # fiberlen.append( len(snr[key+'_FIBERID']))
-        #         fiberlen.append(len(gen_info[key+'_FIBERID']))
-        #         # snrlen.append( len(snr['SNR_MAG_TGT'][i][0]) )
-        #         snrlen.append(len(snr['SNR_MAG_TGT'][i][0]))
-
-        # # to be deprecated
-        # try:
-        #     sort_idx = [snrlen.index(fiberlen[i]) for i in range(len(avobj))]
-        # except:
-        #     logger.info('Inconsistence in FIBERID and SNR lenght')
 
         # Sort objects for QLF: 
         obj_idx = {}
@@ -122,8 +92,7 @@ class SNR:
             # Treating None (inf and Nan already treated in db)
             mag_2 = np.array([-9998 if x is None else x for x in mag ])
             snr_2 = np.array([-9998 if x is None else x for x in snr ])
-
-            idx=np.arange(len(snr_2))
+            idx = np.arange(len(snr_2))
             
             # Filtering values with good mag AND snr
             return list(idx[(mag_2> -999) & (snr_2>0) ])
@@ -134,8 +103,6 @@ class SNR:
         for o in avobj:
             snr_ql, mag_ql = snr['SNR_MAG_TGT'][obj_idx[o]]
             idx = good_idx(mag_ql, snr_ql)
-            with open('dbg','w') as f: 
-                f.write(str( [snr_ql[i] for i in idx]))
             x=[mag_ql[i] for i in idx]
             y=[snr_ql[i] for i in idx]
         
@@ -267,7 +234,7 @@ class SNR:
                     <span style="font-size: 1vw; color: #515151;">@y</span>
                 </div>
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DECAM_R: </span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">DECAM_{}: </span>
                     <span style="font-size: 1vw; color: #515151;">@x</span>
                 </div>
                 <div>
@@ -283,7 +250,7 @@ class SNR:
                     <span style="font-size: 1vw; color: #515151">@dec</span>
                 </div>
             </div>
-        """
+        """.format(str(self.selected_arm).upper())
 
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
@@ -370,7 +337,7 @@ class SNR:
                 </div>
 
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
                     <span style="font-size: 1vw; color: #515151;">@QLF_FIBERID</span>
                 </div>
 
@@ -449,7 +416,7 @@ class SNR:
         p_res = Figure(title='Residual SNR'+name_warn, active_drag="box_zoom",
                     x_axis_label='RA', y_axis_label='DEC',
                     plot_width=380, plot_height=380,
-                    tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"],)
+                    tools=[snr_hover, "pan, box_zoom, reset, crosshair, tap"],)
                     # ,x_range=(left,right), y_range=(bottom, top) )
 
         # Color Map
@@ -463,10 +430,11 @@ class SNR:
         p_res.circle('x1', 'y1', source=source, name="data", radius=radius_hover,
                  # {'field': 'resid_snr', 'transform': mapper},
                  hover_fill_color=fill_color,
-                 fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+                 fill_color=None, line_color=None, line_width=3,
+                 hover_line_color='red')
 
         p_res.circle('x1', 'y1', source=source_not, radius=radius,
-                 fill_color='lightgray', line_color=None, line_width=0.3)
+                 fill_color='darkgray', line_color=None, line_width=0.3)
 
         cbar = Figure(height=p_res.plot_height,
                       active_drag="box_zoom",
@@ -516,7 +484,7 @@ class SNR:
                 </div>
 
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
                     <span style="font-size: 1vw; color: #515151;">@QLF_FIBERID</span>
                 </div>
 
@@ -533,19 +501,6 @@ class SNR:
 
         p_m.vbar('QLF_FIBERID', width=1, top='median', source=source,
                  hover_color='red')
-
-        names = ['FIDSNR %s' % i for i in avobj]
-        vals = ['NaN' if isnr == -
-                9999 else '{:.3f}'.format(isnr) for isnr in snr['FIDSNR_TGT']]
-
-        width_tb, height_tb = 500, 140
-
-        alert = alert_table(nrg, wrg)
-        tb_alert = Div(text=alert, width=width_tb, height=height_tb)
-
-        tb_metric = Div(text=info, width=width_tb, height=height_tb)
-
-
 
 
        # Prepare tables
