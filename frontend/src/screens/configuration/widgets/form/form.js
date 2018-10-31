@@ -58,7 +58,7 @@ const styles = {
     flexDirection: 'column',
     alignItens: 'left',
     padding: 8,
-    width: 70,
+    width: '6vw',
   },
   text: {
     fontSize: '1.2vw',
@@ -68,6 +68,11 @@ const styles = {
   },
   helpText: {
     fontSize: '0.7vw',
+  },
+  checkWH: {
+    width: '1.7vw',
+    height: '4.8vh',
+    marginRight: '0.5vw',
   },
 };
 
@@ -265,6 +270,7 @@ class Form extends React.Component {
                       checked={this.state.arms.includes(arm)}
                       onChange={() => this.updateArm(arm)}
                       value={arm}
+                      classes={{ root: classes.checkWH }}
                     />
                   }
                   label={arm}

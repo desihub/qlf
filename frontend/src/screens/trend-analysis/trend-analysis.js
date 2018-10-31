@@ -107,6 +107,23 @@ const styles = {
     fontSize: '1vw',
     marginTop: '2vh',
   },
+  lineH: {
+    height: '4.87vh',
+    marginLeft: 0,
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
+  },
+  selectIcon: {
+    width: '1.7vw',
+    height: '3.5vh',
+    top: 'calc(50% - 1.6vh)',
+  },
+  mItem: {
+    height: '2.4vh',
+    fontSize: '1vw',
+  },
 };
 
 class TrendAnalysis extends React.Component {
@@ -338,13 +355,23 @@ class TrendAnalysis extends React.Component {
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            classes={{ root: classes.selectEmpty }}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.mItem }}>
+              All
+            </MenuItem>
+            <MenuItem value={'night'} classes={{ root: classes.mItem }}>
+              Night
+            </MenuItem>
+            <MenuItem value={'week'} classes={{ root: classes.mItem }}>
+              Week
+            </MenuItem>
+            <MenuItem value={'month'} classes={{ root: classes.mItem }}>
+              Month
+            </MenuItem>
+            <MenuItem value={'year'} classes={{ root: classes.mItem }}>
+              Year
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -365,10 +392,14 @@ class TrendAnalysis extends React.Component {
               onChange={this.handleChangeXaxis}
               input={<Input />}
               displayEmpty
-              classes={{ root: classes.selectEmpty }}
+              classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
             >
-              <MenuItem value={'noise'}>Noise</MenuItem>
-              <MenuItem value={'bias'}>Bias</MenuItem>
+              <MenuItem value={'noise'} classes={{ root: classes.mItem }}>
+                Noise
+              </MenuItem>
+              <MenuItem value={'bias'} classes={{ root: classes.mItem }}>
+                Bias
+              </MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -388,10 +419,14 @@ class TrendAnalysis extends React.Component {
             onChange={this.handleChangeYaxis}
             input={<Input />}
             displayEmpty
-            classes={{ root: classes.selectEmpty }}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'noise'}>Noise</MenuItem>
-            <MenuItem value={'bias'}>Bias</MenuItem>
+            <MenuItem value={'noise'} classes={{ root: classes.mItem }}>
+              Noise
+            </MenuItem>
+            <MenuItem value={'bias'} classes={{ root: classes.mItem }}>
+              Bias
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -414,33 +449,33 @@ class TrendAnalysis extends React.Component {
           >
             <FormControlLabel
               value="all"
-              control={<Radio classes={{ label: classes.text }} />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="All"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
             <FormControlLabel
               value="0"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="0"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
             <FormControlLabel
               value="1"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="1"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
             <FormControlLabel
               value="2"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="2"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
             <FormControlLabel
               value="3"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="3"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
           </RadioGroup>
         </FormControl>
@@ -464,21 +499,21 @@ class TrendAnalysis extends React.Component {
           >
             <FormControlLabel
               value="b"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="b"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
             <FormControlLabel
               value="r"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="r"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
             <FormControlLabel
               value="z"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="z"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
           </RadioGroup>
         </FormControl>

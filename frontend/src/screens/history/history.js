@@ -19,22 +19,33 @@ const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
     flex: '1',
-    height: '90%',
+    height: 'calc(100vh - 2em - 66px)',
     margin: '1em',
     width: '95vw',
   },
+  grid: {
+    display: 'grid',
+    gridTemplateRows: '4.8vh calc(100vh - 98px - 4.8vh)',
+    height: 'calc(100vh - 98px)',
+  },
+  gridInner: {
+    display: 'grid',
+    gridTemplateRows: 'calc(100vh - 153px - 5.7vh) 5.7vh',
+    height: 'calc(100vh - 153px)',
+  },
   tableBody: {
     overflow: 'auto',
-    height: 'calc(100vh - 2.4vw - 10vh - 38px - 28px)',
+    // height: 'calc(100vh - 3.6vw - 4.8vh - 2em - 198px)',
   },
   tableBodyHistory: {
     overflow: 'auto',
-    height: 'calc(100vh - 2.4vw - 15vh - 38px - 28px)',
+    // height: 'calc(100vh - 2.4vw - 3.5vh - 5.7vh - 4.8vh - 2em - 100px)',
   },
   submit: {
     paddingLeft: '16px',
     cursor: ' pointer',
     fontSize: '1.2vw',
+    verticalAlign: 'middle',
   },
   historyContainer: { WebkitAppRegion: 'no-drag' },
   tabItem: {
@@ -42,6 +53,11 @@ const styles = {
   },
   toolbar: {
     height: '5.7vh',
+    backgroundColor: 'rgb(232, 232, 232)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingLeft: '1.25vw',
+    paddingRight: '1.25vw',
   },
   tabsH: {
     minHeight: '4.8vh',
@@ -51,18 +67,33 @@ const styles = {
     minHeight: '4.8vh',
   },
   ico: {
-    fontSize: '1.2vw',
     paddingLeft: '1.25vw',
   },
   divisor: {
+    backgroundColor: 'rgba(0, 0, 0, 0.176)',
+    display: 'inline-block',
+    width: '1px',
+    color: 'rgba(0, 0, 0, 0.4)',
+    lineHeight: '56px',
     height: '3.4vh',
     marginLeft: '1.25vw',
+    verticalAlign: 'middle',
   },
   button: {
     fontSize: '1.1vw',
   },
   text: {
     fontSize: '1.2vw',
+  },
+  flexBox: {
+    display: 'flex',
+  },
+  flexBoxInner: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  btnSubmit: {
+    lineHeight: '5.7vh',
   },
 };
 
@@ -297,26 +328,33 @@ class History extends Component {
   };
 
   renderToolbar = () => {
-    // const { classes } = this.props;
+    const { classes } = this.props;
     return (
       <Toolbar style={styles.toolbar}>
-        <Icon
-          className="material-icons"
-          title="Clear QA"
-          onClick={() => this.props.navigateToQA(0)}
-          style={styles.ico}
-        >
-          clear_all
-        </Icon>
-        <Icon
-          className="material-icons"
-          title="Refresh"
-          onClick={this.refreshRows}
-          style={styles.ico}
-        >
-          refresh
-        </Icon>
-        {this.renderSelectDate()}
+        <div className={classes.flexBox}>
+          <div className={classes.flexBoxInner}>
+            <Icon
+              className="material-icons"
+              title="Clear QA"
+              onClick={() => this.props.navigateToQA(0)}
+              style={styles.text}
+            >
+              clear_all
+            </Icon>
+            <span className={classes.divisor} />
+            <Icon
+              className="material-icons"
+              title="Refresh"
+              onClick={this.refreshRows}
+              style={styles.text}
+              classes={{ root: classes.ico }}
+            >
+              refresh
+            </Icon>
+            <span className={classes.divisor} />
+          </div>
+          {this.renderSelectDate()}
+        </div>
         {!this.state.renderTabs ? null : this.renderReprocessButton()}
       </Toolbar>
     );
@@ -333,15 +371,19 @@ class History extends Component {
   };
 
   renderReprocessButton = () => {
+    const { classes } = this.props;
     if (this.state.selectedExposures.length < 1) return;
     return (
-      <span
-        style={styles.submit}
-        title="Reprocess"
-        onClick={this.handleOpenDialog}
-      >
-        Submit
-      </span>
+      <div className={classes.btnSubmit}>
+        <span className={classes.divisor} />
+        <span
+          style={styles.submit}
+          title="Reprocess"
+          onClick={this.handleOpenDialog}
+        >
+          Submit
+        </span>
+      </div>
     );
   };
 
@@ -371,8 +413,9 @@ class History extends Component {
   };
 
   renderHistory = () => {
+    const { classes } = this.props;
     return (
-      <div>
+      <div className={classes.gridInner}>
         <div style={styles.tableBodyHistory}>{this.renderRows()}</div>
         {this.renderToolbar()}
       </div>
@@ -387,7 +430,7 @@ class History extends Component {
     const { tab } = this.state;
     const { classes } = this.props;
     return (
-      <div>
+      <div className={classes.grid}>
         <Tabs
           value={tab}
           onChange={this.handleTabChange}
@@ -417,18 +460,6 @@ class History extends Component {
   render() {
     const { classes } = this.props;
     const actions = [
-      // <FlatButton
-      //   key={0}
-      //   label="Cancel"
-      //   primary={true}
-      //   onClick={this.handleCloseDialog}
-      // />,
-      // <FlatButton
-      //   key={1}
-      //   label="Submit"
-      //   primary={true}
-      //   onClick={this.reprocessExposure}
-      // />,
       <Button
         key={0}
         primary={true}
@@ -454,8 +485,6 @@ class History extends Component {
           modal={false}
           open={this.state.confirmDialog}
           onRequestClose={this.handleClose}
-          // style={styles.text}
-          // classes={{ container: classes.text }}
         >
           <DialogContent>
             <DialogContentText classes={{ root: classes.text }}>

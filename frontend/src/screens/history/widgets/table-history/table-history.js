@@ -243,19 +243,21 @@ class TableHistory extends Component {
         page={this.state.offset}
         backIconButtonProps={{
           'aria-label': 'Previous Page',
+          style: styles.wh,
         }}
         nextIconButtonProps={{
           'aria-label': 'Next Page',
-          classes: {
-            root: classes.text,
-            label: classes.text,
-          },
+          style: styles.wh,
         }}
         onChangePage={this.handleChangePage}
         onChangeRowsPerPage={this.handleChangeRowsPerPage}
         classes={{
           caption: classes.text,
           input: classes.text,
+          menuItem: classes.mItem,
+          select: classes.larg,
+          selectIcon: classes.selectIcon,
+          actions: classes.overH,
         }}
       />
     );
@@ -288,10 +290,11 @@ class TableHistory extends Component {
                         )
                       )}
                       onChange={() => this.handleChangeColumns(column.name)}
+                      classes={{ root: classes.checkWH }}
                     />
                   }
                   label={column.name}
-                  classes={{ label: classes.text }}
+                  classes={{ label: classes.text, root: classes.lbl }}
                 />
               ))}
             </FormGroup>
@@ -460,11 +463,38 @@ const styles = {
     float: 'right',
     fontSize: '1.2vw',
   },
+  larg: {
+    width: '2.2vw',
+  },
   text: {
     fontSize: '1.2vw',
   },
+  lbl: {
+    marginLeft: 0,
+  },
   iconCheck: {
     fontSize: '1.2vw',
+  },
+  selectIcon: {
+    width: '1.7vw',
+    height: '3.5vh',
+    top: 'calc(50% - 1.9vh)',
+  },
+  mItem: {
+    height: '2.4vh',
+    fontSize: '1.2vw',
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
+  },
+  checkWH: {
+    width: '1.7vw',
+    height: '4.8vh',
+    marginRight: '0.5vw',
+  },
+  overH: {
+    overflow: 'hidden',
   },
 };
 

@@ -27,6 +27,9 @@ const styles = {
   title: {
     fontSize: '1.2vw',
   },
+  field: {
+    minWidth: '100%',
+  },
 };
 
 class SelectDate extends React.Component {
@@ -116,6 +119,7 @@ class SelectDate extends React.Component {
             type="date"
             value={this.formatFilterDate(this.state.selectedStartDate)}
             onChange={this.changeStart}
+            style={styles.field}
             InputLabelProps={{
               shrink: true,
               style: styles.title,
@@ -134,6 +138,7 @@ class SelectDate extends React.Component {
             type="date"
             value={this.formatFilterDate(this.state.selectedEndDate)}
             onChange={this.changeEnd}
+            style={styles.field}
             InputLabelProps={{
               shrink: true,
               style: styles.title,

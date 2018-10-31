@@ -25,11 +25,30 @@ const styles = {
   },
   itemText: {
     fontSize: '1.1vw',
+    marginLeft: '0.5vw',
   },
   listIcon: { fontSize: '1vw', cursor: 'pointer', paddingRight: '8px' },
   listItem: { padding: '8px' },
   text: {
     fontSize: '1.2vw',
+  },
+  checkWH: {
+    width: '1.7vw',
+    height: '4.8vh',
+  },
+  iconWH: {
+    width: '1vw',
+    height: '2vh',
+    fontSize: '1.2vw',
+    lineHeight: '2.5vh',
+  },
+  lineH: {
+    height: '4.87vh',
+    marginLeft: 0,
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
   },
 };
 
@@ -79,9 +98,9 @@ class HistoryHeader extends React.Component {
   renderArrow = id => {
     if (this.props.ordering === id) {
       if (this.props.asc) {
-        return <Icon>arrow_upward</Icon>;
+        return <Icon style={styles.iconWH}>arrow_upward</Icon>;
       } else {
-        return <Icon>arrow_downward</Icon>;
+        return <Icon style={styles.iconWH}>arrow_downward</Icon>;
       }
     }
   };
@@ -233,27 +252,27 @@ class HistoryHeader extends React.Component {
       >
         <FormControlLabel
           value="abort"
-          control={<Radio />}
+          control={<Radio classes={{ root: classes.wh }} />}
           label="Abort"
-          classes={{ label: classes.itemText }}
+          classes={{ label: classes.itemText, root: classes.lineH }}
         />
         <FormControlLabel
           value="fail"
-          control={<Radio />}
+          control={<Radio classes={{ root: classes.wh }} />}
           label="Fail"
-          classes={{ label: classes.itemText }}
+          classes={{ label: classes.itemText, root: classes.lineH }}
         />
         <FormControlLabel
           value="normal"
-          control={<Radio />}
+          control={<Radio classes={{ root: classes.wh }} />}
           label="Normal"
-          classes={{ label: classes.itemText }}
+          classes={{ label: classes.itemText, root: classes.lineH }}
         />
         <FormControlLabel
           value="all"
-          control={<Radio />}
+          control={<Radio classes={{ root: classes.wh }} />}
           label="All"
-          classes={{ label: classes.itemText }}
+          classes={{ label: classes.itemText, root: classes.lineH }}
         />
       </RadioGroup>
     );
@@ -273,6 +292,7 @@ class HistoryHeader extends React.Component {
   };
 
   renderFlavorRadioGroup = () => {
+    const { classes } = this.props;
     return (
       <RadioGroup
         name="flavor"
@@ -286,13 +306,19 @@ class HistoryHeader extends React.Component {
                 <FormControlLabel
                   key={f}
                   value={f}
-                  control={<Radio />}
+                  control={<Radio classes={{ root: classes.wh }} />}
                   label={f}
+                  classes={{ label: classes.itemText, root: classes.lineH }}
                 />
               );
             })
           : null}
-        <FormControlLabel value="all" control={<Radio />} label="All" />
+        <FormControlLabel
+          value="all"
+          control={<Radio classes={{ root: classes.wh }} />}
+          label="All"
+          classes={{ label: classes.itemText, root: classes.lineH }}
+        />
       </RadioGroup>
     );
   };
@@ -319,11 +345,13 @@ class HistoryHeader extends React.Component {
   };
 
   renderCheckbox = () => {
+    const { classes } = this.props;
     if (!this.props.selectable) return;
     return (
       <TableCell style={styles.tableCell}>
         <Checkbox
           onChange={(evt, checked) => this.props.selectExposure(checked)}
+          classes={{ root: classes.checkWH }}
         />
       </TableCell>
     );

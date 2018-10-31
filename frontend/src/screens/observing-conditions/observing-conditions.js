@@ -116,6 +116,27 @@ const styles = {
     fontSize: '1vw',
     marginTop: '2vh',
   },
+  lineH: {
+    height: '4.87vh',
+    marginLeft: 0,
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
+  },
+  selectIcon: {
+    width: '1.7vw',
+    height: '3.5vh',
+    top: 'calc(50% - 1.6vh)',
+  },
+  textLabel: {
+    fontSize: '1vw',
+    marginLeft: '0.5vw',
+  },
+  mItem: {
+    height: '2.4vh',
+    fontSize: '1vw',
+  },
 };
 
 class ObservingConditions extends React.Component {
@@ -310,21 +331,21 @@ class ObservingConditions extends React.Component {
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            classes={{ root: classes.selectEmpty }}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'all'} classes={{ root: classes.text }}>
+            <MenuItem value={'all'} classes={{ root: classes.mItem }}>
               All
             </MenuItem>
-            <MenuItem value={'night'} classes={{ root: classes.text }}>
+            <MenuItem value={'night'} classes={{ root: classes.mItem }}>
               Night
             </MenuItem>
-            <MenuItem value={'week'} classes={{ root: classes.text }}>
+            <MenuItem value={'week'} classes={{ root: classes.mItem }}>
               Week
             </MenuItem>
-            <MenuItem value={'month'} classes={{ root: classes.text }}>
+            <MenuItem value={'month'} classes={{ root: classes.mItem }}>
               Month
             </MenuItem>
-            <MenuItem value={'year'} classes={{ root: classes.text }}>
+            <MenuItem value={'year'} classes={{ root: classes.mItem }}>
               Year
             </MenuItem>
           </Select>
@@ -347,24 +368,24 @@ class ObservingConditions extends React.Component {
               onChange={this.handleChangeXaxis}
               input={<Input />}
               displayEmpty
-              classes={{ root: classes.selectEmpty }}
+              classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
             >
-              {/* <MenuItem value={'snr'} classes={{ root: classes.text }}>
+              {/* <MenuItem value={'snr'} classes={{ root: classes.mItem }}>
                 SNR
               </MenuItem> */}
               <MenuItem
                 value={'skybrightness'}
-                classes={{ root: classes.text }}
+                classes={{ root: classes.mItem }}
               >
                 SKY BRIGHTNESS
               </MenuItem>
-              {/* <MenuItem value={'traceshifts'} classes={{ root: classes.text }}>
+              {/* <MenuItem value={'traceshifts'} classes={{ root: classes.mItem }}>
                 TRACE SHIFTS
               </MenuItem>
-              <MenuItem value={'psf'} classes={{ root: classes.text }}>
+              <MenuItem value={'psf'} classes={{ root: classes.mItem }}>
                 PSF FWHM
               </MenuItem> */}
-              <MenuItem value={'airmass'} classes={{ root: classes.text }}>
+              <MenuItem value={'airmass'} classes={{ root: classes.mItem }}>
                 AIRMASS
               </MenuItem>
             </Select>
@@ -386,19 +407,19 @@ class ObservingConditions extends React.Component {
             onChange={this.handleChangeYaxis}
             input={<Input />}
             displayEmpty
-            classes={{ root: classes.selectEmpty }}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            {/* <MenuItem value={'snr'} classes={{ root: classes.text }}>
+            {/* <MenuItem value={'snr'} classes={{ root: classes.mItem }}>
               SNR
             </MenuItem> */}
-            <MenuItem value={'skybrightness'} classes={{ root: classes.text }}>
+            <MenuItem value={'skybrightness'} classes={{ root: classes.mItem }}>
               SKY BRIGHTNESS
             </MenuItem>
-            {/* <MenuItem value={'traceshifts'} classes={{ root: classes.text }}>
+            {/* <MenuItem value={'traceshifts'} classes={{ root: classes.mItem }}>
               TRACE SHIFTS
             </MenuItem>
             <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
-            <MenuItem value={'airmass'} classes={{ root: classes.text }}>
+            <MenuItem value={'airmass'} classes={{ root: classes.mItem }}>
               AIRMASS
             </MenuItem>
           </Select>
@@ -444,21 +465,21 @@ class ObservingConditions extends React.Component {
           >
             <FormControlLabel
               value="b"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="b"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.textLabel, root: classes.lineH }}
             />
             <FormControlLabel
               value="r"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="r"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.textLabel, root: classes.lineH }}
             />
             <FormControlLabel
               value="z"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="z"
-              classes={{ label: classes.text }}
+              classes={{ label: classes.textLabel, root: classes.lineH }}
             />
           </RadioGroup>
         </FormControl>

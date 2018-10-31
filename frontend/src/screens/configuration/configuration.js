@@ -11,7 +11,7 @@ const styles = {
   container: {
     margin: '1em',
     overflow: 'auto',
-    height: '85vh',
+    height: 'calc(100vh - 66px - 2em)',
     width: 'calc(100vw - 2em)',
     fontSize: '1.2vw',
   },

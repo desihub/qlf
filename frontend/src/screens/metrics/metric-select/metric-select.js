@@ -8,7 +8,7 @@ const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
     margin: '0.5vh 0.5vw',
-    height: '15vh',
+    // height: '15vh',
   },
   headerMetrics: {
     display: 'grid',
@@ -27,7 +27,7 @@ const styles = {
   buttons: {
     display: 'grid',
     gridTemplateAreas: "'button button' 'button button'",
-    gridTemplateRows: '3vh 3vh 3vh',
+    // gridTemplateRows: '3vh 3vh 3vh',
     justifyContent: 'space-around',
     fontSize: '1.2vw',
   },
@@ -40,20 +40,20 @@ const styles = {
   failure: {
     color: 'red',
     fontSize: '1.2vw',
-    height: '46px',
-    lineHeight: '46px',
+    height: '4vh',
+    lineHeight: '2.5vh',
   },
   normal: {
     color: 'green',
     fontSize: '1.2vw',
-    height: '46px',
-    lineHeight: '46px',
+    height: '4vh',
+    lineHeight: '2.5vh',
   },
   warning: {
     color: '#EFD469',
     fontSize: '1.2vw',
-    height: '46px',
-    lineHeight: '46px',
+    height: '4vh',
+    lineHeight: '2.5vh',
   },
   back: {
     color: 'red',

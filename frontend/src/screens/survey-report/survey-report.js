@@ -78,6 +78,15 @@ const styles = {
     marginTop: '1vh',
     lineHeight: '2.5vh',
   },
+  selectIcon: {
+    width: '1.7vw',
+    height: '3.5vh',
+    top: 'calc(50% - 1.6vh)',
+  },
+  mItem: {
+    height: '2.4vh',
+    fontSize: '1vw',
+  },
 };
 
 class SurveyReport extends React.Component {
@@ -271,13 +280,23 @@ class SurveyReport extends React.Component {
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            classes={{ root: classes.selectEmpty }}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.mItem }}>
+              All
+            </MenuItem>
+            <MenuItem value={'night'} classes={{ root: classes.mItem }}>
+              Night
+            </MenuItem>
+            <MenuItem value={'week'} classes={{ root: classes.mItem }}>
+              Week
+            </MenuItem>
+            <MenuItem value={'month'} classes={{ root: classes.mItem }}>
+              Month
+            </MenuItem>
+            <MenuItem value={'year'} classes={{ root: classes.mItem }}>
+              Year
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -317,12 +336,20 @@ class SurveyReport extends React.Component {
             onChange={this.handleChangeProgram}
             input={<Input />}
             displayEmpty
-            classes={{ root: classes.selectEmpty }}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'bright'}>Bright</MenuItem>
-            <MenuItem value={'dark'}>Dark</MenuItem>
-            <MenuItem value={'gray'}>Gray</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.mItem }}>
+              All
+            </MenuItem>
+            <MenuItem value={'bright'} classes={{ root: classes.mItem }}>
+              Bright
+            </MenuItem>
+            <MenuItem value={'dark'} classes={{ root: classes.mItem }}>
+              Dark
+            </MenuItem>
+            <MenuItem value={'gray'} classes={{ root: classes.mItem }}>
+              Gray
+            </MenuItem>
           </Select>
         </FormControl>
       </div>

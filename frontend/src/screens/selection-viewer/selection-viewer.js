@@ -64,6 +64,15 @@ const styles = {
   },
   text: {
     fontSize: '1.1vw',
+    marginLeft: '0.5vw',
+  },
+  lineH: {
+    height: '4.87vh',
+    marginLeft: 0,
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
   },
 };
 
@@ -186,21 +195,21 @@ class SelectionViewer extends React.Component {
             >
               <FormControlLabel
                 value="b"
-                control={<Radio />}
+                control={<Radio classes={{ root: classes.wh }} />}
                 label="b"
-                classes={{ label: classes.title }}
+                classes={{ label: classes.text, root: classes.lineH }}
               />
               <FormControlLabel
                 value="r"
-                control={<Radio />}
+                control={<Radio classes={{ root: classes.wh }} />}
                 label="r"
-                classes={{ label: classes.title }}
+                classes={{ label: classes.text, root: classes.lineH }}
               />
               <FormControlLabel
                 value="z"
-                control={<Radio />}
+                control={<Radio classes={{ root: classes.wh }} />}
                 label="z"
-                classes={{ label: classes.title }}
+                classes={{ label: classes.text, root: classes.lineH }}
               />
             </RadioGroup>
           </div>
@@ -222,15 +231,15 @@ class SelectionViewer extends React.Component {
           >
             <FormControlLabel
               value="raw"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="raw"
-              classes={{ label: classes.title }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
             <FormControlLabel
               value="reduced"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="reduced"
-              classes={{ label: classes.title }}
+              classes={{ label: classes.text, root: classes.lineH }}
             />
           </RadioGroup>
         </div>
