@@ -29,7 +29,7 @@ class Footprint():
 
         plot.circle(vx, vy, fill_color='red', size=5, alpha=0.7)
 
-        plot.xaxis.axis_label = "RA (deg)"
+        plot.xaxis.axis_label = "RA (hour)"
         plot.yaxis.axis_label = "DEC (deg)"
 
         return plot
