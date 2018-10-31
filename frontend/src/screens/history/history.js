@@ -25,13 +25,13 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateRows: '4.8vh calc(100vh - 98px - 4.8vh)',
+    gridTemplateRows: '5.4vh calc(100vh - 98px - 5.4vh)',
     height: 'calc(100vh - 98px)',
   },
   gridInner: {
     display: 'grid',
-    gridTemplateRows: 'calc(100vh - 153px - 5.7vh) 5.7vh',
-    height: 'calc(100vh - 153px)',
+    gridTemplateRows: 'calc(100vh - 159px - 5.7vh) 5.7vh',
+    height: 'calc(100vh - 159px)',
   },
   tableBody: {
     overflow: 'auto',
@@ -60,11 +60,11 @@ const styles = {
     paddingRight: '1.25vw',
   },
   tabsH: {
-    minHeight: '4.8vh',
+    minHeight: '5.4vh',
   },
   tabWH: {
     minWidth: '11vw',
-    minHeight: '4.8vh',
+    minHeight: '5.4vh',
   },
   ico: {
     paddingLeft: '1.25vw',
