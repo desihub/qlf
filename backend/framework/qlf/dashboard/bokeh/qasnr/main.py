@@ -38,11 +38,7 @@ class SNR:
             process_id=process_id)]
         exposure = process.exposure
         fmap = Fibermap.objects.filter(exposure=exposure)
-        otype_tile = fmap[0].objtype
-
-        # Load data from Sframe fits:
-        frame = load_fits(self.selected_process_id, cam)
-        objlist = set(frame["FIBERMAP"].data["OBJTYPE"])
+       
         objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
 
 
@@ -71,7 +67,7 @@ class SNR:
             name_warn = ''
         except:
             exptime = 1000
-            name_warn = ' (exptime fixed in 1000)'
+            name_warn = ' (exptime fixed)'
 
         qlf_obj = ['ELG', 'LRG', 'QSO', 'STAR']
         keys_snr = list(snr.keys())

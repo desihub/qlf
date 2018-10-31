@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import PNGViewer from './png-viewer/png-viewer';
 import LogViewer from './log-viewer/log-viewer';
 import GlobalViewer from './global-viewer/global-viewer';
+import SpectraViewer from './spectra-viewer/spectra-viewer';
 
 const styles = {
   controlsContainer: {
@@ -49,6 +50,11 @@ const styles = {
   },
   button: {
     float: 'right',
+    margin: '10px 0',
+  },
+  buttonGreen: {
+    backgroundColor: 'green',
+    color: 'white',
   },
   spectrographLabel: {
     paddingBottom: 10,
@@ -64,46 +70,43 @@ class SelectionViewer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      arm: null,
+      selectArm: '',
+      selectProcessing: '',
+      selectSpectrograph: [],
+      arm: '',
       spectrograph: [],
-      processing: null,
+      processing: '',
       loading: false,
+      preview: false,
     };
   }
 
   static propTypes = {
     classes: PropTypes.object,
     spectrograph: PropTypes.bool,
+    armAll: PropTypes.bool,
     arm: PropTypes.bool,
     processing: PropTypes.bool,
   };
 
   handleChangeSpectrograph = spectrograph => {
-    this.setState({ spectrograph: [spectrograph] });
-    if (
-      this.props.processing
-        ? this.state.arm !== null &&
-          this.state.processing !== null &&
-          spectrograph !== this.state.spectrograph[0]
-        : this.state.arm !== null && spectrograph !== this.state.spectrograph[0]
-    )
-      this.loadStart();
+    this.setState({
+      spectrograph: [spectrograph],
+      preview: false,
+      loading: false,
+    });
   };
 
   handleChangeArm = evt => {
-    this.setState({ arm: evt.target.value });
-    if (
-      this.props.processing
-        ? this.state.spectrograph.length !== 0 && this.state.processing !== null
-        : this.state.spectrograph.length !== 0
-    )
-      this.loadStart();
+    this.setState({ arm: evt.target.value, preview: false, loading: false });
   };
 
   handleChangeProcessing = evt => {
-    this.setState({ processing: evt.target.value });
-    if (this.state.spectrograph.length !== 0 && this.state.arm !== null)
-      this.loadStart();
+    this.setState({
+      processing: evt.target.value,
+      preview: false,
+      loading: false,
+    });
   };
 
   loadStart = () => {
@@ -133,11 +136,24 @@ class SelectionViewer extends React.Component {
     );
   };
 
+  handleSubmit = () => {
+    this.setState({
+      selectProcessing: this.state.processing,
+      selectSpectrograph: this.state.spectrograph,
+      selectArm: this.state.arm,
+      preview: true,
+    });
+    this.loadStart();
+  };
+
   clearSelection = () => {
     this.setState({
-      processing: null,
+      selectArm: '',
+      selectProcessing: '',
+      selectSpectrograph: [],
+      processing: '',
       spectrograph: [],
-      arm: null,
+      arm: '',
       loading: false,
     });
   };
@@ -172,6 +188,9 @@ class SelectionViewer extends React.Component {
               value={this.state.arm}
               onChange={this.handleChangeArm}
             >
+              {this.props.armAll ? (
+                <FormControlLabel value="all" control={<Radio />} label="All" />
+              ) : null}
               <FormControlLabel value="b" control={<Radio />} label="b" />
               <FormControlLabel value="r" control={<Radio />} label="r" />
               <FormControlLabel value="z" control={<Radio />} label="z" />
@@ -209,6 +228,7 @@ class SelectionViewer extends React.Component {
           {this.renderSpectrographSelection()}
           {this.renderArmSelection()}
           {this.renderProcessingSelection()}
+          {this.renderSubmit()}
           {this.renderClear()}
         </div>
       );
@@ -225,22 +245,50 @@ class SelectionViewer extends React.Component {
     </Button>
   );
 
+  renderSubmit = () => (
+    <Button
+      onClick={this.handleSubmit}
+      variant="raised"
+      size="small"
+      className={this.props.classes.button}
+      classes={{ raised: this.props.classes.buttonGreen }}
+      disabled={!this.isValid()}
+    >
+      Submit
+    </Button>
+  );
+
+  isValid = () => {
+    let valid = true;
+    if (this.props.arm) {
+      valid = this.state.arm !== '';
+    }
+    if (this.props.spectrograph) {
+      valid = valid && this.state.spectrograph.length !== 0;
+    }
+    if (this.props.processing) {
+      valid = valid && this.state.processing !== '';
+    }
+    return valid;
+  };
+
   renderViewer = () => {
+    if (!this.state.preview) return;
     switch (window.location.pathname) {
       case '/ccd-viewer':
         return (
           <PNGViewer
-            processing={this.state.processing}
-            arm={this.state.arm}
-            spectrograph={this.state.spectrograph}
+            processing={this.state.selectProcessing}
+            arm={this.state.selectArm}
+            spectrograph={this.state.selectSpectrograph}
             loadEnd={this.loadEnd}
           />
         );
       case '/log-viewer':
         return (
           <LogViewer
-            arm={this.state.arm}
-            spectrograph={this.state.spectrograph}
+            arm={this.state.selectArm}
+            spectrograph={this.state.selectSpectrograph}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
             loading={this.state.loading}
@@ -252,7 +300,7 @@ class SelectionViewer extends React.Component {
             screen={'globalfiber'}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
-            arm={this.state.arm}
+            arm={this.state.selectArm}
           />
         );
       case '/focus-viewer':
@@ -261,7 +309,7 @@ class SelectionViewer extends React.Component {
             screen={'globalfocus'}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
-            arm={this.state.arm}
+            arm={this.state.selectArm}
           />
         );
       case '/snr-viewer':
@@ -270,7 +318,15 @@ class SelectionViewer extends React.Component {
             screen={'globalsnr'}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
-            arm={this.state.arm}
+            arm={this.state.selectArm}
+          />
+        );
+      case '/spectra-viewer':
+        return (
+          <SpectraViewer
+            loadEnd={this.loadEnd}
+            loadStart={this.loadStart}
+            arm={this.state.selectArm}
           />
         );
       default:

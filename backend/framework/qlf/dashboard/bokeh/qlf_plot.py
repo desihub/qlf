@@ -242,7 +242,11 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
             program_prefix = '_'+program
         else:
             program_prefix = ''
-        ref=par[key+program_prefix+'_REF']
+        try:
+            ref=par[key+program_prefix+'_REF']
+        except:
+            if qa =='xyshifts':
+                ref=[np.NaN]*2
         if qa =='snr':
             nrows=len(met['OBJLIST'])
         elif isinstance(ref,list):
