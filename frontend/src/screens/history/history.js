@@ -28,18 +28,12 @@ const styles = {
     gridTemplateRows: '5.4vh calc(100vh - 98px - 5.4vh)',
     height: 'calc(100vh - 98px)',
   },
-  gridInner: {
-    display: 'grid',
-    gridTemplateRows: 'calc(100vh - 159px - 5.7vh) 5.7vh',
-    height: 'calc(100vh - 159px)',
-  },
   tableBody: {
     overflow: 'auto',
-    // height: 'calc(100vh - 3.6vw - 4.8vh - 2em - 198px)',
   },
   tableBodyHistory: {
     overflow: 'auto',
-    // height: 'calc(100vh - 2.4vw - 3.5vh - 5.7vh - 4.8vh - 2em - 100px)',
+    height: 'calc(100vh - 98px - 5.4vh - 6.5vh)',
   },
   submit: {
     paddingLeft: '16px',
@@ -52,7 +46,7 @@ const styles = {
     fontSize: '1.2vw',
   },
   toolbar: {
-    height: '5.7vh',
+    minHeight: '6.5vh',
     backgroundColor: 'rgb(232, 232, 232)',
     display: 'flex',
     justifyContent: 'space-between',
@@ -93,7 +87,7 @@ const styles = {
     alignItems: 'center',
   },
   btnSubmit: {
-    lineHeight: '5.7vh',
+    lineHeight: '6.5vh',
   },
 };
 
@@ -330,7 +324,7 @@ class History extends Component {
   renderToolbar = () => {
     const { classes } = this.props;
     return (
-      <Toolbar style={styles.toolbar}>
+      <Toolbar className={classes.toolbar}>
         <div className={classes.flexBox}>
           <div className={classes.flexBoxInner}>
             <Icon
@@ -377,7 +371,7 @@ class History extends Component {
       <div className={classes.btnSubmit}>
         <span className={classes.divisor} />
         <span
-          style={styles.submit}
+          className={classes.submit}
           title="Reprocess"
           onClick={this.handleOpenDialog}
         >
@@ -403,8 +397,9 @@ class History extends Component {
   };
 
   renderLast = () => {
+    const { classes } = this.props;
     return (
-      <div style={styles.tableBody}>
+      <div className={classes.tableBody}>
         {this.props.type === 'process'
           ? this.renderRecentProcesses()
           : this.renderRecentExposures()}
@@ -415,8 +410,8 @@ class History extends Component {
   renderHistory = () => {
     const { classes } = this.props;
     return (
-      <div className={classes.gridInner}>
-        <div style={styles.tableBodyHistory}>{this.renderRows()}</div>
+      <div>
+        <div className={classes.tableBodyHistory}>{this.renderRows()}</div>
         {this.renderToolbar()}
       </div>
     );
@@ -438,7 +433,7 @@ class History extends Component {
           textColor="primary"
           fullWidth
           centered
-          style={styles.tabsH}
+          className={classes.tabsH}
         >
           <Tab
             label="Most Recent"
@@ -464,7 +459,7 @@ class History extends Component {
         key={0}
         primary={true}
         onClick={this.handleCloseDialog}
-        style={styles.button}
+        className={classes.button}
       >
         Cancel
       </Button>,
@@ -472,14 +467,14 @@ class History extends Component {
         key={1}
         primary={true}
         onClick={this.reprocessExposure}
-        style={styles.button}
+        className={classes.button}
       >
         Submit
       </Button>,
     ];
 
     return (
-      <div style={styles.historyContainer}>
+      <div className={classes.historyContainer}>
         <Dialog
           actions={actions}
           modal={false}
@@ -492,7 +487,7 @@ class History extends Component {
             </DialogContentText>
           </DialogContent>
         </Dialog>
-        <Card style={styles.card}>
+        <Card className={classes.card}>
           {!this.state.renderTabs ? this.renderHistory() : this.renderTabs()}
         </Card>
       </div>
