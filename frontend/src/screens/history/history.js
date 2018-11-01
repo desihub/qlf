@@ -25,7 +25,7 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateRows: '5.4vh calc(100vh - 98px - 5.4vh)',
+    gridTemplateRows: '6.5vh calc(100vh - 98px - 6.5vh)',
     height: 'calc(100vh - 98px)',
   },
   tableBody: {
@@ -33,7 +33,7 @@ const styles = {
   },
   tableBodyHistory: {
     overflow: 'auto',
-    height: 'calc(100vh - 98px - 5.4vh - 6.5vh)',
+    height: 'calc(100vh - 98px - 6.5vh - 6.5vh)',
   },
   submit: {
     paddingLeft: '16px',
@@ -54,11 +54,11 @@ const styles = {
     paddingRight: '1.25vw',
   },
   tabsH: {
-    minHeight: '5.4vh',
+    minHeight: '6.5vh',
   },
   tabWH: {
     minWidth: '11vw',
-    minHeight: '5.4vh',
+    minHeight: '6.5vh',
   },
   ico: {
     paddingLeft: '1.25vw',
