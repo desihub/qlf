@@ -162,7 +162,7 @@ class Xwsigma:
                                     high=1.01*np.max(wsigma))
 
         # ======
-        # XSIGMA
+        # XSIGMA WEDGE
 
         radius = 0.0165 
         radius_hover = 0.02
@@ -177,7 +177,7 @@ class Xwsigma:
         px = Figure(title='XSIGMA',
             x_axis_label='RA',
             y_axis_label='DEC',
-            plot_height=350,
+            plot_height=400,
             x_range= xrange_wedge,#Range1d(left,right),
             y_range=yrange_wedge,#Range1d(bottom, top),
             tools=[xsigma_hover,
@@ -218,13 +218,13 @@ class Xwsigma:
         xhist.yaxis.axis_label = "X std dev (number of pixels)"
 
         # ======
-        # WSIGMA
+        # WEDGE WSIGMA
         pw = Figure(title='WSIGMA',
                 x_axis_label='RA',
                 y_axis_label='DEC',
-                plot_height=350,
-                x_range= xrange_wedge, #Range1d(left,right),
-                y_range= yrange_wedge, #Range1d(bottom,top),
+                plot_height=400,
+                x_range=xrange_wedge, 
+                y_range=yrange_wedge, 
                 tools=[wsigma_hover,
                 "box_zoom,pan,reset,crosshair"],
                 active_drag="box_zoom")
@@ -272,12 +272,11 @@ class Xwsigma:
                 histval = 'histplusone'
             else:
                 ylabel = "Frequency"
-                yrange = (-0.1*max(hist), 1.1*max(hist))
+                yrange = (-0.0*max(hist), 1.1*max(hist))
                 bottomval = 'bottom'
                 histval = 'hist'
             return [ylabel, yrange, bottomval, histval]
 
-        yrangex = yrange
 
         xhistlabel = "XSIGMA"
         yscale = "auto"
@@ -310,9 +309,22 @@ class Xwsigma:
 
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
 
-        p_hist_x = Figure(sizing_mode='scale_width', title='', tools=[hover, "box_zoom,wheel_zoom,pan,reset"], active_drag="box_zoom", plot_height=300,
-                          y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale, y_range=yrange, x_range=hist_rg
-                          )
+        yrangex = yrange
+
+
+        p_hist_x = Figure(sizing_mode='scale_width',
+                            title='', 
+                            tools=[hover, "box_zoom,wheel_zoom,pan,reset"], 
+                            active_drag="box_zoom", 
+                            plot_height=300,
+                            y_axis_label=ylabel, 
+                            x_axis_label=xhistlabel,
+                            background_fill_color="white", 
+                            x_axis_type="auto", 
+                            y_axis_type=yscale, 
+                            y_range=yrange, 
+                            x_range=(hist_rg[0]+xw_ref[0],
+                                hist_rg[1]+xw_ref[0]), )
 
         p_hist_x.quad(top=histval, bottom=bottomval, left='left', right='right',
                       source=source_hist,
@@ -352,8 +364,19 @@ class Xwsigma:
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
         yrangew = yrange
 
-        p_hist_w = Figure(sizing_mode='scale_width', title='', tools=[hover, "box_zoom, pan,wheel_zoom,reset"], active_drag="box_zoom",
-                          y_axis_label=ylabel, x_axis_label=xhistlabel, background_fill_color="white", plot_height=300, x_axis_type="auto",    y_axis_type=yscale, y_range=yrange, x_range=hist_rg)  # , y_range=(1, 11**(int(np.log10(max(hist)))+1) ) )
+        p_hist_w = Figure(sizing_mode='scale_width', 
+                            title='', 
+                            tools=[hover, "box_zoom, pan,wheel_zoom,reset"], 
+                            active_drag="box_zoom",
+                            y_axis_label=ylabel, 
+                            x_axis_label=xhistlabel, 
+                            background_fill_color="white", 
+                            plot_height=300, 
+                            x_axis_type="auto",    
+                            y_axis_type=yscale, 
+                            y_range=yrange, 
+                            x_range=(hist_rg[0]+xw_ref[1], 
+                                    hist_rg[1] +xw_ref[1]), )
 
         p_hist_w.quad(top=histval, bottom=bottomval, left='left', right='right',
                       source=source_hist,
@@ -365,34 +388,39 @@ class Xwsigma:
         bname = 'XWSIGMA'
 
         for ialert in nrg:  # par[bname+'_NORMAL_RANGE']:
-            spans = Span(location=ialert, dimension='height', line_color='green',
-                         line_dash='dashed', line_width=2)
+            spans = Span(location=ialert+xw_ref[0], 
+                        dimension='height',
+                        line_color='green',
+                        line_dash='dashed', line_width=2)
             p_hist_x.add_layout(spans)
-            my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data',
-                             text='Normal Range', text_color='green', angle=np.pi/2.)
+            my_label = Label(x=ialert+xw_ref[0], 
+                            y= yrangex[-1]/2.2,
+                            y_units='data',
+                            text='Normal Range',
+                            text_color='green', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
 
         for ialert in wrg:  # par[bname+'_WARN_RANGE']:
-            spans = Span(location=ialert, dimension='height', line_color='tomato',
+            spans = Span(location=ialert+xw_ref[0], dimension='height', line_color='tomato',
                          line_dash='dotdash', line_width=2)
             p_hist_x.add_layout(spans)
-            my_label = Label(x=ialert, y=yrangex[-1]/2.2, y_units='data',
+            my_label = Label(x=ialert+xw_ref[0], y=yrangex[-1]/2.2, y_units='data',
                              text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
 
         for ialert in nrg:  # par[bname+'_NORMAL_RANGE']:
-            spans = Span(location=ialert, dimension='height', line_color='green',
+            spans = Span(location=ialert+xw_ref[1], dimension='height', line_color='green',
                          line_dash='dashed', line_width=2)
             p_hist_w.add_layout(spans)
-            my_label = Label(x=ialert, y=yrangew[-1]/2.2, y_units='data',
+            my_label = Label(x=ialert+xw_ref[1], y=yrangew[-1]/2.2, y_units='data',
                              text='Normal Range', text_color='green', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
         for ialert in wrg:  # par[bname+'_WARN_RANGE']:
-            spans = Span(location=ialert, dimension='height', line_color='tomato',
+            spans = Span(location=ialert+xw_ref[1], dimension='height', line_color='tomato',
                          line_dash='dotdash', line_width=2)
             p_hist_w.add_layout(spans)
-            my_label = Label(x=ialert, y=yrangew[-1]/2.2, y_units='data',
+            my_label = Label(x=ialert+xw_ref[1], y=yrangew[-1]/2.2, y_units='data',
                              text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
@@ -454,6 +482,15 @@ class Xwsigma:
         alert_w = alert_table(nrg, wrg)
         tb_alert_x = Div(text=alert_x)
         tb_alert_w = Div(text=alert_w)
+
+        font_size = "1.2vw"
+        for plot in [px, pw, xhist,whist,p_hist_x,p_hist_w,xamp,wamp]:
+            plot.xaxis.major_label_text_font_size = font_size
+            plot.yaxis.major_label_text_font_size = font_size
+            plot.xaxis.axis_label_text_font_size = font_size
+            plot.yaxis.axis_label_text_font_size = font_size
+            plot.legend.label_text_font_size = font_size
+            plot.title.text_font_size = font_size
 
 
         layout = column(
