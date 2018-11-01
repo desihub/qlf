@@ -106,6 +106,7 @@ class Countbins:
 
         # ----------------
         # Wedge
+
         if flavor == "science":
      
             if ra is None or dec is None:
@@ -134,22 +135,23 @@ class Countbins:
 
             hover = HoverTool(tooltips=count_tooltip)
 
-            radius = 0.013
-            radius_hover = 0.015
-
-            # axes limit
-            xmin, xmax = [min(ra), max(ra)]
-            ymin, ymax = [min(dec), max(dec)]
-            xfac, yfac = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
-            left, right = xmin - xfac, xmax+xfac
-            bottom, top = ymin-yfac, ymax+yfac
+            radius = 0.0165  
+            radius_hover = 0.02  
+            
+            # centralize wedges in plots:
+            ra_center=0.5*(max(ra)+min(ra))
+            dec_center=0.5*(max(dec)+min(dec))
+            xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
+            yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
 
             p2 = Figure(title='GOOD FIBERS',
             plot_width=450,
-            plot_height=350,
+            plot_height=400,
             active_drag="box_zoom",
             x_axis_label='RA',
             y_axis_label='DEC',
+            x_range=xrange_wedge,
+            y_range=yrange_wedge,
             tools=[hover,
             "box_zoom,pan,reset,lasso_select,crosshair,tap"],
             toolbar_location="right")
