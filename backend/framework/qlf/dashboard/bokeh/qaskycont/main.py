@@ -2,7 +2,7 @@ from bokeh.plotting import Figure
 from bokeh.layouts import column, widgetbox
 
 from bokeh.models import HoverTool, ColumnDataSource
-from bokeh.models import LinearColorMapper, ColorBar
+from bokeh.models import LinearColorMapper, ColorBar, Range1d
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import write_info, get_palette,\
@@ -90,19 +90,31 @@ class Skycont:
 
         mapper = LinearColorMapper(palette=my_palette,
                                    low=np.min(sky),
-                                   high=np.max(sky))
+                                   high=np.max(sky),
+                                   nan_color='darkgray')
 
-        radius = 0.013  # 0.015
-        radius_hover = 0.015  # 0.0165
+        radius = 0.0165  # 0.013
+        radius_hover = 0.02  # 0.015
+
+        # centralize wedges in plots:
+        ra_center=0.5*(max(ra)+min(ra))
+        dec_center=0.5*(max(dec)+min(dec))
+        xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
+        yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
 
         p2 = Figure(title='SKY_CONT',
-                    x_axis_label='RA', y_axis_label='DEC',
-                    plot_width=500, plot_height=380,
-                    tools=[hover, "pan,box_zoom,reset,tap"], active_drag="box_zoom",)
+                    x_axis_label='RA', 
+                    y_axis_label='DEC',
+                    plot_width=500, 
+                    plot_height=380,
+                    x_range=xrange_wedge, 
+                    y_range=yrange_wedge,
+                    tools=[hover, "pan,box_zoom, wheel_zoom,reset,tap"], 
+                    active_drag="box_zoom",)
 
         p2.circle('ra', 'dec', source=source2, radius=radius,
                   fill_color={'field': 'skycont', 'transform': mapper},
-                  line_color='black', line_width=0.1)
+                  line_color='black', line_width=0.3)
 
         # marking the Hover point
         p2.circle('ra', 'dec', source=source2, radius=radius_hover, fill_color=None, line_color=None, hover_fill_color={
