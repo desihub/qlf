@@ -21,6 +21,8 @@ const styles = {
     justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
+    paddingRight: '10px',
+    boxSizing: 'border-box',
   },
   column: {
     display: 'flex',
@@ -49,6 +51,10 @@ const styles = {
   },
   formControl: {
     width: '100%',
+  },
+  buttons: {
+    display: 'grid',
+    width: '10vw',
   },
   button: {
     float: 'right',
@@ -363,8 +369,10 @@ class SurveyReport extends React.Component {
         {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
         {this.renderProgramSelection()}
-        {this.renderSubmit()}
-        {this.renderClear()}
+        <div className={classes.buttons}>
+          {this.renderSubmit()}
+          {this.renderClear()}
+        </div>
       </div>
     );
   };

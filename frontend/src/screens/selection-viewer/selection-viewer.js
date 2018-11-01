@@ -22,6 +22,8 @@ const styles = {
     justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
+    paddingRight: '10px',
+    boxSizing: 'border-box',
   },
   column: {
     display: 'flex',
@@ -47,6 +49,10 @@ const styles = {
   },
   selection: {
     textAlign: 'center',
+  },
+  buttons: {
+    display: 'grid',
+    width: '10vw',
   },
   button: {
     float: 'right',
@@ -210,10 +216,10 @@ class SelectionViewer extends React.Component {
               onChange={this.handleChangeArm}
             >
               {this.props.armAll ? (
-                <FormControlLabel 
-                  value="all" 
-                  control={<Radio classes={{ root: classes.wh }} /> />} 
-                  label="All"        
+                <FormControlLabel
+                  value="all"
+                  control={<Radio classes={{ root: classes.wh }} />}
+                  label="All"
                   classes={{ label: classes.text, root: classes.lineH }}
                 />
               ) : null}
@@ -278,8 +284,10 @@ class SelectionViewer extends React.Component {
           {this.renderSpectrographSelection()}
           {this.renderArmSelection()}
           {this.renderProcessingSelection()}
-          {this.renderSubmit()}
-          {this.renderClear()}
+          <div className={classes.buttons}>
+            {this.renderSubmit()}
+            {this.renderClear()}
+          </div>
         </div>
       );
   };

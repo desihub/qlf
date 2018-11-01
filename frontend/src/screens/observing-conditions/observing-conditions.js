@@ -27,9 +27,8 @@ const styles = {
     // justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
-    paddingBottom: '5px',
     paddingRight: '10px',
-    boxSizung: 'border-box',
+    boxSizing: 'border-box',
   },
   controlsContainerInner: {
     display: 'flex',
@@ -68,6 +67,10 @@ const styles = {
   },
   formControl: {
     width: '100%',
+  },
+  buttons: {
+    display: 'grid',
+    // width: '10vw',
   },
   button: {
     float: 'right',
@@ -541,8 +544,10 @@ class ObservingConditions extends React.Component {
         {this.renderYaxisSelection()}
         {this.renderSpectrographSelection()}
         {this.renderArmSelection()}
-        {this.renderSubmit()}
-        {this.renderClear()}
+        <div className={classes.buttons}>
+          {this.renderSubmit()}
+          {this.renderClear()}
+        </div>
       </div>
     );
   };

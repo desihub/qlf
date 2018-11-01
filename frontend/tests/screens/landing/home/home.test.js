@@ -33,7 +33,7 @@ describe('Landing Home', () => {
         .at(0)
         .text()
     ).toBe(
-      'Pipeline Monitor Control and monitor the execution of the Quick Look pipeline'
+      'Pipeline MonitorControl and monitor the execution of the Quick Look pipeline'
     );
     expect(
       wrapper
