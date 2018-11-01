@@ -35,14 +35,11 @@ class Skypeak:
         ra = gen_info['RA']
         dec = gen_info['DEC']
 
-        # ============================================
-        # values to plot:
+        obj_type = sort_obj(gen_info)
+
         name = 'PEAKCOUNT'
         metr = skypeak
 
-        # ============================================
-        # THIS: Given the set up in the block above,
-        #       we have the bokeh plots
 
         my_palette = get_palette("viridis")
 
@@ -68,19 +65,15 @@ class Skypeak:
         """
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
-        # int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
-        qlf_fiberid = np.arange(0, 500)  # [c1:c2]
-
-        obj_type = sort_obj(gen_info)
-        # ---------------------------------
+        qlf_fiberid = np.arange(0, 500)
 
         peak_hover = HoverTool(tooltips=peak_tooltip)
 
         peakcount_fib = metr['PEAKCOUNT_FIB']
 
         source = ColumnDataSource(data={
-            'x1': ra, #gen_info['RA'][c1:c2],
-            'y1': dec, #gen_info['DEC'][c1:c2],
+            'x1': ra, 
+            'y1': dec,
             'peakcount_fib': peakcount_fib,
             'QLF_FIBERID': qlf_fiberid,
             'OBJ_TYPE': obj_type,
@@ -91,10 +84,8 @@ class Skypeak:
                                    low=0.98*np.min(peakcount_fib),
                                    high=1.02*np.max(peakcount_fib))
 
-        radius = 0.013
-        radius_hover = 0.015
-        radius = 0.0165  # 0.013
-        radius_hover = 0.02  # 0.015
+        radius = 0.0165  
+        radius_hover = 0.02
 
         # centralize wedges in plots:
         ra_center=0.5*(max(ra)+min(ra))
@@ -109,7 +100,7 @@ class Skypeak:
         left, right = xmin - xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
-        p = Figure(title='PEAKCOUNT: sum of counts in peak regions ', 
+        p = Figure(title='PEAKCOUNT', #sum of counts in peak regions 
                     x_axis_label='RA', 
                     y_axis_label='DEC',
                     plot_width=500, 
@@ -131,7 +122,6 @@ class Skypeak:
         #taptool = p.select(type=TapTool)
         #taptool.callback = OpenURL(url=url)
 
-        # bokeh.pydata.org/en/latest/docs/reference/models/annotations.html
         xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
                               title="counts",
                               major_label_text_font_style="bold", padding=26,
@@ -199,7 +189,7 @@ class Skypeak:
         alert_txt = alert_table(nrg, wrg)
         alert_tb = Div(text=alert_txt)
 
-        font_size = "1vw"
+        font_size = "1.2vw"
         for plot in [p_hist, p]:
             plot.xaxis.major_label_text_font_size = font_size
             plot.yaxis.major_label_text_font_size = font_size
@@ -209,7 +199,6 @@ class Skypeak:
             plot.title.text_font_size = font_size
 
 
-        #row1 = column(p, p_hist)
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
                         widgetbox(metric_tb), widgetbox(alert_tb),
                         column(p, sizing_mode='scale_both'),

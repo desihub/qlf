@@ -382,8 +382,8 @@ class SNR:
                                        low=rmin - dy, high=rmax+dy)
             fill_color = {'field': 'resid_snr', 'transform': mapper}
 
-        radius = 0.0165  # 0.013
-        radius_hover = 0.02  # 0.015
+        radius = 0.0165  
+        radius_hover = 0.02  
         # centralize wedges in plots:
         ra_center=0.5*(max(ra)+min(ra))
         dec_center=0.5*(max(dec)+min(dec))

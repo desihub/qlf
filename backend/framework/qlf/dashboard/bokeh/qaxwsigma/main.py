@@ -124,8 +124,7 @@ class Xwsigma:
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
         # determining the position of selected cam fibers:
-
-        obj_type = sort_obj(gen_info)  # [""]*500
+        obj_type = sort_obj(gen_info)
         # ---------------------------------
 
         xsigma_hover = HoverTool(tooltips=xsigma_tooltip)
@@ -165,8 +164,8 @@ class Xwsigma:
         # ======
         # XSIGMA
 
-        radius = 0.0165  # 0.013
-        radius_hover = 0.02  # 0.015
+        radius = 0.0165 
+        radius_hover = 0.02
 
         # centralize wedges in plots:
         ra_center=0.5*(max(ra)+min(ra))
