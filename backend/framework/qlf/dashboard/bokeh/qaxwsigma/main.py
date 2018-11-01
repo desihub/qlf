@@ -165,16 +165,22 @@ class Xwsigma:
         # ======
         # XSIGMA
 
-        radius = 0.013  # 0.015
-        radius_hover = 0.015  # 0.0165
+        radius = 0.0165  # 0.013
+        radius_hover = 0.02  # 0.015
+
+        # centralize wedges in plots:
+        ra_center=0.5*(max(ra)+min(ra))
+        dec_center=0.5*(max(dec)+min(dec))
+        xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
+        yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
+
 
         px = Figure(title='XSIGMA',
             x_axis_label='RA',
             y_axis_label='DEC',
             plot_height=350,
-            x_range=Range1d(left,right),
-            y_range=Range1d(bottom,
-            top),
+            x_range= xrange_wedge,#Range1d(left,right),
+            y_range=yrange_wedge,#Range1d(bottom, top),
             tools=[xsigma_hover,
             "box_zoom,pan,reset,crosshair"],
             active_drag="box_zoom")
@@ -218,8 +224,8 @@ class Xwsigma:
                 x_axis_label='RA',
                 y_axis_label='DEC',
                 plot_height=350,
-                x_range=Range1d(left,right),
-                y_range=Range1d(bottom,top),
+                x_range= xrange_wedge, #Range1d(left,right),
+                y_range= yrange_wedge, #Range1d(bottom,top),
                 tools=[wsigma_hover,
                 "box_zoom,pan,reset,crosshair"],
                 active_drag="box_zoom")

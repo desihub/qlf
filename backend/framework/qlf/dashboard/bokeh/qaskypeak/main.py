@@ -3,7 +3,7 @@ from bokeh.layouts import row, column, widgetbox
 
 from bokeh.models import HoverTool, ColumnDataSource, Span
 from bokeh.models import LinearColorMapper, ColorBar
-from bokeh.models import TapTool, OpenURL
+from bokeh.models import TapTool, OpenURL, Range1d
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
@@ -32,6 +32,8 @@ class Skypeak:
         par = mergedqa['TASKS']['CHECK_SPECTRA']['PARAMS']
 
         gen_info = mergedqa['GENERAL_INFO']
+        ra = gen_info['RA']
+        dec = gen_info['DEC']
 
         # ============================================
         # values to plot:
@@ -67,10 +69,8 @@ class Skypeak:
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
         # int(selected_spectrograph)*500, (int(selected_spectrograph)+1)*500
-        c1, c2 = 0, 500
         qlf_fiberid = np.arange(0, 500)  # [c1:c2]
 
-        # To be abandoned:
         obj_type = sort_obj(gen_info)
         # ---------------------------------
 
@@ -79,8 +79,8 @@ class Skypeak:
         peakcount_fib = metr['PEAKCOUNT_FIB']
 
         source = ColumnDataSource(data={
-            'x1': gen_info['RA'][c1:c2],
-            'y1': gen_info['DEC'][c1:c2],
+            'x1': ra, #gen_info['RA'][c1:c2],
+            'y1': dec, #gen_info['DEC'][c1:c2],
             'peakcount_fib': peakcount_fib,
             'QLF_FIBERID': qlf_fiberid,
             'OBJ_TYPE': obj_type,
@@ -93,6 +93,14 @@ class Skypeak:
 
         radius = 0.013
         radius_hover = 0.015
+        radius = 0.0165  # 0.013
+        radius_hover = 0.02  # 0.015
+
+        # centralize wedges in plots:
+        ra_center=0.5*(max(ra)+min(ra))
+        dec_center=0.5*(max(dec)+min(dec))
+        xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
+        yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
 
         # axes limit
         xmin, xmax = [min(gen_info['RA'][:]), max(gen_info['RA'][:])]
@@ -101,8 +109,14 @@ class Skypeak:
         left, right = xmin - xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
-        p = Figure(title='PEAKCOUNT: sum of counts in peak regions ', x_axis_label='RA', y_axis_label='DEC',
-                   plot_width=500, plot_height=400, tools=[peak_hover, "box_zoom, wheel_zoom,pan,reset,crosshair, tap"], active_drag="box_zoom",)
+        p = Figure(title='PEAKCOUNT: sum of counts in peak regions ', 
+                    x_axis_label='RA', 
+                    y_axis_label='DEC',
+                    plot_width=500, 
+                    plot_height=400,
+                    x_range=xrange_wedge,
+                    y_range=yrange_wedge, 
+                    tools=[peak_hover, "box_zoom, wheel_zoom,pan,reset,crosshair, tap"], active_drag="box_zoom",)
 
         # Color Map
         p.circle('x1', 'y1', source=source, name="data", radius=radius,
