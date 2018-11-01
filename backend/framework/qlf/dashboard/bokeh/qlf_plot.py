@@ -242,11 +242,18 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
             program_prefix = '_'+program
         else:
             program_prefix = ''
-        ref=par[key+program_prefix+'_REF']
-        if isinstance(ref,list):
+        try:
+            ref=par[key+program_prefix+'_REF']
+        except:
+            if qa =='xyshifts':
+                ref=[np.NaN]*2
+        if qa =='snr':
+            nrows=len(met['OBJLIST'])
+        elif isinstance(ref,list):
             nrows=len(ref)
         else:
             nrows = 1
+
 
     try:
         curexp = met[key]
@@ -262,6 +269,9 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
             x = curexp[i]
             if qa=='arc':
                 ref_tb.append('%d'%ref[i])
+            elif (qa=='snr') & (nrows != len(ref)):
+                try: ref_tb.append('%.2f'%ref[i])
+                except: ref_tb.append('')
             else:
                 ref_tb.append('%.2f'%ref[i])
 
@@ -293,7 +303,7 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         # per_TGT
         if objtype is not None:
             objtype_tb = ['STAR' if i == 'STD' else i for i in objtype]
-            key_tb = [qa_metrics[qa]] * nrows
+            key_tb = [qa_metrics[qa]+" (%s)"%x for x in objtype_tb ]# * nrows
         else:
             key_tb = [qa_metrics[qa]] * nrows
 

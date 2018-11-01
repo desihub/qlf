@@ -91,8 +91,8 @@ class HistoryData extends React.Component {
     if (!Array.isArray(qaTests)) return null;
     if (qaTests) {
       if (
-        JSON.stringify(qaTests).includes('None') &&
-        JSON.stringify(qaTests).includes('ALARM') &&
+        JSON.stringify(qaTests).includes('None') ||
+        JSON.stringify(qaTests).includes('ALARM') ||
         JSON.stringify(qaTests).includes('FAIL')
       )
         return 0;
@@ -176,6 +176,10 @@ class HistoryData extends React.Component {
     const status = !row.runtime
       ? processing ? 'pending' : 'aborted'
       : this.qaState();
+    const flavor = isNotProcessingHistory
+      ? row['flavor']
+      : row.exposure['flavor'];
+
     switch (type) {
       case 'parent':
         return (
@@ -249,7 +253,7 @@ class HistoryData extends React.Component {
             classes={{ root: classes.text }}
           >
             <Icon
-              onClick={evt => this.props.setAnchorEl(evt, processId)}
+              onClick={evt => this.props.setAnchorEl(evt, processId, flavor)}
               style={styles.notificationsIcon}
               classes={{ root: classes.ico }}
             >

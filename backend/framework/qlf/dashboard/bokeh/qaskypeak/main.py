@@ -70,6 +70,7 @@ class Skypeak:
         c1, c2 = 0, 500
         qlf_fiberid = np.arange(0, 500)  # [c1:c2]
 
+        # To be abandoned:
         obj_type = sort_obj(gen_info)
         # ---------------------------------
 
@@ -101,7 +102,7 @@ class Skypeak:
         bottom, top = ymin-yfac, ymax+yfac
 
         p = Figure(title='PEAKCOUNT: sum of counts in peak regions ', x_axis_label='RA', y_axis_label='DEC',
-                   plot_width=500, plot_height=400, tools=[peak_hover, "box_zoom,pan,reset,crosshair, tap"], active_drag="box_zoom",)
+                   plot_width=500, plot_height=400, tools=[peak_hover, "box_zoom, wheel_zoom,pan,reset,crosshair, tap"], active_drag="box_zoom",)
 
         # Color Map
         p.circle('x1', 'y1', source=source, name="data", radius=radius,
