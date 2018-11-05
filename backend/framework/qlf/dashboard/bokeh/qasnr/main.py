@@ -9,8 +9,7 @@ from bokeh.models import Spacer, Range1d
 from dashboard.bokeh.helper import write_description, write_info
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import sort_obj, mtable, alert_table
-from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics,\
-    load_fits
+from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
@@ -31,14 +30,7 @@ class SNR:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-
-        # process_id = self.selected_process_id
-        # process = Process.objects.get(pk=process_id)
-        # joblist = [entry.camera.camera for entry in Job.objects.filter(
-        #     process_id=process_id)]
-        # exposure = process.exposure
-        # fmap = Fibermap.objects.filter(exposure=exposure)
-       
+        
         # list of available object in petal
         objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
         if 'SKY' in objlist:
