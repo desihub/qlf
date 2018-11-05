@@ -11,9 +11,8 @@ const styles = {
     justifyContent: 'center',
   },
   main: {
-    maxWidth: '70vw',
+    width: '70vw',
     flexDirection: 'column',
-    // maxHeight: '65vh',
     height: 'calc(100vh - 223px)',
     overflowY: 'auto',
     margin: '16px',

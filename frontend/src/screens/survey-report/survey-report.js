@@ -30,11 +30,12 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: '12vw calc(100vw - 19vw)',
+    gridTemplateColumns: '12vw calc(100vw - 64px - 12vw)',
+    width: 'calc(100vw - 64px)',
     height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: 'calc(100vw - 17vw)',
+    width: 'calc(100vw - 64px - 12vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',
