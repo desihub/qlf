@@ -52,8 +52,6 @@ export default class ContactUs extends React.Component {
   };
 
   sendEmail = () => {
-    const required = 'Required';
-    const invalid = 'Invalid email';
     const name = this.state.name;
     const message = this.state.message;
     const email = this.state.email;
@@ -69,10 +67,10 @@ export default class ContactUs extends React.Component {
       QlfApi.sendTicketMail(email, message, subject, name);
     } else {
       this.setState({
-        nameError: name ? '' : required,
-        messageError: message ? '' : required,
-        emailError: regex.test(email) ? '' : invalid,
-        subjectError: subject ? '' : required,
+        nameError: name === undefined,
+        messageError: message === undefined,
+        emailError: !regex.test(email),
+        subjectError: subject === undefined,
       });
     }
   };
@@ -86,21 +84,21 @@ export default class ContactUs extends React.Component {
             fullWidth={true}
             label="Name"
             onChange={this.handleChange('name')}
-            errortext={this.state.nameError}
+            error={this.state.nameError}
             style={styles.text}
           />
           <TextField
             fullWidth={true}
             label="Email"
             onChange={this.handleChange('email')}
-            errortext={this.state.emailError}
+            error={this.state.emailError}
             style={styles.text}
           />
           <TextField
             fullWidth={true}
             label="Subject"
             onChange={this.handleChange('subject')}
-            errortext={this.state.subjectError}
+            error={this.state.subjectError}
             style={styles.text}
           />
           <TextField
@@ -109,7 +107,7 @@ export default class ContactUs extends React.Component {
             rows={4}
             fullWidth={true}
             onChange={this.handleChange('message')}
-            errortext={this.state.messageError}
+            error={this.state.messageError}
             style={styles.text}
           />
           <Recaptcha
