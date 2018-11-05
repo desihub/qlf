@@ -5,7 +5,7 @@ from bokeh.plotting import Figure
 from bokeh.layouts import column, widgetbox, layout
 from bokeh.models import LinearColorMapper, ColorBar
 from bokeh.models.widgets import PreText, Div
-from bokeh.models import Spacer
+from bokeh.models import Spacer, Range1d
 from dashboard.bokeh.helper import write_description, write_info
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import sort_obj, mtable, alert_table
@@ -399,8 +399,14 @@ class SNR:
                                        low=rmin - dy, high=rmax+dy)
             fill_color = {'field': 'resid_snr', 'transform': mapper}
 
-        radius = 0.013
-        radius_hover = 0.015
+        radius = 0.0165  
+        radius_hover = 0.02  
+        # centralize wedges in plots:
+        ra_center=0.5*(max(ra)+min(ra))
+        dec_center=0.5*(max(dec)+min(dec))
+        xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
+        yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
+
 
         # axes limit
         xmin, xmax = [min(ra[:]), max(ra[:])]
@@ -412,12 +418,15 @@ class SNR:
 
 
         # WEDGE RESIDUAL plots
-
-        p_res = Figure(title='Residual SNR'+name_warn, active_drag="box_zoom",
-                    x_axis_label='RA', y_axis_label='DEC',
-                    plot_width=380, plot_height=380,
-                    tools=[snr_hover, "pan, box_zoom, reset, crosshair, tap"],)
-                    # ,x_range=(left,right), y_range=(bottom, top) )
+        p_res = Figure(title='Residual SNR'+name_warn,
+                    active_drag="box_zoom",
+                    x_axis_label='RA',
+                    y_axis_label='DEC',
+                    plot_width=380,
+                    plot_height=380,
+                    x_range=xrange_wedge,
+                    y_range=yrange_wedge,
+                    tools=[snr_hover, "pan,box_zoom,reset,crosshair, tap"],)
 
         # Color Map
         p_res.circle('x1', 'y1', source=source, name="data", radius=radius,
@@ -493,7 +502,8 @@ class SNR:
         median_hover = HoverTool(tooltips=median_tooltip, mode='vline')
 
         p_m = Figure(title='',
-                     x_axis_label='Fiber', y_axis_label='Median SNR',
+                     x_axis_label='Fiber',
+                     y_axis_label='Median SNR',
                      plot_height=300,
                      active_drag="box_zoom",
                      tools=[median_hover, "pan,box_zoom,reset,crosshair"],
