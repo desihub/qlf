@@ -14,6 +14,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import QlfApi from '../../containers/offline/connection/qlf-api';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import DialogActions from '@material-ui/core/DialogActions';
 
 const styles = {
   card: {
@@ -485,6 +486,7 @@ class History extends Component {
             <DialogContentText classes={{ root: classes.text }}>
               Reprocess {this.exposuresToReprocess()}?
             </DialogContentText>
+            <DialogActions>{actions}</DialogActions>
           </DialogContent>
         </Dialog>
         <Card className={classes.card}>
