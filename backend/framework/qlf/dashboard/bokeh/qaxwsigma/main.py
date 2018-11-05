@@ -74,10 +74,9 @@ class Xwsigma:
 
         xfiber = np.arange(len(xsigma))
         wfiber = np.arange(len(wsigma))
-
-        if flavor is not 'science':
-            ra =np.full(500,np.nan)
-            dec=np.full(500,np.nan)
+        if mergedqa['FLAVOR'].upper() != 'SCIENCE':
+            ra = np.full(500,np.nan)
+            dec= np.full(500,np.nan)
 
         source = ColumnDataSource(data={
             'x1': ra,  
@@ -113,7 +112,7 @@ class Xwsigma:
                 </div>
 
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
                     <span style="font-size: 1vw; color: #515151;">@xfiber</span>
                 </div>
 
@@ -139,7 +138,7 @@ class Xwsigma:
                     <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
                     <span style="font-size: 1vw; color: #515151;">@wfiber</span>
                 </div>
 
@@ -154,6 +153,8 @@ class Xwsigma:
 
         xsigma_hover = HoverTool(tooltips=xsigma_tooltip)
         wsigma_hover = HoverTool(tooltips=wsigma_tooltip)
+        xsigma_std = HoverTool(tooltips=xsigma_tooltip, mode='vline')
+        wsigma_std = HoverTool(tooltips=wsigma_tooltip, mode='vline')
 
 
 
@@ -179,16 +180,21 @@ class Xwsigma:
             # ============
             # XSIGMA WEDGE
 
-            radius = 0.013  # 0.015
-            radius_hover = 0.015  # 0.0165
+            radius = 0.0165 
+            radius_hover = 0.02
 
-            px = figure(title='XSIGMA',
+            # centralize wedges in plots:
+            ra_center=0.5*(max(ra)+min(ra))
+            dec_center=0.5*(max(dec)+min(dec))
+            xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
+            yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
+
+            px = Figure(title='XSIGMA',
                 x_axis_label='RA',
                 y_axis_label='DEC',
                 plot_height=350,
-                x_range=Range1d(left,right),
-                y_range=Range1d(bottom,
-                top),
+                x_range=xrange_wedge,
+                y_range=yrange_wedge,
                 tools=[xsigma_hover,
                 "box_zoom,pan,reset,crosshair"],
                 active_drag="box_zoom")
@@ -217,12 +223,12 @@ class Xwsigma:
 
             # ============
             # WSIGMA WEDGE
-            pw = figure(title='WSIGMA',
+            pw = Figure(title='WSIGMA',
                     x_axis_label='RA',
                     y_axis_label='DEC',
                     plot_height=350,
-                    x_range=Range1d(left,right),
-                    y_range=Range1d(bottom,top),
+                    x_range=xrange_wedge,
+                    y_range=yrange_wedge,
                     tools=[wsigma_hover,
                     "box_zoom,pan,reset,crosshair"],
                     active_drag="box_zoom")
@@ -258,7 +264,7 @@ class Xwsigma:
         d_yplt = (max(xsigma) - min(xsigma))*0.1
         yrange = [0, max(xsigma) + d_yplt]
 
-        xhist = plot_hist(xsigma_hover, yrange, ph=300)
+        xhist = plot_hist(xsigma_std, yrange, ph=300)
         xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data', source=source,
                    fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
                    hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -270,7 +276,7 @@ class Xwsigma:
         d_yplt = (max(wsigma) - min(wsigma))*0.1
         yrange = [0, max(wsigma) + d_yplt]
 
-        whist = plot_hist(wsigma_hover, yrange, ph=300)
+        whist = plot_hist(wsigma_std, yrange, ph=300)
         whist.quad(top='wsigma', bottom='bottom', left='left', right='right', name='data', source=source,
                    fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
                    hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -288,7 +294,7 @@ class Xwsigma:
                 histval = 'histplusone'
             else:
                 ylabel = "Frequency"
-                yrange = (-0.0*max(hist), 1.1*max(hist))
+                yrange = (0.0*max(hist), 1.1*max(hist))
                 bottomval = 'bottom'
                 histval = 'hist'
             return [ylabel, yrange, bottomval, histval]
