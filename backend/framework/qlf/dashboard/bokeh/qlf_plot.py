@@ -10,7 +10,9 @@ import numpy as np
 
 
 def sort_obj(gen_info):
-    """ Hover info of objects type in fibers plots.
+    """ Hover info of objects type in fibers (wedge) plots.
+            input: gen_info= mergedqa['GENERAL_INFO']
+            returns: list(500)
     """
     obj_type = ['']*500
     for key in ['LRG', 'ELG', 'QSO', 'STAR', 'SKY']:
@@ -304,6 +306,8 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         if objtype is not None:
             objtype_tb = ['STAR' if i == 'STD' else i for i in objtype]
             key_tb = [qa_metrics[qa]+" (%s)"%x for x in objtype_tb ]# * nrows
+            # key_tb = [qa_metrics[qa] + ' ( %s)' % objtype_tb[i]
+            #   for i in list(range(nrows))]
         else:
             key_tb = [qa_metrics[qa]] * nrows
 
