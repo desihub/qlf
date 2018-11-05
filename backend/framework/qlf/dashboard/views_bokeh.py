@@ -117,9 +117,9 @@ def get_footprint(request):
         exposures_ra = list()
         exposures_dec = list()
         for exposure in processed_exposures:
-            if exposure.telra:
+            if exposure.telra is not None:
                 exposures_ra.append(exposure.telra)
-            if exposure.teldec:
+            if exposure.teldec is not None:
                 exposures_dec.append(exposure.teldec)
 
         exposures_radec = {"ra": exposures_ra, "dec": exposures_dec}
