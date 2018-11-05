@@ -148,7 +148,7 @@ class Xwsigma:
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
         # determining the position of selected cam fibers:
-
+        obj_type = sort_obj(gen_info)
         # ---------------------------------
 
         xsigma_hover = HoverTool(tooltips=xsigma_tooltip)
