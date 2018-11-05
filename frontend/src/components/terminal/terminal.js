@@ -5,7 +5,7 @@ const styles = {
   terminal: {
     display: 'flex',
     flex: 1,
-    margin: '0 auto',
+    margin: '0 0 0 8px',
     borderRadius: '3px',
     background: 'rgba(0, 0, 0, 1)',
     overflow: 'auto',
