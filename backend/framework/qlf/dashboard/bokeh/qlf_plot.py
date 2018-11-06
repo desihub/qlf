@@ -244,13 +244,19 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
             program_prefix = '_'+program
         else:
             program_prefix = ''
+
         try:
             ref=par[key+program_prefix+'_REF']
         except:
             if qa =='xyshifts':
                 ref=[np.NaN]*2
+
         if qa =='snr':
             nrows=len(met['OBJLIST'])
+        elif qa == 'fiberflat': 
+            # Solving for wrong lenght in ref list
+            nrows=1
+            ref=ref[0]
         elif isinstance(ref,list):
             nrows=len(ref)
         else:
@@ -288,6 +294,10 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
 
             cur_tb.append(xstr)
     elif nrows == 1:
+        if qa=='fiberflat':
+            # Solving for wrong length in list
+            try: curexp=curexp[0]
+            except: pass
         if isinstance(curexp, float):
             cur_tb = '%.2f' % curexp
             ref_tb = '%.2f' % ref[0]
