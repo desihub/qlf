@@ -3,7 +3,7 @@ import Control from '../../../../src/screens/metrics/control/control';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import sinon from 'sinon';
-import FlatButton from 'material-ui/FlatButton';
+import Button from '@material-ui/core/Button';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -27,7 +27,7 @@ describe('Metric Controls', () => {
 
   it('has select buttons', () => {
     const wrapper = mount(controls);
-    const buttons = wrapper.find(FlatButton);
+    const buttons = wrapper.find(Button);
     buttons.at(0).simulate('click');
     buttons.at(1).simulate('click');
     expect(changeArm.callCount).toBe(2);

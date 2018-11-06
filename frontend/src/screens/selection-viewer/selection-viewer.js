@@ -18,10 +18,12 @@ const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
-    width: 200,
+    width: '12vw',
     justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
+    paddingRight: '10px',
+    boxSizing: 'border-box',
   },
   column: {
     display: 'flex',
@@ -29,11 +31,12 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
+    gridTemplateColumns: '12vw calc(100vw - 64px - 12vw)',
+    width: 'calc(100vw - 64px)',
     height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: 'calc(100vw - 280px)',
+    width: 'calc(100vw - 64px - 12vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',
@@ -48,8 +51,13 @@ const styles = {
   selection: {
     textAlign: 'center',
   },
+  buttons: {
+    display: 'grid',
+    width: '10vw',
+  },
   button: {
     float: 'right',
+    fontSize: '1.2vw',
     margin: '10px 0',
   },
   buttonGreen: {
@@ -63,6 +71,21 @@ const styles = {
     margin: '16px',
     padding: '16px',
     height: 'calc(100vh - 135px)',
+  },
+  title: {
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1.1vw',
+    marginLeft: '0.5vw',
+  },
+  lineH: {
+    height: '4.87vh',
+    marginLeft: 0,
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
   },
 };
 
@@ -159,29 +182,34 @@ class SelectionViewer extends React.Component {
   };
 
   renderSpectrographSelection = () => {
+    const { classes } = this.props;
     if (this.props.spectrograph)
       return (
         <div>
           <FormLabel
             className={this.props.classes.spectrographLabel}
             component="legend"
+            classes={{ root: classes.title }}
           >
             Spectrograph:
           </FormLabel>
           <Petals
             selected={this.state.spectrograph}
             onClick={this.handleChangeSpectrograph}
-            size={100}
+            size={22}
           />
         </div>
       );
   };
 
   renderArmSelection = () => {
+    const { classes } = this.props;
     if (this.props.arm)
       return (
         <div className={this.props.classes.selection}>
-          <FormLabel component="legend">Arm:</FormLabel>
+          <FormLabel component="legend" classes={{ root: classes.title }}>
+            Arm:
+          </FormLabel>
           <div className={this.props.classes.row}>
             <RadioGroup
               className={this.props.classes.column}
@@ -189,11 +217,31 @@ class SelectionViewer extends React.Component {
               onChange={this.handleChangeArm}
             >
               {this.props.armAll ? (
-                <FormControlLabel value="all" control={<Radio />} label="All" />
+                <FormControlLabel
+                  value="all"
+                  control={<Radio classes={{ root: classes.wh }} />}
+                  label="All"
+                  classes={{ label: classes.text, root: classes.lineH }}
+                />
               ) : null}
-              <FormControlLabel value="b" control={<Radio />} label="b" />
-              <FormControlLabel value="r" control={<Radio />} label="r" />
-              <FormControlLabel value="z" control={<Radio />} label="z" />
+              <FormControlLabel
+                value="b"
+                control={<Radio classes={{ root: classes.wh }} />}
+                label="b"
+                classes={{ label: classes.text, root: classes.lineH }}
+              />
+              <FormControlLabel
+                value="r"
+                control={<Radio classes={{ root: classes.wh }} />}
+                label="r"
+                classes={{ label: classes.text, root: classes.lineH }}
+              />
+              <FormControlLabel
+                value="z"
+                control={<Radio classes={{ root: classes.wh }} />}
+                label="z"
+                classes={{ label: classes.text, root: classes.lineH }}
+              />
             </RadioGroup>
           </div>
         </div>
@@ -201,19 +249,28 @@ class SelectionViewer extends React.Component {
   };
 
   renderProcessingSelection = () => {
+    const { classes } = this.props;
     if (this.props.processing)
       return (
         <div className={this.props.classes.selection}>
-          <FormLabel component="legend">Processing:</FormLabel>
+          <FormLabel component="legend" classes={{ root: classes.title }}>
+            Processing:
+          </FormLabel>
           <RadioGroup
             value={this.state.processing}
             onChange={this.handleChangeProcessing}
           >
-            <FormControlLabel value="raw" control={<Radio />} label="raw" />
+            <FormControlLabel
+              value="raw"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="raw"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
             <FormControlLabel
               value="reduced"
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.wh }} />}
               label="reduced"
+              classes={{ label: classes.text, root: classes.lineH }}
             />
           </RadioGroup>
         </div>
@@ -228,8 +285,10 @@ class SelectionViewer extends React.Component {
           {this.renderSpectrographSelection()}
           {this.renderArmSelection()}
           {this.renderProcessingSelection()}
-          {this.renderSubmit()}
-          {this.renderClear()}
+          <div className={classes.buttons}>
+            {this.renderSubmit()}
+            {this.renderClear()}
+          </div>
         </div>
       );
   };

@@ -23,11 +23,12 @@ const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
-    width: '200px',
-    justifyContent: 'space-evenly',
+    width: '12vw',
+    // justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
-    paddingBottom: '5px',
+    paddingRight: '10px',
+    boxSizing: 'border-box',
   },
   controlsContainerInner: {
     display: 'flex',
@@ -40,11 +41,12 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 130px)',
+    gridTemplateColumns: '12vw calc(100vw - 64px - 12vw)',
+    width: 'calc(100vw - 64px)',
+    height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: 'calc(100vw - 280px)',
+    width: 'calc(100vw - 64px - 12vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',
@@ -64,16 +66,16 @@ const styles = {
     width: '50%',
     paddingBottom: '2.5vh',
   },
-  selectionRadioInner: {
-    position: 'relative',
-    paddingLeft: '15px',
-  },
   formControl: {
     width: '100%',
+  },
+  buttons: {
+    display: 'grid',
   },
   button: {
     float: 'right',
     margin: '10px 0',
+    fontSize: '1.2vw',
   },
   buttonGreen: {
     backgroundColor: 'green',
@@ -92,47 +94,38 @@ const styles = {
     padding: '16px',
     height: 'calc(100vh - 135px)',
   },
-  bulletB: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'dodgerblue',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '30px',
-    left: '0',
+  title: {
+    fontSize: '1.2vw',
   },
-  bulletR: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'red',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '78px',
-    left: '0',
+  text: {
+    fontSize: '1vw',
+    marginLeft: '0.5vw',
   },
-  bulletZ: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'fuchsia',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '126px',
-    left: '0',
+  selectEmpty: {
+    fontSize: '1vw',
+    marginTop: '1vh',
+    lineHeight: '2.5vh',
+  },
+  radioGroup: {
+    fontSize: '1vw',
+    marginTop: '2vh',
+  },
+  lineH: {
+    height: '4.87vh',
+    marginLeft: 0,
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
+  },
+  selectIcon: {
+    width: '1.7vw',
+    height: '3.5vh',
+    top: 'calc(50% - 1.6vh)',
+  },
+  mItem: {
+    height: '2.4vh',
+    fontSize: '1vw',
   },
 };
 
@@ -354,22 +347,35 @@ class TrendAnalysis extends React.Component {
   };
 
   renderDatePeriodSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Date Period</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Date Period
+          </InputLabel>
           <Select
             value={this.state.datePeriod}
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            className={this.props.classes.selectEmpty}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.mItem }}>
+              All
+            </MenuItem>
+            <MenuItem value={'night'} classes={{ root: classes.mItem }}>
+              Night
+            </MenuItem>
+            <MenuItem value={'week'} classes={{ root: classes.mItem }}>
+              Week
+            </MenuItem>
+            <MenuItem value={'month'} classes={{ root: classes.mItem }}>
+              Month
+            </MenuItem>
+            <MenuItem value={'year'} classes={{ root: classes.mItem }}>
+              Year
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -377,19 +383,27 @@ class TrendAnalysis extends React.Component {
   };
 
   renderXaxisSelection = () => {
+    const { classes } = this.props;
     if (this.state.tab !== 'Time Series')
       return (
         <div className={this.props.classes.selection}>
           <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink>Xaxis</InputLabel>
+            <InputLabel shrink classes={{ root: classes.title }}>
+              Xaxis
+            </InputLabel>
             <Select
               value={this.state.xaxis}
               onChange={this.handleChangeXaxis}
               input={<Input />}
               displayEmpty
+              classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
             >
-              <MenuItem value={'noise'}>Noise</MenuItem>
-              <MenuItem value={'bias'}>Bias</MenuItem>
+              <MenuItem value={'noise'} classes={{ root: classes.mItem }}>
+                Noise
+              </MenuItem>
+              <MenuItem value={'bias'} classes={{ root: classes.mItem }}>
+                Bias
+              </MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -397,18 +411,26 @@ class TrendAnalysis extends React.Component {
   };
 
   renderYaxisSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Yaxis</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Yaxis
+          </InputLabel>
           <Select
             value={this.state.yaxis}
             onChange={this.handleChangeYaxis}
             input={<Input />}
             displayEmpty
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'noise'}>Noise</MenuItem>
-            <MenuItem value={'bias'}>Bias</MenuItem>
+            <MenuItem value={'noise'} classes={{ root: classes.mItem }}>
+              Noise
+            </MenuItem>
+            <MenuItem value={'bias'} classes={{ root: classes.mItem }}>
+              Bias
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -416,20 +438,49 @@ class TrendAnalysis extends React.Component {
   };
 
   renderAmpSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selectionRadio}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Amp</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Amp
+          </InputLabel>
           <RadioGroup
             className={this.props.classes.column}
             value={this.state.amp}
             onChange={this.handleChangeAmp}
+            classes={{ root: classes.radioGroup }}
           >
-            <FormControlLabel value="all" control={<Radio />} label="All" />
-            <FormControlLabel value="0" control={<Radio />} label="0" />
-            <FormControlLabel value="1" control={<Radio />} label="1" />
-            <FormControlLabel value="2" control={<Radio />} label="2" />
-            <FormControlLabel value="3" control={<Radio />} label="3" />
+            <FormControlLabel
+              value="all"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="All"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
+            <FormControlLabel
+              value="0"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="0"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
+            <FormControlLabel
+              value="1"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="1"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
+            <FormControlLabel
+              value="2"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="2"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
+            <FormControlLabel
+              value="3"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="3"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
           </RadioGroup>
         </FormControl>
       </div>
@@ -437,40 +488,59 @@ class TrendAnalysis extends React.Component {
   };
 
   renderArmSelection = () => {
+    const { classes } = this.props;
     return (
-      <div className={this.props.classes.selectionRadio}>
-        <div className={this.props.classes.selectionRadioInner}>
-          <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink>Arm</InputLabel>
-            <RadioGroup
-              className={this.props.classes.column}
-              value={this.state.arm}
-              onChange={this.handleChangeArm}
-            >
-              <FormControlLabel value="b" control={<Radio />} label="b" />
-              <FormControlLabel value="r" control={<Radio />} label="r" />
-              <FormControlLabel value="z" control={<Radio />} label="z" />
-            </RadioGroup>
-          </FormControl>
-        </div>
+      <div className={classes.selectionRadio}>
+        <FormControl className={classes.formControl}>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Arm
+          </InputLabel>
+          <RadioGroup
+            className={classes.column}
+            value={this.state.arm}
+            onChange={this.handleChangeArm}
+            classes={{ root: classes.radioGroup }}
+          >
+            <FormControlLabel
+              value="b"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="b"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
+            <FormControlLabel
+              value="r"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="r"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
+            <FormControlLabel
+              value="z"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="z"
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
+          </RadioGroup>
+        </FormControl>
       </div>
     );
   };
 
   renderSpectrographSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.SpectroGraph}>
         <InputLabel
           shrink
           className={this.props.classes.spectrographLabel}
           component="legend"
+          classes={{ root: classes.title }}
         >
           Spectrograph
         </InputLabel>
         <Petals
           selected={this.state.spectrograph}
           onClick={this.handleChangeSpectrograph}
-          size={100}
+          size={22}
         />
       </div>
     );
@@ -533,8 +603,10 @@ class TrendAnalysis extends React.Component {
           {this.renderAmpSelection()}
           {this.renderArmSelection()}
         </div>
-        {this.renderSubmit()}
-        {this.renderClear()}
+        <div className={classes.buttons}>
+          {this.renderSubmit()}
+          {this.renderClear()}
+        </div>
       </div>
     );
   };
