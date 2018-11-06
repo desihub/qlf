@@ -18,6 +18,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Tooltip from '@material-ui/core/Tooltip';
+import Icon from '@material-ui/core/Icon';
 
 const styles = {
   controlsContainer: {
@@ -60,6 +62,7 @@ const styles = {
   selection: {
     textAlign: 'center',
     paddingBottom: '2.5vh',
+    position: 'relative',
   },
   selectionRadio: {
     width: '50%',
@@ -138,6 +141,18 @@ const styles = {
   mItem: {
     height: '2.4vh',
     fontSize: '1vw',
+  },
+  icoInfo: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    cursor: 'pointer',
+    fontSize: '1.5vh',
+    zIndex: 999,
+  },
+  tooltipText: {
+    fontSize: '1.5vh',
+    width: '11vw',
   },
 };
 
@@ -320,10 +335,25 @@ class ObservingConditions extends React.Component {
     });
   };
 
+  renderLegendDate = () => {
+    return (
+      <div>
+        <p>Aguardando Texto</p>
+      </div>
+    );
+  };
+
   renderDatePeriodSelection = () => {
     const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
+        <Tooltip
+          classes={{ tooltip: classes.tooltipText }}
+          title={this.renderLegendDate()}
+          placement="bottom"
+        >
+          <Icon style={styles.icoInfo}>info</Icon>
+        </Tooltip>
         <FormControl className={this.props.classes.formControl}>
           <InputLabel shrink classes={{ root: classes.title }}>
             Date Period
