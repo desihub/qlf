@@ -30,15 +30,15 @@ describe('Monitor Status', () => {
     const wrapper = mount(status);
     expect(
       wrapper
-        .find('Cards')
+        .find('CardContent')
         .at(2)
-        .props().title
+        .text()
     ).toBe('Exposure: 3');
     expect(
       wrapper
-        .find('Cards')
+        .find('CardContent')
         .at(0)
-        .props().title
+        .text()
     ).toBe('Status: Running');
     wrapper.unmount();
   });

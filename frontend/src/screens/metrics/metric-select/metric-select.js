@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import Card from '@material-ui/core/Card';
-import FlatButton from 'material-ui/FlatButton';
+import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 
 const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
     margin: '0.5vh 0.5vw',
+    // height: '15vh',
   },
   headerMetrics: {
     display: 'grid',
@@ -21,32 +21,43 @@ const styles = {
     paddingLeft: '1vw',
   },
   title: {
-    fontSize: '14px',
+    fontSize: '1.2vw',
     color: 'rgba(0, 0, 0, 0.54)',
   },
   buttons: {
     display: 'grid',
     gridTemplateAreas: "'button button' 'button button'",
+    // gridTemplateRows: '3vh 3vh 3vh',
     justifyContent: 'space-around',
-    fontSize: '14px',
+    fontSize: '1.2vw',
   },
   selected: {
     fontWeight: 'bold',
   },
   metricLabel: {
-    fontSize: '14px',
+    fontSize: '1.2vw',
   },
   failure: {
     color: 'red',
+    fontSize: '1.2vw',
+    height: '4vh',
+    lineHeight: '2.5vh',
   },
   normal: {
     color: 'green',
+    fontSize: '1.2vw',
+    height: '4vh',
+    lineHeight: '2.5vh',
   },
   warning: {
     color: '#EFD469',
+    fontSize: '1.2vw',
+    height: '4vh',
+    lineHeight: '2.5vh',
   },
   back: {
     color: 'red',
+    fontSize: '1.2vw',
   },
 };
 
@@ -99,28 +110,28 @@ export default class MetricSelect extends Component {
             buttonsStatus[index].toUpperCase() === 'NORMAL' ? ' ✓' : ' ✖︎'
           );
         return (
-          <FlatButton
+          <Button
             key={index}
-            labelStyle={{ ...selected, ...styles.metricLabel }}
+            labelstyle={{ ...selected, ...styles.metricLabel }}
             onClick={() => this.props.selectQA('qa' + qaName)}
             fullWidth
             style={labelColor}
-            label={label}
-            // primary={buttonsStatus[index]}
-            secondary={!buttonsStatus[index]}
-          />
+          >
+            {label}
+          </Button>
         );
       } else {
         return (
-          <FlatButton
+          <Button
             key={index}
-            labelStyle={{ ...selected, ...styles.metricLabel }}
+            labelstyle={{ ...selected, ...styles.metricLabel }}
             onClick={() => this.props.selectQA('qa' + qaName)}
             fullWidth
             style={styles.failure}
-            label={qaDisplay.toUpperCase() + ' ✖︎'}
             disabled={true}
-          />
+          >
+            {qa.toUpperCase() + ' ✖︎'}
+          </Button>
         );
       }
     });

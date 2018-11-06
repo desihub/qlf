@@ -19,6 +19,13 @@ const styles = {
     backgroundColor: 'white',
     border: '1px solid lightgrey',
     padding: 1,
+    fontSize: '1.1vw',
+    marginTop: '1vh',
+    lineHeight: 1,
+  },
+  text: {
+    fontSize: '1vw',
+    paddingTop: '5px',
   },
 };
 
@@ -96,6 +103,7 @@ export default class SelectDate extends React.Component {
             onChange={this.changeStart}
             InputLabelProps={{
               shrink: true,
+              style: styles.text,
             }}
             inputProps={{
               style: styles.dateField,
@@ -113,6 +121,7 @@ export default class SelectDate extends React.Component {
             onChange={this.changeEnd}
             InputLabelProps={{
               shrink: true,
+              style: styles.text,
             }}
             inputProps={{
               style: styles.dateField,

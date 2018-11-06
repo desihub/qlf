@@ -26,7 +26,7 @@ describe('Landing Contact', () => {
 
   it('sends incompleted form', () => {
     wrapper
-      .find('RaisedButton')
+      .find('Button')
       .find('button')
       .simulate('click');
     expect(
@@ -34,6 +34,6 @@ describe('Landing Contact', () => {
         .find('TextField')
         .at(0)
         .text()
-    ).toBe('NameRequired');
+    ).toBe('Name');
   });
 });

@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ArrowDropDown, ArrowDropUp } from 'material-ui-icons';
+import { withStyles } from '@material-ui/core/styles';
+import Icon from '@material-ui/core/Icon';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
-import Icon from '@material-ui/core/Icon';
 import QlfApi from '../../../../../containers/offline/connection/qlf-api';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -24,13 +24,35 @@ const styles = {
     textAlign: 'center',
   },
   itemText: {
-    fontSize: '12px',
+    fontSize: '1.1vw',
+    marginLeft: '0.5vw',
   },
-  listIcon: { fontSize: 20, cursor: 'pointer', paddingRight: '8px' },
+  listIcon: { fontSize: '1vw', cursor: 'pointer', paddingRight: '8px' },
   listItem: { padding: '8px' },
+  text: {
+    fontSize: '1.2vw',
+  },
+  checkWH: {
+    width: '1.7vw',
+    height: '4.8vh',
+  },
+  iconWH: {
+    width: '1vw',
+    height: '2vh',
+    fontSize: '1.2vw',
+    lineHeight: '2.5vh',
+  },
+  lineH: {
+    height: '4.87vh',
+    marginLeft: 0,
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
+  },
 };
 
-export default class HistoryHeader extends React.Component {
+class HistoryHeader extends React.Component {
   static muiName = 'TableHead';
 
   constructor(props) {
@@ -57,6 +79,7 @@ export default class HistoryHeader extends React.Component {
     tableColumns: PropTypes.array.isRequired,
     openColumnsModal: PropTypes.func.isRequired,
     addStatusFilter: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
   };
 
   componentWillMount() {
@@ -75,9 +98,9 @@ export default class HistoryHeader extends React.Component {
   renderArrow = id => {
     if (this.props.ordering === id) {
       if (this.props.asc) {
-        return <ArrowDropUp />;
+        return <Icon style={styles.iconWH}>arrow_upward</Icon>;
       } else {
-        return <ArrowDropDown />;
+        return <Icon style={styles.iconWH}>arrow_downward</Icon>;
       }
     }
   };
@@ -219,6 +242,7 @@ export default class HistoryHeader extends React.Component {
   };
 
   renderStatusRadioGroup = () => {
+    const { classes } = this.props;
     return (
       <RadioGroup
         name="flavor"
@@ -226,10 +250,30 @@ export default class HistoryHeader extends React.Component {
         value={this.state.selectedStatus}
         onChange={this.handleStatusRadioChange}
       >
-        <FormControlLabel value="abort" control={<Radio />} label="Abort" />
-        <FormControlLabel value="fail" control={<Radio />} label="Fail" />
-        <FormControlLabel value="normal" control={<Radio />} label="Normal" />
-        <FormControlLabel value="all" control={<Radio />} label="All" />
+        <FormControlLabel
+          value="abort"
+          control={<Radio classes={{ root: classes.wh }} />}
+          label="Abort"
+          classes={{ label: classes.itemText, root: classes.lineH }}
+        />
+        <FormControlLabel
+          value="fail"
+          control={<Radio classes={{ root: classes.wh }} />}
+          label="Fail"
+          classes={{ label: classes.itemText, root: classes.lineH }}
+        />
+        <FormControlLabel
+          value="normal"
+          control={<Radio classes={{ root: classes.wh }} />}
+          label="Normal"
+          classes={{ label: classes.itemText, root: classes.lineH }}
+        />
+        <FormControlLabel
+          value="all"
+          control={<Radio classes={{ root: classes.wh }} />}
+          label="All"
+          classes={{ label: classes.itemText, root: classes.lineH }}
+        />
       </RadioGroup>
     );
   };
@@ -248,6 +292,7 @@ export default class HistoryHeader extends React.Component {
   };
 
   renderFlavorRadioGroup = () => {
+    const { classes } = this.props;
     return (
       <RadioGroup
         name="flavor"
@@ -261,24 +306,35 @@ export default class HistoryHeader extends React.Component {
                 <FormControlLabel
                   key={f}
                   value={f}
-                  control={<Radio />}
+                  control={<Radio classes={{ root: classes.wh }} />}
                   label={f}
+                  classes={{ label: classes.itemText, root: classes.lineH }}
                 />
               );
             })
           : null}
-        <FormControlLabel value="all" control={<Radio />} label="All" />
+        <FormControlLabel
+          value="all"
+          control={<Radio classes={{ root: classes.wh }} />}
+          label="All"
+          classes={{ label: classes.itemText, root: classes.lineH }}
+        />
       </RadioGroup>
     );
   };
 
   renderProcessingHistoryHeader = () => {
+    const { classes } = this.props;
     return (
       <TableHead>
         <TableRow>
           {this.props.tableColumns.map((column, id) => {
             return (
-              <TableCell key={`PROCESS${id}`} style={styles.tableCell}>
+              <TableCell
+                key={`PROCESS${id}`}
+                style={styles.tableCell}
+                classes={{ root: classes.text }}
+              >
                 {this.renderHeader(column.key, column.name)}
               </TableCell>
             );
@@ -289,17 +345,20 @@ export default class HistoryHeader extends React.Component {
   };
 
   renderCheckbox = () => {
+    const { classes } = this.props;
     if (!this.props.selectable) return;
     return (
       <TableCell style={styles.tableCell}>
         <Checkbox
           onChange={(evt, checked) => this.props.selectExposure(checked)}
+          classes={{ root: classes.checkWH }}
         />
       </TableCell>
     );
   };
 
   renderObservingHistoryHeader = () => {
+    const { classes } = this.props;
     return (
       <TableHead>
         <TableRow>
@@ -310,7 +369,11 @@ export default class HistoryHeader extends React.Component {
             .filter(column => column.key !== null)
             .map((column, id) => {
               return (
-                <TableCell key={`EXP${id}`} style={styles.tableCell}>
+                <TableCell
+                  key={`EXP${id}`}
+                  style={styles.tableCell}
+                  classes={{ root: classes.text }}
+                >
                   {this.renderHeader(column.key, column.name)}
                 </TableCell>
               );
@@ -326,3 +389,5 @@ export default class HistoryHeader extends React.Component {
       : this.renderObservingHistoryHeader();
   }
 }
+
+export default withStyles(styles)(HistoryHeader);

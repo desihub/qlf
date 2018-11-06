@@ -23,11 +23,11 @@ const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
-    width: '200px',
-    justifyContent: 'space-evenly',
+    width: '12vw',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
-    paddingBottom: '5px',
+    paddingRight: '10px',
+    boxSizing: 'border-box',
   },
   controlsContainerInner: {
     display: 'flex',
@@ -40,12 +40,12 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
-    height: 'calc(100vh - 180px)',
+    gridTemplateColumns: '12vw calc(100vw - 64px - 12vw)',
+    width: 'calc(100vw - 64px)',
+    height: 'calc(100vh - 130px - 1.2vw - 4.8vh)',
   },
   viewer: {
-    width: 'calc(100vw - 280px)',
-    height: 'calc(100vh - 180px)',
+    width: 'calc(100vw - 64px - 12vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',
@@ -65,16 +65,16 @@ const styles = {
     width: '50%',
     paddingBottom: '2.5vh',
   },
-  selectionRadioInner: {
-    position: 'relative',
-    paddingLeft: '15px',
-  },
   formControl: {
     width: '100%',
+  },
+  buttons: {
+    display: 'grid',
   },
   button: {
     float: 'right',
     margin: '10px 0',
+    fontSize: '1.2vw',
   },
   buttonGreen: {
     backgroundColor: 'green',
@@ -91,49 +91,53 @@ const styles = {
   main: {
     margin: '16px',
     padding: '16px',
-    height: 'calc(100vh - 135px)',
+    height: 'calc(100vh - 130px)',
   },
-  bulletB: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'dodgerblue',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '30px',
-    left: '0',
+  title: {
+    fontSize: '1.2vw',
   },
-  bulletR: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'red',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '78px',
-    left: '0',
+  text: {
+    fontSize: '1vw',
   },
-  bulletZ: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    border: 'solid 1px #333',
-    background: 'fuchsia',
-    fontSize: 0,
-    textIndent: '-9999em',
-    position: 'absolute',
-    top: '126px',
-    left: '0',
+  tabItem: {
+    fontSize: '1.2vw',
+  },
+  tabsH: {
+    minHeight: '4.8vh',
+  },
+  tabWH: {
+    minWidth: '11vw',
+    minHeight: '4.8vh',
+  },
+  selectEmpty: {
+    fontSize: '1vw',
+    marginTop: '1vh',
+    lineHeight: '2.5vh',
+  },
+  radioGroup: {
+    fontSize: '1vw',
+    marginTop: '2vh',
+  },
+  lineH: {
+    height: '4.87vh',
+    marginLeft: 0,
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
+  },
+  selectIcon: {
+    width: '1.7vw',
+    height: '3.5vh',
+    top: 'calc(50% - 1.6vh)',
+  },
+  textLabel: {
+    fontSize: '1vw',
+    marginLeft: '0.5vw',
+  },
+  mItem: {
+    height: '2.4vh',
+    fontSize: '1vw',
   },
 };
 
@@ -317,22 +321,35 @@ class ObservingConditions extends React.Component {
   };
 
   renderDatePeriodSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Date Period</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Date Period
+          </InputLabel>
           <Select
             value={this.state.datePeriod}
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            className={this.props.classes.selectEmpty}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.mItem }}>
+              All
+            </MenuItem>
+            <MenuItem value={'night'} classes={{ root: classes.mItem }}>
+              Night
+            </MenuItem>
+            <MenuItem value={'week'} classes={{ root: classes.mItem }}>
+              Week
+            </MenuItem>
+            <MenuItem value={'month'} classes={{ root: classes.mItem }}>
+              Month
+            </MenuItem>
+            <MenuItem value={'year'} classes={{ root: classes.mItem }}>
+              Year
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -340,22 +357,39 @@ class ObservingConditions extends React.Component {
   };
 
   renderXaxisSelection = () => {
+    const { classes } = this.props;
     if (this.state.tab !== 'Time Series')
       return (
         <div className={this.props.classes.selection}>
           <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink>Xaxis</InputLabel>
+            <InputLabel shrink classes={{ root: classes.title }}>
+              Xaxis
+            </InputLabel>
             <Select
               value={this.state.xaxis}
               onChange={this.handleChangeXaxis}
               input={<Input />}
               displayEmpty
+              classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
             >
-              {/* <MenuItem value={'snr'}>SNR</MenuItem> */}
-              <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
-              {/* <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
-            <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
-              <MenuItem value={'airmass'}>AIRMASS</MenuItem>
+              {/* <MenuItem value={'snr'} classes={{ root: classes.mItem }}>
+                SNR
+              </MenuItem> */}
+              <MenuItem
+                value={'skybrightness'}
+                classes={{ root: classes.mItem }}
+              >
+                SKY BRIGHTNESS
+              </MenuItem>
+              {/* <MenuItem value={'traceshifts'} classes={{ root: classes.mItem }}>
+                TRACE SHIFTS
+              </MenuItem>
+              <MenuItem value={'psf'} classes={{ root: classes.mItem }}>
+                PSF FWHM
+              </MenuItem> */}
+              <MenuItem value={'airmass'} classes={{ root: classes.mItem }}>
+                AIRMASS
+              </MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -363,21 +397,33 @@ class ObservingConditions extends React.Component {
   };
 
   renderYaxisSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Yaxis</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Yaxis
+          </InputLabel>
           <Select
             value={this.state.yaxis}
             onChange={this.handleChangeYaxis}
             input={<Input />}
             displayEmpty
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            {/* <MenuItem value={'snr'}>SNR</MenuItem> */}
-            <MenuItem value={'skybrightness'}>SKY BRIGHTNESS</MenuItem>
-            {/* <MenuItem value={'traceshifts'}>TRACE SHIFTS</MenuItem>
+            {/* <MenuItem value={'snr'} classes={{ root: classes.mItem }}>
+              SNR
+            </MenuItem> */}
+            <MenuItem value={'skybrightness'} classes={{ root: classes.mItem }}>
+              SKY BRIGHTNESS
+            </MenuItem>
+            {/* <MenuItem value={'traceshifts'} classes={{ root: classes.mItem }}>
+              TRACE SHIFTS
+            </MenuItem>
             <MenuItem value={'psf'}>PSF FWHM</MenuItem> */}
-            <MenuItem value={'airmass'}>AIRMASS</MenuItem>
+            <MenuItem value={'airmass'} classes={{ root: classes.mItem }}>
+              AIRMASS
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -385,41 +431,60 @@ class ObservingConditions extends React.Component {
   };
 
   renderSpectrographSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.SpectroGraph}>
         <InputLabel
           shrink
           className={this.props.classes.spectrographLabel}
           component="legend"
+          classes={{ root: classes.title }}
         >
           Spectrograph
         </InputLabel>
         <Petals
           selected={this.state.spectrograph}
           onClick={this.handleChangeSpectrograph}
-          size={100}
+          size={22}
         />
       </div>
     );
   };
 
   renderArmSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selectionRadio}>
-        <div className={this.props.classes.selectionRadioInner}>
-          <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink>Arm</InputLabel>
-            <RadioGroup
-              className={this.props.classes.column}
-              value={this.state.arm}
-              onChange={this.handleChangeArm}
-            >
-              <FormControlLabel value="b" control={<Radio />} label="b" />
-              <FormControlLabel value="r" control={<Radio />} label="r" />
-              <FormControlLabel value="z" control={<Radio />} label="z" />
-            </RadioGroup>
-          </FormControl>
-        </div>
+        <FormControl className={this.props.classes.formControl}>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Arm
+          </InputLabel>
+          <RadioGroup
+            className={this.props.classes.column}
+            value={this.state.arm}
+            onChange={this.handleChangeArm}
+            classes={{ root: classes.radioGroup }}
+          >
+            <FormControlLabel
+              value="b"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="b"
+              classes={{ label: classes.textLabel, root: classes.lineH }}
+            />
+            <FormControlLabel
+              value="r"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="r"
+              classes={{ label: classes.textLabel, root: classes.lineH }}
+            />
+            <FormControlLabel
+              value="z"
+              control={<Radio classes={{ root: classes.wh }} />}
+              label="z"
+              classes={{ label: classes.textLabel, root: classes.lineH }}
+            />
+          </RadioGroup>
+        </FormControl>
       </div>
     );
   };
@@ -478,8 +543,10 @@ class ObservingConditions extends React.Component {
         {this.renderYaxisSelection()}
         {this.renderSpectrographSelection()}
         {this.renderArmSelection()}
-        {this.renderSubmit()}
-        {this.renderClear()}
+        <div className={classes.buttons}>
+          {this.renderSubmit()}
+          {this.renderClear()}
+        </div>
       </div>
     );
   };
@@ -534,6 +601,7 @@ class ObservingConditions extends React.Component {
 
   renderTabs = () => {
     const { tab } = this.state;
+    const { classes } = this.props;
     return (
       <div>
         <Tabs
@@ -543,9 +611,18 @@ class ObservingConditions extends React.Component {
           textColor="primary"
           fullWidth
           centered
+          style={styles.tabsH}
         >
-          <Tab label="Time Series" value={'Time Series'} />
-          <Tab label="Regression" value={'Regression'} />
+          <Tab
+            label="Time Series"
+            value={'Time Series'}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
+          <Tab
+            label="Regression"
+            value={'Regression'}
+            classes={{ root: classes.tabWH, label: classes.tabItem }}
+          />
         </Tabs>
         {tab === 'Time Series' ? this.renderTimeSeries() : null}
         {tab === 'Regression' ? this.renderRegression() : null}

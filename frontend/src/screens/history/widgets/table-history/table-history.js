@@ -235,6 +235,7 @@ class TableHistory extends Component {
   };
 
   renderPagination = () => {
+    const { classes } = this.props;
     if (!this.props.rowsCount) return;
     return (
       <TablePagination
@@ -244,17 +245,28 @@ class TableHistory extends Component {
         page={this.state.offset}
         backIconButtonProps={{
           'aria-label': 'Previous Page',
+          style: styles.wh,
         }}
         nextIconButtonProps={{
           'aria-label': 'Next Page',
+          style: styles.wh,
         }}
         onChangePage={this.handleChangePage}
         onChangeRowsPerPage={this.handleChangeRowsPerPage}
+        classes={{
+          caption: classes.text,
+          input: classes.text,
+          menuItem: classes.mItem,
+          select: classes.larg,
+          selectIcon: classes.selectIcon,
+          actions: classes.overH,
+        }}
       />
     );
   };
 
   renderColumnsModal = () => {
+    const { classes } = this.props;
     const availableColumns =
       this.props.type === 'process' ? processColumns : exposureColumns;
     return (
@@ -265,7 +277,9 @@ class TableHistory extends Component {
       >
         <div className={this.props.classes.modalBody}>
           <FormControl component="fieldset">
-            <FormLabel component="legend">Avaiable Columns</FormLabel>
+            <FormLabel className={classes.text} component="legend">
+              Avaiable Columns
+            </FormLabel>
             <FormGroup className={this.props.classes.columnsFormGroup}>
               {availableColumns.map(column => (
                 <FormControlLabel
@@ -278,9 +292,11 @@ class TableHistory extends Component {
                         )
                       )}
                       onChange={() => this.handleChangeColumns(column.name)}
+                      classes={{ root: classes.checkWH }}
                     />
                   }
                   label={column.name}
+                  classes={{ label: classes.text, root: classes.lbl }}
                 />
               ))}
             </FormGroup>
@@ -448,6 +464,40 @@ const styles = {
   },
   modalColumnsButtonClose: {
     float: 'right',
+    fontSize: '1.2vw',
+  },
+  larg: {
+    width: '2.2vw',
+  },
+  text: {
+    fontSize: '1.2vw',
+  },
+  lbl: {
+    marginLeft: 0,
+  },
+  iconCheck: {
+    fontSize: '1.2vw',
+  },
+  selectIcon: {
+    width: '1.7vw',
+    height: '3.5vh',
+    top: 'calc(50% - 1.9vh)',
+  },
+  mItem: {
+    height: '2.4vh',
+    fontSize: '1.2vw',
+  },
+  wh: {
+    width: '1.7vw',
+    height: '3.5vh',
+  },
+  checkWH: {
+    width: '1.7vw',
+    height: '4.8vh',
+    marginRight: '0.5vw',
+  },
+  overH: {
+    overflow: 'hidden',
   },
 };
 

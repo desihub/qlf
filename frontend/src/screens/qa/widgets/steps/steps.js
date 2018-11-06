@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PieChart from './piechart/piechart';
-import { Card } from 'material-ui/Card';
+import Card from '@material-ui/core/Card';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import Status from '../../../../components/status/status';
@@ -80,8 +80,8 @@ const styles = {
   green: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '0.8vw',
-    height: '1.05vh',
+    width: '0.6vw',
+    height: '1.2vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#008000',
@@ -92,8 +92,8 @@ const styles = {
   yellow: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '0.8vw',
-    height: '1.05vh',
+    width: '0.6vw',
+    height: '1.2vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#ffff00',
@@ -104,8 +104,8 @@ const styles = {
   red: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '0.8vw',
-    height: '1.05vh',
+    width: '0.6vw',
+    height: '1.2vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#ff0000',
@@ -116,8 +116,8 @@ const styles = {
   lightgray: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '0.8vw',
-    height: '1.05vh',
+    width: '0.6vw',
+    height: '1.2vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#d3d3d3',
@@ -128,8 +128,8 @@ const styles = {
   black: {
     display: 'inline-block',
     verticalAlign: 'top',
-    width: '0.8vw',
-    height: '1.05vh',
+    width: '0.6vw',
+    height: '1.2vh',
     borderRadius: '50%',
     border: 'solid 1px #333',
     background: '#000000',

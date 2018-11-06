@@ -1,9 +1,9 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
 import Recaptcha from 'react-recaptcha';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from '@material-ui/core/Button';
 import QlfApi from '../../../../containers/offline/connection/qlf-api';
 import Paper from '@material-ui/core/Paper';
+import TextField from '@material-ui/core/TextField';
 
 const styles = {
   container: {
@@ -11,12 +11,23 @@ const styles = {
     justifyContent: 'center',
   },
   main: {
-    maxWidth: '70vw',
+    width: '70vw',
     flexDirection: 'column',
-    maxHeight: '65vh',
+    height: 'calc(100vh - 223px)',
     overflowY: 'auto',
     margin: '16px',
     padding: '16px',
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1.2vw',
+    marginBottom: '20px',
+  },
+  button: {
+    backgroundColor: 'rgb(0, 200, 83)',
+    fontSize: '1.1vw',
+    color: '#fff',
+    marginTop: '20px',
   },
 };
 
@@ -33,29 +44,17 @@ export default class ContactUs extends React.Component {
     this.setState({ validation: true });
   };
 
-  storeNameRef = ref => {
-    this.nameRef = ref;
-  };
-
-  storeEmailRef = ref => {
-    this.emailRef = ref;
-  };
-
-  storeSubjectRef = ref => {
-    this.subjectRef = ref;
-  };
-
-  storeMessageRef = ref => {
-    this.messageRef = ref;
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
   };
 
   sendEmail = () => {
-    const required = 'Required';
-    const invalid = 'Invalid email';
-    const name = this.nameRef.getValue();
-    const message = this.messageRef.getValue();
-    const email = this.emailRef.getValue();
-    const subject = this.subjectRef.getValue();
+    const name = this.state.name;
+    const message = this.state.message;
+    const email = this.state.email;
+    const subject = this.state.subject;
     const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (
       regex.test(email) &&
@@ -67,10 +66,10 @@ export default class ContactUs extends React.Component {
       QlfApi.sendTicketMail(email, message, subject, name);
     } else {
       this.setState({
-        nameError: name ? '' : required,
-        messageError: message ? '' : required,
-        emailError: regex.test(email) ? '' : invalid,
-        subjectError: subject ? '' : required,
+        nameError: name === undefined,
+        messageError: message === undefined,
+        emailError: !regex.test(email),
+        subjectError: subject === undefined,
       });
     }
   };
@@ -81,43 +80,49 @@ export default class ContactUs extends React.Component {
         <Paper elevation={4} style={styles.main}>
           <h1>Contact Us</h1>
           <TextField
-            ref={ref => this.storeNameRef(ref)}
             fullWidth={true}
-            floatingLabelText="Name"
-            errorText={this.state.nameError}
+            label="Name"
+            onChange={this.handleChange('name')}
+            error={this.state.nameError}
+            style={styles.text}
           />
           <TextField
-            ref={ref => this.storeEmailRef(ref)}
             fullWidth={true}
-            floatingLabelText="Email"
-            errorText={this.state.emailError}
+            label="Email"
+            onChange={this.handleChange('email')}
+            error={this.state.emailError}
+            style={styles.text}
           />
           <TextField
-            ref={ref => this.storeSubjectRef(ref)}
             fullWidth={true}
-            floatingLabelText="Subject"
-            errorText={this.state.subjectError}
+            label="Subject"
+            onChange={this.handleChange('subject')}
+            error={this.state.subjectError}
+            style={styles.text}
           />
           <TextField
-            ref={ref => this.storeMessageRef(ref)}
-            floatingLabelText="Message"
-            multiLine={true}
+            label="Message"
+            multiline={true}
             rows={4}
             fullWidth={true}
-            errorText={this.state.messageError}
+            onChange={this.handleChange('message')}
+            error={this.state.messageError}
+            style={styles.text}
           />
           <Recaptcha
             sitekey={process.env.REACT_APP_CAPTCHA_KEY}
             render="explicit"
             verifyCallback={this.verifyCallback}
           />
-          <RaisedButton
-            label="submit"
-            labelStyle={{ color: 'white' }}
-            backgroundColor={'#00C853'}
+          <Button
+            labelstyle={{ color: 'white', fontSize: '1.1vw' }}
+            color="primary"
             fullWidth={true}
             onClick={this.sendEmail}
-          />
+            style={styles.button}
+          >
+            Submit
+          </Button>
         </Paper>
       </div>
     );

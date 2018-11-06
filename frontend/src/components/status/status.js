@@ -1,15 +1,29 @@
 import React, { Component } from 'react';
-import Card from '../card/card';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   container: {
     flex: 1,
     display: 'flex',
   },
+  cardsItens: {
+    minHeight: '4.5vh',
+    flex: 1,
+    margin: '1.5vh 1vw 1vh 1vw',
+    borderLeft: 'solid 4px #424242',
+    overflow: 'hidden',
+    boxShadow:
+      '0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12)',
+    borderRadius: '2px',
+    backgroundColor: '#fff',
+    fontSize: '1.2vw',
+  },
 };
 
-export default class Status extends Component {
+class Status extends Component {
   static propTypes = {
     pipelineRunning: PropTypes.string,
     exposureId: PropTypes.string.isRequired,
@@ -17,6 +31,7 @@ export default class Status extends Component {
     date: PropTypes.string,
     flavor: PropTypes.string,
     processId: PropTypes.string,
+    classes: PropTypes.object.isRequired,
   };
 
   formatDate = () => {
@@ -25,6 +40,7 @@ export default class Status extends Component {
   };
 
   render() {
+    const { classes } = this.props;
     const mjd = parseFloat(this.props.mjd)
       ? parseFloat(this.props.mjd).toFixed(3)
       : '';
@@ -35,14 +51,30 @@ export default class Status extends Component {
     return (
       <div style={{ ...styles.container }}>
         {this.props.pipelineRunning ? (
-          <Card title={`Status: ${this.props.pipelineRunning}`} />
+          <Card className={classes.cardsItens}>
+            <CardContent>{`Status: ${this.props.pipelineRunning}`}</CardContent>
+          </Card>
         ) : null}
-        <Card title={`Flavor: ${this.props.flavor}`} />
-        {processId ? <Card title={`Process Id: ${processId}`} /> : null}
-        <Card title={`Exposure: ${this.props.exposureId}`} />
-        <Card title={`MJD: ${mjd}`} />
-        <Card title={`Date: ${this.formatDate()}`} />
+        <Card className={classes.cardsItens}>
+          <CardContent>{`Flavor: ${this.props.flavor}`}</CardContent>
+        </Card>
+        {processId ? (
+          <Card className={classes.cardsItens}>
+            <CardContent>{`Process Id: ${processId}`}</CardContent>
+          </Card>
+        ) : null}
+        <Card className={classes.cardsItens}>
+          <CardContent>{`Exposure: ${this.props.exposureId}`}</CardContent>
+        </Card>
+        <Card className={classes.cardsItens}>
+          <CardContent>{`MJD: ${mjd}`}</CardContent>
+        </Card>
+        <Card className={classes.cardsItens}>
+          <CardContent>{`Date: ${this.formatDate()}`}</CardContent>
+        </Card>
       </div>
     );
   }
 }
+
+export default withStyles(styles)(Status);

@@ -62,7 +62,7 @@ class LogViewer extends React.Component {
       <div>
         <Terminal
           lines={this.state.lines}
-          width={'calc(100vw - 280px)'}
+          width={'calc(100vw - 72px - 12vw)'}
           height={'calc(100vh - 135px)'}
         />
       </div>

@@ -1,17 +1,8 @@
 import React from 'react';
-import { Card, CardTitle, CardMedia, CardText } from 'material-ui/Card';
+import Card from '@material-ui/core/Card';
+import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
-import {
-  History,
-  RemoveRedEye,
-  Web,
-  Cloud,
-  TrendingUp,
-  Assignment,
-  ViewModule,
-  BrightnessMedium,
-  AddToQueue,
-} from 'material-ui-icons';
+import Icon from '@material-ui/core/Icon';
 
 const styles = {
   card: {
@@ -21,21 +12,20 @@ const styles = {
     marginBottom: '1vw',
     height: '90%',
     cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
   },
   icon: {
-    height: '5vw',
-    width: '4vw',
+    fontSize: '7vw',
   },
   cardMedia: {
-    display: 'flex',
-    flex: '1',
+    alignItems: 'center',
     justifyContent: 'center',
-  },
-  titleContainer: {
-    padding: '1vw',
+    display: 'flex',
   },
   title: {
     fontSize: '2vw',
+    padding: '1vw',
   },
   subtitle: {
     fontSize: '1.2vw',
@@ -60,23 +50,37 @@ export default class Cards extends React.Component {
         : {};
     switch (this.props.icon) {
       case 'Web':
-        return <Web style={{ ...styles.icon, ...deactivate }} />;
+        return <Icon style={{ ...styles.icon, ...deactivate }}>web</Icon>;
       case 'RemoveRedEye':
-        return <RemoveRedEye style={{ ...styles.icon, ...deactivate }} />;
+        return (
+          <Icon style={{ ...styles.icon, ...deactivate }}>remove_red_eye</Icon>
+        );
       case 'History':
-        return <History style={{ ...styles.icon, ...deactivate }} />;
+        return <Icon style={{ ...styles.icon, ...deactivate }}>history</Icon>;
       case 'Cloud':
-        return <Cloud style={{ ...styles.icon, ...deactivate }} />;
+        return <Icon style={{ ...styles.icon, ...deactivate }}>cloud</Icon>;
       case 'TrendingUp':
-        return <TrendingUp style={{ ...styles.icon, ...deactivate }} />;
+        return (
+          <Icon style={{ ...styles.icon, ...deactivate }}>trending_up</Icon>
+        );
       case 'Assignment':
-        return <Assignment style={{ ...styles.icon, ...deactivate }} />;
+        return (
+          <Icon style={{ ...styles.icon, ...deactivate }}>assignment</Icon>
+        );
       case 'ViewModule':
-        return <ViewModule style={{ ...styles.icon, ...deactivate }} />;
+        return (
+          <Icon style={{ ...styles.icon, ...deactivate }}>view_module</Icon>
+        );
       case 'BrightnessMedium':
-        return <BrightnessMedium style={{ ...styles.icon, ...deactivate }} />;
+        return (
+          <Icon style={{ ...styles.icon, ...deactivate }}>
+            brightness_medium
+          </Icon>
+        );
       case 'AddToQueue':
-        return <AddToQueue style={{ ...styles.icon, ...deactivate }} />;
+        return (
+          <Icon style={{ ...styles.icon, ...deactivate }}>add_to_queue</Icon>
+        );
       default:
         return;
     }
@@ -94,17 +98,13 @@ export default class Cards extends React.Component {
         : {};
     return (
       <Card style={{ ...styles.card, ...deactivateCard }}>
-        <CardTitle
-          titleStyle={{ ...styles.title, ...deactivate }}
-          style={styles.titleContainer}
-          title={this.props.title}
-        />
-        <CardMedia style={styles.cardMedia}>
-          <div>{this.renderIcon()}</div>
-        </CardMedia>
-        <CardText style={{ ...styles.subtitle, ...deactivate }}>
+        <Typography style={{ ...styles.title, ...deactivate }}>
+          {this.props.title}
+        </Typography>
+        <div style={styles.cardMedia}>{this.renderIcon()}</div>
+        <Typography style={{ ...styles.subtitle, ...deactivate }}>
           {this.props.subtitle}
-        </CardText>
+        </Typography>
       </Card>
     );
   }

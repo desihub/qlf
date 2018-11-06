@@ -9,6 +9,9 @@ const styles = theme => ({
     margin: theme.spacing.unit * 2,
     cursor: 'pointer',
   },
+  text: {
+    fontSize: '1.2vw',
+  },
 });
 
 class CCDSelector extends React.Component {
@@ -45,6 +48,7 @@ class CCDSelector extends React.Component {
         <Typography
           className={classes.typography}
           onClick={() => this.openViewer('ccd')}
+          classes={{ root: classes.text }}
         >
           CCD
         </Typography>
@@ -54,6 +58,7 @@ class CCDSelector extends React.Component {
                 key="fiber"
                 className={classes.typography}
                 onClick={() => this.openViewer('fiber')}
+                classes={{ root: classes.text }}
               >
                 Fibers
               </Typography>,
@@ -61,6 +66,7 @@ class CCDSelector extends React.Component {
                 key="spectra"
                 className={classes.typography}
                 onClick={() => this.openViewer('spectra')}
+                classes={{ root: classes.text }}
               >
                 Spectra
               </Typography>,

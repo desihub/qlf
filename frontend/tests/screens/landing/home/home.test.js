@@ -33,21 +33,23 @@ describe('Landing Home', () => {
         .at(0)
         .text()
     ).toBe(
-      'Pipeline MonitorControl and monitor the execution of the Quick Look pipeline'
+      'Pipeline MonitorwebControl and monitor the execution of the Quick Look pipeline'
     );
     expect(
       wrapper
         .find('a')
         .at(1)
         .text()
-    ).toBe('Processing HistoryList exposures that have been processed');
+    ).toBe(
+      'Processing Historyadd_to_queueList exposures that have been processed'
+    );
     expect(
       wrapper
         .find('a')
         .at(2)
         .text()
     ).toBe(
-      'Observing HistoryDisplay time series plots for QA metrics, list of exposures and observed targets for the current night of for a range of nights'
+      'Observing HistoryhistoryDisplay time series plots for QA metrics, list of exposures and observed targets for the current night of for a range of nights'
     );
     expect(
       wrapper
@@ -55,7 +57,7 @@ describe('Landing Home', () => {
         .at(3)
         .text()
     ).toBe(
-      'Afternoon PlanningBrowse QA results for exposures processed by the offline pipeline at NERSC'
+      'Afternoon Planningbrightness_mediumBrowse QA results for exposures processed by the offline pipeline at NERSC'
     );
     expect(
       wrapper
@@ -63,7 +65,7 @@ describe('Landing Home', () => {
         .at(4)
         .text()
     ).toBe(
-      'Trend AnalysisSimple plots using quantities stored in the database'
+      'Trend Analysistrending_upSimple plots using quantities stored in the database'
     );
     expect(
       wrapper
@@ -71,20 +73,24 @@ describe('Landing Home', () => {
         .at(5)
         .text()
     ).toBe(
-      'Observing ConditionsDisplay observing conditions such as atmospheric transparency, seeing, and observing background from the GFA camera'
+      'Observing ConditionscloudDisplay observing conditions such as atmospheric transparency, seeing, and observing background from the GFA camera'
     );
     expect(
       wrapper
         .find('a')
         .at(6)
         .text()
-    ).toBe('Survey ReportsShow the overall progress and performance of survey');
+    ).toBe(
+      'Survey ReportsassignmentShow the overall progress and performance of survey'
+    );
     expect(
       wrapper
         .find('a')
         .at(7)
         .text()
-    ).toBe('ConfigurationConfiguration of initial settings for execution');
+    ).toBe(
+      'Configurationview_moduleConfiguration of initial settings for execution'
+    );
   });
 
   it('resizes screen', () => {

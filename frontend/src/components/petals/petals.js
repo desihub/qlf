@@ -10,6 +10,30 @@ export default class Petals extends Component {
     onClick: PropTypes.func.isRequired,
   };
 
+  state = {
+    petalSize: 80,
+  };
+
+  componentDidMount() {
+    this.updatePetalSize();
+  }
+
+  componentWillMount() {
+    window.addEventListener('resize', this.updatePetalSize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updatePetalSize);
+  }
+
+  updatePetalSize = () => {
+    if (window.outerWidth) {
+      this.setState({
+        petalSize: (window.outerWidth + window.outerHeight) / this.props.size,
+      });
+    }
+  };
+
   stageColor = index => {
     if (this.props.selected.includes(index)) return 'green';
     return 'lightgray';
@@ -33,14 +57,14 @@ export default class Petals extends Component {
     };
 
     return (
-      <svg width={this.props.size} height={this.props.size}>
+      <svg width={this.state.petalSize} height={this.state.petalSize}>
         <VictoryPie
           padding={0}
-          width={this.props.size}
-          height={this.props.size}
+          width={this.state.petalSize}
+          height={this.state.petalSize}
           standalone={false}
           colorScale={['gray']}
-          labelRadius={this.props.size / 3}
+          labelRadius={this.state.petalSize / 3}
           data={data}
           startAngle={18}
           endAngle={378}
@@ -107,7 +131,7 @@ export default class Petals extends Component {
             },
             labels: {
               fill: 'black',
-              fontSize: this.props.size / 10,
+              fontSize: this.state.petalSize / 10,
             },
           }}
         />

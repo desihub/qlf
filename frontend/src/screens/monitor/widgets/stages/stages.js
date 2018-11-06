@@ -5,7 +5,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import _ from 'lodash';
-import { Card } from 'material-ui/Card';
+import Card from '@material-ui/core/Card';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
