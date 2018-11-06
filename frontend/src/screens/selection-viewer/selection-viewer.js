@@ -291,7 +291,6 @@ class SelectionViewer extends React.Component {
             spectrograph={this.state.selectSpectrograph}
             loadEnd={this.loadEnd}
             loadStart={this.loadStart}
-            loading={this.state.loading}
           />
         );
       case '/fiber-viewer':
