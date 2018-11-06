@@ -13,8 +13,8 @@ const apiUrl = process.env.REACT_APP_API;
 
 const styles = {
   iframe: {
-    width: '100%',
-    height: '100%',
+    height: 'calc(100vh - 135px)',
+    width: 'calc(100vw - 64px - 12vw)',
   },
   preview: {
     display: 'flex',
@@ -26,7 +26,7 @@ const styles = {
     width: '100%',
     display: 'grid',
     gridTemplateColumns: 'auto',
-    height: 'calc(100vh - 161px)',
+    height: 'calc(100vh - 135px)',
     overflowY: 'auto',
   },
   previewResize: {

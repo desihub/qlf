@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import FlatButton from 'material-ui/FlatButton';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   card: {
@@ -24,50 +25,63 @@ const styles = {
   },
   button: {
     minWidth: '10px',
+    background: 'white',
+    border: '0',
+    boxShadow: 'none',
   },
   value: {
-    fontSize: '14px',
+    fontSize: '1.2vw',
     textAlign: 'center',
     padding: '5px',
   },
   title: {
     paddingLeft: '10px',
-    fontSize: '14px',
+    fontSize: '1.2vw',
     color: 'rgba(0, 0, 0, 0.54)',
     gridArea: 'title',
   },
+  text: {
+    fontSize: '1.2vw',
+  },
 };
 
-export default class Control extends Component {
+class Control extends Component {
   static propTypes = {
     value: PropTypes.any.isRequired,
     title: PropTypes.string.isRequired,
     change: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <Card style={styles.card}>
         <div style={styles.grid}>
           <Typography variant="body2" style={styles.title}>
             {this.props.title}
           </Typography>
-          <FlatButton
+          <Button
             style={styles.button}
-            className="control"
-            label="<"
-            primary={true}
             onClick={() => this.props.change('prev')}
-          />
+            classes={{ raised: classes.text }}
+            variant="raised"
+          >
+            &lt;
+          </Button>
           <span style={styles.value}>{this.props.value}</span>
-          <FlatButton
+          <Button
             style={styles.button}
-            label=">"
-            primary={true}
             onClick={() => this.props.change('next')}
-          />
+            classes={{ raised: classes.text }}
+            variant="raised"
+          >
+            &gt;
+          </Button>
         </div>
       </Card>
     );
   }
 }
+
+export default withStyles(styles)(Control);

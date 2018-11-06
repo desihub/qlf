@@ -23,15 +23,17 @@ const styles = {
     margin: '1em',
   },
   label: {
-    fontSize: '0.75rem',
+    fontSize: '1.2vw',
     marginTop: 16,
   },
   title: {
     marginTop: 16,
     textAlign: 'center',
+    fontSize: '1.3vw',
   },
   button: {
     margin: '1em',
+    fontSize: '1.2vw',
   },
   formGroup: {
     display: 'flex',
@@ -48,7 +50,7 @@ const styles = {
     justifySelf: 'center',
   },
   labelThreshold: {
-    fontSize: '0.75rem',
+    fontSize: '1.1vw',
     marginTop: 0,
   },
   threshold: {
@@ -56,7 +58,21 @@ const styles = {
     flexDirection: 'column',
     alignItens: 'left',
     padding: 8,
-    width: 70,
+    width: '6vw',
+  },
+  text: {
+    fontSize: '1.2vw',
+  },
+  textField: {
+    fontSize: '1vw',
+  },
+  helpText: {
+    fontSize: '0.7vw',
+  },
+  checkWH: {
+    width: '1.7vw',
+    height: '4.8vh',
+    marginRight: '0.5vw',
   },
 };
 
@@ -197,6 +213,7 @@ class Form extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <div style={styles.container}>
         {this.state.loading ? <CircularProgress size={50} /> : null}
@@ -210,6 +227,13 @@ class Form extends React.Component {
             label={c.label}
             InputLabelProps={{
               shrink: true,
+              style: styles.textField,
+            }}
+            inputProps={{
+              style: styles.text,
+            }}
+            FormHelperTextProps={{
+              style: styles.helpText,
             }}
             helperText={c.helperText}
             fullWidth
@@ -237,7 +261,7 @@ class Form extends React.Component {
                   onClick={spectrograph =>
                     this.updateSpectrograph(arm, spectrograph)
                   }
-                  size={100}
+                  size={22}
                 />
                 <FormControlLabel
                   control={
@@ -246,10 +270,12 @@ class Form extends React.Component {
                       checked={this.state.arms.includes(arm)}
                       onChange={() => this.updateArm(arm)}
                       value={arm}
+                      classes={{ root: classes.checkWH }}
                     />
                   }
                   label={arm}
                   style={styles.formCheckbox}
+                  classes={{ label: classes.text }}
                 />
               </div>
             ))}
@@ -266,6 +292,13 @@ class Form extends React.Component {
             label={c.label}
             InputLabelProps={{
               shrink: true,
+              style: styles.textField,
+            }}
+            inputProps={{
+              style: styles.text,
+            }}
+            FormHelperTextProps={{
+              style: styles.helpText,
             }}
             helperText={c.helperText}
             fullWidth
@@ -285,17 +318,20 @@ class Form extends React.Component {
               type="number"
               InputLabelProps={{
                 shrink: true,
+                style: styles.textField,
               }}
               inputProps={{
                 min: 0,
                 max: 100,
                 step: 10,
+                style: styles.text,
               }}
               margin="normal"
               value={this.state[c.state]}
               onChange={this.handleChange(c.state)}
-          InputProps={{ // eslint-disable-line
+              InputProps={{ // eslint-disable-line
                 endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                style: styles.textField,
               }}
             />
           ))}

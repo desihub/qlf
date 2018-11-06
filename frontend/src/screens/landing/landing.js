@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
-import AppBar from 'material-ui/AppBar';
 import MainMenu from './widgets/main-menu/main-menu';
 import Home from './widgets/home/home';
 import AboutUs from './widgets/about/about';
@@ -11,6 +10,9 @@ import ContactUs from './widgets/contact/contact';
 const styles = {
   mainMenu: {
     height: '32px',
+    backgroundColor: 'rgba(0, 0, 0, 0.87)',
+    color: '#fff',
+    padding: '0 24px 0 24px',
   },
   currentScreen: {
     minHeight: 'calc(100vh - 185px)',
@@ -47,12 +49,7 @@ class Landing extends Component {
   render() {
     return (
       <div>
-        <AppBar
-          showMenuIconButton={false}
-          style={styles.mainMenu}
-          title={this.renderMainMenu()}
-          zDepth={0}
-        />
+        <div style={styles.mainMenu}>{this.renderMainMenu()}</div>
         <div style={styles.currentScreen}>{this.renderCurrentScreen()}</div>
       </div>
     );

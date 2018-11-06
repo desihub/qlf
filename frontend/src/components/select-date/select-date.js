@@ -2,6 +2,7 @@ import React from 'react';
 import Proptypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   container: {
@@ -19,10 +20,19 @@ const styles = {
     backgroundColor: 'white',
     border: '1px solid lightgrey',
     padding: 1,
+    fontSize: '0.92vw',
+    marginTop: '1.05vh',
+    lineHeight: '2vh',
+  },
+  title: {
+    fontSize: '1.2vw',
+  },
+  field: {
+    minWidth: '100%',
   },
 };
 
-export default class SelectDate extends React.Component {
+class SelectDate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,6 +47,7 @@ export default class SelectDate extends React.Component {
     startDate: Proptypes.string.isRequired,
     endDate: Proptypes.string.isRequired,
     setHistoryRangeDate: Proptypes.func.isRequired,
+    classes: Proptypes.object.isRequired,
   };
 
   componentWillMount() {
@@ -108,8 +119,10 @@ export default class SelectDate extends React.Component {
             type="date"
             value={this.formatFilterDate(this.state.selectedStartDate)}
             onChange={this.changeStart}
+            style={styles.field}
             InputLabelProps={{
               shrink: true,
+              style: styles.title,
             }}
             inputProps={{
               style: styles.dateField,
@@ -125,8 +138,10 @@ export default class SelectDate extends React.Component {
             type="date"
             value={this.formatFilterDate(this.state.selectedEndDate)}
             onChange={this.changeEnd}
+            style={styles.field}
             InputLabelProps={{
               shrink: true,
+              style: styles.title,
             }}
             inputProps={{
               style: styles.dateField,
@@ -139,3 +154,5 @@ export default class SelectDate extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(SelectDate);

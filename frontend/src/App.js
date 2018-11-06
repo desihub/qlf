@@ -1,7 +1,5 @@
 import React from 'react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import AppBar from 'material-ui/AppBar';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Landing from './screens/landing/landing';
 import { Route } from 'react-router';
 import { Provider } from 'react-redux';
@@ -14,7 +12,7 @@ import OfflineContainer from './containers/offline/offline-container';
 import Icon from '@material-ui/core/Icon';
 import Notification from './components/notification/notification';
 
-const theme = {
+const theme = createMuiTheme({
   spacing: {
     iconSize: 24,
     desktopGutter: 24,
@@ -31,7 +29,7 @@ const theme = {
   fontFamily: 'Roboto, sans-serif',
   borderRadius: 2,
   palette: {
-    primary1Color: '#24292E',
+    primary1Color: '#3c3c3c',
     primary2Color: '#0097a7',
     primary3Color: '#bdbdbd',
     accent1Color: '#ba000d',
@@ -43,11 +41,24 @@ const theme = {
     canvasColor: '#ffffff',
     borderColor: '#e0e0e0',
     disabledColor: 'rgba(0, 0, 0, 0.3)',
-    pickerHeaderColor: '#24292E',
+    pickerHeaderColor: '#3c3c3c',
     clockCircleColor: 'rgba(0, 0, 0, 0.07)',
     shadowColor: 'rgba(0, 0, 0, 1)',
   },
-};
+  overrides: {
+    MuiAppBar: {
+      colorPrimary: {
+        color: '#fff',
+        backgroundColor: 'rgba(0, 0, 0, 0.87)',
+      },
+    },
+    MuiSvgIcon: {
+      root: {
+        fontSize: '2vw',
+      },
+    },
+  },
+});
 
 const styles = {
   grid: {
@@ -64,8 +75,15 @@ const styles = {
   },
   headerTop: {
     fontSize: '35px',
-    padding: '0px 6vw 35px 6vw',
+    padding: '10px 6vw 50px',
     fontWeight: 900,
+    backgroundColor: 'rgba(0, 0, 0, 0.87)',
+    color: '#fff',
+  },
+  headerBottom: {
+    backgroundColor: 'rgba(0, 0, 0, 0.87)',
+    color: '#fff',
+    padding: '0 24px 0 24px',
   },
   headerTitleBottom: {
     fontSize: '16px',
@@ -106,6 +124,9 @@ const styles = {
   },
   headerTopSmall: {
     height: '38px',
+    backgroundColor: 'rgba(0, 0, 0, 0.87)',
+    color: '#fff',
+    padding: '0 24px 0 24px',
   },
   hideMenu: { color: 'white', cursor: 'pointer', fontSize: '10px' },
   bottom: {
@@ -201,10 +222,6 @@ class App extends React.Component {
     this.setState({ url });
   };
 
-  showMenuIcon = () => {
-    return false;
-  };
-
   renderAppBar = () => {
     if (this.renderRouteName() === '') {
       return (
@@ -228,59 +245,20 @@ class App extends React.Component {
             >
               home
             </Icon>
-            {/* <span style={styles.hideMenu} onClick={this.toggleHeader}>
-              Hide Menu
-            </span> */}
           </div>
         </div>
       );
     }
   };
 
-  toggleHeader = () => {
-    this.setState({ displayHeaders: !this.state.displayHeaders });
-  };
-
   renderTopBar = () => {
-    // if (!this.state.displayHeaders) return;
     const homeAppleTitleStyle =
       this.renderRouteName() === '' ? styles.headerTop : styles.headerTopSmall;
-    return (
-      <AppBar
-        titleStyle={homeAppleTitleStyle}
-        showMenuIconButton={this.showMenuIcon()}
-        onLeftIconButtonTouchTap={this.openDrawer}
-        title={this.renderAppBar()}
-      />
-    );
+    return <div style={homeAppleTitleStyle}>{this.renderAppBar()}</div>;
   };
 
   renderBottomBar = () => {
-    // if (!this.state.displayHeaders)
-    //   return (
-    //     <span
-    //       style={{
-    //         color: 'gray',
-    //         marginRight: '1em',
-    //         cursor: 'pointer',
-    //         fontSize: '10px',
-    //         display: 'flex',
-    //         justifyContent: 'flex-end',
-    //       }}
-    //       onClick={this.toggleHeader}
-    //     >
-    //       Show Menu
-    //     </span>
-    //   );
-
-    return (
-      <AppBar
-        showMenuIconButton={false}
-        titleStyle={styles.headerTitleBottom}
-        style={styles.headerBottom}
-        title={this.renderBottomBarTitle()}
-      />
-    );
+    return <div style={styles.headerBottom}>{this.renderBottomBarTitle()}</div>;
   };
 
   openLineaWebSite = () => {
@@ -332,7 +310,7 @@ class App extends React.Component {
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
+          <MuiThemeProvider theme={theme}>
             <div style={useGrid}>
               <div style={headerStyle}>
                 {this.renderRouteName() === '' ? (
@@ -359,7 +337,7 @@ class App extends React.Component {
                     disconnected={this.websocketDisconnected}
                   />
                 ) : null}
-                <OfflineContainer toggleHeader={this.toggleHeader} />
+                <OfflineContainer />
               </div>
               <div style={styles.footerContainer}>{this.renderBottomBar()}</div>
             </div>

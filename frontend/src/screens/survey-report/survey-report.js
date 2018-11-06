@@ -17,10 +17,12 @@ const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
-    width: 200,
+    width: '12vw',
     justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
+    paddingRight: '10px',
+    boxSizing: 'border-box',
   },
   column: {
     display: 'flex',
@@ -28,11 +30,12 @@ const styles = {
   },
   gridRow: {
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
+    gridTemplateColumns: '12vw calc(100vw - 64px - 12vw)',
+    width: 'calc(100vw - 64px)',
     height: 'calc(100vh - 135px)',
   },
   viewer: {
-    width: 'calc(100vw - 280px)',
+    width: 'calc(100vw - 64px - 12vw)',
   },
   fadeLoaderFull: {
     position: 'absolute',
@@ -50,9 +53,14 @@ const styles = {
   formControl: {
     width: '100%',
   },
+  buttons: {
+    display: 'grid',
+    width: '10vw',
+  },
   button: {
     float: 'right',
     margin: '10px 0',
+    fontSize: '1.2vw',
   },
   buttonGreen: {
     backgroundColor: 'green',
@@ -65,6 +73,26 @@ const styles = {
     margin: '16px',
     padding: '16px',
     height: 'calc(100vh - 135px)',
+  },
+  title: {
+    fontSize: '1.2vw',
+  },
+  text: {
+    fontSize: '1.1vw',
+  },
+  selectEmpty: {
+    fontSize: '1vw',
+    marginTop: '1vh',
+    lineHeight: '2.5vh',
+  },
+  selectIcon: {
+    width: '1.7vw',
+    height: '3.5vh',
+    top: 'calc(50% - 1.6vh)',
+  },
+  mItem: {
+    height: '2.4vh',
+    fontSize: '1vw',
   },
 };
 
@@ -247,22 +275,35 @@ class SurveyReport extends React.Component {
   );
 
   renderDatePeriodSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Date Period</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Date Period
+          </InputLabel>
           <Select
             value={this.state.datePeriod}
             onChange={this.handleChangeDatePeriod}
             input={<Input />}
             displayEmpty
-            className={this.props.classes.selectEmpty}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'night'}>Night</MenuItem>
-            <MenuItem value={'week'}>Week</MenuItem>
-            <MenuItem value={'month'}>Month</MenuItem>
-            <MenuItem value={'year'}>Year</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.mItem }}>
+              All
+            </MenuItem>
+            <MenuItem value={'night'} classes={{ root: classes.mItem }}>
+              Night
+            </MenuItem>
+            <MenuItem value={'week'} classes={{ root: classes.mItem }}>
+              Week
+            </MenuItem>
+            <MenuItem value={'month'} classes={{ root: classes.mItem }}>
+              Month
+            </MenuItem>
+            <MenuItem value={'year'} classes={{ root: classes.mItem }}>
+              Year
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -290,21 +331,32 @@ class SurveyReport extends React.Component {
   };
 
   renderProgramSelection = () => {
+    const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink>Program</InputLabel>
+          <InputLabel shrink classes={{ root: classes.title }}>
+            Program
+          </InputLabel>
           <Select
             value={this.state.program}
             onChange={this.handleChangeProgram}
             input={<Input />}
             displayEmpty
-            className={this.props.classes.selectEmpty}
+            classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
           >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'bright'}>Bright</MenuItem>
-            <MenuItem value={'dark'}>Dark</MenuItem>
-            <MenuItem value={'gray'}>Gray</MenuItem>
+            <MenuItem value={'all'} classes={{ root: classes.mItem }}>
+              All
+            </MenuItem>
+            <MenuItem value={'bright'} classes={{ root: classes.mItem }}>
+              Bright
+            </MenuItem>
+            <MenuItem value={'dark'} classes={{ root: classes.mItem }}>
+              Dark
+            </MenuItem>
+            <MenuItem value={'gray'} classes={{ root: classes.mItem }}>
+              Gray
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -318,8 +370,10 @@ class SurveyReport extends React.Component {
         {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
         {this.renderProgramSelection()}
-        {this.renderSubmit()}
-        {this.renderClear()}
+        <div className={classes.buttons}>
+          {this.renderSubmit()}
+          {this.renderClear()}
+        </div>
       </div>
     );
   };
