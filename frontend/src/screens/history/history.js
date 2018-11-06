@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TableHistory from './widgets/table-history/table-history';
-import SelectDate from './widgets/select-date/select-date';
+import SelectDate from '../../components/select-date/select-date';
 import SelectNight from './widgets/select-night/select-night';
 import { Card } from 'material-ui/Card';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
@@ -105,6 +105,7 @@ export default class History extends Component {
     } else if (this.props.startDate && this.props.endDate)
       return (
         <SelectDate
+          row={true}
           startDate={this.props.startDate}
           endDate={this.props.endDate}
           setHistoryRangeDate={this.setHistoryRangeDate}

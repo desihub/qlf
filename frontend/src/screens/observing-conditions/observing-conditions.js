@@ -450,6 +450,7 @@ class ObservingConditions extends React.Component {
   );
 
   renderSelectDate = () => {
+    console.log(this.state)
     if (this.state.startDate !== '' && this.state.endDate !== '')
       return (
         <SelectDate
@@ -530,6 +531,7 @@ class ObservingConditions extends React.Component {
 
   handleTabChange = (evt, tab) => {
     this.setState({ tab });
+    this.clearSelection();
   };
 
   renderTabs = () => {
