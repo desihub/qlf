@@ -92,9 +92,9 @@ describe('QA', () => {
   it('changes store', async () => {
     expect(
       wrapper
-        .find('Cards')
+        .find('CardContent')
         .at(2)
-        .props().title
+        .text()
     ).toBe('Exposure: 3');
     expect(
       wrapper
