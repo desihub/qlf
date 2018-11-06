@@ -39,6 +39,9 @@ class Xwsigma:
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
         gen_info = mergedqa['GENERAL_INFO']
+        flavor= mergedqa['FLAVOR']
+
+
 
         ra = gen_info['RA']
         dec = gen_info['DEC']
@@ -52,6 +55,7 @@ class Xwsigma:
 
         nrg = check_ccds['PARAMS']['XWSIGMA_NORMAL_RANGE']
         wrg = check_ccds['PARAMS']['XWSIGMA_WARN_RANGE']
+        obj_type = sort_obj(gen_info)  # [""]*500
 
         if mergedqa['FLAVOR'].upper() == 'SCIENCE':
             program = mergedqa['GENERAL_INFO']['PROGRAM'].upper()
@@ -67,6 +71,26 @@ class Xwsigma:
         hist_rg = (wrg[0] - 0.1*delta_rg, wrg[1]+0.1*delta_rg)
 
         my_palette = get_palette("viridis")
+
+        xfiber = np.arange(len(xsigma))
+        wfiber = np.arange(len(wsigma))
+        if mergedqa['FLAVOR'].upper() != 'SCIENCE':
+            ra = np.full(500,np.nan)
+            dec= np.full(500,np.nan)
+
+        source = ColumnDataSource(data={
+            'x1': ra,  
+            'y1': dec, 
+            'xsigma': xsigma,
+            'wsigma': wsigma,
+            'xfiber': xfiber,
+            'wfiber': wfiber,
+            'OBJ_TYPE': obj_type,
+            'left': np.arange(0, 500)-0.4,
+            'right': np.arange(0, 500)+0.4,
+            'bottom': [0]*500
+            })
+
 
         xsigma_tooltip = """
             <div>
@@ -88,12 +112,12 @@ class Xwsigma:
                 </div>
 
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
                     <span style="font-size: 1vw; color: #515151;">@xfiber</span>
                 </div>
 
-            </div>
-        """
+                </div>
+            """
 
         wsigma_tooltip = """
             <div>
@@ -114,12 +138,12 @@ class Xwsigma:
                     <span style="font-size: 1vw; color: #515151;">@y1</span>
                 </div>
                 <div>
-                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER #: </span>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">FIBER ID: </span>
                     <span style="font-size: 1vw; color: #515151;">@wfiber</span>
                 </div>
 
             </div>
-        """
+            """
 
         url = "http://legacysurvey.org/viewer?ra=@ra&dec=@dec&zoom=16&layer=decals-dr5"
 
@@ -129,87 +153,118 @@ class Xwsigma:
 
         xsigma_hover = HoverTool(tooltips=xsigma_tooltip)
         wsigma_hover = HoverTool(tooltips=wsigma_tooltip)
-
-        xfiber = np.arange(len(xsigma))
-        wfiber = np.arange(len(wsigma))
-
-        source = ColumnDataSource(data={
-            'x1': ra,  
-            'y1': dec, 
-            'xsigma': xsigma,
-            'wsigma': wsigma,
-            'xfiber': xfiber,
-            'wfiber': wfiber,
-            'OBJ_TYPE': obj_type,
-            'left': np.arange(0, 500)-0.4,
-            'right': np.arange(0, 500)+0.4,
-            'bottom': [0]*500
-        })
-
-        # axes limit
-        xmin, xmax = [min(ra[:]), max(ra[:])]
-        ymin, ymax = [min(dec[:]), max(dec[:])]
-        xfac, yfac = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
-        left, right = xmin - xfac, xmax+xfac
-        bottom, top = ymin-yfac, ymax+yfac
-
-        xmapper = LinearColorMapper(palette=my_palette,
-                                    low=0.98*np.min(xsigma),
-                                    high=1.02*np.max(xsigma))
-
-        wmapper = LinearColorMapper(palette=my_palette,
-                                    low=0.99*np.min(wsigma),
-                                    high=1.01*np.max(wsigma))
-
-        # ======
-        # XSIGMA WEDGE
-
-        radius = 0.0165 
-        radius_hover = 0.02
-
-        # centralize wedges in plots:
-        ra_center=0.5*(max(ra)+min(ra))
-        dec_center=0.5*(max(dec)+min(dec))
-        xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
-        yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
+        xsigma_std = HoverTool(tooltips=xsigma_tooltip, mode='vline')
+        wsigma_std = HoverTool(tooltips=wsigma_tooltip, mode='vline')
 
 
-        px = Figure(title='XSIGMA',
-            x_axis_label='RA',
-            y_axis_label='DEC',
-            plot_height=400,
-            x_range= xrange_wedge,#Range1d(left,right),
-            y_range=yrange_wedge,#Range1d(bottom, top),
-            tools=[xsigma_hover,
-            "box_zoom,pan,reset,crosshair"],
-            active_drag="box_zoom")
 
-        # Color Map
-        px.circle('x1','y1', source=source, name="data", radius=radius,
-                  fill_color={'field': 'xsigma', 'transform': xmapper},
-                  line_color='black', line_width=0.1,
-                  hover_line_color='red')
 
-        # marking the Hover point
-        px.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-                  'field': 'xsigma', 'transform': xmapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+        if flavor=="science":
+            
 
-        taptool = px.select(type=TapTool)
-        taptool.callback = OpenURL(url=url)
+            # axes limit
+            xmin, xmax = [min(ra[:]), max(ra[:])]
+            ymin, ymax = [min(dec[:]), max(dec[:])]
+            xfac, yfac = [(xmax-xmin)*0.06, (ymax-ymin)*0.06]
+            left, right = xmin - xfac, xmax+xfac
+            bottom, top = ymin-yfac, ymax+yfac
 
-        xcolor_bar = ColorBar(color_mapper=xmapper, label_standoff=-13,
-                              major_label_text_font_style="bold", padding=26,
-                              major_label_text_align='right',
-                              major_label_text_font_size="10pt",
-                              location=(0, 0))
+            xmapper = LinearColorMapper(palette=my_palette,
+                                        low=0.98*np.min(xsigma),
+                                        high=1.02*np.max(xsigma))
 
-        px.add_layout(xcolor_bar, 'left')
+            wmapper = LinearColorMapper(palette=my_palette,
+                                        low=0.99*np.min(wsigma),
+                                        high=1.01*np.max(wsigma))
+
+            # ============
+            # XSIGMA WEDGE
+
+            radius = 0.0165 
+            radius_hover = 0.02
+
+            # centralize wedges in plots:
+            ra_center=0.5*(max(ra)+min(ra))
+            dec_center=0.5*(max(dec)+min(dec))
+            xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
+            yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
+
+            px = Figure(title='XSIGMA',
+                x_axis_label='RA',
+                y_axis_label='DEC',
+                plot_height=350,
+                x_range=xrange_wedge,
+                y_range=yrange_wedge,
+                tools=[xsigma_hover,
+                "box_zoom,pan,reset,crosshair"],
+                active_drag="box_zoom")
+
+            # Color Map
+            px.circle('x1','y1', source=source, name="data", radius=radius,
+                      fill_color={'field': 'xsigma', 'transform': xmapper},
+                      line_color='black', line_width=0.1,
+                      hover_line_color='red')
+
+            # marking the Hover point
+            px.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
+                      'field': 'xsigma', 'transform': xmapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+
+            taptool = px.select(type=TapTool)
+            taptool.callback = OpenURL(url=url)
+
+            xcolor_bar = ColorBar(color_mapper=xmapper, label_standoff=-13,
+                                  major_label_text_font_style="bold", padding=26,
+                                  major_label_text_align='right',
+                                  major_label_text_font_size="10pt",
+                                  location=(0, 0))
+
+            px.add_layout(xcolor_bar, 'left')
+
+
+            # ============
+            # WSIGMA WEDGE
+            pw = Figure(title='WSIGMA',
+                    x_axis_label='RA',
+                    y_axis_label='DEC',
+                    plot_height=350,
+                    x_range=xrange_wedge,
+                    y_range=yrange_wedge,
+                    tools=[wsigma_hover,
+                    "box_zoom,pan,reset,crosshair"],
+                    active_drag="box_zoom")
+
+            # Color Map
+            pw.circle('x1','y1', source=source, name="data", radius=radius,
+                      fill_color={'field': 'wsigma', 'transform': wmapper},
+                      line_color='black', line_width=0.1,
+                      hover_line_color='red')
+
+            # marking the Hover point
+            pw.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
+                      'field': 'wsigma', 'transform': wmapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
+
+            taptool = pw.select(type=TapTool)
+            taptool.callback = OpenURL(url=url)
+
+            wcolor_bar = ColorBar(color_mapper=wmapper, label_standoff=-13,
+                                  major_label_text_font_style="bold", padding=26,
+                                  major_label_text_align='right',
+                                  major_label_text_font_size="10pt",
+                                  location=(0, 0))
+
+            pw.add_layout(wcolor_bar, 'left')
+
+
+
+
+        # ================================
+        # Stat histogram
 
         # x_fiber_hist
         d_yplt = (max(xsigma) - min(xsigma))*0.1
         yrange = [0, max(xsigma) + d_yplt]
 
-        xhist = plot_hist(xsigma_hover, yrange, ph=300)
+        xhist = plot_hist(xsigma_std, yrange, ph=300)
         xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data', source=source,
                    fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
                    hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -217,44 +272,11 @@ class Xwsigma:
         xhist.xaxis.axis_label = "Fiber number"
         xhist.yaxis.axis_label = "X std dev (number of pixels)"
 
-        # ======
-        # WEDGE WSIGMA
-        pw = Figure(title='WSIGMA',
-                x_axis_label='RA',
-                y_axis_label='DEC',
-                plot_height=400,
-                x_range=xrange_wedge, 
-                y_range=yrange_wedge, 
-                tools=[wsigma_hover,
-                "box_zoom,pan,reset,crosshair"],
-                active_drag="box_zoom")
-
-        # Color Map
-        pw.circle('x1','y1', source=source, name="data", radius=radius,
-                  fill_color={'field': 'wsigma', 'transform': wmapper},
-                  line_color='black', line_width=0.1,
-                  hover_line_color='red')
-
-        # marking the Hover point
-        pw.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-                  'field': 'wsigma', 'transform': wmapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
-
-        taptool = pw.select(type=TapTool)
-        taptool.callback = OpenURL(url=url)
-
-        wcolor_bar = ColorBar(color_mapper=wmapper, label_standoff=-13,
-                              major_label_text_font_style="bold", padding=26,
-                              major_label_text_align='right',
-                              major_label_text_font_size="10pt",
-                              location=(0, 0))
-
-        pw.add_layout(wcolor_bar, 'left')
-
         # w_fiber_hist
         d_yplt = (max(wsigma) - min(wsigma))*0.1
         yrange = [0, max(wsigma) + d_yplt]
 
-        whist = plot_hist(wsigma_hover, yrange, ph=300)
+        whist = plot_hist(wsigma_std, yrange, ph=300)
         whist.quad(top='wsigma', bottom='bottom', left='left', right='right', name='data', source=source,
                    fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
                    hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
@@ -272,7 +294,7 @@ class Xwsigma:
                 histval = 'histplusone'
             else:
                 ylabel = "Frequency"
-                yrange = (-0.0*max(hist), 1.1*max(hist))
+                yrange = (0.0*max(hist), 1.1*max(hist))
                 bottomval = 'bottom'
                 histval = 'hist'
             return [ylabel, yrange, bottomval, histval]
@@ -467,8 +489,8 @@ class Xwsigma:
 
         # -------------------------------------------------------------------------
         info_col = Div(text=write_description('xwsigma'))
-        pxh = column(px, xhist, p_hist_x, xamp)
-        pwh = column(pw, whist, p_hist_w, wamp)
+        # pxh = column(px, xhist, p_hist_x, xamp)
+        # pwh = column(pw, whist, p_hist_w, wamp)
 
         curexp, refexp = '%3.2f' % xwsigma[0], '%3.2f' % xw_ref[0]  # 'xx..xx'
         info = metric_table('X sigma', 'xsigma', curexp, refexp)
@@ -483,30 +505,42 @@ class Xwsigma:
         tb_alert_x = Div(text=alert_x)
         tb_alert_w = Div(text=alert_w)
 
-        font_size = "1.2vw"
-        for plot in [px, pw, xhist,whist,p_hist_x,p_hist_w,xamp,wamp]:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
+        if flavor == 'science':
+            pxh = column(px, xhist, p_hist_x, xamp)
+            pwh = column(pw, whist, p_hist_w, wamp)
 
-
-        layout = column(
-            widgetbox(info_col, css_classes=["header"]),
-            widgetbox(Div(), css_classes=["tableranges"]),
-            widgetbox(tb_x),
-            widgetbox(tb_w),
-            widgetbox(tb_alert_x),
-            widgetbox(tb_alert_w),
-            column(px, sizing_mode='scale_both'),
-            column(pw, sizing_mode='scale_both'),
-            column(xhist, sizing_mode='scale_both'),
-            column(whist, sizing_mode='scale_both'),
-            column(p_hist_x, sizing_mode='scale_both'),
-            column(p_hist_w, sizing_mode='scale_both'),
-            column(xamp, sizing_mode='scale_both'),
-            column(wamp, sizing_mode='scale_both'),
-            css_classes=["display-grid"], sizing_mode='scale_width')
+            layout = column(
+                widgetbox(info_col, css_classes=["header"]),
+                widgetbox(Div(), css_classes=["tableranges"]),
+                widgetbox(tb_x),
+                widgetbox(tb_w),
+                widgetbox(tb_alert_x),
+                widgetbox(tb_alert_w),
+                column(px, sizing_mode='scale_both'),
+                column(pw, sizing_mode='scale_both'),
+                column(xhist, sizing_mode='scale_both'),
+                column(whist, sizing_mode='scale_both'),
+                column(p_hist_x, sizing_mode='scale_both'),
+                column(p_hist_w, sizing_mode='scale_both'),
+                column(xamp, sizing_mode='scale_both'),
+                column(wamp, sizing_mode='scale_both'),
+                css_classes=["display-grid"], sizing_mode='scale_width')
+        else:
+             layout = column(
+                widgetbox(info_col, css_classes=["header"]),
+                widgetbox(Div(), css_classes=["tableranges"]),
+                widgetbox(tb_x),
+                widgetbox(tb_w),
+                widgetbox(tb_alert_x),
+                widgetbox(tb_alert_w),
+                # column(px, sizing_mode='scale_both'),
+                # column(pw, sizing_mode='scale_both'),
+                column(xhist, sizing_mode='scale_both'),
+                column(whist, sizing_mode='scale_both'),
+                column(p_hist_x, sizing_mode='scale_both'),
+                column(p_hist_w, sizing_mode='scale_both'),
+                column(xamp, sizing_mode='scale_both'),
+                column(wamp, sizing_mode='scale_both'),
+                css_classes=["display-grid"], sizing_mode='scale_width')
+           
         return file_html(layout, CDN, "XWSIGMA")

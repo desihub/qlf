@@ -66,7 +66,7 @@ class Countbins:
         fibers = list(countbins['GOOD_FIBERS'])
         colors = ['#319b5c' if i == 1 else '#282828' for i in fibers]
         x = np.array(range(len(fibers)))
-        hist_hover = HoverTool(tooltips=hist_tooltip)
+        hist_hover = HoverTool(tooltips=hist_tooltip, mode='vline')
         hist_source = ColumnDataSource(
             data={'goodfiber': y,
                   'fiberid': x,
