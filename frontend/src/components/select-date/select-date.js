@@ -68,9 +68,9 @@ export default class SelectDate extends React.Component {
     const startDate = moment(nextProps.startDate).format('YYYY-MM-DD');
     const endDate = moment(nextProps.endDate).format('YYYY-MM-DD');
     if (
-      !this.props.row &&
-      this.state.selectedStartDate !== startDate &&
-      this.state.selectedEndDate !== endDate
+      !nextProps.row &&
+      (this.state.selectedStartDate !== startDate ||
+        this.state.selectedEndDate !== endDate)
     ) {
       this.setState({
         selectedStartDate: startDate,

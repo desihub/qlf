@@ -112,45 +112,35 @@ class SurveyReport extends React.Component {
     let start = null;
     switch (evt.target.value) {
       case 'all':
-        if (evt.target.value !== this.state.datePeriod)
-          this.setState({
-            datePeriod: evt.target.value,
-            startDate: this.props.startDate,
-            endDate: this.props.endDate,
-            preview: false,
-          });
+        this.setState({
+          datePeriod: evt.target.value,
+          startDate: this.props.startDate,
+          endDate: this.props.endDate,
+          preview: false,
+        });
         return;
       case 'night':
-        start = moment().format();
+        start = moment(this.props.endDate);
         break;
       case 'week':
-        start = moment()
-          .subtract(7, 'days')
-          .format();
+        start = moment(this.props.endDate).subtract(7, 'days');
         break;
       case 'month':
-        start = moment()
-          .subtract(1, 'month')
-          .format();
-        break;
-      case 'semester':
-        start = moment()
-          .subtract(6, 'month')
-          .format();
+        start = moment(this.props.endDate).subtract(1, 'month');
         break;
       case 'year':
-        start = moment()
-          .subtract(1, 'year')
-          .format();
+        start = moment(this.props.endDate).subtract(1, 'year');
         break;
       default:
         return;
     }
+    const firstDate = moment(this.props.startDate);
+    start = moment(start).diff(firstDate) > 0 ? start : firstDate;
     if (evt.target.value !== this.state.datePeriod)
       this.setState({
         datePeriod: evt.target.value,
         startDate: moment(start).format('YYYY-MM-DD'),
-        endDate: moment().format('YYYY-MM-DD'),
+        endDate: moment(this.props.endDate).format('YYYY-MM-DD'),
         preview: false,
       });
   };
