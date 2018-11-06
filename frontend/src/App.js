@@ -57,11 +57,6 @@ const theme = createMuiTheme({
         fontSize: '2vw',
       },
     },
-    // MuiSelect: {
-    //   icon: {
-    //     fontSize: '1.2vw',
-    //   },
-    // },
   },
 });
 

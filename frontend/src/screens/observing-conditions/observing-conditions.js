@@ -24,7 +24,6 @@ const styles = {
     display: 'grid',
     alignItems: 'center',
     width: '12vw',
-    // justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
     paddingRight: '10px',
