@@ -253,14 +253,14 @@ def load_spectra(request):
         arms=['b', 'r', 'z']
     else:
         arms=[arm]
-    # try:
-    if spectra == 'spectra':
-        spectra_html = Spectra(process_id, arms).load_spectra()
-    elif spectra == 'spectra_fib':
-        spectra_html = Spectra(process_id, arms).render_spectra(
-            fiber, spectrograph)
-    # except Exception as err:
-    #     spectra_html = "Can't load spectra: {}".format(err)
+    try:
+        if spectra == 'spectra':
+            spectra_html = Spectra(process_id, arms).load_spectra()
+        elif spectra == 'spectra_fib':
+            spectra_html = Spectra(process_id, arms).render_spectra(
+                fiber, spectrograph)
+    except Exception as err:
+        spectra_html = "Can't load spectra: {}".format(err)
 
     context = {'image': spectra_html}
     response = HttpResponse(template.render(context, request))
