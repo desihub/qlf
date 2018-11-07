@@ -18,13 +18,13 @@ import TrendViewer from './trend-viewer/trend-viewer';
 import SelectDate from '../../components/select-date/select-date';
 import Petals from '../../components/petals/petals';
 import moment from 'moment';
+import LegendDate from '../../components/legend-date/legend-date';
 
 const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
     width: '12vw',
-    // justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
     paddingRight: '10px',
@@ -61,6 +61,7 @@ const styles = {
   selection: {
     textAlign: 'center',
     paddingBottom: '2.5vh',
+    position: 'relative',
   },
   selectionRadio: {
     width: '50%',
@@ -345,8 +346,9 @@ class TrendAnalysis extends React.Component {
   renderDatePeriodSelection = () => {
     const { classes } = this.props;
     return (
-      <div className={this.props.classes.selection}>
-        <FormControl className={this.props.classes.formControl}>
+      <div className={classes.selection}>
+        <LegendDate />
+        <FormControl className={classes.formControl}>
           <InputLabel shrink classes={{ root: classes.title }}>
             Date Period
           </InputLabel>
@@ -378,39 +380,11 @@ class TrendAnalysis extends React.Component {
     );
   };
 
-  renderXaxisSelection = () => {
-    const { classes } = this.props;
-    if (this.state.tab !== 'Time Series')
-      return (
-        <div className={this.props.classes.selection}>
-          <FormControl className={this.props.classes.formControl}>
-            <InputLabel shrink classes={{ root: classes.title }}>
-              Xaxis
-            </InputLabel>
-            <Select
-              value={this.state.xaxis}
-              onChange={this.handleChangeXaxis}
-              input={<Input />}
-              displayEmpty
-              classes={{ root: classes.selectEmpty, icon: classes.selectIcon }}
-            >
-              <MenuItem value={'noise'} classes={{ root: classes.mItem }}>
-                Noise
-              </MenuItem>
-              <MenuItem value={'bias'} classes={{ root: classes.mItem }}>
-                Bias
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </div>
-      );
-  };
-
   renderYaxisSelection = () => {
     const { classes } = this.props;
     return (
-      <div className={this.props.classes.selection}>
-        <FormControl className={this.props.classes.formControl}>
+      <div className={classes.selection}>
+        <FormControl className={classes.formControl}>
           <InputLabel shrink classes={{ root: classes.title }}>
             Yaxis
           </InputLabel>
@@ -592,7 +566,6 @@ class TrendAnalysis extends React.Component {
       <div className={classes.controlsContainer}>
         {this.renderDatePeriodSelection()}
         {this.renderSelectDate()}
-        {this.renderXaxisSelection()}
         {this.renderYaxisSelection()}
         {this.renderSpectrographSelection()}
         <div className={classes.controlsContainerInner}>

@@ -12,6 +12,7 @@ import Select from '@material-ui/core/Select';
 import SurveyViewer from './survey-viewer/survey-viewer';
 import SelectDate from '../../components/select-date/select-date';
 import moment from 'moment';
+import LegendDate from '../../components/legend-date/legend-date';
 
 const styles = {
   controlsContainer: {
@@ -49,6 +50,7 @@ const styles = {
   },
   selection: {
     textAlign: 'center',
+    position: 'relative',
   },
   formControl: {
     width: '100%',
@@ -268,6 +270,7 @@ class SurveyReport extends React.Component {
     const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
+        <LegendDate />
         <FormControl className={this.props.classes.formControl}>
           <InputLabel shrink classes={{ root: classes.title }}>
             Date Period

@@ -18,6 +18,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import LegendDate from '../../components/legend-date/legend-date';
 
 const styles = {
   controlsContainer: {
@@ -60,6 +61,7 @@ const styles = {
   selection: {
     textAlign: 'center',
     paddingBottom: '2.5vh',
+    position: 'relative',
   },
   selectionRadio: {
     width: '50%',
@@ -320,6 +322,7 @@ class ObservingConditions extends React.Component {
     const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
+        <LegendDate />
         <FormControl className={this.props.classes.formControl}>
           <InputLabel shrink classes={{ root: classes.title }}>
             Date Period
