@@ -194,16 +194,16 @@ class ObservingConditions extends React.Component {
         });
         return;
       case 'night':
-        start = moment(this.props.endDate);
+        start = moment();
         break;
       case 'week':
-        start = moment(this.props.endDate).subtract(7, 'days');
+        start = moment().subtract(7, 'days');
         break;
       case 'month':
-        start = moment(this.props.endDate).subtract(1, 'month');
+        start = moment().subtract(1, 'month');
         break;
       case 'year':
-        start = moment(this.props.endDate).subtract(1, 'year');
+        start = moment().subtract(1, 'year');
         break;
       default:
         return;
@@ -213,7 +213,7 @@ class ObservingConditions extends React.Component {
     this.setState({
       datePeriod: evt.target.value,
       startDate: moment(start).format('YYYY-MM-DD'),
-      endDate: moment(this.props.endDate).format('YYYY-MM-DD'),
+      endDate: moment().format('YYYY-MM-DD'),
       preview: false,
     });
   };
