@@ -1,21 +1,14 @@
 {% block content %}
 <style>
-        body {
-                position: relative;
-        }
+body {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
 
-        .container {
-                position: absolute;
-                top: 0;
-                left: 50%;
-                transform: translate(-50%, 0);
-                max-width: 100%;
-                max-height: 100%;
-        }
 </style>
 
-<div class="container">
-        {{ image|safe }}
-</div>
+{{ image|safe }}
 
 {% endblock content %}

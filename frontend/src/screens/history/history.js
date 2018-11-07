@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TableHistory from './widgets/table-history/table-history';
-import SelectDate from './widgets/select-date/select-date';
+import SelectDate from '../../components/select-date/select-date';
 import SelectNight from './widgets/select-night/select-night';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -163,6 +163,7 @@ class History extends Component {
     } else if (this.props.startDate && this.props.endDate)
       return (
         <SelectDate
+          row={true}
           startDate={this.props.startDate}
           endDate={this.props.endDate}
           setHistoryRangeDate={this.setHistoryRangeDate}

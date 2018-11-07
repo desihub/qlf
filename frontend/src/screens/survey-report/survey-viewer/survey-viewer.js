@@ -8,6 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 // import Resizable from 're-resizable';
 import QlfApi from '../../../containers/offline/connection/qlf-api';
+import moment from 'moment';
 
 const apiUrl = process.env.REACT_APP_API;
 
@@ -157,10 +158,7 @@ class SurveyViewer extends React.Component {
   };
 
   formatDate = date => {
-    if (date.includes('T') && date.includes('-')) {
-      return date.split('T')[0].replace(/-/g, '');
-    }
-    return '';
+    return moment(date).format('YYYYMMDD');
   };
 
   renderImage = () => {

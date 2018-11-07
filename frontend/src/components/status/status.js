@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -10,9 +9,9 @@ const styles = {
     display: 'flex',
   },
   cardsItens: {
-    minHeight: '4.5vh',
     flex: 1,
-    margin: '1.5vh 1vw 1vh 1vw',
+    padding: 5,
+    margin: '1vh 1vw 1vh 1vw',
     borderLeft: 'solid 4px #424242',
     overflow: 'hidden',
     boxShadow:
@@ -52,25 +51,23 @@ class Status extends Component {
       <div style={{ ...styles.container }}>
         {this.props.pipelineRunning ? (
           <Card className={classes.cardsItens}>
-            <CardContent>{`Status: ${this.props.pipelineRunning}`}</CardContent>
+            {`Status: ${this.props.pipelineRunning}`}
           </Card>
         ) : null}
         <Card className={classes.cardsItens}>
-          <CardContent>{`Flavor: ${this.props.flavor}`}</CardContent>
+          {`Flavor: ${this.props.flavor}`}
         </Card>
         {processId ? (
           <Card className={classes.cardsItens}>
-            <CardContent>{`Process Id: ${processId}`}</CardContent>
+            {`Process Id: ${processId}`}
           </Card>
         ) : null}
         <Card className={classes.cardsItens}>
-          <CardContent>{`Exposure: ${this.props.exposureId}`}</CardContent>
+          {`Exposure: ${this.props.exposureId}`}
         </Card>
+        <Card className={classes.cardsItens}>{`MJD: ${mjd}`}</Card>
         <Card className={classes.cardsItens}>
-          <CardContent>{`MJD: ${mjd}`}</CardContent>
-        </Card>
-        <Card className={classes.cardsItens}>
-          <CardContent>{`Date: ${this.formatDate()}`}</CardContent>
+          {`Date: ${this.formatDate()}`}
         </Card>
       </div>
     );

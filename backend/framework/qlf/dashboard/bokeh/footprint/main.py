@@ -22,7 +22,9 @@ class Footprint():
 
         plot = figure(
             tools='box_zoom,pan,wheel_zoom,reset,lasso_select,crosshair',
-            active_drag="box_zoom"
+            active_drag="box_zoom",
+            height=450,
+            sizing_mode='scale_width'
         )
 
         plot.circle(x, y, fill_color='black', alpha=0.1)

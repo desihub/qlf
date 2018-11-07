@@ -184,26 +184,22 @@ class TrendAnalysis extends React.Component {
         });
         return;
       case 'night':
-        start = moment().format();
+        start = moment();
         break;
       case 'week':
-        start = moment()
-          .subtract(7, 'days')
-          .format();
+        start = moment().subtract(7, 'days');
         break;
       case 'month':
-        start = moment()
-          .subtract(1, 'month')
-          .format();
+        start = moment().subtract(1, 'month');
         break;
       case 'year':
-        start = moment()
-          .subtract(1, 'year')
-          .format();
+        start = moment().subtract(1, 'year');
         break;
       default:
         return;
     }
+    const firstDate = moment(this.props.startDate);
+    start = moment(start).diff(firstDate) > 0 ? start : firstDate;
     this.setState({
       datePeriod: evt.target.value,
       startDate: moment(start).format('YYYY-MM-DD'),
