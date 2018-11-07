@@ -18,9 +18,6 @@ const styles = {
   tooltipText: {
     fontSize: '1vw',
   },
-  tooltipPos: {
-    top: '2vh',
-  },
 };
 
 class LegendDate extends React.Component {
@@ -59,9 +56,6 @@ class LegendDate extends React.Component {
         classes={{ tooltip: classes.tooltipText }}
         title={this.renderLegendDate()}
         placement="bottom-end"
-        PopperProps={{
-          style: styles.tooltipPos,
-        }}
       >
         <Icon style={styles.icoInfo}>info</Icon>
       </Tooltip>
