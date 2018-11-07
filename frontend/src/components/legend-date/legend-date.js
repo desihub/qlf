@@ -5,16 +5,22 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
 
 const styles = {
-  icoInfo: {
+  ico: {
     position: 'absolute',
-    top: 0,
-    right: 0,
+    top: '-0.05vh',
+    left: 0,
+  },
+  icoInfo: {
     cursor: 'pointer',
     fontSize: '1.5vh',
     zIndex: 999,
   },
   tooltipText: {
     fontSize: '1.5vh',
+    zIndex: '999',
+  },
+  tooltipPos: {
+    top: '2vh',
   },
 };
 
@@ -31,15 +37,15 @@ class LegendDate extends React.Component {
         </p>
         <p>Night - Current date* for both start and end date</p>
         <p>
-          Week - A range of start date (Current date* - 7days) and end date
+          Week - A range of start date (Current date* - 7 days) and end date
           (Current date*)
         </p>
         <p>
-          Month - A range of start date (Current date* - 30days) and end date
+          Month - A range of start date (Current date* - 30 days) and end date
           (Current date*)
         </p>
         <p>
-          Year - A range of start date (Current date* - 365days) and end date
+          Year - A range of start date (Current date* - 365 days) and end date
           (Current date*)
         </p>
         <p>*Day and Current date is observation date</p>
@@ -54,6 +60,9 @@ class LegendDate extends React.Component {
         classes={{ tooltip: classes.tooltipText }}
         title={this.renderLegendDate()}
         placement="bottom-end"
+        PopperProps={{
+          style: styles.tooltipPos,
+        }}
       >
         <Icon style={styles.icoInfo}>info</Icon>
       </Tooltip>
@@ -61,7 +70,8 @@ class LegendDate extends React.Component {
   };
 
   render() {
-    return <div>{this.renderTooltip()}</div>;
+    const { classes } = this.props;
+    return <div className={classes.ico}>{this.renderTooltip()}</div>;
   }
 }
 

@@ -128,6 +128,9 @@ const styles = {
     height: '2.4vh',
     fontSize: '1vw',
   },
+  space: {
+    position: 'relative',
+  },
 };
 
 class TrendAnalysis extends React.Component {
@@ -347,9 +350,13 @@ class TrendAnalysis extends React.Component {
     const { classes } = this.props;
     return (
       <div className={classes.selection}>
-        <LegendDate />
         <FormControl className={classes.formControl}>
-          <InputLabel shrink classes={{ root: classes.title }}>
+          <InputLabel
+            shrink
+            style={styles.space}
+            classes={{ root: classes.title }}
+          >
+            <LegendDate />
             Date Period
           </InputLabel>
           <Select
