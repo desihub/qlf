@@ -12,6 +12,7 @@ import Select from '@material-ui/core/Select';
 import SurveyViewer from './survey-viewer/survey-viewer';
 import SelectDate from '../../components/select-date/select-date';
 import moment from 'moment';
+import LegendDate from '../../components/legend-date/legend-date';
 
 const styles = {
   controlsContainer: {
@@ -49,6 +50,7 @@ const styles = {
   },
   selection: {
     textAlign: 'center',
+    position: 'relative',
   },
   formControl: {
     width: '100%',
@@ -140,40 +142,30 @@ class SurveyReport extends React.Component {
     let start = null;
     switch (evt.target.value) {
       case 'all':
-        if (evt.target.value !== this.state.datePeriod)
-          this.setState({
-            datePeriod: evt.target.value,
-            startDate: this.props.startDate,
-            endDate: this.props.endDate,
-            preview: false,
-          });
+        this.setState({
+          datePeriod: evt.target.value,
+          startDate: this.props.startDate,
+          endDate: this.props.endDate,
+          preview: false,
+        });
         return;
       case 'night':
-        start = moment().format();
+        start = moment();
         break;
       case 'week':
-        start = moment()
-          .subtract(7, 'days')
-          .format();
+        start = moment().subtract(7, 'days');
         break;
       case 'month':
-        start = moment()
-          .subtract(1, 'month')
-          .format();
-        break;
-      case 'semester':
-        start = moment()
-          .subtract(6, 'month')
-          .format();
+        start = moment().subtract(1, 'month');
         break;
       case 'year':
-        start = moment()
-          .subtract(1, 'year')
-          .format();
+        start = moment().subtract(1, 'year');
         break;
       default:
         return;
     }
+    const firstDate = moment(this.props.startDate);
+    start = moment(start).diff(firstDate) > 0 ? start : firstDate;
     if (evt.target.value !== this.state.datePeriod)
       this.setState({
         datePeriod: evt.target.value,
@@ -278,6 +270,7 @@ class SurveyReport extends React.Component {
     const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
+        <LegendDate />
         <FormControl className={this.props.classes.formControl}>
           <InputLabel shrink classes={{ root: classes.title }}>
             Date Period
