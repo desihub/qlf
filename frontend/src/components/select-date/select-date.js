@@ -5,12 +5,20 @@ import moment from 'moment';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
-  container: {
+  rowContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'left',
+  },
+  rowSpace: {
+    paddingLeft: '2vw',
+  },
+  columnContainer: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'left',
   },
-  fieldDate: {
+  columnSpace: {
     paddingBottom: '2.5vh',
   },
   label: {
@@ -47,12 +55,13 @@ class SelectDate extends React.Component {
     startDate: Proptypes.string.isRequired,
     endDate: Proptypes.string.isRequired,
     setHistoryRangeDate: Proptypes.func.isRequired,
+    row: Proptypes.bool,
     classes: Proptypes.object.isRequired,
   };
 
   componentWillMount() {
-    const startDate = new Date(this.props.startDate);
-    const endDate = new Date(this.props.endDate);
+    const startDate = moment(this.props.startDate).format('YYYY-MM-DD');
+    const endDate = moment(this.props.endDate).format('YYYY-MM-DD');
     if (
       this.state.rangeStartDate !== startDate &&
       this.state.rangeEndDate !== endDate
@@ -67,11 +76,12 @@ class SelectDate extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const startDate = new Date(nextProps.startDate);
-    const endDate = new Date(nextProps.endDate);
+    const startDate = moment(nextProps.startDate).format('YYYY-MM-DD');
+    const endDate = moment(nextProps.endDate).format('YYYY-MM-DD');
     if (
-      this.state.selectedStartDate !== startDate &&
-      this.state.selectedEndDate !== endDate
+      !nextProps.row &&
+      (this.state.selectedStartDate !== startDate ||
+        this.state.selectedEndDate !== endDate)
     ) {
       this.setState({
         selectedStartDate: startDate,
@@ -94,8 +104,8 @@ class SelectDate extends React.Component {
 
   selectRange = () => {
     this.props.setHistoryRangeDate(
-      this.formatFilterDate(this.state.selectedStartDate, true),
-      this.formatFilterDate(this.state.selectedEndDate, true)
+      this.formatFilterDate(this.state.selectedStartDate),
+      this.formatFilterDate(this.state.selectedEndDate)
     );
   };
 
@@ -110,9 +120,13 @@ class SelectDate extends React.Component {
   };
 
   render() {
+    const containerStyle = this.props.row
+      ? styles.rowContainer
+      : styles.columnContainer;
+    const spaceStyle = this.props.row ? styles.rowSpace : styles.columnSpace;
     return (
-      <div style={styles.container}>
-        <div style={styles.fieldDate}>
+      <div style={containerStyle}>
+        <div style={spaceStyle}>
           <TextField
             id="start"
             label="Start Date"
@@ -131,7 +145,7 @@ class SelectDate extends React.Component {
             }}
           />
         </div>
-        <div style={styles.fieldDate}>
+        <div style={spaceStyle}>
           <TextField
             id="end"
             label="End Date"

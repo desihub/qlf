@@ -21,7 +21,7 @@ from dashboard.bokeh.globalsnr.main import GlobalSnr
 from dashboard.bokeh.timeseries.main import TimeSeries
 from dashboard.bokeh.regression.main import Regression
 from dashboard.bokeh.spectra.main import Spectra
-import datetime
+from datetime import datetime, timedelta
 
 from .models import Process, Exposure
 
@@ -78,18 +78,22 @@ def embed_bokeh(request, bokeh_app):
     return response
 
 
-def filter_processed_exposures(start, end, program):
-    start_date = datetime.datetime.strptime(start, "%Y%m%d").replace(
-        tzinfo=datetime.timezone.utc)
-    end_date = datetime.datetime.strptime(end, "%Y%m%d").replace(
-        tzinfo=datetime.timezone.utc) + datetime.timedelta(days=1)
-
+def filter_processed_exposures(begin_date, end_date, program):
+    print('aqui')
     if not program or program == 'all':
-        exposures = Exposure.objects.filter(
-            dateobs__gte=start_date, dateobs__lte=end_date)
+        exposures = Exposure.objects.all()
     else:
-        exposures = Exposure.objects.filter(
-            program=program, dateobs__gte=start_date, dateobs__lte=end_date)
+        exposures = Exposure.objects.filter(program=program)
+
+    print(exposures)
+
+    if begin_date:
+        begin_date = datetime.strptime(begin_date, "%Y%m%d")
+        exposures = exposures.filter(dateobs__gte=begin_date)
+        
+    if end_date:
+        end_date = datetime.strptime(end_date, "%Y%m%d") + timedelta(days=1)
+        exposures = exposures.filter(dateobs__lte=end_date)
 
     processed_exposures = list()
     for exposure in exposures:
@@ -249,14 +253,14 @@ def load_spectra(request):
         arms=['b', 'r', 'z']
     else:
         arms=[arm]
-    # try:
-    if spectra == 'spectra':
-        spectra_html = Spectra(process_id, arms).load_spectra()
-    elif spectra == 'spectra_fib':
-        spectra_html = Spectra(process_id, arms).render_spectra(
-            fiber, spectrograph)
-    # except Exception as err:
-    #     spectra_html = "Can't load spectra: {}".format(err)
+    try:
+        if spectra == 'spectra':
+            spectra_html = Spectra(process_id, arms).load_spectra()
+        elif spectra == 'spectra_fib':
+            spectra_html = Spectra(process_id, arms).render_spectra(
+                fiber, spectrograph)
+    except Exception as err:
+        spectra_html = "Can't load spectra: {}".format(err)
 
     context = {'image': spectra_html}
     response = HttpResponse(template.render(context, request))

@@ -10,7 +10,6 @@ class LogViewer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      processId: undefined,
       lines: [],
     };
   }
@@ -19,41 +18,24 @@ class LogViewer extends React.Component {
     arm: PropTypes.string,
     loadEnd: PropTypes.func.isRequired,
     loadStart: PropTypes.func.isRequired,
-    loading: PropTypes.bool.isRequired,
   };
 
   componentWillMount() {
     document.title = 'Log Viewer';
     if (window.location.search.includes('process=')) {
       const processId = window.location.search.split('process=')[1];
-      this.setState({
-        processId,
-      });
+      this.getLines(processId);
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      (this.props.arm !== nextProps.arm &&
-        this.props.spectrograph.length > 0) ||
-      ((this.props.spectrograph.length === 0 &&
-        nextProps.spectrograph.length > 0) ||
-        (this.props.spectrograph[0] !== nextProps.spectrograph[0] &&
-          this.props.arm))
-    ) {
-      this.getLines(nextProps);
-    } else if (!this.props.loading && !nextProps.arm) {
-      this.setState({ lines: [] });
-    }
-  }
-
-  getLines = async nextProps => {
+  getLines = async processId => {
     const lines = await QlfApi.getCameraLog(
-      this.state.processId,
-      nextProps.arm,
-      nextProps.spectrograph
+      processId,
+      this.props.arm,
+      this.props.spectrograph
     );
     if (lines && lines.lines) this.setState({ lines: lines.lines.reverse() });
+    else this.setState({ lines: ['Logs not found'] });
     this.props.loadEnd();
   };
 

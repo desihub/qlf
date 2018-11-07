@@ -1,5 +1,5 @@
 import React from 'react';
-import SelectDate from '../../../../../src/screens/history/widgets/select-date/select-date';
+import SelectDate from '../../../src/components/select-date/select-date';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
