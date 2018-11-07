@@ -107,7 +107,6 @@ const styles = {
   },
   tooltipText: {
     fontSize: '1.5vh',
-    width: '11vw',
   },
 };
 
@@ -292,7 +291,23 @@ class SurveyReport extends React.Component {
   renderLegendDate = () => {
     return (
       <div>
-        <p>Aguardando Texto</p>
+        <p>
+          All - A range of start and end date related to available exposure day*
+        </p>
+        <p>Night - Current date* for both start and end date</p>
+        <p>
+          Week - A range of start date (Current date* - 7days) and end date
+          (Current date*)
+        </p>
+        <p>
+          Month - A range of start date (Current date* - 30days) and end date
+          (Current date*)
+        </p>
+        <p>
+          Year - A range of start date (Current date* - 365days) and end date
+          (Current date*)
+        </p>
+        <p>*Day and Current date is observation date</p>
       </div>
     );
   };
@@ -304,7 +319,7 @@ class SurveyReport extends React.Component {
         <Tooltip
           classes={{ tooltip: classes.tooltipText }}
           title={this.renderLegendDate()}
-          placement="bottom"
+          placement="bottom-end"
         >
           <Icon style={styles.icoInfo}>info</Icon>
         </Tooltip>
