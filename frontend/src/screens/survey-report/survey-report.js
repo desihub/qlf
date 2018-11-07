@@ -19,7 +19,6 @@ const styles = {
     display: 'grid',
     alignItems: 'center',
     width: '12vw',
-    justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
     paddingRight: '10px',
@@ -58,6 +57,8 @@ const styles = {
   buttons: {
     display: 'grid',
     width: '10vw',
+    alignItems: 'center',
+    height: '13vh',
   },
   button: {
     float: 'right',
@@ -95,6 +96,9 @@ const styles = {
   mItem: {
     height: '2.4vh',
     fontSize: '1vw',
+  },
+  space: {
+    position: 'relative',
   },
 };
 
@@ -270,9 +274,13 @@ class SurveyReport extends React.Component {
     const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
-        <LegendDate />
         <FormControl className={this.props.classes.formControl}>
-          <InputLabel shrink classes={{ root: classes.title }}>
+          <InputLabel
+            shrink
+            style={styles.space}
+            classes={{ root: classes.title }}
+          >
+            <LegendDate />
             Date Period
           </InputLabel>
           <Select
