@@ -7,17 +7,16 @@ import Icon from '@material-ui/core/Icon';
 const styles = {
   ico: {
     position: 'absolute',
-    top: '-0.05vh',
+    top: '-0.07vh',
     left: 0,
   },
   icoInfo: {
     cursor: 'pointer',
-    fontSize: '1.5vh',
+    fontSize: '1.2vw',
     zIndex: 999,
   },
   tooltipText: {
-    fontSize: '1.5vh',
-    zIndex: '999',
+    fontSize: '1vw',
   },
   tooltipPos: {
     top: '2vh',
