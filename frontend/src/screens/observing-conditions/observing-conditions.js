@@ -325,7 +325,6 @@ class ObservingConditions extends React.Component {
     const { classes } = this.props;
     return (
       <div className={this.props.classes.selection}>
-        <LegendDate />
         <FormControl className={this.props.classes.formControl}>
           <InputLabel
             shrink
