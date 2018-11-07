@@ -11,7 +11,7 @@ const styles = {
     left: 0,
   },
   icoInfo: {
-   cursor: 'pointer',
+    cursor: 'pointer',
     fontSize: '1.5vh',
     zIndex: 999,
   },
