@@ -18,15 +18,13 @@ import TrendViewer from './trend-viewer/trend-viewer';
 import SelectDate from '../../components/select-date/select-date';
 import Petals from '../../components/petals/petals';
 import moment from 'moment';
-import Tooltip from '@material-ui/core/Tooltip';
-import Icon from '@material-ui/core/Icon';
+import LegendDate from '../../components/legend-date/legend-date';
 
 const styles = {
   controlsContainer: {
     display: 'grid',
     alignItems: 'center',
     width: '12vw',
-    // justifyContent: 'space-evenly',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
     paddingRight: '10px',
@@ -129,17 +127,6 @@ const styles = {
   mItem: {
     height: '2.4vh',
     fontSize: '1vw',
-  },
-  icoInfo: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    cursor: 'pointer',
-    fontSize: '1.5vh',
-    zIndex: 999,
-  },
-  tooltipText: {
-    fontSize: '1.5vh',
   },
 };
 
@@ -360,41 +347,11 @@ class TrendAnalysis extends React.Component {
     });
   };
 
-  renderLegendDate = () => {
-    return (
-      <div>
-        <p>
-          All - A range of start and end date related to available exposure day*
-        </p>
-        <p>Night - Current date* for both start and end date</p>
-        <p>
-          Week - A range of start date (Current date* - 7days) and end date
-          (Current date*)
-        </p>
-        <p>
-          Month - A range of start date (Current date* - 30days) and end date
-          (Current date*)
-        </p>
-        <p>
-          Year - A range of start date (Current date* - 365days) and end date
-          (Current date*)
-        </p>
-        <p>*Day and Current date is observation date</p>
-      </div>
-    );
-  };
-
   renderDatePeriodSelection = () => {
     const { classes } = this.props;
     return (
       <div className={classes.selection}>
-        <Tooltip
-          classes={{ tooltip: classes.tooltipText }}
-          title={this.renderLegendDate()}
-          placement="bottom-end"
-        >
-          <Icon style={styles.icoInfo}>info</Icon>
-        </Tooltip>
+        <LegendDate />
         <FormControl className={classes.formControl}>
           <InputLabel shrink classes={{ root: classes.title }}>
             Date Period
