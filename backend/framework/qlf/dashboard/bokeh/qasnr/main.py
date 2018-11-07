@@ -407,8 +407,6 @@ class SNR:
         left, right = xmin - xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
-
-
         # WEDGE RESIDUAL plots
         p_res = Figure(title='Residual SNR'+name_warn,
                     active_drag="box_zoom",
