@@ -1,4 +1,7 @@
-const apiUrl = process.env.REACT_APP_API;
+const apiUrl =
+  process.env.NODE_ENV !== 'development'
+    ? window.origin + '/'
+    : process.env.REACT_APP_API;
 const headers = new Headers({
   Accept: 'application/json',
   'Content-Type': 'application/json',

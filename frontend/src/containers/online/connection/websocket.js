@@ -68,7 +68,11 @@ class Connection extends Component {
   };
 
   render() {
-    const url = process.env.REACT_APP_WEBSOCKET;
+    const url =
+      process.env.NODE_ENV === 'development'
+        ? process.env.REACT_APP_WEBSOCKET
+        : window.origin.replace('http', 'ws') + '/dashboard/';
+
     return (
       <div>
         <Websocket
