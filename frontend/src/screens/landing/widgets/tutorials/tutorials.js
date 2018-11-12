@@ -45,6 +45,7 @@ const styles = {
   },
   viewer: {
     width: 'calc(70vw - 12vw)',
+    position: 'relative',
   },
   title: {
     fontSize: '2em',
@@ -56,6 +57,16 @@ const styles = {
   textItem: {
     fontSize: '1vw',
     cursor: 'pointer',
+  },
+  fadeLoaderFull: {
+    position: 'absolute',
+    paddingLeft: 'calc((100vw - 40px) / 2)',
+    paddingTop: 'calc(22vh)',
+  },
+  fadeLoader: {
+    position: 'absolute',
+    paddingLeft: 'calc(70vw - 41vw)',
+    paddingTop: 'calc(22vh)',
   },
 };
 
@@ -82,7 +93,7 @@ class Tutorials extends React.Component {
 
   handleClickVideo = idVideo => {
     this.setState({ idVideo });
-    this.loadStart();
+    if (this.state.idVideo !== idVideo) this.loadStart();
   };
 
   renderLoading = () => {
@@ -147,7 +158,10 @@ class Tutorials extends React.Component {
           <h1 className={classes.title}>Tutorials</h1>
           <div className={classes.gridRow}>
             {this.renderControls()}
-            <div className={classes.viewer}>{this.renderViewer()}</div>
+            <div className={classes.viewer}>
+              {this.renderLoading()}
+              {this.renderViewer()}
+            </div>
           </div>
         </Paper>
       </div>
