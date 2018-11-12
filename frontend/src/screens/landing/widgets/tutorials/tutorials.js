@@ -8,7 +8,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
-// import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Icon from '@material-ui/core/Icon';
 
 const styles = {
   container: {
@@ -57,6 +57,11 @@ const styles = {
   textItem: {
     fontSize: '1vw',
     cursor: 'pointer',
+    display: 'block',
+    textAlign: 'center',
+    borderBottom: '1px solid #333',
+    width: '100%',
+    paddingBottom: '3px',
   },
   fadeLoaderFull: {
     position: 'absolute',
@@ -67,6 +72,9 @@ const styles = {
     position: 'absolute',
     paddingLeft: 'calc(70vw - 41vw)',
     paddingTop: 'calc(22vh)',
+  },
+  space: {
+    paddingBottom: '8px',
   },
 };
 
@@ -121,11 +129,10 @@ class Tutorials extends React.Component {
     return (
       <div className={classes.controlsContainer}>
         <ExpansionPanel>
-          <ExpansionPanelSummary>
-            {/* expandIcon={<ExpandMoreIcon />} */}
+          <ExpansionPanelSummary expandIcon={<Icon>expand_more</Icon>}>
             <Typography className={classes.text}>Processing History</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          <ExpansionPanelDetails className={classes.space}>
             <Typography className={classes.textItem}>
               <span onClick={() => this.handleClickVideo('YLt5ouupWbk')}>
                 QA
