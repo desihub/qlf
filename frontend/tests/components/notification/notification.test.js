@@ -38,7 +38,7 @@ describe('Monitor Status', () => {
     expect(wrapper.find('ListItem').length).toBe(2);
     expect(
       wrapper
-        .find('h3')
+        .find('Typography')
         .at(0)
         .text()
     ).toBe('Available Disk Space 8%');
