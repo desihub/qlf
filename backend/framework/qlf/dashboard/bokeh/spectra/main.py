@@ -98,9 +98,10 @@ class Spectra():
 
         radius = 0.017
         radius_hover = 0.018
+        plot_space=0.1
 
-        xrange = Range1d(start=ra_center + 2, end=ra_center-2)
-        yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
+        xrange = Range1d(start=min(source.data['ra'])-plot_space, end=max(source.data['ra'])+plot_space)
+        yrange = Range1d(start=min(source.data['dec'])-plot_space, end=max(source.data['dec'])+plot_space)
 
         p = figure(title='FIBERS (ARM %s)' % (','.join(wedge_arm)),
                    x_axis_label='RA',
