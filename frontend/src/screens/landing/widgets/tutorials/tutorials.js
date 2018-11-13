@@ -132,20 +132,16 @@ class Tutorials extends React.Component {
           <ExpansionPanelSummary expandIcon={<Icon>expand_more</Icon>}>
             <Typography className={classes.text}>Processing History</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails className={classes.space}>
-            <Typography className={classes.textItem}>
-              <span onClick={() => this.handleClickVideo('YLt5ouupWbk')}>
-                QA
-              </span>
-            </Typography>
-          </ExpansionPanelDetails>
-          <ExpansionPanelDetails>
-            <Typography className={classes.textItem}>
-              <span onClick={() => this.handleClickVideo('FT1T0OjvLO8')}>
-                View
-              </span>
-            </Typography>
-          </ExpansionPanelDetails>
+          <div onClick={() => this.handleClickVideo('YLt5ouupWbk')}>
+            <ExpansionPanelDetails className={classes.space}>
+              <Typography className={classes.textItem}>QA</Typography>
+            </ExpansionPanelDetails>
+          </div>
+          <div onClick={() => this.handleClickVideo('FT1T0OjvLO8')}>
+            <ExpansionPanelDetails>
+              <Typography className={classes.textItem}>View</Typography>
+            </ExpansionPanelDetails>
+          </div>
         </ExpansionPanel>
       </div>
     );
