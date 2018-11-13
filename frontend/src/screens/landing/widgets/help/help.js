@@ -88,6 +88,9 @@ export default class Help extends React.Component {
             <li>
               <span>Riccardo Campisano</span>
             </li>
+            <li>
+              <span>Eric Freire</span>
+            </li>
           </ul>
         </Paper>
       </div>
