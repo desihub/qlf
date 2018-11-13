@@ -71,7 +71,7 @@ const styles = {
   },
   headerContainer: {
     position: 'relative',
-    height: '99px',
+    height: '100%',
   },
   headerTop: {
     fontSize: '35px',
