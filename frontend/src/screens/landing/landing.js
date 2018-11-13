@@ -5,6 +5,7 @@ import MainMenu from './widgets/main-menu/main-menu';
 import Home from './widgets/home/home';
 import AboutUs from './widgets/about/about';
 import Help from './widgets/help/help';
+import Tutorials from './widgets/tutorials/tutorials';
 import ContactUs from './widgets/contact/contact';
 
 const styles = {
@@ -39,6 +40,8 @@ class Landing extends Component {
         return <AboutUs />;
       case '/help':
         return <Help />;
+      case '/tutorials':
+        return <Tutorials />;
       case '/contact':
         return <ContactUs />;
       default:
