@@ -142,7 +142,7 @@ class GlobalFiber:
         process_id = self.selected_process_id
         process = Process.objects.get(pk=process_id)
         exposure = process.exposure
-        fmap = Fibermap.objects.filter(exposure=exposure)[0]
+        fmap = Fibermap.objects.filter(exposure=exposure).last('pk')
 
         src = self.data_source(fmap)
 

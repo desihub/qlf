@@ -18,8 +18,8 @@ qlf_root = os.environ.get('QLF_ROOT')
 class Spectra():
     def __init__(self, process_id, arms):
         self.selected_process_id = process_id
-        process = Process.objects.get(pk=process_id)
-        exposure = process.exposure
+        self.process = Process.objects.get(pk=process_id)
+        exposure = self.process.exposure
         self.exposure = exposure
         self.selected_arm = arms
 
@@ -43,14 +43,19 @@ class Spectra():
         color = []
         cam_inst = []
         for spec in list(range(10)):
-            cam = self.selected_arm[0]+str(spec)
-            sframe_exists = os.path.isfile("{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
-                qlf_root,
-                self.exposure.night,
-                str(self.exposure.exposure_id).zfill(8),
-                cam,
-                str(self.exposure.exposure_id).zfill(8),
-            ))
+            sframe_exists = False
+            for cam in self.selected_arm:
+                cam = cam+str(spec)
+                process_dir = self.process.process_dir
+                path_exists = os.path.isfile("{}/spectro/redux/{}/sframe-{}-{}.fits""".format(
+                    qlf_root,
+                    process_dir,
+                    cam,
+                    process_dir.split('/')[-1],
+                ))
+                if path_exists:
+                    sframe_exists = True
+
             if sframe_exists:
                 y = y + list(range(500))
                 color = color + ['green']*500
@@ -153,14 +158,14 @@ class Spectra():
 
     def load_frame(self, fiber_id, arm):
         try:
-            frame = fits.open(
-                "{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
-                    qlf_root,
-                    self.exposure.night,
-                    str(self.exposure.exposure_id).zfill(8),
-                    arm+self.spectrograph,
-                    str(self.exposure.exposure_id).zfill(8),
-                ))
+            process_dir = self.process.process_dir
+            frame_path = "{}/spectro/redux/{}/sframe-{}-{}.fits""".format(
+                qlf_root,
+                process_dir,
+                arm+self.spectrograph,
+                process_dir.split('/')[-1],
+            )
+            frame = fits.open(frame_path)
         except:
             return None
         flux = frame["FLUX"].data
