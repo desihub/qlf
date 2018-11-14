@@ -13,13 +13,14 @@ import os
 from astropy.io import fits
 
 qlf_root = os.environ.get('QLF_ROOT')
+spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
 
 
 class Spectra():
     def __init__(self, process_id, arms):
         self.selected_process_id = process_id
-        process = Process.objects.get(pk=process_id)
-        exposure = process.exposure
+        self.process = Process.objects.get(pk=process_id)
+        exposure = self.process.exposure
         self.exposure = exposure
         self.selected_arm = arms
 
@@ -43,14 +44,19 @@ class Spectra():
         color = []
         cam_inst = []
         for spec in list(range(10)):
-            cam = self.selected_arm[0]+str(spec)
-            sframe_exists = os.path.isfile("{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
-                qlf_root,
-                self.exposure.night,
-                str(self.exposure.exposure_id).zfill(8),
-                cam,
-                str(self.exposure.exposure_id).zfill(8),
-            ))
+            sframe_exists = False
+            for arm in self.selected_arm:
+                cam = arm+str(spec)
+                process_dir = self.process.process_dir
+                path_exists = os.path.isfile("{}/{}/sframe-{}-{}.fits""".format(
+                    spectro_redux,
+                    process_dir,
+                    cam,
+                    process_dir.split('/')[-1],
+                ))
+                if path_exists:
+                    sframe_exists = True
+
             if sframe_exists:
                 y = y + list(range(500))
                 color = color + ['green']*500
@@ -98,10 +104,12 @@ class Spectra():
 
         radius = 0.017
         radius_hover = 0.018
-        plot_space=0.1
+        plot_space = 0.1
 
-        xrange = Range1d(start=min(source.data['ra'])-plot_space, end=max(source.data['ra'])+plot_space)
-        yrange = Range1d(start=min(source.data['dec'])-plot_space, end=max(source.data['dec'])+plot_space)
+        xrange = Range1d(
+            start=min(source.data['ra'])-plot_space, end=max(source.data['ra'])+plot_space)
+        yrange = Range1d(start=min(
+            source.data['dec'])-plot_space, end=max(source.data['dec'])+plot_space)
 
         p = figure(title='FIBERS (ARM %s)' % (','.join(wedge_arm)),
                    x_axis_label='RA',
@@ -153,14 +161,14 @@ class Spectra():
 
     def load_frame(self, fiber_id, arm):
         try:
-            frame = fits.open(
-                "{}/spectro/redux/exposures/{}/{}/sframe-{}-{}.fits""".format(
-                    qlf_root,
-                    self.exposure.night,
-                    str(self.exposure.exposure_id).zfill(8),
-                    arm+self.spectrograph,
-                    str(self.exposure.exposure_id).zfill(8),
-                ))
+            process_dir = self.process.process_dir
+            frame_path = "{}/{}/sframe-{}-{}.fits""".format(
+                spectro_redux,
+                process_dir,
+                arm+self.spectrograph,
+                process_dir.split('/')[-1],
+            )
+            frame = fits.open(frame_path)
         except:
             return None
         flux = frame["FLUX"].data
@@ -201,14 +209,14 @@ class Spectra():
         # -------------------
         # Saving ploting data:
         fluxes = {}
-        ra_obs=''
-        dec_obs=''
+        ra_obs = ''
+        dec_obs = ''
         for arm in self.selected_arm:
             fl = self.load_frame(fiber, arm)
             if fl:
                 fluxes.update({arm: fl})
-                ra_obs=fl['ra']
-                dec_obs=fl['dec']
+                ra_obs = fl['ra']
+                dec_obs = fl['dec']
 
         for arm in [list(fluxes.keys())[0]]:
             brick = fluxes[arm]['brick']
@@ -217,8 +225,8 @@ class Spectra():
         # ------------
         # Bokeh Plots:
         p_spec = figure(title="Brick name: "+brick+',  Fiber ID: %d, RA: %.2f, DEC: %.2f' % (fiber, ra_obs, dec_obs),
-                        x_axis_label= 'Wavelength (A)', 
-                        y_axis_label= obj_name+' Flux (counts)',
+                        x_axis_label='Wavelength (A)',
+                        y_axis_label=obj_name+' Flux (counts)',
                         plot_width=800, plot_height=340,
                         active_drag="box_zoom",
                         tools=[spec_hover, "pan,box_zoom,reset,crosshair, wheel_zoom"], sizing_mode='scale_width')
