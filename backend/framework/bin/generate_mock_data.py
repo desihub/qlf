@@ -99,6 +99,7 @@ def generate_new_exposure(flavor, night):
     exposure.save()
 
     fibermap = qlf_models.get_last_fibermap_by_flavor(flavor)
+    fibermap.pk = fibermap.pk+1
     fibermap.exposure = exposure
     fibermap.save()
 
