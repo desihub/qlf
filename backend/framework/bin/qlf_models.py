@@ -281,6 +281,17 @@ class QLFModels(object):
 
         return exposure
 
+    def get_last_fibermap_by_flavor(self, flavor):
+        """ Get last processed exposures by flavor """
+
+        try:
+            exposure = self.get_last_exposure_by_flavor(flavor)
+            fibermap = Fibermap.objects.filter(exposure=exposure).latest('pk')
+        except Exposure.DoesNotExist:
+            fibermap = None
+
+        return fibermap
+
     def get_last_process_by_flavor(self, flavor, jobs_isnull=True):
         """Get last process by flavor
         
