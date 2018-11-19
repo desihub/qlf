@@ -8,11 +8,6 @@
       "end": "Starting to run step Flexure",
       "qa_list": [
         {
-          "display_name": "Check HDUs",
-          "status_key": "CHECKHDUS_STATUS",
-          "name": "hdu"
-        },
-        {
           "display_name": "Noise AMP",
           "status_key": "NOISE_AMP_STATUS",
           "name": "rms"
