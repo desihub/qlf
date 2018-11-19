@@ -375,6 +375,8 @@ def run_process(exposure, return_process_id=None):
         for spec in spectrographs:
             if arm + spec in available_cameras:
                 cameras.append({'name': arm + spec})
+            else:
+                logger.info('{} not found in header'.format(arm + spec))
 
     exposure['cameras'] = cameras
 
