@@ -16,3 +16,9 @@
 [submodule "backend/desitarget"]
 	path = backend/desitarget
 	url = https://github.com/desihub/desitarget.git
+[submodule "speclite"]
+	path = speclite
+	url = https://github.com/dkirkby/speclite.git
+[submodule "backend/speclite"]
+	path = backend/speclite
+	url = https://github.com/dkirkby/speclite.git

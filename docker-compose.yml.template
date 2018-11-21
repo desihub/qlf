@@ -22,6 +22,7 @@ services:
       - QL_CONFIG_DIR=/app/desispec/py/desispec/data/quicklook/ # mergedQA templates
       - QL_CALIB_DIR=/app/spectro/ccd_calibration_data # psf files
       - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
+      - DESI_PRODUCT_ROOT=/app/
       # Django:
       - QLF_API_URL=http://localhost:8000/dashboard/api
       - QLF_BASE_URL=http://localhost:8000
