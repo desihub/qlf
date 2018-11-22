@@ -71,6 +71,35 @@ class Configuration(models.Model):
     )
 
 
+class Camera(models.Model):
+    """Camera information"""
+    camera = models.CharField(
+        max_length=2,
+        help_text='Camera ID',
+        primary_key=True
+    )
+    spectrograph = models.CharField(
+        max_length=1,
+        help_text='Spectrograph ID'
+    )
+    arm = models.CharField(
+        max_length=1,
+        help_text='Arm ID'
+    )
+
+    def __str__(self):
+        return str(self.camera)
+
+
+class Fibermap(models.Model):
+    """Fibermap information"""
+    fiber_ra = ArrayField(models.FloatField())
+    fiber_dec = ArrayField(models.FloatField())
+    fiber = ArrayField(models.FloatField())
+    objtype = ArrayField(models.CharField(max_length=15))
+    exposure = models.ForeignKey(Exposure, related_name='fibermap_exposure')
+
+
 class Process(models.Model):
     """Process information"""
 
@@ -115,26 +144,6 @@ class Process(models.Model):
         null=True,
         related_name='process_configuration'
     )
-
-
-class Camera(models.Model):
-    """Camera information"""
-    camera = models.CharField(
-        max_length=2,
-        help_text='Camera ID',
-        primary_key=True
-    )
-    spectrograph = models.CharField(
-        max_length=1,
-        help_text='Spectrograph ID'
-    )
-    arm = models.CharField(
-        max_length=1,
-        help_text='Arm ID'
-    )
-
-    def __str__(self):
-        return str(self.camera)
 
 
 class Job(models.Model):
@@ -183,13 +192,96 @@ class Job(models.Model):
         return str(self.name)
 
 
-class Fibermap(models.Model):
-    """Fibermap information"""
-    fiber_ra = ArrayField(models.FloatField())
-    fiber_dec = ArrayField(models.FloatField())
-    fiber = ArrayField(models.FloatField())
-    objtype = ArrayField(models.CharField(max_length=15))
-    exposure = models.ForeignKey(Exposure, related_name='fibermap_exposure')
+class AfternoonProcess(models.Model):
+    """Afternoon Planning process information"""
+
+    STATUS_OK = 0
+    STATUS_FAILED = 1
+
+    pipeline_name = models.CharField(
+        max_length=60,
+        help_text='Name of the pipeline.'
+    )
+    process_dir = models.CharField(
+        max_length=145,
+        help_text='Path to process'
+    )
+    version = models.CharField(
+        max_length=45,
+        help_text='Path to process'
+    )
+    start = models.DateTimeField(
+        auto_now=True,
+        help_text='Datetime when the process was started'
+    )
+    end = models.DateTimeField(
+        blank=True, null=True,
+        help_text='Datetime when the process was finished.'
+    )
+    status = models.SmallIntegerField(
+        default=STATUS_OK,
+        help_text='Process status, 0=OK, 1=Failed'
+    )
+    exposure = models.ForeignKey(
+        Exposure,
+        related_name='afternoon_process_exposure'
+    )
+    qa_tests = JSONField(
+        default={},
+        help_text='QA tests summary.'
+    )
+    configuration = models.ForeignKey(
+        Configuration,
+        blank=True,
+        null=True,
+        related_name='afternoon_process_configuration'
+    )
+
+
+class AfternoonJob(models.Model):
+    """Afternoon Planning job information"""
+
+    STATUS_OK = 0
+    STATUS_FAILED = 1
+    STATUS_RUNNING = 2
+
+    name = models.CharField(
+        max_length=45,
+        default='Quick Look',
+        help_text='Name of the job.'
+    )
+    start = models.DateTimeField(
+        auto_now=True,
+        help_text='Datetime when the job was started'
+    )
+    end = models.DateTimeField(
+        blank=True, null=True,
+        help_text='Datetime when the job was finished.'
+    )
+    status = models.SmallIntegerField(
+        default=STATUS_RUNNING,
+        help_text='Job status, 0=OK, 1=Failed, 2=Running'
+    )
+    version = models.CharField(
+        max_length=16, null=True,
+        help_text='Version of the pipeline'
+    )
+    camera = models.ForeignKey(Camera, related_name='camera_afternoon_jobs')
+    process = models.ForeignKey(
+        AfternoonProcess, related_name='afternoon_process_afternoon_jobs',
+        on_delete=models.CASCADE
+    )
+    logname = models.CharField(
+        max_length=65, null=True,
+        help_text='Name of the log file.'
+    )
+    output = JSONField(
+        help_text='JSON structure with the QA result',
+        null=True
+    )
+
+    def __str__(self):
+        return str(self.name)
 
 
 class ProcessComment(models.Model):
