@@ -14,5 +14,6 @@ EXPOSE 7070
 RUN sed --regexp-extended --in-place=.bak 's%^pid\s+/var/run/nginx.pid;%pid /var/tmp/nginx.pid;%' /etc/nginx/nginx.conf
 # Add frontend build to image
 ADD build /var/www/frontend
-
+RUN chgrp nginx /var/www/frontend
+RUN chmod -R g+w /var/www/frontend
 USER nginx

@@ -83,7 +83,6 @@ services:
     working_dir: /home/node
     volumes:
       - ./frontend/:/home/node
-      - ./ql_mapping:/home/node/src/assets/ql_mapping
   nginx:
     build: ./nginx
     ports:
