@@ -4,6 +4,8 @@ process.env.NODE_ENV = 'development';
 
 describe('QlfApi', () => {
   beforeEach(() => {
+    // eslint-disable-next-line
+    console.log(process.env.REACT_APP_API);
     fetch.mockReset();
   });
 
