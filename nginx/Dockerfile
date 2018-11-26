@@ -12,7 +12,5 @@ EXPOSE 7070
 
 # Write the PID file to a location where regular users have write access.
 RUN sed --regexp-extended --in-place=.bak 's%^pid\s+/var/run/nginx.pid;%pid /var/tmp/nginx.pid;%' /etc/nginx/nginx.conf
-# Add frontend build to image
-# ADD build /var/www/frontend
 
 USER nginx
