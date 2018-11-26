@@ -135,18 +135,15 @@ describe('QlfApi', () => {
 
   it('calls getFlavors', () => {
     QlfApi.getFlavors();
-    expect(fetch).toBeCalledWith(
-      'undefined/dashboard/api/distinct_flavors/',
-      {
-        headers: {
-          _headers: {
-            accept: ['application/json'],
-            'content-type': ['application/json'],
-          },
+    expect(fetch).toBeCalledWith('undefined/dashboard/api/distinct_flavors/', {
+      headers: {
+        _headers: {
+          accept: ['application/json'],
+          'content-type': ['application/json'],
         },
-        method: 'GET',
-      }
-    );
+      },
+      method: 'GET',
+    });
   });
 
   it('calls getProcessingHistory', () => {
@@ -197,52 +194,43 @@ describe('QlfApi', () => {
 
   it('calls addProcessComment', () => {
     QlfApi.addProcessComment('testing configuration', 1);
-    expect(fetch).toBeCalledWith(
-      'undefined/dashboard/api/process_comment/',
-      {
-        body: '{"text":"testing configuration","process":1,"user":1}',
-        headers: {
-          _headers: {
-            accept: ['application/json'],
-            'content-type': ['application/json'],
-          },
+    expect(fetch).toBeCalledWith('undefined/dashboard/api/process_comment/', {
+      body: '{"text":"testing configuration","process":1,"user":1}',
+      headers: {
+        _headers: {
+          accept: ['application/json'],
+          'content-type': ['application/json'],
         },
-        method: 'POST',
-      }
-    );
+      },
+      method: 'POST',
+    });
   });
 
   it('calls deleteProcessComment', () => {
     QlfApi.deleteProcessComment(3);
-    expect(fetch).toBeCalledWith(
-      'undefined/dashboard/api/process_comment/3/',
-      {
-        headers: {
-          _headers: {
-            accept: ['application/json'],
-            'content-type': ['application/json'],
-          },
+    expect(fetch).toBeCalledWith('undefined/dashboard/api/process_comment/3/', {
+      headers: {
+        _headers: {
+          accept: ['application/json'],
+          'content-type': ['application/json'],
         },
-        method: 'DELETE',
-      }
-    );
+      },
+      method: 'DELETE',
+    });
   });
 
   it('calls updateProcessComment', () => {
     QlfApi.updateProcessComment(3, 1, 'update comment');
-    expect(fetch).toBeCalledWith(
-      'undefined/dashboard/api/process_comment/3/',
-      {
-        body: '{"text":"update comment","process":1}',
-        headers: {
-          _headers: {
-            accept: ['application/json'],
-            'content-type': ['application/json'],
-          },
+    expect(fetch).toBeCalledWith('undefined/dashboard/api/process_comment/3/', {
+      body: '{"text":"update comment","process":1}',
+      headers: {
+        _headers: {
+          accept: ['application/json'],
+          'content-type': ['application/json'],
         },
-        method: 'PUT',
-      }
-    );
+      },
+      method: 'PUT',
+    });
   });
 
   it('calls getProcessComments', () => {
