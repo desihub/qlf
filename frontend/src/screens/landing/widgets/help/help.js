@@ -74,6 +74,9 @@ export default class Help extends React.Component {
               <span>Cristiano Singulani</span>
             </li>
             <li>
+              <span>Eric Freire</span>
+            </li>
+            <li>
               <span>Felipe Machado</span>
             </li>
             <li>

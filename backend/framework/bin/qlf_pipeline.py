@@ -10,6 +10,7 @@ from datetime import datetime
 from multiprocessing import Lock, Manager, Process
 from threading import Thread
 from concurrent import futures
+from util import check_hdu
 
 import logging
 
@@ -368,10 +369,14 @@ def run_process(exposure, return_process_id=None):
     spectrographs = os.environ.get('PIPELINE_SPECTROGRAPHS').split(',')
 
     cameras = list()
+    available_cameras = check_hdu(exposure['exposure_id'], exposure['night'])
 
     for arm in arms:
         for spec in spectrographs:
-            cameras.append({'name': arm + spec})
+            if arm + spec in available_cameras:
+                cameras.append({'name': arm + spec})
+            else:
+                logger.info('{} not found in header'.format(arm + spec))
 
     exposure['cameras'] = cameras
 

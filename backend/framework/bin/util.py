@@ -121,6 +121,41 @@ def extract_fibermap_data(exposure_id, night):
     }
 
 
+def check_hdu(exposure_id, night):
+    """ Checks camera and EXPID data from fits file header.
+
+    Arguments:
+        exposure_id {int} -- exposure ID
+        night {str} -- night (format: YYYYMMDD)
+
+    Returns:
+        array -- avaiable camera list.
+    """
+
+    desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+
+    exposure_zfill = str(exposure_id).zfill(8)
+    expo_name = "desi-{}.fits.fz".format(exposure_zfill)
+
+    file_path = os.path.join(desi_spectro_data, night,
+                             exposure_zfill, expo_name)
+
+    try:
+        hdr = astropy.io.fits.open(file_path)
+        cameras = []
+        for camera in hdr:
+            try:
+                if camera.header['EXPID'] == exposure_id and \
+                  camera.header['CAMERA']:
+                    cameras.append(camera.header['CAMERA'])
+            except:
+                None
+        return cameras
+    except Exception as err:
+        logger.error("Error to load fits file: %s" % err)
+        return []
+
+
 def ensure_dir(path):
     """ Ensures that the directory exists.
 
@@ -142,3 +177,7 @@ def format_night(new_date):
     """
 
     return new_date.strftime("%Y%m%d")
+
+
+if __name__ == "__main__":
+    check_hdu(3578, '20191001')

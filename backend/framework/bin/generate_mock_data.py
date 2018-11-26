@@ -98,6 +98,11 @@ def generate_new_exposure(flavor, night):
 
     exposure.save()
 
+    fibermap = qlf_models.get_last_fibermap_by_flavor(flavor)
+    fibermap.pk = fibermap.pk+1
+    fibermap.exposure = exposure
+    fibermap.save()
+
     return exposure
 
 
@@ -127,7 +132,7 @@ def generate_jobs_by_process(process):
                     if item in METRICS[m]:
                         try:
                             out = job.output['TASKS'][m]['METRICS'][item]
-                            out = simulate_output(out, -6.0, 6.0)
+                            out = simulate_output(out, -2.0, 2.0)
                             job.output['TASKS'][m]['METRICS'][item] = out
                         except:
                             print('Error in {}/{} simulation.'.format(m, item))
