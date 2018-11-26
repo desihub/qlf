@@ -9,6 +9,7 @@ import Adapter from 'enzyme-adapter-react-16';
 configure({ adapter: new Adapter() });
 
 process.env.REACT_APP_WEBSOCKET = 'ws://localhost:8000';
+process.env.NODE_ENV = 'development';
 
 const mockServer = new Server('ws://localhost:8000');
 

@@ -1,5 +1,7 @@
 import QlfApi from '../../../../src/containers/offline/connection/qlf-api';
 
+process.env.NODE_ENV = 'development';
+
 describe('QlfApi', () => {
   beforeEach(() => {
     fetch.mockReset();
