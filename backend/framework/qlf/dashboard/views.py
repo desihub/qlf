@@ -400,6 +400,15 @@ def disk_thresholds(request):
         "disk_percent_alert": disk_percent_alert
     })
 
+def check_view_files(request):
+    process_id = request.GET.get('process_id')
+    p=Process.objects.filter(id=process_id).last()
+    
+    return JsonResponse({
+        "spectra": True,
+        "ccd": True,
+    })
+
 def get_camera_log(request):
     process = request.GET.get('process')
     camera = request.GET.get('camera')
