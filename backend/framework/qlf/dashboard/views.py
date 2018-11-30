@@ -400,6 +400,52 @@ def disk_thresholds(request):
         "disk_percent_alert": disk_percent_alert
     })
 
+def check_ccds(process_dir, camera):
+    desi_spectro_data = os.environ.get('DESI_SPECTRO_DATA')
+    desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
+    data_path = '{}/{}/desi-{}.fits.fz'.format(desi_spectro_data,
+                                            process_dir,
+                                            process_dir.split('/')[-1])
+    redux_path = '{}/{}/sframe-{}-{}.fits'.format(
+                desi_spectro_redux, process_dir, camera, process_dir.split('/')[-1])
+
+    return os.path.exists(data_path) or os.path.exists(redux_path)
+
+def check_spectra(process_dir, camera):
+    desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
+    frame_path = "{}/{}/sframe-{}-{}.fits""".format(
+        desi_spectro_redux,
+        process_dir,
+        camera,
+        process_dir.split('/')[-1],
+    )
+
+    return os.path.exists(frame_path)
+    
+def check_view_files(request):
+    process_id = request.GET.get('process_id')
+    p=Process.objects.filter(id=process_id).last()
+
+    exp_zfill = str(p.exposure_id).zfill(8)
+    process_dir = p.process_dir
+    spectra = False
+    ccd = False
+
+    for job in p.process_jobs.all():
+        arm = job.camera.arm
+        spectrograph = job.camera.spectrograph
+        camera = str(arm+spectrograph)
+        if check_ccds(process_dir, camera):
+            ccd = True
+
+        if check_spectra(process_dir, camera):
+            spectra=True
+
+    return JsonResponse({
+        "spectra": spectra,
+        "ccd": ccd
+    })
+
 def get_camera_log(request):
     process = request.GET.get('process')
     camera = request.GET.get('camera')

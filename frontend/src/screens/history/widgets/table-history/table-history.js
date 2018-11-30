@@ -409,6 +409,7 @@ class TableHistory extends Component {
             anchorEl={this.state.anchorEl}
             handleClose={() => this.setAnchorEl(null)}
             flavor={this.state.flavor}
+            processId={parseInt(this.state.currentProcessId, 10)}
             openCCDViewer={viewer =>
               this.props.openCCDViewer(viewer, this.state.currentProcessId)
             }
