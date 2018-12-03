@@ -330,4 +330,22 @@ export default class QlfApi {
     const responseJson = await objectData.json();
     return responseJson;
   }
+
+  static async checkViewFiles(processId) {
+    try {
+      const check = await fetch(
+        `${apiUrl}dashboard/api/check_view_files/?format=json&process_id=${
+          processId
+        }`,
+        {
+          method: 'GET',
+          headers: headers,
+        }
+      );
+      const responseJson = await check.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
+  }
 }
