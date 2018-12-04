@@ -341,7 +341,7 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         # ref_tb=ref
 
     tblines = ""
-    print(qa)
+
     if qa == 'integ':
         for i, x in enumerate(curexp):
             if nrows == 1:
