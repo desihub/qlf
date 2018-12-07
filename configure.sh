@@ -13,11 +13,6 @@ cp backend/global-env.template backend/global-env
 echo 'Copying default docker-compose.yml'
 cp docker-compose.yml.template docker-compose.yml
 
-echo 'Copying default nginx-proxy'
-cd nginx
-cp nginx-proxy.conf.template nginx-proxy.conf
-cd ..
-
 echo 'Copying default frontend .env'
 cd frontend
 cp .env.template .env
