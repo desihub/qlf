@@ -23,10 +23,3 @@ fi
 if [ $1 = "daemon" ]; then
   docker exec -it $(docker ps -f "name=qlf" --format "{{.Names}}") ./startDaemon.sh
 fi
-
-if [ $1 = "build" ]; then
-  docker-compose up frontend
-  cp -R frontend/build nginx
-  docker build -t qlf_nginx:latest -f nginx/Dockerfile.prod nginx
-  rm -rf nginx/build
-fi

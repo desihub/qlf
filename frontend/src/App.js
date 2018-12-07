@@ -303,6 +303,7 @@ class App extends React.Component {
   };
 
   render() {
+    console.log(process.env.REACT_APP_UHULS);
     const containerStyle = this.state.displayHeaders ? styles.container : null;
     const headerStyle =
       this.renderRouteName() === '' ? styles.headerContainer : null;
