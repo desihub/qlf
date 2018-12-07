@@ -79,13 +79,10 @@ def embed_bokeh(request, bokeh_app):
 
 
 def filter_processed_exposures(begin_date, end_date, program):
-    print('aqui')
     if not program or program == 'all':
         exposures = Exposure.objects.all()
     else:
         exposures = Exposure.objects.filter(program=program)
-
-    print(exposures)
 
     if begin_date:
         begin_date = datetime.strptime(begin_date, "%Y%m%d")

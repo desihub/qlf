@@ -4,7 +4,7 @@
     {
       "display_name": "CHECK CCDS",
       "name": "CHECK_CCDs",
-      "start": "Running Check_HDUs",
+      "start": "Starting to run step Initialize",
       "end": "Starting to run step Flexure",
       "qa_list": [
         {

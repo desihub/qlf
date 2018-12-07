@@ -10,6 +10,7 @@ import numpy as np
 
 from dashboard.bokeh.helper import write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist
+from dashboard.models import Job, Process, Fibermap
 
 import logging
 from bokeh.resources import CDN
@@ -37,10 +38,10 @@ class Integ:
         gen_info = mergedqa['GENERAL_INFO']
 
         check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
-        std_fiberid = check_spectra['METRICS']['STAR_FIBERID']
+        std_fiberid = mergedqa['GENERAL_INFO']['STAR_FIBERID']
         nrg = check_spectra['PARAMS']['DELTAMAG_TGT_NORMAL_RANGE']
         wrg = check_spectra['PARAMS']['DELTAMAG_TGT_WARN_RANGE']
-        fiber_mag = check_spectra['METRICS']['FIBER_MAG']
+        fiber_mag = mergedqa['GENERAL_INFO']['FIBER_MAGS']
 
         hist_tooltip = """ 
             <div>
@@ -73,23 +74,18 @@ class Integ:
         info_col = Div(text=write_description('integ'))
 
         # Reading obj_type
-        try:
-            from dashboard.models import Job, Process
+        process_id = self.selected_process_id
+        process = Process.objects.get(pk=process_id)
+        joblist = [entry.camera.camera for entry in Job.objects.filter(
+            process_id=process_id)]
+        exposure = process.exposure
+        fmap = Fibermap.objects.filter(exposure=exposure).last()
+        otype_tile = fmap.objtype
 
-            process_id = self.selected_process_id
-            process = Process.objects.get(pk=process_id)
-            joblist = [entry.camera.camera for entry in Job.objects.filter(
-                process_id=process_id)]
-            exposure = process.exposure
-            fmap = Fibermap.objects.filter(exposure=exposure)
-            otype_tile = fmap.objtype
+        objlist = sorted(set(otype_tile))
+        if 'SKY' in objlist:
+            objlist.remove('SKY')
 
-            objlist = sorted(set(otype_tile))
-            if 'SKY' in objlist:
-                objlist.remove('SKY')
-
-        except Exception as err:
-            objlist = None
 
         # Prepare tables
         # objtype=['ELG','STAR'] )

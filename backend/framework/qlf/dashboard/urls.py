@@ -41,6 +41,8 @@ urlpatterns = [
         views.send_ticket_email, name='send_ticket_email'),
     url(r'^dashboard/api/disk_thresholds',
         views.disk_thresholds, name='disk_thresholds'),
+    url(r'^dashboard/api/check_view_files',
+        views.check_view_files, name='check_view_files'),
     url(r'^dashboard/admin', include(admin.site.urls)),
     url(r'^dashboard/api/', include(api_router.urls)),
     url(r'^dashboard/get_footprint',

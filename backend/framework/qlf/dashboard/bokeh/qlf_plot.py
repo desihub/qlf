@@ -273,8 +273,7 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
 
     if nrows > 1:
         cur_tb, ref_tb = [], []
-        for i in list(range(nrows)):
-            x = curexp[i]
+        for i, x in enumerate(curexp):
             if qa=='arc':
                 ref_tb.append('%d'%ref[i])
             elif (qa=='snr') & (nrows != len(ref)):
@@ -342,26 +341,49 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         # ref_tb=ref
 
     tblines = ""
-    for i in list(range(nrows)):
-        if nrows == 1:
-            tblines = tblines +\
-                """<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>
-                """.format(key, cur_tb, ref_tb)
-                #                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td>
-        elif i == 0:
-            tblines = tblines +\
-                """<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>
-                """.format(key_tb[i], cur_tb[i], ref_tb[i])
-        else:
-            tblines = tblines +\
-                """<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>
-                """.format(key_tb[i], cur_tb[i], ref_tb[i])
+
+    if qa == 'integ':
+        for i, x in enumerate(curexp):
+            if nrows == 1:
+                tblines = tblines +\
+                    """<tr>
+                    <td>{}</td> <td>{}</td> <td>{}</td>
+                    </tr>
+                    """.format(key, cur_tb, ref_tb)
+                    #                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td>
+            elif i == 0:
+                tblines = tblines +\
+                    """<tr>
+                    <td>{}</td> <td>{}</td> <td>{}</td>
+                    </tr>
+                    """.format(key_tb[i], cur_tb[i], ref_tb[i])
+            else:
+                tblines = tblines +\
+                    """<tr>
+                    <td>{}</td> <td>{}</td> <td>{}</td>
+                    </tr>
+                    """.format(key_tb[i], cur_tb[i], ref_tb[i])
+    else:
+        for i in list(range(nrows)):
+            if nrows == 1:
+                tblines = tblines +\
+                    """<tr>
+                    <td>{}</td> <td>{}</td> <td>{}</td>
+                    </tr>
+                    """.format(key, cur_tb, ref_tb)
+                    #                <td rowspan="{}">{}</td> <td>{}</td> <td>{}</td>
+            elif i == 0:
+                tblines = tblines +\
+                    """<tr>
+                    <td>{}</td> <td>{}</td> <td>{}</td>
+                    </tr>
+                    """.format(key_tb[i], cur_tb[i], ref_tb[i])
+            else:
+                tblines = tblines +\
+                    """<tr>
+                    <td>{}</td> <td>{}</td> <td>{}</td>
+                    </tr>
+                    """.format(key_tb[i], cur_tb[i], ref_tb[i])
 
     return style + header + tblines + end
 
