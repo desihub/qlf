@@ -4,7 +4,7 @@
     {
       "display_name": "CHECK CCDS",
       "name": "CHECK_CCDs",
-      "start": "Running Check_HDUs",
+      "start": "Starting to run step Initialize",
       "end": "Starting to run step Flexure",
       "qa_list": [
         {
@@ -33,7 +33,7 @@
       "display_name": "CHECK FIBERS",
       "name": "CHECK_FIBERS",
       "start": "Starting to run step Flexure",
-      "end": "Starting to run step ApplyFiberFlat_QL",
+      "end": "Starting to run step ApplyFiberFlat_QP",
       "qa_list": [
         {
           "display_name": "NGOODFIB",
@@ -50,7 +50,7 @@
     {
       "display_name": "CHECK SPECTRA",
       "name": "CHECK_SPECTRA",
-      "start": "Starting to run step ApplyFiberFlat_QL",
+      "start": "Starting to run step ApplyFiberFlat_QP",
       "end": "Pipeline completed",
       "qa_list": [
         {
