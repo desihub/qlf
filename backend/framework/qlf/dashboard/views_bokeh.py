@@ -82,16 +82,10 @@ def filter_processed_exposures(begin_date, end_date, program):
     if not program or program == 'all':
         exposures = Exposure.objects.all()
     else:
-        exposures = Exposure.objects.filter(program=program)
-
-    if begin_date:
         begin_date = datetime.strptime(begin_date, "%Y%m%d")
-        exposures = exposures.filter(dateobs__gte=begin_date)
-        
-    if end_date:
         end_date = datetime.strptime(end_date, "%Y%m%d") + timedelta(days=1)
-        exposures = exposures.filter(dateobs__lte=end_date)
-
+        exposures = Exposure.objects.filter(
+            program=program).filter(dateobs__gte=begin_date).filter(dateobs__lte=end_date)
     processed_exposures = list()
     for exposure in exposures:
         if list(Process.objects.filter(exposure_id=exposure.pk)) != []:
