@@ -45,12 +45,6 @@
     "test": "jest --setupTestFrameworkScriptFile=raf/polyfill",
     "watch": "jest --watch --setupTestFrameworkScriptFile=raf/polyfill",
     "eject": "react-scripts eject",
-    "electron-start": "node src/electron-wait-react",
-    "electron": "electron .",
-    "pack": "electron-builder --dir",
-    "dist-win": "electron-builder --win",
-    "dist-mac": "electron-builder --mac",
-    "dist-linux": "electron-builder --linux",
     "serve": "serve -s build -l $QLF_UI_PORT"
   },
   "jest": {
@@ -67,12 +61,13 @@
     ]
   },
   "devDependencies": {
-    "babel-jest": "^21.2.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.4.2",
     "coveralls": "^3.0.0",
-    "electron": "^1.8.4",
-    "electron-builder": "^20.8.1",
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.0",
     "eslint": "^4.10.0",

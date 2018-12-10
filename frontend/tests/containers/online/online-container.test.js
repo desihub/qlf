@@ -13,6 +13,7 @@ import { Server } from 'mock-socket';
 configure({ adapter: new Adapter() });
 
 const mockServer = new Server('ws://localhost:8000');
+process.env.NODE_ENV = 'development';
 
 const setURL = url => {
   const parser = document.createElement('a');

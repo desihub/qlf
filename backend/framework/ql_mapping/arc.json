@@ -1,0 +1,64 @@
+{
+  "flavor": "arc",
+  "step_list": [
+    {
+      "display_name": "CHECK CCDS",
+      "name": "CHECK_CCDs",
+      "start": "Starting to run step Initialize",
+      "end": "Starting to run step Flexure",
+      "qa_list": [
+        {
+          "display_name": "Noise AMP",
+          "status_key": "NOISE_AMP_STATUS",
+          "name": "rms"
+        },
+        {
+          "display_name": "Bias AMP",
+          "status_key": "BIAS_AMP_STATUS",
+          "name": "bias"
+        },
+        {
+          "display_name": "LITFRAC AMP",
+          "status_key": "LITFRAC_AMP_STATUS",
+          "name": "countpix"
+        },
+        {
+          "display_name": "XWSIGMA",
+          "status_key": "XWSIGMA_STATUS",
+          "name": "xwsigma"
+        }
+      ]
+    },
+    {
+      "display_name": "CHECK FIBERS",
+      "name": "CHECK_FIBERS",
+      "start": "Starting to run step Flexure",
+      "end": "Starting to run step ResolutionFit",
+      "qa_list": [
+        {
+          "display_name": "NGOODFIB",
+          "status_key": "NGOODFIB_STATUS",
+          "name": "countbins"
+        },
+        {
+          "display_name": "XYSHIFTS",
+          "status_key": "XYSHIFTS_STATUS",
+          "name": "xyshifts"
+        }
+      ]
+    },
+    {
+      "display_name": "CHECK ARC EXP",
+      "name": "CHECK_ARC",
+      "start": "Starting to run step ResolutionFit",
+      "end": "Pipeline processing finished",
+      "qa_list": [
+        {
+          "display_name": "CHECKARC",
+          "status_key": "CHECKARC_STATUS",
+          "name": "checkarc"
+        }
+      ]
+    }
+  ]
+}

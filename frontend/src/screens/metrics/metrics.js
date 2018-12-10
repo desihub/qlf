@@ -176,11 +176,17 @@ export default class Metrics extends Component {
 
   renderQA = () => {
     if (!this.state.qa) return;
+    const origin =
+      process.env.NODE_ENV !== 'development'
+        ? window.origin + '/'
+        : process.env.REACT_APP_API;
     const url =
-      process.env.REACT_APP_BOKEH +
-      `load_qa/?qa=${this.state.qa}&process_id=${this.props.processId}&arm=${
-        this.props.arms[this.state.arm]
-      }&spectrograph=${this.state.spectrograph}`;
+      origin +
+      `dashboard/load_qa/?qa=${this.state.qa}&process_id=${
+        this.props.processId
+      }&arm=${this.props.arms[this.state.arm]}&spectrograph=${
+        this.state.spectrograph
+      }`;
 
     return (
       <div style={{ ...styles.controls }}>

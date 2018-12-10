@@ -130,7 +130,7 @@ export default class MetricSelect extends Component {
             style={styles.failure}
             disabled={true}
           >
-            {qa.toUpperCase() + ' ✖︎'}
+            {qaName.toUpperCase() + ' ✖︎'}
           </Button>
         );
       }

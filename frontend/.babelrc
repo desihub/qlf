@@ -1,15 +1,19 @@
 {
   "plugins": [
-    "transform-object-rest-spread"
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-proposal-class-properties"
   ],
-  "presets": ["es2015", "react"],
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ],
   "env": {
     "test": {
       "plugins": [
-				"transform-class-properties",
-        "transform-object-rest-spread",
-        "transform-es2015-modules-commonjs",
-        "transform-es2015-arrow-functions"
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-modules-commonjs",
+        "@babel/plugin-transform-arrow-functions"
       ]
     }
   }

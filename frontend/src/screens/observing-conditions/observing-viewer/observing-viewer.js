@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-const apiUrl = process.env.REACT_APP_API;
+const apiUrl =
+  process.env.NODE_ENV !== 'development'
+    ? window.origin + '/'
+    : process.env.REACT_APP_API;
 
 const styles = {
   iframe: {

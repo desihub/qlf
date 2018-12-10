@@ -77,3 +77,4 @@ build
 .yarn
 
 nginx/nginx-proxy.conf
+global-env

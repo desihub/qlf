@@ -10,7 +10,10 @@ import TableRow from '@material-ui/core/TableRow';
 import QlfApi from '../../../containers/offline/connection/qlf-api';
 import moment from 'moment';
 
-const apiUrl = process.env.REACT_APP_API;
+const apiUrl =
+  process.env.NODE_ENV !== 'development'
+    ? window.origin + '/'
+    : process.env.REACT_APP_API;
 
 const styles = {
   iframe: {

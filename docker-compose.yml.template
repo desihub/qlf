@@ -11,87 +11,20 @@ services:
     image: redis
   app:
     build: ./backend
-    environment:
-      - LOGS_DIRECTORY=True
-      # QL
-      - DESI_SPECTRO_DATA=/app/spectro/data # input directory for qlf
-      - DESI_SPECTRO_REDUX=/app/spectro/redux # output directory for qlf
-      - QL_SPEC_DATA=/app/spectro/data # input directory for ql
-      - QL_SPEC_REDUX=/app/spectro/redux # output directory for ql
-      - DESI_CCD_CALIBRATION_DATA=/app/spectro/ccd_calibration_data/ # monthly calibration files
-      - QL_CONFIG_DIR=/app/desispec/py/desispec/data/quicklook/ # mergedQA templates
-      - QL_CALIB_DIR=/app/spectro/ccd_calibration_data # psf files
-      - OMP_NUM_THREADS=1 # This avoids unwanted concurrency during BoxcarExtract
-      - DESI_PRODUCT_ROOT=/app/
-      # Django:
-      - QLF_API_URL=http://localhost:8000/dashboard/api
-      - QLF_BASE_URL=http://localhost:8000
-      - QLF_HOSTNAME=*
-      - QLF_PORT=8000
-      - EMAIL_USE_TLS = False
-      - EMAIL_HOST=localhost
-      - EMAIL_PORT=25
-      - EMAIL_HELPDESK=LIneA Science Server <helpdesk@linea.gov.br>
-      - REDIS_NAME=redis
-      - QLF_REDIS=True # comment out for offline mode
-      - WEBSOCKET_UPDATE_INTERVAL=3 # websocket update time (seconds)
-      - UPDATE_DEPENDENCIES=True # run conda and pip install when starting container
-      - DEFAULT_QLF_CFG=/app/framework/config/qlf.cfg.template
-      - QLF_CFG=/app/framework/config/qlf.cfg
-      - DISK_SPACE_PERCENT_WARNING=40
-      - DISK_SPACE_PERCENT_ALERT=20
-      - POINTINGS_FILE=/app/spectro/noconstraints.dat
-      # Database
-      - POSTGRES_PASSWORD=qlfuser
-      # - POSTGRES_PASSWORD_FILE=/run/secrets/pw # nersc
-      - POSTGRES_USER=userqlf
-      - POSTGRES_DB=dbqlf
-      - POSTGRES_PORT=
-      - POSTGRES_OPTIONS=
-      - DB_NAME=db
-      - RUN_DB_MIGRATIONS=True
-      # Daemon
-      - DAEMON_TEST=False
-      - EXPOSURE_MONITORING_NS=exposure.monitoring
-      - ICS_NAME=ICSDaemon
-      - ICS_HOST=localhost
-      - ICS_PORT=50006
-      # ICS
-      - START_ICS=False
-      - PYRO_HOST=localhost
-      - PYRO_REQUIRE_EXPOSE=False
-      - PYRO_SERIALIZER=pickle
-      - PYRO_THREADPOOL_SIZE=64
-      - PYRO_PORT=56006
-      - PYRO_SERIALIZERS_ACCEPTED=pickle
-      # Pipeline Configuration
-      - PIPELINE_ARMS=b # e.g. b,r,z
-      - PIPELINE_SPECTROGRAPHS=0 # e.g. 0,1,2,3,4,5,6,7,8,9
-      - PIPELINE_LOGLEVEL=INFO # e.g. DEBUG, INFO, WARNING or ERROR
-      - PIPELINE_MAX_WORKERS=0 # maximum workers running at the same time (0 for unlimited)
-      - PIPELINE_DELAY=20
+    env_file:
+      - ./backend/global-env
     volumes:
       - ./backend/:/app # maps host diretory to internal container directory
-      - ./ql_mapping:/app/framework/ql_mapping
+      - /home/felipe/repos/nights:/home/felipe/repos/nights
     working_dir: /app/
     command: ./run.sh # script that runs on docker-compose up
     depends_on:
       - redis
       - db
-  frontend:
-    image: node:8.9
-    entrypoint: sh entrypoint.sh
-    working_dir: /home/node
-    volumes:
-      - ./frontend/:/home/node
-      - ./ql_mapping:/home/node/src/assets/ql_mapping
   nginx:
-    build: ./nginx
+    build: ./frontend
     ports:
       - 80:8080
-    volumes:
-      - ./nginx/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./frontend/build:/var/www/frontend
     cap_drop:
       - ALL
     depends_on:
