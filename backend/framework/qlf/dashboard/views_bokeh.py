@@ -95,9 +95,8 @@ def get_footprint(request):
     start = request.GET.get('start')
     end = request.GET.get('end')
     program = request.GET.get('program')
-    processed_exposures = []
     if not program:
-        exposures_radec = {"ra": [], "dec": []}
+        processed_exposures = []
     elif not start or not end:
         context = {'image': "Select start and end date"}
         response = HttpResponse(template.render(context, request))
