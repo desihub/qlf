@@ -80,18 +80,14 @@ def embed_bokeh(request, bokeh_app):
 
 def filter_processed_exposures(begin_date, end_date, program):
     if not program or program == 'all':
-        exposures = Exposure.objects.all()
+        exposures_radec = Process.objects.all().values('exposure__telra', 'exposure__teldec').distinct()
     else:
         begin_date = datetime.strptime(begin_date, "%Y%m%d")
         end_date = datetime.strptime(end_date, "%Y%m%d") + timedelta(days=1)
-        exposures = Exposure.objects.filter(
-            program=program).filter(dateobs__gte=begin_date).filter(dateobs__lte=end_date)
-    processed_exposures = list()
-    for exposure in exposures:
-        if list(Process.objects.filter(exposure_id=exposure.pk)) != []:
-            processed_exposures.append(exposure)
+        exposures_radec = Process.objects.filter(
+            exposure__program=program).filter(exposure__dateobs__gte=begin_date).filter(exposure__dateobs__lte=end_date).values('exposure__telra', 'exposure__teldec').distinct()
 
-    return processed_exposures
+    return exposures_radec
 
 def get_footprint(request):
     """Generates and render png"""
@@ -99,6 +95,7 @@ def get_footprint(request):
     start = request.GET.get('start')
     end = request.GET.get('end')
     program = request.GET.get('program')
+    processed_exposures = []
     if not program:
         exposures_radec = {"ra": [], "dec": []}
     elif not start or not end:
@@ -109,17 +106,8 @@ def get_footprint(request):
     else:
         processed_exposures = filter_processed_exposures(start, end, program)
 
-        exposures_ra = list()
-        exposures_dec = list()
-        for exposure in processed_exposures:
-            if exposure.telra is not None:
-                exposures_ra.append(exposure.telra)
-            if exposure.teldec is not None:
-                exposures_dec.append(exposure.teldec)
-
-        exposures_radec = {"ra": exposures_ra, "dec": exposures_dec}
     # Generate Footprint
-    footprint = Footprint().render(exposures_radec)
+    footprint = Footprint().render(processed_exposures)
     context = {'image': footprint}
     response = HttpResponse(template.render(context, request))
 

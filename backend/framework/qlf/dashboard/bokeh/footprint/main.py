@@ -45,10 +45,15 @@ class Footprint():
         pointings = Table.read(pointings_file, format='ascii.commented_header')
         coords = SkyCoord(ra=pointings['RA']*u.hour,
                           dec=pointings['DEC']*u.deg, frame='icrs')
-        if not exposures_radec['ra']:
+        if len(exposures_radec) == 0:
             empty = SkyCoord(ra=[]*u.hour, dec=[]*u.deg, frame='icrs')
             return file_html(self.footprint(coords, empty), CDN, "DESI Footprint")
-        visibles = SkyCoord(ra=exposures_radec['ra']*u.hour,
-                            dec=exposures_radec['dec']*u.deg, frame='icrs')
+        ra_list = []
+        dec_list = []
+        for radec in exposures_radec:
+            ra_list.append(radec['exposure__telra'])
+            dec_list.append(radec['exposure__teldec'])
+        visibles = SkyCoord(ra=ra_list*u.hour,
+                            dec=dec_list*u.deg, frame='icrs')
 
         return file_html(self.footprint(coords, visibles), CDN, "DESI Footprint")
