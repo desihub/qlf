@@ -15,7 +15,6 @@ services:
       - ./backend/global-env
     volumes:
       - ./backend/:/app # maps host diretory to internal container directory
-      - /home/felipe/repos/nights:/home/felipe/repos/nights
     working_dir: /app/
     command: ./run.sh # script that runs on docker-compose up
     depends_on:
