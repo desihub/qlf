@@ -7,7 +7,7 @@ from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
 from dashboard.bokeh.helper import write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
-from dashboard.bokeh.qlf_plot import metric_table, alert_table
+from dashboard.bokeh.qlf_plot import alert_table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Div
 from bokeh.resources import CDN
@@ -492,14 +492,8 @@ class Xwsigma:
         # pxh = column(px, xhist, p_hist_x, xamp)
         # pwh = column(pw, whist, p_hist_w, wamp)
 
-        curexp, refexp = '%3.2f' % xwsigma[0], '%3.2f' % xw_ref[0]  # 'xx..xx'
-        info = metric_table('X sigma', 'xsigma', curexp, refexp)
+        info = mtable('xwsigma', mergedqa)
         tb_x = Div(text=info)
-        # tb_x = mtable('xwsigma', mergedqa)
-
-        curexp, refexp = '%3.2f' % xwsigma[1], '%3.2f' % xw_ref[1]
-        info = metric_table('W sigma', 'wsigma', curexp, refexp)
-        tb_w = Div(text=info)
 
         alert_x = alert_table(nrg, wrg)
         alert_w = alert_table(nrg, wrg)
@@ -514,7 +508,9 @@ class Xwsigma:
                 widgetbox(info_col, css_classes=["header"]),
                 widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(tb_x),
-                widgetbox(tb_w),
+                widgetbox(Div(), css_classes=["tableranges"]),
+                widgetbox(Div(text='<h2 align=center style="text-align:center;">  XSIGMA </h2>')),
+                widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
                 widgetbox(tb_alert_x),
                 widgetbox(tb_alert_w),
                 column(px, sizing_mode='scale_both'),
@@ -531,7 +527,9 @@ class Xwsigma:
                 widgetbox(info_col, css_classes=["header"]),
                 widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(tb_x),
-                widgetbox(tb_w),
+                widgetbox(Div(), css_classes=["tableranges"]),
+                widgetbox(Div(text='<h2 align=center style="text-align:center;">  XSIGMA </h2>')),
+                widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
                 widgetbox(tb_alert_x),
                 widgetbox(tb_alert_w),
                 # column(px, sizing_mode='scale_both'),

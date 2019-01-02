@@ -63,107 +63,6 @@ def alert_table(nrg, wrg):
     return style + header + tblines + end
 
 
-def metric_table(metricname, keyname,  curexp='xxx', refexp='xxx', objtype=['XXELG', 'XXSTAR']):
-    """ Create metric tables
-    """
-
-    style = """    <style>        table {
-            font-family: arial, sans-serif;
-            font-size: 1vw;
-            border-collapse: collapse;
-            width: 100%;
-            }
-
-        td, th {
-            border: 1px solid #dddddd;
-            text-align: center;
-            }
-        tr:nth-child(even) {
-        background-color: #dcdcdc;
-                text-align:center;
-        }
-        tr:{text-align:center;}
-        </style>"""
-
-    header = """
-        <div  style="text-align:center;padding-left:20px;padding-top:10px;">
-        <table>
-              <col width="200">
-              <col width="100">
-              <col width="90">
-              <col width="90">
-        <tr>
-          <th>keyname</th> <th>Current Exposure</th> <th>Reference Exposure</th>
-        </tr>"""
-
-    end = """</table> </div> """
-
-    title = """<h2 align=center style="text-align:center;">  {} </h2>""".format(
-        keyname)
-
-    key_tb = []
-    curtb = (['???'])*len(curexp)
-
-    if keyname in ['snr', 'integ']:
-        # per_TGT
-        for i in list(range(len(curexp))):
-            key_tb.append(metricname + '  ( %s)' % objtype[i])
-            try:
-                curtb[i] = '{:4.3f}'.format(curexp[i])
-            except:
-                curtb[i] = '???'
-
-    elif keyname in ['countpix', 'getbias', 'getrms']:
-        # per AMP
-        for i in list(range(len(curexp))):
-            key_tb.append(metricname + ' (AMP %d)' % (i+1))
-            try:
-                curtb[i] = '{:4.3f}'.format(curexp[i])
-            except:
-                curtb[i] = '???'  # curexp[i]
-
-    elif keyname in ['xwsigma']:
-        # per axis x or w
-        for i in list(range(len(curexp))):
-            key_tb.append(metricname + [' (x)', ' (w)'][i])
-            try:
-                curtb[i] = '{:4.3f}'.format(curexp[i])
-            except:
-                curtb[i] = '???'  # curexp[i]
-
-    else:
-        key_tb = ['xwsigma' if 'igma' in metricname else metricname][0]
-        try:
-            curtb = curexp  # '%3.2f'%(curexp)
-        except:
-            curtb = '???'
-
-    if isinstance(curexp, list):
-        nrows = len(curexp)
-        tblines = ""
-        for i in list(range(len(curexp))):
-            if i == 0:
-                tblines = tblines +\
-                    """<tr>
-                    <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>
-                """.format(nrows, key_tb[i], curtb[i], refexp)
-
-            else:
-                tblines = tblines +\
-                    """<tr>
-                <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>
-                """.format(key_tb[i], curtb[i], refexp)
-
-    else:
-        tblines = """<tr>
-                  <td>{}</td> <td>{}</td> <td>{}</td>
-                </tr>""".format(key_tb, curtb, refexp)
-
-    return style + title + header + tblines + end
-
-
 def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     qa_metrics = {}
     qa_metrics['countpix'] = 'LITFRAC_AMP'
@@ -184,7 +83,7 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         'countpix': 'CHECK_CCDs',
         'getbias': 'CHECK_CCDs',
         'getrms': 'CHECK_CCDs',
-        'xwsigma': 'CHECK_FIBERS',
+        'xwsigma': 'CHECK_CCDs',
         'countbins': 'CHECK_FIBERS',
         'skycont': 'CHECK_SPECTRA',
         'skypeak': 'CHECK_SPECTRA',
@@ -246,7 +145,7 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         try:
             ref=par[key+program_prefix+'_REF']
         except:
-            if qa =='xyshifts':
+            if qa =='xyshifts' or qa == 'xwsigma':
                 ref=[np.NaN]*2
 
         if qa =='snr':
@@ -255,7 +154,7 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
             # Solving for wrong lenght in ref list
             nrows=1
             ref=ref[0]
-        elif isinstance(ref,list):
+        elif ref and isinstance(ref,list):
             nrows=len(ref)
         else:
             nrows = 1
