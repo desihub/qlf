@@ -15,7 +15,7 @@ from bokeh.embed import file_html
 import numpy as np
 import logging
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import set_amp, plot_amp
+from dashboard.bokeh.qlf_plot import set_amp, plot_amp, mtable
 from bokeh.models import PrintfTickFormatter
 
 
@@ -495,6 +495,7 @@ class Xwsigma:
         curexp, refexp = '%3.2f' % xwsigma[0], '%3.2f' % xw_ref[0]  # 'xx..xx'
         info = metric_table('X sigma', 'xsigma', curexp, refexp)
         tb_x = Div(text=info)
+        # tb_x = mtable('xwsigma', mergedqa)
 
         curexp, refexp = '%3.2f' % xwsigma[1], '%3.2f' % xw_ref[1]
         info = metric_table('W sigma', 'wsigma', curexp, refexp)

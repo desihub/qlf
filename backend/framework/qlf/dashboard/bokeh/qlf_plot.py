@@ -174,7 +174,6 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
     qa_metrics['skycont'] = 'SKYCONT'
     qa_metrics['skypeak'] = 'PEAKCOUNT'
     qa_metrics['integ'] = 'DELTAMAG_TGT'
-    qa_metrics['skyresid'] = 'MED_RESID'
     qa_metrics['snr'] = 'FIDSNR_TGT'
     qa_metrics['fiberflat']= 'CHECKFLAT'
     qa_metrics['arc']= 'CHECKARC'
@@ -190,7 +189,6 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
         'skycont': 'CHECK_SPECTRA',
         'skypeak': 'CHECK_SPECTRA',
         'integ': 'CHECK_SPECTRA',
-        'skyresid': 'CHECK_SPECTRA',
         'snr': 'CHECK_SPECTRA',
         'fiberflat': "CHECK_FIBERFLAT",
         'arc': "CHECK_ARC",
@@ -386,141 +384,6 @@ def mtable(qa, data, objtype=['OTYPE ?', 'OTYPE ?']):
                     """.format(key_tb[i], cur_tb[i], ref_tb[i])
 
     return style + header + tblines + end
-
-
-
-def range_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0, 0],  wrng=[0, 0], nlines=None, align='center'):
-    ''' Usage Example:
-            table_txt = html_table( nrng=nrg, wrng=wrg  )
-            tbinfo = Div(text=table_txt, width=600, height=300)
-    '''
-    lines = """ """
-    tblines = """ """
-    nlines = len(names)
-    if(nlines != len(vals)):
-        return """error in table"""
-
-    style = """
-    <style>
-        table {
-            font-family: arial, sans-serif;
-            font-size: 1vw;
-            border-collapse: collapse;
-            width: 100%;
-            }
-
-        td, th {
-            border: 1px solid #dddddd;
-            text-align: center;
-            padding: 8px;
-            }
-        tr:nth-child(even) {
-        background-color: #dddddd;
-                text-align:center;
-        }
-        tr:{text-align:center;}
-        </style>
-        """
-
-    header = """
-    <div  style="text-align:center;padding-left:20px;padding-top:10px;">
-
-
-    <table>
-    <tr>
-        <th>Alert</th>     <th>Minimum Value</th>        <th>Maximum Value</th>
-    </tr>"""
-
-    for i1, i2 in [[nkey, nrng], [wkey, wrng]]:
-        lines = lines+"""
-        <tr>
-            <td>{}</td>
-            <td> {:.2f}</td>  <td>{:.2f}</td>
-        </tr>""".format(i1, i2[0], i2[1])
-
-    end = """</table> </div> """
-
-    return style+header + tblines+lines+end
-
-
-def html_table(names=[], vals=[], nkey='Normal Range', wkey='Warning Range', nrng=[0, 0],  wrng=[0, 0], nlines=None, align='center'):
-    lines = """ """
-    tblines = """ """
-    nlines = len(names)
-    if(nlines != len(vals)):
-        print('error in table')
-
-    if(nlines == 0):
-        tblines = ""
-    else:
-        for i in range(nlines):
-            if isinstance(vals[i], list):
-                tblines = tblines+"""<tr>
-                <td>{}</td>
-                <td> {}</td>
-                </tr>""".format(names[i], vals[i])  # , vals[i][0] )
-
-            elif(names[i] == 'NGOODFIB'):
-                tblines = tblines+"""<tr>
-                <td>{}</td>
-                <td> {:d}</td>
-                </tr>""".format(names[i], vals[i])
-            elif(isinstance(vals[i], str)):
-                tblines = tblines+"""<tr>
-                <td>{}</td>
-                <td> {}</td>
-                </tr>""".format(names[i], vals[i])
-            elif(isinstance(vals[i], float)):
-                tblines = tblines+"""<tr>
-                <td>{}</td>
-                <td> {:.3f}</td>
-                </tr>""".format(names[i], vals[i])
-
-            else:
-                tblines = tblines+"""<tr>
-                <td>{}</td>
-                <td> {:.3f}</td>
-                </tr>""".format(names[i], vals[i])
-
-    style = """
-    <style>
-        table {
-            font-family: arial, sans-serif;
-            font-size: 1vw;
-            border-collapse: collapse;
-            width: 100%;
-            }
-
-        td, th {
-            border: 1px solid #dddddd;
-            text-align: center;
-            }
-        tr:nth-child(even) {
-        background-color: #dddddd;
-                text-align:center;
-        }
-        tr:{text-align:center;}
-        </style>
-        """
-
-    header = """
-    <div>
-    <table>
-    <tr>
-        <th>Parameter</th>        <th>Value</th>
-    </tr>"""
-
-    for i1, i2 in [(nkey, nrng), (wkey, wrng)]:
-        lines = lines+"""
-        <tr>
-            <td>{}</td>
-            <td> [{:.2f},  {:.2f}]</td>
-        </tr>""".format(i1, i2[0], i2[1])
-
-    end = """</table> </div> """
-
-    return style+header + tblines+lines+end
-
 
 def plot_hist(hover, yrange, yscale="auto", pw=600, ph=400):
     """
