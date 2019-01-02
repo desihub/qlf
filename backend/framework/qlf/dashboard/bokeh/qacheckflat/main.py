@@ -5,7 +5,7 @@ from bokeh.models.widgets import Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.qlf_plot import mtable, alert_table
+from dashboard.bokeh.plots.table import Table
 
 import numpy as np
 
@@ -51,14 +51,11 @@ class Flat:
 
 
         # Prepare tables
-        metric_txt = mtable('fiberflat', mergedqa)
-        metric_tb = Div(text=metric_txt)
-
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
+        metric = Table().mtable('fiberflat', mergedqa)
+        alert = Table().alert_table(nrg, wrg)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+                        metric, alert,
                         # column(p, sizing_mode='scale_both'),
                         # column(p2, sizing_mode='scale_both'),
                         css_classes=["display-grid"])

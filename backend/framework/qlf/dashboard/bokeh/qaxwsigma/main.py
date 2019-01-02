@@ -7,7 +7,7 @@ from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
 from dashboard.bokeh.helper import write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
-from dashboard.bokeh.qlf_plot import alert_table
+from dashboard.bokeh.plots.table import Table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Div
 from bokeh.resources import CDN
@@ -15,8 +15,9 @@ from bokeh.embed import file_html
 import numpy as np
 import logging
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import set_amp, plot_amp, mtable
+from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 from bokeh.models import PrintfTickFormatter
+from dashboard.bokeh.plots.table import Table
 
 
 class Xwsigma:
@@ -492,13 +493,10 @@ class Xwsigma:
         # pxh = column(px, xhist, p_hist_x, xamp)
         # pwh = column(pw, whist, p_hist_w, wamp)
 
-        info = mtable('xwsigma', mergedqa)
-        tb_x = Div(text=info)
+        info = Table().mtable('xwsigma', mergedqa)
 
-        alert_x = alert_table(nrg, wrg)
-        alert_w = alert_table(nrg, wrg)
-        tb_alert_x = Div(text=alert_x)
-        tb_alert_w = Div(text=alert_w)
+        alert_x = Table().alert_table(nrg, wrg)
+        alert_w = Table().alert_table(nrg, wrg)
 
         if flavor == 'science':
             pxh = column(px, xhist, p_hist_x, xamp)
@@ -507,12 +505,12 @@ class Xwsigma:
             layout = column(
                 widgetbox(info_col, css_classes=["header"]),
                 widgetbox(Div(), css_classes=["tableranges"]),
-                widgetbox(tb_x),
+                info,
                 widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  XSIGMA </h2>')),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
-                widgetbox(tb_alert_x),
-                widgetbox(tb_alert_w),
+                alert_x,
+                alert_w,
                 column(px, sizing_mode='scale_both'),
                 column(pw, sizing_mode='scale_both'),
                 column(xhist, sizing_mode='scale_both'),

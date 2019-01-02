@@ -7,8 +7,8 @@ from bokeh.models import LinearColorMapper, ColorBar
 
 from dashboard.bokeh.helper import write_description,\
     get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import  sort_obj,\
-    mtable, alert_table
+from dashboard.bokeh.qlf_plot import  sort_obj
+from dashboard.bokeh.plots.table import Table
 
 import numpy as np
 import logging
@@ -190,13 +190,11 @@ class Countbins:
             plot.title.text_font_size = font_size
 
        # Prepare tables
-        metric_txt = mtable('countbins', mergedqa)
-        metric_tb = Div(text=metric_txt)
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
+        metric = Table().mtable('countbins', mergedqa)
+        alert = Table().alert_table(nrg, wrg)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+                        metric, alert,
                         column(p, sizing_mode='scale_both'),
                         column(p2, sizing_mode='scale_both'),
                         css_classes=["display-grid"])

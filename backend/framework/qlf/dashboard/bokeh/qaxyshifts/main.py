@@ -5,7 +5,7 @@ from bokeh.models.widgets import Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.qlf_plot import mtable, alert_table
+from dashboard.bokeh.plots.table import Table
 
 import numpy as np
 
@@ -40,14 +40,11 @@ class Xyshifts:
         info_col = Div(text=write_description('xyshifts'))
 
         # Prepare tables
-        metric_txt = mtable('xyshifts', mergedqa)
-        metric_tb = Div(text=metric_txt)
-
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
+        metric = Table().mtable('xyshifts', mergedqa)
+        alert = Table().alert_table(nrg, wrg)
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+                        metric, alert,
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "XYSHIFTS")

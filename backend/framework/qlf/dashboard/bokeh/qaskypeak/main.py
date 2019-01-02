@@ -7,7 +7,8 @@ from bokeh.models import TapTool, OpenURL, Range1d
 from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import sort_obj, mtable, alert_table
+from dashboard.bokeh.qlf_plot import sort_obj
+from dashboard.bokeh.plots.table import Table
 
 from dashboard.bokeh.helper import write_description, get_palette
 
@@ -184,10 +185,8 @@ class Skypeak:
         wrg = par['PEAKCOUNT_WARN_RANGE']
 
        # Prepare tables
-        metric_txt = mtable('skypeak', mergedqa)
-        metric_tb = Div(text=metric_txt)
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
+        metric = Table().mtable('skypeak', mergedqa)
+        alert = Table().alert_table(nrg, wrg)
 
         font_size = "1.2vw"
         for plot in [p_hist, p]:
@@ -200,7 +199,7 @@ class Skypeak:
 
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+                        metric, alert,
                         column(p, sizing_mode='scale_both'),
                         column(p_hist, sizing_mode='scale_both'),
                         css_classes=["display-grid"])

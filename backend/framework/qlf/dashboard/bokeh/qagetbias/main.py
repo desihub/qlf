@@ -9,8 +9,8 @@ import numpy as np
 
 from dashboard.bokeh.helper import write_description, write_info,\
                      get_merged_qa_scalar_metrics, get_palette
-from dashboard.bokeh.qlf_plot import alert_table,\
-    mtable, set_amp, plot_amp
+from dashboard.bokeh.qlf_plot import set_amp, plot_amp
+from dashboard.bokeh.plots.table import Table
 
 import logging
 from bokeh.resources import CDN
@@ -80,16 +80,13 @@ class Bias:
         # Prepare tables
         metricname='BIAS_AMP'
         keyname='getbias'
-        metric_txt=mtable('getbias', mergedqa)
-        metric_tb=Div(text=metric_txt)
-
-        alert_txt = alert_table(nrg,wrg)
-        alert_tb = Div(text=alert_txt)
+        metric = Table().mtable('getbias', mergedqa)
+        alert = Table().alert_table(nrg,wrg)
         p.sizing_mode = "scale_width"
 
 
         ptxt = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb),widgetbox(alert_tb),
+                        metric, alert,
                         column(p, sizing_mode='scale_both', css_classes=["main-one"]),
                         css_classes=["display-grid"])
 

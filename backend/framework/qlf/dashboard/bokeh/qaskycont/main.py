@@ -7,7 +7,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import write_info, get_palette,\
     get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import mtable, alert_table
+from dashboard.bokeh.plots.table import Table
 
 from dashboard.bokeh.helper import write_description
 
@@ -146,10 +146,8 @@ class Skycont:
 
 
        # Prepare tables
-        metric_txt = mtable('skycont', mergedqa)
-        metric_tb = Div(text=metric_txt)
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
+        metric = Table().mtable('skycont', mergedqa)
+        alert = Table().alert_table(nrg, wrg)
 
         font_size = "1vw"
         for plot in [p2]:
@@ -161,7 +159,7 @@ class Skycont:
             plot.title.text_font_size = font_size
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+                        metric, alert,
                         column(p2, sizing_mode='scale_both',
                                css_classes=["main-one"]),
                         css_classes=["display-grid"])

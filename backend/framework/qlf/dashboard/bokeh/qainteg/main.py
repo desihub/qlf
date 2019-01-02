@@ -4,7 +4,7 @@ from bokeh.layouts import column, widgetbox
 from bokeh.models.widgets import Div
 
 from bokeh.models import HoverTool, ColumnDataSource
-from dashboard.bokeh.qlf_plot import mtable, alert_table
+from dashboard.bokeh.plots.table import Table
 
 import numpy as np
 
@@ -90,10 +90,8 @@ class Integ:
         # Prepare tables
         # objtype=['ELG','STAR'] )
 
-        metric_txt = mtable('integ', mergedqa ,objtype=objlist)
-        metric_tb = Div(text=metric_txt)
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
+        metric = Table().mtable('integ', mergedqa ,objtype=objlist)
+        alert = Table().alert_table(nrg, wrg)
 
         font_size = "1vw"
         for plot in [fiber_hist]:
@@ -105,8 +103,8 @@ class Integ:
             plot.title.text_font_size = font_size
 
         layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb, css_classes=["table-ranges"]),
-                        widgetbox(alert_tb, css_classes=["table-ranges-sec"]),
+                        metric,
+                        alert,
                         column(fiber_hist, sizing_mode='scale_both', css_classes=["main-one"]),
                         css_classes=["display-grid"])
 
