@@ -6,7 +6,7 @@ from bokeh.models import Span, Label
 from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
+from dashboard.bokeh.qlf_plot import sort_obj
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Div
 from bokeh.resources import CDN
@@ -18,6 +18,7 @@ from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.patch.main import Patch
 from dashboard.bokeh.plots.descriptors.title import Title
+from dashboard.bokeh.plots.plot2d.main import Plot2d
 
 
 class Xwsigma:
@@ -265,24 +266,37 @@ class Xwsigma:
         d_yplt = (max(xsigma) - min(xsigma))*0.1
         yrange = [0, max(xsigma) + d_yplt]
 
-        xhist = plot_hist(xsigma_std, yrange, ph=300)
-        xhist.quad(top='xsigma', bottom='bottom', left='left', right='right', name='data', source=source,
-                   fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
-                   hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
-
-        xhist.xaxis.axis_label = "Fiber number"
-        xhist.yaxis.axis_label = "X std dev (number of pixels)"
+        xhist = Plot2d(
+            yrange,
+            x_title="Fiber number",
+            y_title="X std dev (number of pixels)",
+            tooltip=xsigma_tooltip,
+            title="",
+            width=600,
+            height=300,
+            yscale="auto"
+        ).quad(
+            source,
+            top='xsigma',
+        )
 
         # w_fiber_hist
         d_yplt = (max(wsigma) - min(wsigma))*0.1
         yrange = [0, max(wsigma) + d_yplt]
 
-        whist = plot_hist(wsigma_std, yrange, ph=300)
-        whist.quad(top='wsigma', bottom='bottom', left='left', right='right', name='data', source=source,
-                   fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
-                   hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
-        whist.xaxis.axis_label = "Fiber number"
-        whist.yaxis.axis_label = "W std dev (number of pixels)"
+        whist = Plot2d(
+            yrange,
+            x_title="Fiber number",
+            y_title="W std dev (number of pixels)",
+            tooltip=xsigma_tooltip,
+            title="",
+            width=600,
+            height=300,
+            yscale="auto"
+        ).quad(
+            source,
+            top='wsigma',
+        )
 
         # ================================
         # Stat histogram

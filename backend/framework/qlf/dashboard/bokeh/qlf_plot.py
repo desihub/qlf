@@ -23,25 +23,6 @@ def sort_obj(gen_info):
             pass
     return obj_type
 
-def plot_hist(hover, yrange, yscale="auto", pw=600, ph=400):
-    """
-    Defaults for histograms
-    """
-    if yscale not in ["log", "auto"]:
-        logger.warn('Wrong yscale')
-    if yrange == None:
-        plot = Figure(tools=[hover, "pan,wheel_zoom,box_zoom,reset, crosshair, tap"], plot_width=pw, active_drag="box_zoom",
-                      plot_height=ph, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale)
-
-    else:
-        plot = Figure(tools=[hover, "pan,wheel_zoom,box_zoom,reset, crosshair, tap"], plot_width=pw, active_drag="box_zoom",
-                      plot_height=ph, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale, y_range=yrange)
-
-    # plot.add_tools(hover)
-
-    return plot
-
-
 def set_amp(z_value):
     ''' Setup for AMP plots
     '''

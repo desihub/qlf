@@ -1,27 +1,19 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column
 
 from bokeh.models.widgets import Div
 
-from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.models import ColumnDataSource
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
+from dashboard.bokeh.plots.plot2d.main import Plot2d
 
 import numpy as np
 
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import plot_hist
 from dashboard.models import Job, Process, Fibermap
 
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-
-import os
-
-spectro_data = os.environ.get('DESI_SPECTRO_DATA')
-
-logger = logging.getLogger(__name__)
 
 
 class Integ:
@@ -44,7 +36,7 @@ class Integ:
         wrg = check_spectra['PARAMS']['DELTAMAG_TGT_WARN_RANGE']
         fiber_mag = mergedqa['GENERAL_INFO']['FIBER_MAGS']
 
-        hist_tooltip = """ 
+        tooltip = """ 
             <div>
                 <div>
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">INTEG: </span>
@@ -56,21 +48,29 @@ class Integ:
                 </div>
             </div>
                 """
-        hist_hover = HoverTool(tooltips=hist_tooltip)
-        hist_source = ColumnDataSource(
-            data={'integ': fiber_mag,
-                  'x': np.arange(len(fiber_mag)),
-                  })
+
+        source = ColumnDataSource(
+            data={
+                'integ': fiber_mag,
+                'x': np.arange(len(fiber_mag)),
+            }
+        )
 
         yrange = [0, 1.1*max(fiber_mag)]
-        fiber_hist = plot_hist(hist_hover, yrange, ph=350)
 
-        fiber_hist.vbar(top='integ', x='x', width=0.8,
-                        source=hist_source,
-                        fill_color="dodgerblue", line_color="black", line_width=0.01, alpha=0.8,
-                        hover_fill_color='red', hover_line_color='red', hover_alpha=0.8)
-        fiber_hist.xaxis.axis_label = "Fibers"
-        fiber_hist.yaxis.axis_label = "Integral (counts)"
+        fiber_hist = Plot2d(
+            yrange,
+            x_title="Fibers",
+            y_title="Integral (counts)",
+            tooltip=tooltip,
+            title="",
+            width=600,
+            height=400,
+            yscale="auto"
+        ).vbar(
+            source,
+            y="integ",
+        )
 
         info_col = Title().write_description('integ')
 
@@ -91,15 +91,6 @@ class Integ:
         # Prepare tables
         metric = Table().mtable('integ', mergedqa ,objtype=objlist)
         alert = Table().alert_table(nrg, wrg)
-
-        font_size = "1vw"
-        for plot in [fiber_hist]:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
 
         layout = column(info_col, Div(),
                         metric,

@@ -1,5 +1,3 @@
-import os
-import logging
 from bokeh.models import ColumnDataSource, HoverTool, TapTool, OpenURL
 from bokeh.plotting import Figure
 from bokeh.layouts import column, widgetbox, layout
@@ -9,16 +7,13 @@ from bokeh.models import Spacer, Range1d
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
+from dashboard.bokeh.plots.plot2d.main import Plot2d
 from dashboard.bokeh.qlf_plot import sort_obj
 from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
 from dashboard.models import Job, Process, Fibermap
-
-logger = logging.getLogger(__name__)
-
-spectro_data = os.environ.get('DESI_SPECTRO_DATA')
 
 
 class SNR:
@@ -250,9 +245,24 @@ class SNR:
         lw = 1.5
         y_plot = 'y2'
         plt_scale = 'log'
-
         hover = HoverTool(tooltips=html_tooltip)
 
+        # elg_plot = Plot2d(
+        #     yrange=[],
+        #     x_title="DECAM_{}".format(str(self.selected_arm).upper()),
+        #     y_title="MEDIAN SNR^2",
+        #     tooltip=html_tooltip,
+        #     title="ELG",
+        #     width=600,
+        #     height=300,
+        #     yscale="log"
+        # ).line(
+        #     source=elg_fit,
+        #     y='y2',
+        # ).circle(
+        #     source=elg,
+        #     y='y2'
+        # ).plot
 
         elg_plot = init_xy_plot(hover=hover, yscale=plt_scale)
         elg_plot.line(x='x', y=y_plot, source=elg_fit,

@@ -1,2 +1,0 @@
-class Plot2d:
-  
