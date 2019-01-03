@@ -53,10 +53,10 @@ class Bias:
         metric = Table().mtable('getbias', mergedqa)
         alert = Table().alert_table(nrg,wrg)
 
-        ptxt = column(info_col, Div(),
+        layout = column(info_col, Div(),
                         metric, alert,
                         column(p, sizing_mode='scale_both', css_classes=["main-one"]),
                         css_classes=["display-grid"])
 
 
-        return file_html(ptxt, CDN, "GETBIAS")
+        return file_html(layout, CDN, "GETBIAS")
