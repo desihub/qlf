@@ -1,18 +1,11 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column
 
 from bokeh.models.widgets import Div
-from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
-from bokeh.models import LinearColorMapper, ColorBar
 
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 
-import numpy as np
-
-from dashboard.bokeh.helper import write_description, write_info,\
-    get_merged_qa_scalar_metrics
-from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import set_amp, plot_amp
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 
 import logging
 from bokeh.resources import CDN
@@ -37,13 +30,13 @@ class SkyR:
         nrg = skyR['PARAMS']['SKYRBAND_NORMAL_RANGE']
         wrg = skyR['PARAMS']['SKYRBAND_WARN_RANGE']
 
-        info_col = Div(text=write_description('skyR'))
+        info_col = Title().write_description('skyR')
 
         # Prepare tables
         metric = Table().mtable('skyR', mergedqa)
         alert = Table().alert_table(nrg, wrg)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+        layout = column(info_col, Div(),
                         metric, alert,
                         css_classes=["display-grid"])
 
