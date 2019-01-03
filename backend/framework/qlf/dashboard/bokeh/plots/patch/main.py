@@ -1,7 +1,12 @@
 import numpy as np
+from dashboard.bokeh.helper import get_palette
+from bokeh.models import LinearColorMapper, ColorBar
+from bokeh.models import HoverTool, PrintfTickFormatter, ColumnDataSource
+from bokeh.plotting import Figure
+
 
 class Patch:
-    def set_amp(z_value):
+    def set_amp(self, z_value):
         ''' Setup for AMP plots
         '''
         dz = z_value
@@ -22,7 +27,7 @@ class Patch:
 
         return ztext, cbarformat
 
-    def plot_amp(self, dz, refexp, mapper, name="", font_size="1.2vw"):
+    def plot_amp(self, dz, refexp, name="", font_size="1.2vw", description="", wrg=[]):
         ''' Initializing AMP plot
         '''
         ztext, cbarformat = self.set_amp(dz)
@@ -57,6 +62,19 @@ class Patch:
         p.legend.label_text_font_size = font_size
         p.title.text_font_size = font_size
 
+        p.xaxis.axis_label= description
+
+        cmap = get_palette("RdBu_r")
+        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
+            nan_color="darkgrey")
+
+        formatter = PrintfTickFormatter(format=cbarformat)
+        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
+                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
+                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
+                              title_text_baseline="alphabetic")
+        p.add_layout(color_bar, 'right')
+
         p.grid.grid_line_color = None
         p.outline_line_color = None
         p.axis.clear
@@ -64,7 +82,6 @@ class Patch:
 
         p.axis.major_label_text_font_size = '0pt'
         p.yaxis.major_label_text_font_size = '0pt'
-        #p.xaxis.axis_label_text_font_size = "0pt"
         p.xaxis.major_tick_line_color = None
         p.xaxis.minor_tick_line_color = None
         p.yaxis.major_tick_line_color = None

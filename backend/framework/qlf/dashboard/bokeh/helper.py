@@ -13,30 +13,6 @@ QLF_API_URL = os.environ.get('QLF_API_URL',
 logger = logging.getLogger(__name__)
 
 
-def get_arms_and_spectrographs():
-    """
-    Rescues all the arms and spectrographs.
-
-    return: {"arms": [...], "spectrographs": [...]}
-    """
-    arms = list()
-    spectrographs = list()
-
-    api = requests.get(QLF_API_URL).json()
-
-    cameras = requests.get(
-        api['camera'],
-        params={'paginate': 'null', 'fields': ','.join(
-            ['arm', 'spectrograph'])}
-    ).json()
-
-    for camera in cameras:
-        arms.append(camera['arm'])
-        spectrographs.append(camera['spectrograph'])
-
-    return {"arms": list(set(arms)), "spectrographs": list(set(spectrographs))}
-
-
 def get_last_process():
     """
     Returns last process
@@ -46,89 +22,12 @@ def get_last_process():
     return requests.get(api['last_process']).json()
 
 
-def get_exposure_ids():
-    """
-    Returns the list with exposure ids
-    """
-
-    api = requests.get(QLF_API_URL).json()
-
-    r = requests.get(
-        api['exposure'], params={'paginate': 'null', 'fields': 'exposure_id'}
-    ).json()
-
-    return [int(e['exposure_id']) for e in r]
-
-
-def get_exposures():
-    """
-    Returns the list of registered exposures
-    """
-
-    api = requests.get(QLF_API_URL).json()
-
-    # TODO: filter exposures by flavor?
-    r = requests.get(
-        api['exposure'],
-        params={
-            'paginate': 'null',
-            'fields': ','.join(['exposure_id', 'flavor', 'telra', 'teldec'])
-        }
-    ).json()
-
-    expid = [int(e['exposure_id']) for e in r]
-    flavor = [e['flavor'] for e in r]
-    ra = [e['telra'] for e in r]
-    dec = [e['teldec'] for e in r]
-
-    return {
-        'expid': expid, 'flavor': flavor,
-        'ra': ra, 'dec': dec
-    }
-
-
-def get_cameras():
-    """
-    Returns the list of registered cameras
-    """
-
-    api = requests.get(QLF_API_URL).json()
-
-    return requests.get(api['camera'], params={'paginate': 'null'}).json()
-
-
 def get_merged_qa_scalar_metrics(process_id, cam):
     """
     Returns cam scalar metrics
     """
 
-    # scalar_metrics = dict()
-    # try:
-    #     obj = Job.objects.filter(process_id=process_id).get(camera=cam)
-    #     scalar_metrics = obj.output
-    # except Job.DoesNotExist:
-    #     scalar_metrics = None
-    # return scalar_metrics
     return QLFModels().get_output(process_id, cam)
-
-
-def load_fits(process_id, cam):
-    '''Load reduced fits '''
-    from astropy.io import fits
-
-    try:
-        process = Process.objects.get(pk=process_id)
-        exposure = process.exposure
-        folder = "/app/spectro/redux/exposures/{}/{:08d}".format(
-            exposure.night, process.exposure_id)
-
-        file = "sframe-{}-{:08d}.fits".format(cam, process.exposure_id)
-        fitsfile = fits.open('{}/{}'.format(folder, file))
-        return fitsfile
-
-    except Exception as err:
-        logger.info('{}'.format(err))
-        return None
 
 
 def init_xy_plot(hover, yscale):
@@ -195,22 +94,6 @@ def write_description(qa_name):
     text="""<body><p  style="text-align:left; color:#262626; font-size:1.5vw;">
             <b>{}</b> <br>{}</body>""".format(info_dic[qa_name][0],info_dic[qa_name][1])
     return text
-
-
-def eval_histpar(yscale, hist):
-    """ Common parameters for histograms"""
-    from numpy import log10
-    if yscale == 'log':
-        ylabel = "Frequency + 1"
-        yrange = (1, 1. * 10**(int(log10(max(hist))) + 1))
-        bottomval = 'bottomplusone'
-        histval = 'histplusone'
-    else:
-        ylabel = "Frequency"
-        yrange = (-0.1*max(hist), 1.1*max(hist))
-        bottomval = 'bottom'
-        histval = 'hist'
-    return [ylabel, yrange, bottomval, histval]
 
 
 def get_palette(name_of_mpl_palette):

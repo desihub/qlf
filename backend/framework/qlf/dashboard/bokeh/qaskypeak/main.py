@@ -8,7 +8,7 @@ from bokeh.models.widgets import Select
 from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import sort_obj
-from dashboard.bokeh.plots.table import Table
+from dashboard.bokeh.plots.descriptors.table import Table
 
 from dashboard.bokeh.helper import write_description, get_palette
 

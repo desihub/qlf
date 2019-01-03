@@ -9,8 +9,9 @@ import numpy as np
 
 from dashboard.bokeh.helper import write_description, write_info,\
                      get_merged_qa_scalar_metrics, get_palette
-from dashboard.bokeh.qlf_plot import set_amp, plot_amp
-from dashboard.bokeh.plots.table import Table
+
+from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.patch.main import Patch
 
 import logging
 from bokeh.resources import CDN
@@ -43,27 +44,14 @@ class Bias:
                                                            program_prefix+'_REF']
 
 
-        # amp
-        name = 'BIAS_AMP'
-        metr = getbias
-
-        dz = getbias[name]  
-
-        cmap = get_palette("RdBu_r")
-        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
-            nan_color="darkgrey")
-
-        ztext, cbarformat = set_amp(getbias["BIAS_AMP"])
-        p = plot_amp(dz,refexp, mapper, name = name)
-
-        p.xaxis.axis_label= "Average bias value per Amp (photon counts)"
-
-        formatter = PrintfTickFormatter(format=cbarformat)
-        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
-                              title_text_baseline="alphabetic")
-        p.add_layout(color_bar, 'right')
+        # PATCH
+        p = Patch().plot_amp(
+            dz=getbias["BIAS_AMP"],
+            refexp=refexp,
+            name="BIAS_AMP",
+            description="Average bias value per Amp (photon counts)",
+            wrg=wrg
+        )
 
         # INFO TABLES:
         info, nlines = write_info('getbias', tests)

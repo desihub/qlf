@@ -7,7 +7,6 @@ from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
 from dashboard.bokeh.helper import write_description, get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
-from dashboard.bokeh.plots.table import Table
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Div
 from bokeh.resources import CDN
@@ -17,7 +16,7 @@ import logging
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 from bokeh.models import PrintfTickFormatter
-from dashboard.bokeh.plots.table import Table
+from dashboard.bokeh.plots.descriptors.table import Table
 
 
 class Xwsigma:

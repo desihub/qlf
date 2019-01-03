@@ -8,7 +8,7 @@ from bokeh.models import LinearColorMapper, ColorBar
 from dashboard.bokeh.helper import write_description,\
     get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import  sort_obj
-from dashboard.bokeh.plots.table import Table
+from dashboard.bokeh.plots.descriptors.table import Table
 
 import numpy as np
 import logging

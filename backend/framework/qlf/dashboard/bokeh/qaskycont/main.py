@@ -7,7 +7,7 @@ from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import write_info, get_palette,\
     get_merged_qa_scalar_metrics
-from dashboard.bokeh.plots.table import Table
+from dashboard.bokeh.plots.descriptors.table import Table
 
 from dashboard.bokeh.helper import write_description
 

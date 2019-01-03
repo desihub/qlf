@@ -4,7 +4,7 @@ from bokeh.layouts import column, widgetbox
 from bokeh.models.widgets import Div
 
 from bokeh.models import HoverTool, ColumnDataSource
-from dashboard.bokeh.plots.table import Table
+from dashboard.bokeh.plots.descriptors.table import Table
 
 import numpy as np
 

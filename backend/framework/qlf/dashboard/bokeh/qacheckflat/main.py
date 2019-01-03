@@ -5,7 +5,7 @@ from bokeh.models.widgets import Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.plots.table import Table
+from dashboard.bokeh.plots.descriptors.table import Table
 
 import numpy as np
 
