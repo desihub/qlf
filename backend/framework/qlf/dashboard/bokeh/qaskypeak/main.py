@@ -9,8 +9,9 @@ from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import sort_obj
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 
-from dashboard.bokeh.helper import write_description, get_palette
+from dashboard.bokeh.helper import get_palette
 
 import numpy as np
 import logging
@@ -133,7 +134,7 @@ class Skypeak:
         p.add_layout(xcolor_bar, 'right')
 
         try:
-            info_col = Div(text=write_description('skypeak'))
+            info_col = Title().write_description('skypeak')
         except Exception as err:
             info_col = Div(text="""""")
 
@@ -198,7 +199,7 @@ class Skypeak:
             plot.title.text_font_size = font_size
 
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+        layout = column(info_col, Div(),
                         metric, alert,
                         column(p, sizing_mode='scale_both'),
                         column(p_hist, sizing_mode='scale_both'),

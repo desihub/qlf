@@ -5,10 +5,10 @@ from bokeh.models import HoverTool, ColumnDataSource, Range1d, Label,\
     FixedTicker
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.helper import write_description,\
-    get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import  sort_obj
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 
 import numpy as np
 import logging
@@ -173,7 +173,7 @@ class Countbins:
         ngood = countbins['NGOODFIB']
         fracgood = ngood/500. - 1.
 
-        info_col = Div(text=write_description('countbins'))
+        info_col = Title().write_description('countbins')
 
         font_size = "1.2vw"
 
@@ -193,7 +193,7 @@ class Countbins:
         metric = Table().mtable('countbins', mergedqa)
         alert = Table().alert_table(nrg, wrg)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+        layout = column(info_col, Div(),
                         metric, alert,
                         column(p, sizing_mode='scale_both'),
                         column(p2, sizing_mode='scale_both'),

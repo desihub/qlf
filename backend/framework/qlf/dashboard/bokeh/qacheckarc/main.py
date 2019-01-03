@@ -1,16 +1,11 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column
 
 from bokeh.models.widgets import Div
-from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
-from bokeh.models import LinearColorMapper, ColorBar
 
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 
-import numpy as np
-
-from dashboard.bokeh.helper import write_description, write_info,\
-    get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 
 import logging
@@ -36,13 +31,13 @@ class Arc:
         nrg = check_arc['PARAMS']['CHECKARC_NORMAL_RANGE']
         wrg = check_arc['PARAMS']['CHECKARC_WARN_RANGE']
 
-        info_col = Div(text=write_description('arc'))
+        info_col = Title().write_description('arc')
 
         # Prepare tables
         metric = Table().mtable('arc', mergedqa)
         alert = Table().alert_table(nrg, wrg)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+        layout = column(info_col, Div(),
                         metric, alert,
                         css_classes=["display-grid"])
 

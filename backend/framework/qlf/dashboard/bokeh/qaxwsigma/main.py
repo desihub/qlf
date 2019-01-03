@@ -5,7 +5,7 @@ from bokeh.models import Span, Label
 
 from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
-from dashboard.bokeh.helper import write_description, get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist, sort_obj
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Div
@@ -17,6 +17,7 @@ from dashboard.bokeh.helper import get_palette
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.patch.main import Patch
+from dashboard.bokeh.plots.descriptors.title import Title
 
 
 class Xwsigma:
@@ -466,9 +467,7 @@ class Xwsigma:
         )
 
         # -------------------------------------------------------------------------
-        info_col = Div(text=write_description('xwsigma'))
-        # pxh = column(px, xhist, p_hist_x, xamp)
-        # pwh = column(pw, whist, p_hist_w, wamp)
+        info_col = Title().write_description('xwsigma')
 
         info = Table().mtable('xwsigma', mergedqa)
 
@@ -480,7 +479,7 @@ class Xwsigma:
             pwh = column(pw, whist, p_hist_w, wamp)
 
             layout = column(
-                widgetbox(info_col, css_classes=["header"]),
+                info_col,
                 widgetbox(Div(), css_classes=["tableranges"]),
                 info,
                 widgetbox(Div(), css_classes=["tableranges"]),
@@ -499,7 +498,7 @@ class Xwsigma:
                 css_classes=["display-grid"], sizing_mode='scale_width')
         else:
              layout = column(
-                widgetbox(info_col, css_classes=["header"]),
+                info_col,
                 widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(tb_x),
                 widgetbox(Div(), css_classes=["tableranges"]),

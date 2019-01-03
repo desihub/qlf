@@ -6,9 +6,9 @@ from bokeh.layouts import column, widgetbox, layout
 from bokeh.models import LinearColorMapper, ColorBar
 from bokeh.models.widgets import PreText, Div
 from bokeh.models import Spacer, Range1d
-from dashboard.bokeh.helper import write_description, write_info
 from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 from dashboard.bokeh.qlf_plot import sort_obj
 from dashboard.bokeh.helper import init_xy_plot, get_merged_qa_scalar_metrics
 from bokeh.resources import CDN
@@ -299,13 +299,7 @@ class SNR:
         star_plot.title.text = "STAR"
 
         # infos
-        key_name = 'snr'
-        info, nlines = write_info(key_name, check_spectra['PARAMS'])
-        txt = PreText(text=info, height=nlines*20)
-        info_col = Div(text=write_description('snr'))  # *star_plot.plot_width)
-
-
-
+        info_col = Title().write_description('snr')
 
         # -----------------
         #       WEDGES
@@ -531,7 +525,7 @@ class SNR:
             plot.title.text_font_size = font_size
 
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+        layout = column(info_col, Div(),
                         metric, alert,
                         column(elg_plot, sizing_mode='scale_both'),
                         column(lrg_plot, sizing_mode='scale_both'),

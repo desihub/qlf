@@ -6,11 +6,11 @@ from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.models import LinearColorMapper, ColorBar
 
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 
 import numpy as np
 
-from dashboard.bokeh.helper import write_description, write_info,\
-    get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
 
 import logging
@@ -37,26 +37,14 @@ class Flat:
         wrg = check_flat['PARAMS']['CHECKFLAT_WARN_RANGE']
         refexp = check_flat['PARAMS']['CHECKFLAT_REF']
 
-
-        #info, nlines = write_info('getrms', check_ccds['PARAMS'])
-        info = """<div> 
-        <body><p  style="text-align:left; color:#262626; font-size:20px;">
-                    <b>Check Fiber Flat</b> <br> Examine fiber flat and test for
-                     stability and consistency 
-        </body></div>"""
-        nlines = 2
-        txt = Div(text=info, width=450)
-        info_col = Div(text=write_description('fiberflat'))
-
+        info_col = Title().write_description('fiberflat')
 
         # Prepare tables
         metric = Table().mtable('fiberflat', mergedqa)
         alert = Table().alert_table(nrg, wrg)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+        layout = column(info_col, Div(),
                         metric, alert,
-                        # column(p, sizing_mode='scale_both'),
-                        # column(p2, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "FIBERFLAT")

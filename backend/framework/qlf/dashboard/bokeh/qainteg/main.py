@@ -5,10 +5,11 @@ from bokeh.models.widgets import Div
 
 from bokeh.models import HoverTool, ColumnDataSource
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 
 import numpy as np
 
-from dashboard.bokeh.helper import write_description, get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import plot_hist
 from dashboard.models import Job, Process, Fibermap
 
@@ -71,7 +72,7 @@ class Integ:
         fiber_hist.xaxis.axis_label = "Fibers"
         fiber_hist.yaxis.axis_label = "Integral (counts)"
 
-        info_col = Div(text=write_description('integ'))
+        info_col = Title().write_description('integ')
 
         # Reading obj_type
         process_id = self.selected_process_id
@@ -100,7 +101,7 @@ class Integ:
             plot.legend.label_text_font_size = font_size
             plot.title.text_font_size = font_size
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+        layout = column(info_col, Div(),
                         metric,
                         alert,
                         column(fiber_hist, sizing_mode='scale_both', css_classes=["main-one"]),

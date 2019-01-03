@@ -5,12 +5,9 @@ from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.models import LinearColorMapper, ColorBar, Range1d
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import PreText, Div
-from dashboard.bokeh.helper import write_info, get_palette,\
-    get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_palette, get_merged_qa_scalar_metrics
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
-
-from dashboard.bokeh.helper import write_description
 
 import numpy as np
 import logging
@@ -141,10 +138,7 @@ class Skycont:
         p2.add_layout(color_bar, 'right')
 
         # infos
-        info, nlines = write_info('skycont', check_spectra['PARAMS'])
-        txt = PreText(text=info, height=nlines*20)
         info_col = Title().write_description('skycont')
-
 
        # Prepare tables
         metric = Table().mtable('skycont', mergedqa)
