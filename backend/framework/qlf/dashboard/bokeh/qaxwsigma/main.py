@@ -14,9 +14,9 @@ from bokeh.embed import file_html
 import numpy as np
 import logging
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.patch.main import Patch
 
 
 class Xwsigma:
@@ -448,44 +448,22 @@ class Xwsigma:
 
 
         # amp 1
-        dz = xw_amp[0]  
-        name = 'XSIGMA AMP'
-        cmap = get_palette('RdBu_r')
-        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
-                 nan_color='darkgray')
-
-        ztext, cbarformat = set_amp(dz)
-        xamp = plot_amp(dz, [xw_ref[0]]*4, mapper, name=name)
-
-        formatter = PrintfTickFormatter(format=cbarformat)
-        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
-                              title_text_baseline="alphabetic")
-        xamp.height = 400
-
-        xamp.xaxis.axis_label = "X standard deviation per Amp (number of pixels)"
-
-        xamp.add_layout(color_bar, 'right')
+        xamp = Patch().plot_amp(
+            dz=xw_amp[0],
+            refexp=[xw_ref[0]]*4,
+            name="XSIGMA AMP",
+            description="X standard deviation per Amp (number of pixels)",
+            wrg=wrg
+        )
 
         # amp 2
-        dz = xw_amp[1]  
-        name = 'WSIGMA AMP'
-        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
-            nan_color='gray')
-
-        ztext, cbarformat = set_amp(dz)
-        wamp = plot_amp(dz, [xw_ref[1]]*4, mapper, name=name)
-
-        formatter = PrintfTickFormatter(format=cbarformat)
-        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="(Val-Ref)", title_standoff=15, title_text_baseline="alphabetic")
-        wamp.height = 400
-
-        wamp.xaxis.axis_label = "W standard deviation per Amp (number of pixels)"
-
-        wamp.add_layout(color_bar, 'right')
+        wamp = Patch().plot_amp(
+            dz=xw_amp[1],
+            refexp=[xw_ref[1]]*4,
+            name="WSIGMA AMP",
+            description="W standard deviation per Amp (number of pixels)",
+            wrg=wrg
+        )
 
         # -------------------------------------------------------------------------
         info_col = Div(text=write_description('xwsigma'))

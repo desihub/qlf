@@ -12,7 +12,6 @@ import numpy as np
 from dashboard.bokeh.helper import write_description, write_info,\
     get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import set_amp, plot_amp
 
 import logging
 from bokeh.resources import CDN

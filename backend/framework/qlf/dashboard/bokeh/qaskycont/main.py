@@ -8,6 +8,7 @@ from bokeh.models.widgets import PreText, Div
 from dashboard.bokeh.helper import write_info, get_palette,\
     get_merged_qa_scalar_metrics
 from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 
 from dashboard.bokeh.helper import write_description
 
@@ -142,7 +143,7 @@ class Skycont:
         # infos
         info, nlines = write_info('skycont', check_spectra['PARAMS'])
         txt = PreText(text=info, height=nlines*20)
-        info_col = Div(text=write_description('skycont'))
+        info_col = Title().write_description('skycont')
 
 
        # Prepare tables
@@ -158,7 +159,7 @@ class Skycont:
             plot.legend.label_text_font_size = font_size
             plot.title.text_font_size = font_size
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
+        layout = column(info_col, Div(),
                         metric, alert,
                         column(p2, sizing_mode='scale_both',
                                css_classes=["main-one"]),

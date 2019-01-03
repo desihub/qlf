@@ -88,8 +88,6 @@ class Integ:
 
 
         # Prepare tables
-        # objtype=['ELG','STAR'] )
-
         metric = Table().mtable('integ', mergedqa ,objtype=objlist)
         alert = Table().alert_table(nrg, wrg)
 
