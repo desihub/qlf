@@ -249,8 +249,8 @@ class SNR:
 
         # elg_plot = Plot2d(
         #     yrange=[],
-        #     x_title="DECAM_{}".format(str(self.selected_arm).upper()),
-        #     y_title="MEDIAN SNR^2",
+        #     x_label="DECAM_{}".format(str(self.selected_arm).upper()),
+        #     y_label="MEDIAN SNR^2",
         #     tooltip=html_tooltip,
         #     title="ELG",
         #     width=600,

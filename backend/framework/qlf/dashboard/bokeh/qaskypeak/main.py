@@ -1,24 +1,20 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import row, column, widgetbox
+from bokeh.layouts import row, column
 
 from bokeh.models import HoverTool, ColumnDataSource, Span
-from bokeh.models import LinearColorMapper, ColorBar
+from bokeh.models import LinearColorMapper
 from bokeh.models import TapTool, OpenURL, Range1d
-from bokeh.models.widgets import Select
-from bokeh.models.widgets import PreText, Div
+from bokeh.models.widgets import Div
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import sort_obj
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
+from dashboard.bokeh.plots.plot2d.main import Plot2d
 
 from dashboard.bokeh.helper import get_palette
 
 import numpy as np
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-
-logger = logging.getLogger(__name__)
 
 
 class Skypeak:
@@ -102,41 +98,37 @@ class Skypeak:
         left, right = xmin - xfac, xmax+xfac
         bottom, top = ymin-yfac, ymax+yfac
 
-        p = Figure(title='PEAKCOUNT', #sum of counts in peak regions 
-                    x_axis_label='RA', 
-                    y_axis_label='DEC',
-                    plot_width=500, 
-                    plot_height=400,
-                    x_range=xrange_wedge,
-                    y_range=yrange_wedge, 
-                    tools=[peak_hover, "box_zoom, wheel_zoom,pan,reset,crosshair, tap"], active_drag="box_zoom",)
+        wedge_plot = Plot2d(
+            x_range=xrange_wedge,
+            y_range=yrange_wedge,
+            x_label="RA",
+            y_label="DEC",
+            tooltip=peak_tooltip,
+            title="PEAKCOUNT",
+            width=500,
+            height=380,
+        ).circle(
+            source,
+            y="y1",
+            x='x1',
+            radius=radius,
+            fill_color={'field': 'peakcount_fib', 'transform': mapper},
+            line_color='black',
+            line_width=0.3,
+        ).circle(
+            source,
+            y="y1",
+            x='x1',
+            radius=radius_hover,
+            fill_color=None,
+            line_color=None,
+            line_width=3,
+            hover_fill_color={'field': 'peakcount_fib', 'transform': mapper},
+            hover_line_color='red'
+        ).colorbar(mapper).plot
 
-        # Color Map
-        p.circle('x1', 'y1', source=source, name="data", radius=radius,
-                 fill_color={'field': 'peakcount_fib', 'transform': mapper},
-                 line_color='black', line_width=0.1,
-                 hover_line_color='red')
 
-        # marking the Hover point
-        p.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-            'field': 'peakcount_fib', 'transform': mapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
-
-        #taptool = p.select(type=TapTool)
-        #taptool.callback = OpenURL(url=url)
-
-        xcolor_bar = ColorBar(color_mapper=mapper, label_standoff=13,
-                              title="counts",
-                              major_label_text_font_style="bold", padding=26,
-                              major_label_text_align='right',
-                              major_label_text_font_size="10pt",
-                              location=(0, 0))
-
-        p.add_layout(xcolor_bar, 'right')
-
-        try:
-            info_col = Title().write_description('skypeak')
-        except Exception as err:
-            info_col = Div(text="""""")
+        info_col = Title().write_description('skypeak')
 
         # ================================
         # histogram
@@ -164,23 +156,22 @@ class Skypeak:
             'right': edges[1:]
         })
 
-        hover = HoverTool(tooltips=hist_tooltip)
 
-        p_hist = Figure(title='', tools=[hover, "box_zoom,pan,wheel_zoom,reset"], active_drag="box_zoom",
-                        y_axis_label='Frequency + 1',
-                        x_axis_label='PEAKCOUNT', background_fill_color="white",
-                        plot_width=550, plot_height=300, x_axis_type="auto",    y_axis_type="log", y_range=(1, 11**(int(np.log10(max(hist)))+1)))
-
-        p_hist.quad(top='histplusone', bottom='bottomplusone', left='left', right='right',
-                    source=source_hist,
-                    fill_color="dodgerblue", line_color="black", alpha=0.8,
-                    hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
-
-        # logger.info(par['PEAKCOUNT_WARN_RANGE'])
-        spans = Span(location=par['PEAKCOUNT_WARN_RANGE'][0], dimension='height', line_color='yellow',
-                     line_dash='dashed', line_width=3)
-
-        p_hist.add_layout(spans)
+        p_hist = Plot2d(
+            y_range=(1, 11**(int(np.log10(max(hist)))+1)),
+            x_label='PEAKCOUNT',
+            y_label='Frequency + 1',
+            tooltip=hist_tooltip,
+            title="",
+            width=550,
+            height=300,
+            yscale="log"
+        ).quad(
+            source_hist,
+            top='histplusone',
+            bottom='bottomplusone',
+            line_width=1,
+        )
 
         nrg = par['PEAKCOUNT_NORMAL_RANGE']
         wrg = par['PEAKCOUNT_WARN_RANGE']
@@ -189,19 +180,9 @@ class Skypeak:
         metric = Table().mtable('skypeak', mergedqa)
         alert = Table().alert_table(nrg, wrg)
 
-        font_size = "1.2vw"
-        for plot in [p_hist, p]:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
-
-
         layout = column(info_col, Div(),
                         metric, alert,
-                        column(p, sizing_mode='scale_both'),
+                        column(wedge_plot, sizing_mode='scale_both'),
                         column(p_hist, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 

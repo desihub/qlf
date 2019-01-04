@@ -268,8 +268,8 @@ class Xwsigma:
 
         xhist = Plot2d(
             yrange,
-            x_title="Fiber number",
-            y_title="X std dev (number of pixels)",
+            x_label="Fiber number",
+            y_label="X std dev (number of pixels)",
             tooltip=xsigma_tooltip,
             title="",
             width=600,
@@ -286,8 +286,8 @@ class Xwsigma:
 
         whist = Plot2d(
             yrange,
-            x_title="Fiber number",
-            y_title="W std dev (number of pixels)",
+            x_label="Fiber number",
+            y_label="W std dev (number of pixels)",
             tooltip=xsigma_tooltip,
             title="",
             width=600,

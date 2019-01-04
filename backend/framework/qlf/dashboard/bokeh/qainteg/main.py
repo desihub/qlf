@@ -60,8 +60,8 @@ class Integ:
 
         fiber_hist = Plot2d(
             yrange,
-            x_title="Fibers",
-            y_title="Integral (counts)",
+            x_label="Fibers",
+            y_label="Integral (counts)",
             tooltip=tooltip,
             title="",
             width=600,
