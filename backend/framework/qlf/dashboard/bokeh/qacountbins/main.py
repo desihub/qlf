@@ -84,7 +84,8 @@ class Countbins:
             title="WSIGMA",
             width=550,
             height=350,
-            yscale="auto"
+            yscale="auto",
+            hover_mode="vline",
         ).segment(hist_source).plot
 
         # ----------------

@@ -165,7 +165,8 @@ class Skypeak:
             title="",
             width=550,
             height=300,
-            yscale="log"
+            yscale="log",
+            hover_mode="vline",
         ).quad(
             source_hist,
             top='histplusone',

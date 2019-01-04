@@ -66,7 +66,8 @@ class Integ:
             title="",
             width=600,
             height=400,
-            yscale="auto"
+            yscale="auto",
+            hover_mode="vline",
         ).vbar(
             source,
             y="integ",

@@ -5,8 +5,8 @@ from bokeh.models.glyphs import Segment
 from bokeh.models import FixedTicker
 
 class Plot2d:
-    def __init__(self, x_range=None, y_range=None, x_label="", y_label="", tooltip=None, title="", width=600, height=400, yscale="auto", font_size="1vw"):
-        hover = HoverTool(tooltips=tooltip)
+    def __init__(self, x_range=None, y_range=None, x_label="", y_label="", tooltip=None, title="", width=600, height=400, yscale="auto", font_size="1vw", hover_mode="mouse"):
+        hover = HoverTool(tooltips=tooltip, mode=hover_mode)
 
         if y_range == None:
             self.plot = Figure(

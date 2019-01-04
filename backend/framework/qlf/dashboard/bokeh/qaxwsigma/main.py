@@ -255,7 +255,8 @@ class Xwsigma:
             title="",
             width=600,
             height=300,
-            yscale="auto"
+            yscale="auto",
+            hover_mode="vline",
         ).quad(
             source,
             top='xsigma',
@@ -273,7 +274,8 @@ class Xwsigma:
             title="",
             width=600,
             height=300,
-            yscale="auto"
+            yscale="auto",
+            hover_mode="vline",
         ).quad(
             source,
             top='wsigma',
@@ -338,7 +340,8 @@ class Xwsigma:
             yscale="auto",
             y_range=yrange,
             x_range=(hist_rg[0]+xw_ref[0],
-                     hist_rg[1]+xw_ref[0])
+                     hist_rg[1]+xw_ref[0]),
+            hover_mode="vline",
         ).quad(
             source_hist,
             top=histval,
@@ -386,6 +389,7 @@ class Xwsigma:
             y_range=yrange,
             x_range=(hist_rg[0]+xw_ref[1],
                      hist_rg[1] + xw_ref[1]),
+            hover_mode="vline",
         ).quad(
             source_hist,
             top=histval,
