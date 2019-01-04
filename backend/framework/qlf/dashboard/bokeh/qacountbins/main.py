@@ -1,14 +1,13 @@
-from bokeh.plotting import Figure
 from bokeh.layouts import column, widgetbox
 
-from bokeh.models import HoverTool, ColumnDataSource, Range1d, Label,\
-    FixedTicker
+from bokeh.models import HoverTool, ColumnDataSource, Range1d, Label
 from bokeh.models import LinearColorMapper, ColorBar
 
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import  sort_obj
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
+from dashboard.bokeh.plots.plot2d.main import Plot2d
 
 import numpy as np
 from bokeh.resources import CDN
@@ -62,7 +61,6 @@ class Countbins:
         fibers = list(countbins['GOOD_FIBERS'])
         colors = ['#319b5c' if i == 1 else '#282828' for i in fibers]
         x = np.array(range(len(fibers)))
-        hist_hover = HoverTool(tooltips=hist_tooltip, mode='vline')
         hist_source = ColumnDataSource(
             data={'goodfiber': y,
                   'fiberid': x,
@@ -78,23 +76,16 @@ class Countbins:
                   'color': colors
                   })
 
-        p = Figure(tools=[hist_hover, "box_zoom, pan,wheel_zoom, lasso_select, reset, crosshair, tap"],
-                    y_range=Range1d(-.1, 1.1),
-                    x_axis_label='Fiber', y_axis_label=' Fiber Status',
-                    active_drag="box_zoom",
-                    plot_width=550,
-                    plot_height=300,
-                   )
-
-        from bokeh.models.glyphs import Segment
-
-        seg = Segment(x0='segx0', x1='segx1', y0='segy0',
-                      y1='segy1', line_width=2, line_color='#1e90ff')
-
-        p.add_glyph(hist_source, seg)
-
-        p.yaxis.ticker = FixedTicker(ticks=[0, 1])
-        p.yaxis.major_label_overrides = {'0': 'bad', '1': 'good'}
+        p = Plot2d(
+            y_range=Range1d(-.1, 1.1),
+            x_label="Fiber",
+            y_label="Fiber Status",
+            tooltip=hist_tooltip,
+            title="WSIGMA",
+            width=550,
+            height=350,
+            yscale="auto"
+        ).segment(hist_source).plot
 
         # ----------------
         # Wedge
@@ -125,39 +116,42 @@ class Countbins:
                 </div>
             """
 
-            hover = HoverTool(tooltips=count_tooltip)
-
             radius = 0.0165  
             radius_hover = 0.02  
-            
             # centralize wedges in plots:
             ra_center=0.5*(max(ra)+min(ra))
             dec_center=0.5*(max(dec)+min(dec))
             xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
             yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
 
-            p2 = Figure(title='GOOD FIBERS',
-            plot_width=450,
-            plot_height=400,
-            active_drag="box_zoom",
-            x_axis_label='RA',
-            y_axis_label='DEC',
-            x_range=xrange_wedge,
-            y_range=yrange_wedge,
-            tools=[hover,
-            "box_zoom,pan,reset,lasso_select,crosshair,tap"],
-            toolbar_location="right")
-
-            # Color Map
-            p2.circle('x1','y1', source=hist_source, name="data", radius=radius,
-                      fill_color={'field': 'color'},
-                      line_color='black', line_width=0.3,
-                      hover_line_color='red')
-
-            # marking the Hover point
-            p2.circle('x1', 'y1', source=hist_source, name="data", radius=radius_hover,
-                      hover_fill_color={'field': 'color'}, fill_color=None,
-                      line_color=None, line_width=3, hover_line_color='red')
+            p2 = Plot2d(
+                x_range=xrange_wedge,
+                y_range=yrange_wedge,
+                x_label="RA",
+                y_label="DEC",
+                tooltip=count_tooltip,
+                title="WSIGMA",
+                width=400,
+                height=350,
+                yscale="auto"
+            ).circle(
+                hist_source,
+                y="y1",
+                x='x1',
+                radius=radius,
+                fill_color={'field': 'color'},
+                line_color='black',
+                line_width=0.3,
+            ).circle(
+                hist_source,
+                y="y1",
+                x='x1',
+                radius=radius_hover,
+                fill_color={'field': 'color'},
+                line_color=None,
+                line_width=3,
+                hover_line_color='red'
+            ).plot
 
         else:
             p2 = Div()
@@ -166,20 +160,6 @@ class Countbins:
         fracgood = ngood/500. - 1.
 
         info_col = Title().write_description('countbins')
-
-        font_size = "1.2vw"
-
-        if flavor == "science":
-            plist=[p, p2]
-        else:
-            plist=[p]
-        for plot in plist:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
 
        # Prepare tables
         metric = Table().mtable('countbins', mergedqa)

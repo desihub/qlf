@@ -1,7 +1,8 @@
 from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.models import ColorBar
-
+from bokeh.models.glyphs import Segment
+from bokeh.models import FixedTicker
 
 class Plot2d:
     def __init__(self, x_range=None, y_range=None, x_label="", y_label="", tooltip=None, title="", width=600, height=400, yscale="auto", font_size="1vw"):
@@ -129,4 +130,15 @@ class Plot2d:
                                 major_label_text_font_size="10pt",
                                 location=(0, 0))
         self.plot.add_layout(color_bar, 'right')
+        return self
+
+    def segment(self, source, x0='segx0', x1='segx1', y0='segy0',
+                y1='segy1', line_width=2, line_color='#1e90ff'):
+        seg = Segment(x0=x0, x1=x1, y0=y0,
+                      y1=y1, line_width=line_width, line_color=line_color)
+
+        self.plot.add_glyph(source, seg)
+
+        self.plot.yaxis.ticker = FixedTicker(ticks=[0, 1])
+        self.plot.yaxis.major_label_overrides = {'0': 'bad', '1': 'good'}
         return self

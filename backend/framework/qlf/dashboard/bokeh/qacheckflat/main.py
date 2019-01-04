@@ -1,5 +1,4 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column
 
 from bokeh.models.widgets import Div
 from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
@@ -7,8 +6,6 @@ from bokeh.models import LinearColorMapper, ColorBar
 
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
-
-import numpy as np
 
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.helper import get_palette
