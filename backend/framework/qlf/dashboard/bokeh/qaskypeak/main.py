@@ -107,26 +107,13 @@ class Skypeak:
             title="PEAKCOUNT",
             width=500,
             height=380,
-        ).circle(
+        ).wedge(
             source,
-            y="y1",
             x='x1',
-            radius=radius,
-            fill_color={'field': 'peakcount_fib', 'transform': mapper},
-            line_color='black',
-            line_width=0.3,
-        ).circle(
-            source,
-            y="y1",
-            x='x1',
-            radius=radius_hover,
-            fill_color=None,
-            line_color=None,
-            line_width=3,
-            hover_fill_color={'field': 'peakcount_fib', 'transform': mapper},
-            hover_line_color='red'
-        ).colorbar(mapper).plot
-
+            y='y1',
+            field='peakcount_fib',
+            mapper=mapper,
+        ).plot
 
         info_col = Title().write_description('skypeak')
 

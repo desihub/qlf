@@ -423,34 +423,17 @@ class SNR:
             width=500,
             height=380,
             yscale="auto"
-        ).circle(
+        ).wedge(
             source,
-            y="y1",
             x='x1',
-            radius=radius,
-            fill_color=fill_color,
-            line_color='black',
-            line_width=0.4,
-        ).circle(
-            source,
-            y="y1",
-            x='x1',
-            radius=radius_hover,
-            fill_color=None,
-            line_color=None,
-            line_width=3,
-            hover_fill_color=fill_color,
-            hover_line_color='red'
-        ).circle(
+            y='y1',
+            field='resid_snr',
+            mapper=mapper,
+        ).wedge(
             source_not,
-            y="y1",
             x='x1',
-            radius=radius,
-            fill_color='lightgray',
-            line_color='black',
-            hover_fill_color='lightgrey',
-            line_width=0.3,
-        ).colorbar(mapper).plot
+            y='y1',
+        ).plot
 
         taptool = wedge_plot.select(type=TapTool)
         taptool.callback = OpenURL(url=url)

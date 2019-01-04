@@ -184,24 +184,13 @@ class Xwsigma:
                 width=500,
                 height=380,
                 yscale="auto"
-            ).circle(
+            ).wedge(
                 source,
-                y="y1",
                 x='x1',
-                radius=radius,
-                fill_color={'field': 'xsigma', 'transform': xmapper},
-                line_color='black',
-                line_width=0.3,
-            ).circle(
-                source,
-                y="y1",
-                x='x1',
-                radius=radius_hover,
-                fill_color={'field': 'xsigma', 'transform': xmapper},
-                line_color=None,
-                line_width=3,
-                hover_line_color='red'
-            ).colorbar(xmapper, title="xsigma").plot
+                y='y1',
+                field='xsigma',
+                mapper=xmapper,
+            ).plot
 
             taptool = wedge_plot_x.select(type=TapTool)
             taptool.callback = OpenURL(url=url)
@@ -218,24 +207,13 @@ class Xwsigma:
                 width=500,
                 height=380,
                 yscale="auto"
-            ).circle(
+            ).wedge(
                 source,
-                y="y1",
                 x='x1',
-                radius=radius,
-                fill_color={'field': 'wsigma', 'transform': wmapper},
-                line_color='black',
-                line_width=0.3,
-            ).circle(
-                source,
-                y="y1",
-                x='x1',
-                radius=radius_hover,
-                fill_color={'field': 'wsigma', 'transform': wmapper},
-                line_color=None,
-                line_width=3,
-                hover_line_color='red'
-            ).colorbar(wmapper, title="wsigma").plot
+                y='y1',
+                field='wsigma',
+                mapper=wmapper,
+            ).plot
 
             taptool = wedge_plot_w.select(type=TapTool)
             taptool.callback = OpenURL(url=url)

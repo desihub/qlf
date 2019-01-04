@@ -105,43 +105,17 @@ class Skycont:
             width=500,
             height=380,
             yscale="auto"
-        ).circle(
+        ).wedge(
             source,
-            y="dec",
             x='ra',
-            radius=radius,
-            fill_color={'field': 'skycont', 'transform': mapper},
-            line_color='black',
-            line_width=0.3,
-        ).circle(
-            source,
-            y="dec",
-            x='ra',
-            radius=radius_hover,
-            fill_color=None,
-            line_color=None,
-            line_width=3,
-            hover_fill_color={'field': 'skycont', 'transform': mapper},
-            hover_line_color='red'
-        ).circle(
+            y='dec',
+            field='skycont',
+            mapper=mapper,
+        ).wedge(
             source_not,
-            y="dec",
             x='ra',
-            radius=radius,
-            fill_color='lightgray',
-            line_color='black',
-            hover_fill_color='lightgrey',
-            line_width=0.3,
-        ).circle(
-            source_not,
-            y="dec",
-            x='ra',
-            radius=radius_hover,
-            fill_color=None,
-            line_color=None,
-            line_width=3,
-            hover_line_color='red'
-        ).colorbar(mapper).plot
+            y='dec',
+        ).plot
 
         taptool = wedge_plot.select(type=TapTool)
         taptool.callback = OpenURL(url=url)

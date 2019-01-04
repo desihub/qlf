@@ -135,25 +135,12 @@ class Countbins:
                 width=400,
                 height=350,
                 yscale="auto"
-            ).circle(
+            ).wedge(
                 hist_source,
-                y="y1",
                 x='x1',
-                radius=radius,
-                fill_color={'field': 'color'},
-                line_color='black',
-                line_width=0.3,
-            ).circle(
-                hist_source,
-                y="y1",
-                x='x1',
-                radius=radius_hover,
-                fill_color={'field': 'color'},
-                line_color=None,
-                line_width=3,
-                hover_line_color='red'
+                y='y1',
+                field='color',
             ).plot
-
         else:
             p2 = Div()
 
