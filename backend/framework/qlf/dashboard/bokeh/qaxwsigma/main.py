@@ -1,9 +1,8 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox, gridplot
+from bokeh.layouts import column, gridplot, widgetbox
 
 from bokeh.models import Span, Label
 
-from bokeh.models import ColumnDataSource, HoverTool, Range1d, OpenURL
+from bokeh.models import ColumnDataSource, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 from dashboard.bokeh.qlf_plot import sort_obj
@@ -153,14 +152,6 @@ class Xwsigma:
         obj_type = sort_obj(gen_info)
         # ---------------------------------
 
-        xsigma_hover = HoverTool(tooltips=xsigma_tooltip)
-        wsigma_hover = HoverTool(tooltips=wsigma_tooltip)
-        xsigma_std = HoverTool(tooltips=xsigma_tooltip, mode='vline')
-        wsigma_std = HoverTool(tooltips=wsigma_tooltip, mode='vline')
-
-
-
-
         if flavor=="science":
             
 
@@ -191,73 +182,71 @@ class Xwsigma:
             xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
             yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
 
-            px = Figure(title='XSIGMA',
-                x_axis_label='RA',
-                y_axis_label='DEC',
-                plot_height=350,
+            wedge_plot_x = Plot2d(
                 x_range=xrange_wedge,
                 y_range=yrange_wedge,
-                tools=[xsigma_hover,
-                "box_zoom,pan,reset,crosshair"],
-                active_drag="box_zoom")
+                x_label="RA",
+                y_label="DEC",
+                tooltip=xsigma_tooltip,
+                title="XSIGMA",
+                width=500,
+                height=380,
+                yscale="auto"
+            ).circle(
+                source,
+                y="y1",
+                x='x1',
+                radius=radius,
+                fill_color={'field': 'xsigma', 'transform': xmapper},
+                line_color='black',
+                line_width=0.3,
+            ).circle(
+                source,
+                y="y1",
+                x='x1',
+                radius=radius_hover,
+                fill_color={'field': 'xsigma', 'transform': xmapper},
+                line_color=None,
+                line_width=3,
+                hover_line_color='red'
+            ).colorbar(xmapper, title="xsigma").plot
 
-            # Color Map
-            px.circle('x1','y1', source=source, name="data", radius=radius,
-                      fill_color={'field': 'xsigma', 'transform': xmapper},
-                      line_color='black', line_width=0.1,
-                      hover_line_color='red')
-
-            # marking the Hover point
-            px.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-                      'field': 'xsigma', 'transform': xmapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
-
-            taptool = px.select(type=TapTool)
+            taptool = wedge_plot_x.select(type=TapTool)
             taptool.callback = OpenURL(url=url)
-
-            xcolor_bar = ColorBar(color_mapper=xmapper, label_standoff=-13,
-                                  major_label_text_font_style="bold", padding=26,
-                                  major_label_text_align='right',
-                                  major_label_text_font_size="10pt",
-                                  location=(0, 0))
-
-            px.add_layout(xcolor_bar, 'left')
-
 
             # ============
             # WSIGMA WEDGE
-            pw = Figure(title='WSIGMA',
-                    x_axis_label='RA',
-                    y_axis_label='DEC',
-                    plot_height=350,
-                    x_range=xrange_wedge,
-                    y_range=yrange_wedge,
-                    tools=[wsigma_hover,
-                    "box_zoom,pan,reset,crosshair"],
-                    active_drag="box_zoom")
+            wedge_plot_w = Plot2d(
+                x_range=xrange_wedge,
+                y_range=yrange_wedge,
+                x_label="RA",
+                y_label="DEC",
+                tooltip=wsigma_tooltip,
+                title="WSIGMA",
+                width=500,
+                height=380,
+                yscale="auto"
+            ).circle(
+                source,
+                y="y1",
+                x='x1',
+                radius=radius,
+                fill_color={'field': 'wsigma', 'transform': wmapper},
+                line_color='black',
+                line_width=0.3,
+            ).circle(
+                source,
+                y="y1",
+                x='x1',
+                radius=radius_hover,
+                fill_color={'field': 'wsigma', 'transform': wmapper},
+                line_color=None,
+                line_width=3,
+                hover_line_color='red'
+            ).colorbar(wmapper, title="wsigma").plot
 
-            # Color Map
-            pw.circle('x1','y1', source=source, name="data", radius=radius,
-                      fill_color={'field': 'wsigma', 'transform': wmapper},
-                      line_color='black', line_width=0.1,
-                      hover_line_color='red')
-
-            # marking the Hover point
-            pw.circle('x1', 'y1', source=source, name="data", radius=radius_hover, hover_fill_color={
-                      'field': 'wsigma', 'transform': wmapper}, fill_color=None, line_color=None, line_width=3, hover_line_color='red')
-
-            taptool = pw.select(type=TapTool)
+            taptool = wedge_plot_w.select(type=TapTool)
             taptool.callback = OpenURL(url=url)
-
-            wcolor_bar = ColorBar(color_mapper=wmapper, label_standoff=-13,
-                                  major_label_text_font_style="bold", padding=26,
-                                  major_label_text_align='right',
-                                  major_label_text_font_size="10pt",
-                                  location=(0, 0))
-
-            pw.add_layout(wcolor_bar, 'left')
-
-
-
 
         # ================================
         # Stat histogram
@@ -342,33 +331,28 @@ class Xwsigma:
             'right': edges[1:]
         })
 
-        hover = HoverTool(tooltips=hist_tooltip_x)
-
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
 
         yrangex = yrange
 
 
-        p_hist_x = Figure(sizing_mode='scale_width',
-                            title='', 
-                            tools=[hover, "box_zoom,wheel_zoom,pan,reset"], 
-                            active_drag="box_zoom", 
-                            plot_height=300,
-                            y_axis_label=ylabel, 
-                            x_axis_label=xhistlabel,
-                            background_fill_color="white", 
-                            x_axis_type="auto", 
-                            y_axis_type=yscale, 
-                            y_range=yrange, 
-                            x_range=(hist_rg[0]+xw_ref[0],
-                                hist_rg[1]+xw_ref[0]), )
-
-        p_hist_x.quad(top=histval, bottom=bottomval, left='left', right='right',
-                      source=source_hist,
-                      fill_color="dodgerblue", line_color='blue', alpha=0.8,
-                      hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
-
-        p_hist_x.xaxis.visible = True
+        p_hist_x = Plot2d(
+            x_label=xhistlabel,
+            y_label=ylabel,
+            tooltip=hist_tooltip_x,
+            title="",
+            width=600,
+            height=300,
+            yscale="auto",
+            y_range=yrange,
+            x_range=(hist_rg[0]+xw_ref[0],
+                     hist_rg[1]+xw_ref[0])
+        ).quad(
+            source_hist,
+            top=histval,
+            bottom=bottomval,
+            line_width=0.4,
+        )
 
         # Histogram 2
         xhistlabel = "WSIGMA"
@@ -396,29 +380,26 @@ class Xwsigma:
             'right': edges[1:]
         })
 
-        hover = HoverTool(tooltips=hist_tooltip_w)
-
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
         yrangew = yrange
 
-        p_hist_w = Figure(sizing_mode='scale_width', 
-                            title='', 
-                            tools=[hover, "box_zoom, pan,wheel_zoom,reset"], 
-                            active_drag="box_zoom",
-                            y_axis_label=ylabel, 
-                            x_axis_label=xhistlabel, 
-                            background_fill_color="white", 
-                            plot_height=300, 
-                            x_axis_type="auto",    
-                            y_axis_type=yscale, 
-                            y_range=yrange, 
-                            x_range=(hist_rg[0]+xw_ref[1], 
-                                    hist_rg[1] +xw_ref[1]), )
-
-        p_hist_w.quad(top=histval, bottom=bottomval, left='left', right='right',
-                      source=source_hist,
-                      fill_color="dodgerblue", line_color='blue', alpha=0.8,
-                      hover_fill_color='blue', hover_line_color='black', hover_alpha=0.8)
+        p_hist_w = Plot2d(
+            x_label=xhistlabel,
+            y_label=ylabel,
+            tooltip=hist_tooltip_w,
+            title="",
+            width=600,
+            height=300,
+            yscale="auto",
+            y_range=yrange,
+            x_range=(hist_rg[0]+xw_ref[1],
+                     hist_rg[1] + xw_ref[1]),
+        ).quad(
+            source_hist,
+            top=histval,
+            bottom=bottomval,
+            line_width=0.8,
+        )
 
         # --------------------------------------------------------------
         # vlines ranges:
@@ -489,9 +470,6 @@ class Xwsigma:
         alert_w = Table().alert_table(nrg, wrg)
 
         if flavor == 'science':
-            pxh = column(px, xhist, p_hist_x, xamp)
-            pwh = column(pw, whist, p_hist_w, wamp)
-
             layout = column(
                 info_col,
                 widgetbox(Div(), css_classes=["tableranges"]),
@@ -501,8 +479,8 @@ class Xwsigma:
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
                 alert_x,
                 alert_w,
-                column(px, sizing_mode='scale_both'),
-                column(pw, sizing_mode='scale_both'),
+                column(wedge_plot_x, sizing_mode='scale_both'),
+                column(wedge_plot_w, sizing_mode='scale_both'),
                 column(xhist, sizing_mode='scale_both'),
                 column(whist, sizing_mode='scale_both'),
                 column(p_hist_x, sizing_mode='scale_both'),
@@ -520,8 +498,6 @@ class Xwsigma:
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
                 widgetbox(tb_alert_x),
                 widgetbox(tb_alert_w),
-                # column(px, sizing_mode='scale_both'),
-                # column(pw, sizing_mode='scale_both'),
                 column(xhist, sizing_mode='scale_both'),
                 column(whist, sizing_mode='scale_both'),
                 column(p_hist_x, sizing_mode='scale_both'),
