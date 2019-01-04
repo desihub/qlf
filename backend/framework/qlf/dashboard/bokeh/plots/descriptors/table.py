@@ -1,6 +1,6 @@
 from bokeh.models.widgets import Div
 from bokeh.layouts import widgetbox
-
+import numpy as np
 
 class Table:
     def alert_table(self, nrg, wrg):

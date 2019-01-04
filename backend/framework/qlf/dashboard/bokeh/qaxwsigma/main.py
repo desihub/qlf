@@ -11,7 +11,6 @@ from bokeh.models.widgets import Div
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
-import logging
 from dashboard.bokeh.helper import get_palette
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.plots.descriptors.table import Table
@@ -29,13 +28,6 @@ class Xwsigma:
     def load_qa(self):
 
         cam = self.selected_arm+str(self.selected_spectrograph)
-
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.INFO)
-
-        handler = logging.FileHandler("logs/bokeh_qlf.log")
-        handler.setLevel(logging.INFO)
-        logger.addHandler(handler)
 
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
@@ -492,12 +484,12 @@ class Xwsigma:
              layout = column(
                 info_col,
                 widgetbox(Div(), css_classes=["tableranges"]),
-                widgetbox(tb_x),
+                info,
                 widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  XSIGMA </h2>')),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
-                widgetbox(tb_alert_x),
-                widgetbox(tb_alert_w),
+                alert_x,
+                alert_w,
                 column(xhist, sizing_mode='scale_both'),
                 column(whist, sizing_mode='scale_both'),
                 column(p_hist_x, sizing_mode='scale_both'),
