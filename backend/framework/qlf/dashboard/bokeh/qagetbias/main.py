@@ -8,10 +8,8 @@ from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 from dashboard.bokeh.plots.patch.main import Patch
 
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-logger = logging.getLogger(__name__)
 
 
 class Bias:

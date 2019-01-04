@@ -8,18 +8,6 @@ def get_merged_qa_scalar_metrics(process_id, cam):
 
     return QLFModels().get_output(process_id, cam)
 
-
-def init_xy_plot(hover, yscale):
-    """
-    Defaults for xy plots
-    """
-    plot = Figure(tools=[hover, "pan,wheel_zoom,box_zoom,reset,tap"],active_drag="box_zoom",
-                  y_axis_type=yscale, plot_width=601, plot_height=400)
-    # plot.add_tools(hover)
-
-    return plot
-
-
 def get_palette(name_of_mpl_palette):
     """ Transforms a matplotlib palettes into a bokeh 
     palettes

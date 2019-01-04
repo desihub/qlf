@@ -1,7 +1,6 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column
 
-from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.models import ColumnDataSource
 from bokeh.models import LinearColorMapper, Range1d
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Div
@@ -11,11 +10,8 @@ from dashboard.bokeh.plots.descriptors.title import Title
 from dashboard.bokeh.plots.plot2d.main import Plot2d
 
 import numpy as np
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-
-logger = logging.getLogger(__name__)
 
 
 class Skycont:

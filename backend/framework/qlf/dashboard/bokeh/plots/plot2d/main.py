@@ -41,15 +41,15 @@ class Plot2d:
         self.plot.title.text_font_size = font_size
         self.plot.title.text = title
 
-    def vbar(self, source, y="y"):
+    def vbar(self, source, y="y", x="x", line_width=0.01):
         self.plot.vbar(
             top=y,
-            x='x',
+            x=x,
             width=0.8,
             source=source,
             fill_color="dodgerblue",
             line_color="black",
-            line_width=0.01,
+            line_width=line_width,
             alpha=0.8,
             hover_fill_color='red',
             hover_line_color='red',

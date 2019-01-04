@@ -11,13 +11,9 @@ from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 
 import numpy as np
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 from bokeh.models.widgets import Div
-
-
-logger = logging.getLogger(__name__)
 
 
 class Countbins:
