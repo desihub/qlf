@@ -89,20 +89,16 @@ class Countbins:
                     plot_width=550,
                     plot_height=300,
                    )
+
         from bokeh.models.glyphs import Segment
 
         seg = Segment(x0='segx0', x1='segx1', y0='segy0',
                       y1='segy1', line_width=2, line_color='#1e90ff')
 
         p.add_glyph(hist_source, seg)
-        label = Label(x=330, y=0.7, x_units='data', y_units='data',
-                      text='NGOOD_FIBER: {}'.format(countbins['NGOODFIB']), render_mode='css',
-                      border_line_color='black', border_line_alpha=1.0,
-                      background_fill_color='white', background_fill_alpha=1.0)
 
         p.yaxis.ticker = FixedTicker(ticks=[0, 1])
         p.yaxis.major_label_overrides = {'0': 'bad', '1': 'good'}
-        p.add_layout(label)
 
         # ----------------
         # Wedge

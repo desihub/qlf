@@ -7,10 +7,8 @@ from dashboard.bokeh.plots.descriptors.title import Title
 
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
 
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-logger = logging.getLogger(__name__)
 
 
 class Xyshifts:

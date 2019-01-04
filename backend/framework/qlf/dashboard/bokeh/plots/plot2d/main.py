@@ -2,16 +2,16 @@ from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.plotting import Figure
 
 class Plot2d:
-    def __init__(self, yrange, x_title, y_title, tooltip, title="", width=600, height=400, yscale="auto", font_size="1vw"):
+    def __init__(self, x_range=None, y_range=None, x_title="", y_title="", tooltip=None, title="", width=600, height=400, yscale="auto", font_size="1vw"):
         hover = HoverTool(tooltips=tooltip)
         
-        if yrange == None:
+        if y_range == None:
             self.plot = Figure(tools=[hover, "pan,wheel_zoom,box_zoom,reset, crosshair, tap"], plot_width=width, active_drag="box_zoom",
                         plot_height=height, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale)
 
         else:
             self.plot = Figure(tools=[hover, "pan,wheel_zoom,box_zoom,reset, crosshair, tap"], plot_width=width, active_drag="box_zoom",
-                        plot_height=height, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale, y_range=yrange)
+                               plot_height=height, background_fill_color="white", x_axis_type="auto", y_axis_type=yscale, y_range=y_range, x_range=x_range)
         
         self.plot.xaxis.axis_label = x_title
         self.plot.yaxis.axis_label = y_title
