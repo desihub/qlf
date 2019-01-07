@@ -4,8 +4,7 @@ from bokeh.models import HoverTool, ColumnDataSource, Span
 from bokeh.models import LinearColorMapper
 from bokeh.models import TapTool, OpenURL, Range1d
 from bokeh.models.widgets import Div
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import sort_obj
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics, sort_obj
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 from dashboard.bokeh.plots.plot2d.main import Plot2d

@@ -5,13 +5,12 @@ from bokeh.models import Span, Label
 from bokeh.models import ColumnDataSource, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
 from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import sort_obj
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Div
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
-from dashboard.bokeh.helper import get_palette
+from dashboard.bokeh.helper import get_palette, sort_obj
 from bokeh.models import PrintfTickFormatter
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.patch.main import Patch

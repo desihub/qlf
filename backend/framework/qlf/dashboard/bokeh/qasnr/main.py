@@ -7,8 +7,7 @@ from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 from dashboard.bokeh.plots.plot2d.main import Plot2d
-from dashboard.bokeh.qlf_plot import sort_obj
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from dashboard.bokeh.helper import get_merged_qa_scalar_metrics, sort_obj
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
