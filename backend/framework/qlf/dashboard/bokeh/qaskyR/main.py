@@ -24,16 +24,22 @@ class SkyR:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        gen_info = mergedqa['GENERAL_INFO']
 
-        skyR = mergedqa['TASKS']['CHECK_SPECTRA']
+        check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
 
-        nrg = skyR['PARAMS']['SKYRBAND_NORMAL_RANGE']
-        wrg = skyR['PARAMS']['SKYRBAND_WARN_RANGE']
+        nrg = check_spectra['PARAMS']['SKYRBAND_NORMAL_RANGE']
+        wrg = check_spectra['PARAMS']['SKYRBAND_WARN_RANGE']
 
         info_col = Title().write_description('skyR')
 
-        # Prepare tables
-        metric = Table().mtable('skyR', mergedqa)
+        # Prepare Tables
+        current_exposures = [check_spectra['METRICS']['SKYRBAND']]
+        program = gen_info['PROGRAM'].upper()
+        reference_exposures = check_spectra['PARAMS']['SKYRBAND_' +
+                                                      program + '_REF']
+        keynames = ["SKYRBAND" for i in range(len(current_exposures))]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

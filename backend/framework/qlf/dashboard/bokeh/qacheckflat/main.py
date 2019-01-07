@@ -32,12 +32,14 @@ class Flat:
 
         nrg = check_flat['PARAMS']['CHECKFLAT_NORMAL_RANGE']
         wrg = check_flat['PARAMS']['CHECKFLAT_WARN_RANGE']
-        refexp = check_flat['PARAMS']['CHECKFLAT_REF']
 
         info_col = Title().write_description('fiberflat')
 
         # Prepare tables
-        metric = Table().mtable('fiberflat', mergedqa)
+        current_exposures = check_flat['METRICS']['CHECKFLAT']
+        reference_exposures = check_flat['PARAMS']['CHECKFLAT_REF']
+        keynames = ["CHECKFLAT"]*2
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

@@ -27,9 +27,9 @@ class Countbins:
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
         check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
         gen_info = mergedqa['GENERAL_INFO']
+        flavor=mergedqa["FLAVOR"]
 
         countbins = check_fibers['METRICS']
-        flavor=mergedqa["FLAVOR"]
         nrg = check_fibers['PARAMS']['NGOODFIB_NORMAL_RANGE']
         wrg = check_fibers['PARAMS']['NGOODFIB_WARN_RANGE']
 
@@ -150,7 +150,15 @@ class Countbins:
         info_col = Title().write_description('countbins')
 
        # Prepare tables
-        metric = Table().mtable('countbins', mergedqa)
+        current_exposures = [check_fibers['METRICS']['NGOODFIB']]
+        if flavor == 'science':
+            program = gen_info['PROGRAM'].upper()
+            reference_exposures = check_fibers['PARAMS']['NGOODFIB_' +
+                                                        program + '_REF']
+        else:
+            reference_exposures = check_fibers['PARAMS']['NGOODFIB_REF']
+        keynames = ["NGOODFIB"]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

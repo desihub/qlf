@@ -22,15 +22,25 @@ class Xyshifts:
 
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
 
-        xyshifts = mergedqa['TASKS']['CHECK_FIBERS']
+        check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
+        gen_info = mergedqa['GENERAL_INFO']
+        flavor = mergedqa['FLAVOR']
 
-        nrg = xyshifts['PARAMS']['XYSHIFTS_NORMAL_RANGE']
-        wrg = xyshifts['PARAMS']['XYSHIFTS_WARN_RANGE']
+        nrg = check_fibers['PARAMS']['XYSHIFTS_NORMAL_RANGE']
+        wrg = check_fibers['PARAMS']['XYSHIFTS_WARN_RANGE']
 
         info_col = Title().write_description('xyshifts')
 
         # Prepare tables
-        metric = Table().mtable('xyshifts', mergedqa)
+        current_exposures = check_fibers['METRICS']['XYSHIFTS']
+        program = gen_info['PROGRAM'].upper()
+        if flavor == 'science':
+            reference_exposures = check_fibers['PARAMS']['XYSHIFTS_' +
+                                                        program + '_REF']
+        else:
+            reference_exposures = []
+        keynames = ["X", "Y"]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

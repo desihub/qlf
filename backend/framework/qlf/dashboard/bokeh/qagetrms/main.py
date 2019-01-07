@@ -56,7 +56,18 @@ class RMS:
         info_col = Title().write_description('getrms')
 
         # Prepare tables
-        metric = Table().mtable('getrms', mergedqa, )
+        current_exposures = check_ccds['METRICS']['NOISE_AMP']
+        gen_info = mergedqa['GENERAL_INFO']
+        flavor = mergedqa["FLAVOR"]
+        if flavor == 'science':
+            program = gen_info['PROGRAM'].upper()
+            reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_' +
+                                                       program + '_REF']
+        else:
+            reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_REF']
+        keynames = ["NOISE_AMP" for i in range(len(current_exposures))]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
+
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

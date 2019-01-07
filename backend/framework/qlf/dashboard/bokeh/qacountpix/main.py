@@ -22,8 +22,9 @@ class Countpix:
         cam = self.selected_arm+str(self.selected_spectrograph)
 
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-
-        countpix = mergedqa['TASKS']['CHECK_CCDs']['METRICS']
+        gen_info = mergedqa['GENERAL_INFO']
+        flavor = mergedqa["FLAVOR"]
+        check_ccds = mergedqa['TASKS']['CHECK_CCDs']
         tests = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
 
         nrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_NORMAL_RANGE']
@@ -38,7 +39,7 @@ class Countpix:
 
         # PATCH
         p = Patch().plot_amp(
-            dz=countpix["LITFRAC_AMP"],
+            dz=check_ccds['METRICS']["LITFRAC_AMP"],
             refexp=refexp,
             name="LITFRAC_AMP",
             description="Average bias value per Amp (photon counts)",
@@ -49,7 +50,15 @@ class Countpix:
         info_col = Title().write_description('countpix')
 
         # Prepare tables
-        metric = Table().mtable('countpix', mergedqa)
+        current_exposures = check_ccds['METRICS']['LITFRAC_AMP']
+        if flavor == 'science':
+            program = gen_info['PROGRAM'].upper()
+            reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_' +
+                                                         program + '_REF']
+        else:
+            reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_REF']
+        keynames = ["LITFRAC_AMP" for i in range(len(current_exposures))]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

@@ -26,18 +26,13 @@ class Skypeak:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
         mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-        skypeak = mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']
-        par = mergedqa['TASKS']['CHECK_SPECTRA']['PARAMS']
+        check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']
 
         gen_info = mergedqa['GENERAL_INFO']
         ra = gen_info['RA']
         dec = gen_info['DEC']
 
         obj_type = sort_obj(gen_info)
-
-        name = 'PEAKCOUNT'
-        metr = skypeak
-
 
         my_palette = get_palette("viridis")
 
@@ -67,7 +62,7 @@ class Skypeak:
 
         peak_hover = HoverTool(tooltips=peak_tooltip)
 
-        peakcount_fib = metr['PEAKCOUNT_FIB']
+        peakcount_fib = check_spectra['METRICS']['PEAKCOUNT_FIB']
 
         source = ColumnDataSource(data={
             'x1': ra, 
@@ -161,11 +156,16 @@ class Skypeak:
             line_width=1,
         )
 
-        nrg = par['PEAKCOUNT_NORMAL_RANGE']
-        wrg = par['PEAKCOUNT_WARN_RANGE']
+        nrg = check_spectra['PARAMS']['PEAKCOUNT_NORMAL_RANGE']
+        wrg = check_spectra['PARAMS']['PEAKCOUNT_WARN_RANGE']
 
        # Prepare tables
-        metric = Table().mtable('skypeak', mergedqa)
+        current_exposures = [check_spectra['METRICS']['PEAKCOUNT']]
+        program = gen_info['PROGRAM'].upper()
+        reference_exposures = check_spectra['PARAMS']['PEAKCOUNT_' +
+                                                      program + '_REF']
+        keynames = ["PEAKCOUNT" for i in range(len(current_exposures))]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

@@ -124,7 +124,11 @@ class Skycont:
         info_col = Title().write_description('skycont')
 
        # Prepare tables
-        metric = Table().mtable('skycont', mergedqa)
+        current_exposures = [check_spectra['METRICS']['SKYCONT']]
+        program = gen_info['PROGRAM'].upper()
+        reference_exposures = check_spectra['PARAMS']['SKYCONT_' + program + '_REF']
+        keynames = ["SKYCONT" for i in range(len(current_exposures))]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

@@ -90,7 +90,11 @@ class Integ:
 
 
         # Prepare tables
-        metric = Table().mtable('integ', mergedqa ,objtype=objlist)
+        current_exposures = check_spectra['METRICS']['DELTAMAG_TGT']
+        program = gen_info['PROGRAM'].upper()
+        reference_exposures = check_spectra['PARAMS']['DELTAMAG_TGT_' + program  + '_REF']
+        keynames = ["DELTAMAG_TGT" + " ({})".format(i) for i in objlist]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

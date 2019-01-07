@@ -31,10 +31,15 @@ class Arc:
         nrg = check_arc['PARAMS']['CHECKARC_NORMAL_RANGE']
         wrg = check_arc['PARAMS']['CHECKARC_WARN_RANGE']
 
+
+
         info_col = Title().write_description('arc')
 
         # Prepare tables
-        metric = Table().mtable('arc', mergedqa)
+        current_exposures = check_arc['METRICS']['CHECKARC']
+        reference_exposures = check_arc['PARAMS']['CHECKARC_REF']
+        keynames = ["CHECKARC" + " ( P%d)" % i for i in range(3)]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),

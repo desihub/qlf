@@ -438,19 +438,27 @@ class Xwsigma:
         # -------------------------------------------------------------------------
         info_col = Title().write_description('xwsigma')
 
-        info = Table().mtable('xwsigma', mergedqa)
+        current_exposures = check_ccds['METRICS']['XWSIGMA']
 
         alert_x = Table().alert_table(nrg, wrg)
         alert_w = Table().alert_table(nrg, wrg)
 
         if flavor == 'science':
+            program = gen_info['PROGRAM'].upper()
+            reference_exposures = check_ccds['PARAMS']['XWSIGMA_' + program + '_REF']
+            keynames = ["XSIGMA"]
+            x_metric = Table().reference_table(
+                keynames, [current_exposures[0]], [reference_exposures[0]])
+            keynames = ["WSIGMA"]
+            w_metric = Table().reference_table(
+                keynames, [current_exposures[1]], [reference_exposures[1]])
             layout = column(
                 info_col,
                 widgetbox(Div(), css_classes=["tableranges"]),
-                info,
-                widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  XSIGMA </h2>')),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
+                x_metric,
+                w_metric,
                 alert_x,
                 alert_w,
                 column(wedge_plot_x, sizing_mode='scale_both'),
@@ -463,13 +471,20 @@ class Xwsigma:
                 column(wamp, sizing_mode='scale_both'),
                 css_classes=["display-grid"], sizing_mode='scale_width')
         else:
-             layout = column(
+            reference_exposures = check_ccds['PARAMS']['XWSIGMA_REF']
+            keynames = ["XSIGMA"]
+            x_metric = Table().reference_table(
+                keynames, [current_exposures[0]], [reference_exposures[0]])
+            keynames = ["WSIGMA"]
+            w_metric = Table().reference_table(
+                keynames, [current_exposures[1]], [reference_exposures[1]])
+            layout = column(
                 info_col,
-                widgetbox(Div(), css_classes=["tableranges"]),
-                info,
                 widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  XSIGMA </h2>')),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
+                x_metric,
+                w_metric,
                 alert_x,
                 alert_w,
                 column(xhist, sizing_mode='scale_both'),
