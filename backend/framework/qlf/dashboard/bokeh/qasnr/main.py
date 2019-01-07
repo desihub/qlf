@@ -237,8 +237,8 @@ class SNR:
             y_label="MEDIAN SNR^2",
             tooltip=html_tooltip,
             title="ELG",
-            width=450,
-            height=350,
+            width=500,
+            height=380,
             yscale="log",
         ).line(
             source=elg_fit,
@@ -258,8 +258,8 @@ class SNR:
             y_label="MEDIAN SNR^2",
             tooltip=html_tooltip,
             title="LRG",
-            width=450,
-            height=350,
+            width=500,
+            height=380,
             yscale="log"
         ).line(
             source=lrg_fit,
@@ -279,8 +279,8 @@ class SNR:
             y_label="MEDIAN SNR^2",
             tooltip=html_tooltip,
             title="QSO",
-            width=450,
-            height=350,
+            width=500,
+            height=380,
             yscale="log"
         ).line(
             source=qso_fit,
@@ -300,14 +300,14 @@ class SNR:
             y_label="MEDIAN SNR^2",
             tooltip=html_tooltip,
             title="STAR",
-            width=450,
-            height=350,
-            yscale="log"
+            width=500,
+            height=380,
+            yscale="log",
         ).line(source=star_fit, y='y2').circle(
             source=star,
-            radius=0.02,
+            radius=0.03,
             y='y2',
-            fill_color="green",
+            fill_color="yellow",
         ).plot
 
         # infos
