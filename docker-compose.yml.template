@@ -34,7 +34,6 @@ services:
       - ./backend/global-env
     volumes:
       - ./:/app # maps host diretory to internal container directory
-      - /home/felipe/repos/nights:/home/felipe/repos/nights
     working_dir: /app/
     command: ./jupyter/run.sh # script that runs on docker-compose up
     ports:
