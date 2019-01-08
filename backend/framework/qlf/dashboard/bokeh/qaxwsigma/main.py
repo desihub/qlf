@@ -83,7 +83,6 @@ class Xwsigma:
             'bottom': [0]*500
             })
 
-
         xsigma_tooltip = """
             <div>
                 <div>
@@ -189,6 +188,7 @@ class Xwsigma:
                 y='y1',
                 field='xsigma',
                 mapper=xmapper,
+                colorbar_title='xsigma'
             ).plot
 
             taptool = wedge_plot_x.select(type=TapTool)
@@ -212,6 +212,7 @@ class Xwsigma:
                 y='y1',
                 field='wsigma',
                 mapper=wmapper,
+                colorbar_title='wsigma'
             ).plot
 
             taptool = wedge_plot_w.select(type=TapTool)
@@ -304,9 +305,6 @@ class Xwsigma:
 
         ylabel, yrange, bottomval, histval = histpar(yscale, hist)
 
-        yrangex = yrange
-
-
         p_hist_x = Plot2d(
             x_label=xhistlabel,
             y_label=ylabel,
@@ -385,7 +383,7 @@ class Xwsigma:
                         line_dash='dashed', line_width=2)
             p_hist_x.add_layout(spans)
             my_label = Label(x=ialert+xw_ref[0], 
-                            y= yrangex[-1]/2.2,
+                            y= yrange[-1]/2.2,
                             y_units='data',
                             text='Normal Range',
                             text_color='green', angle=np.pi/2.)
@@ -395,7 +393,7 @@ class Xwsigma:
             spans = Span(location=ialert+xw_ref[0], dimension='height', line_color='tomato',
                          line_dash='dotdash', line_width=2)
             p_hist_x.add_layout(spans)
-            my_label = Label(x=ialert+xw_ref[0], y=yrangex[-1]/2.2, y_units='data',
+            my_label = Label(x=ialert+xw_ref[0], y=yrange[-1]/2.2, y_units='data',
                              text='Warning Range', text_color='tomato', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
 
