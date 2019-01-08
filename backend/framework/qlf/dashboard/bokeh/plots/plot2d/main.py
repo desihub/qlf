@@ -132,7 +132,7 @@ class Plot2d:
         self.plot.add_layout(color_bar, 'right')
         return self
 
-    def wedge(self, source, field=None, x="x", y="y", mapper=None, radius=0.0165, title='counts'):
+    def wedge(self, source, field=None, x="x", y="y", mapper=None, radius=0.0165, colorbar_title='counts'):
 
         if mapper:
             self.plot = self.circle(
@@ -153,7 +153,7 @@ class Plot2d:
                 line_width=3,
                 hover_fill_color={'field': field, 'transform': mapper},
                 hover_line_color='red'
-            ).colorbar(mapper, title=title).plot
+            ).colorbar(mapper, title=colorbar_title).plot
         elif field:
             self.plot = self.circle(
                 source,
