@@ -7,7 +7,7 @@ from bokeh.models import LinearColorMapper, ColorBar
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 from dashboard.bokeh.helper import get_palette
 
 import logging
@@ -26,7 +26,7 @@ class Flat:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
         check_flat = mergedqa['TASKS']['CHECK_FIBERFLAT']
         flat = check_flat['METRICS']
 

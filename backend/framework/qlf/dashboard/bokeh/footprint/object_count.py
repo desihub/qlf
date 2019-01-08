@@ -1,6 +1,6 @@
 import os
 from dashboard.models import Job, Process, Fibermap
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 import pandas as pd
 
 spectro_data = os.environ.get('DESI_SPECTRO_DATA')
@@ -54,7 +54,7 @@ class ObjectStatistics:
             col_nstar.append(objects[arm*500: (arm+1)*500].count('STAR'))
 
             if cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
+                mergedqa = QLFModels().get_output(
                     self.selected_process_id, cam)
                 status = mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']['PEAKCOUNT_STATUS']
                 col_stat.append(status)
@@ -109,7 +109,7 @@ class ObjectStatistics:
             for spec in list(range(10)):
                 cam = arm+str(spec)
                 if cam in joblist:
-                    mergedqa = get_merged_qa_scalar_metrics(
+                    mergedqa = QLFModels().get_output(
                         self.selected_process_id, cam)
                     fiberstatus = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
                     arm_col = arm_col+fiberstatus
@@ -145,7 +145,7 @@ class ObjectStatistics:
                 for spec in list(range(10)):
                     cam = arm+str(spec)
                     if cam in joblist:
-                        mergedqa = get_merged_qa_scalar_metrics(
+                        mergedqa = QLFModels().get_output(
                             self.selected_process_id, cam)
                         fiberstatus = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
                         arm_col = arm_col+fiberstatus

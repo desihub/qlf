@@ -3,7 +3,7 @@ from bokeh.layouts import row, column
 from bokeh.models import HoverTool, ColumnDataSource, Range1d, TapTool
 from bokeh.models.callbacks import CustomJS
 from dashboard.models import Process, Fibermap, Job
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 from bokeh.layouts import widgetbox
 from bokeh.models.widgets import Button
 from bokeh.resources import CDN

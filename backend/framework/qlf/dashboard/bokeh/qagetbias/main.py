@@ -2,7 +2,7 @@ from bokeh.layouts import column
 
 from bokeh.models.widgets import Div
 
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
@@ -21,7 +21,7 @@ class Bias:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
         check_ccds = mergedqa['TASKS']['CHECK_CCDs']
         getbias = check_ccds['METRICS']
 
