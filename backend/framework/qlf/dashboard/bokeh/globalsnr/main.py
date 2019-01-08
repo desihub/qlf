@@ -4,7 +4,7 @@ from bokeh.layouts import row, column
 from bokeh.models import HoverTool, ColumnDataSource, Range1d
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 from dashboard.bokeh.helper import get_palette
 
 import numpy as np
@@ -65,7 +65,7 @@ class GlobalSnr:
             ot_petal = []
             cam_petal = []
             if cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
+                mergedqa = QLFModels().get_output(
                     self.selected_process_id, cam)
 
                 med_snr = np.array(
@@ -161,7 +161,7 @@ class GlobalSnr:
         for spect in list(range(1)):
             cam = self.selected_arm+str(spect)
             if cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
+                mergedqa = QLFModels().get_output(
                     self.selected_process_id, cam)
 
                 # Assign available objects

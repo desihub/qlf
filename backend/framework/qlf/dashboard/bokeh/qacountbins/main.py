@@ -3,7 +3,7 @@ from bokeh.layouts import column, widgetbox
 from bokeh.models import HoverTool, ColumnDataSource, Range1d, Label
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics, sort_obj
+from qlf_models import QLFModels
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 from dashboard.bokeh.plots.plot2d.main import Plot2d
@@ -23,7 +23,7 @@ class Countbins:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
         check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
         gen_info = mergedqa['GENERAL_INFO']
         flavor=mergedqa["FLAVOR"]

@@ -4,7 +4,7 @@ from bokeh.models import Span, Label
 
 from bokeh.models import ColumnDataSource, Range1d, OpenURL
 from bokeh.models import LinearColorMapper, ColorBar
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 from bokeh.models import TapTool, OpenURL
 from bokeh.models.widgets import Div
 from bokeh.resources import CDN
@@ -28,7 +28,7 @@ class Xwsigma:
 
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
 
         gen_info = mergedqa['GENERAL_INFO']
         flavor= mergedqa['FLAVOR']

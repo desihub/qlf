@@ -7,7 +7,8 @@ from dashboard.bokeh.helper import get_palette
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 from dashboard.bokeh.plots.plot2d.main import Plot2d
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics, sort_obj
+from qlf_models import QLFModels
+from dashboard.bokeh.helper import sort_obj
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
@@ -23,7 +24,7 @@ class SNR:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
 
         # list of available object in petal
         objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]

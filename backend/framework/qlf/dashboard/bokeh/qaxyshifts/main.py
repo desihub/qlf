@@ -5,7 +5,7 @@ from bokeh.models.widgets import Div
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 
 from bokeh.resources import CDN
 from bokeh.embed import file_html
@@ -20,7 +20,7 @@ class Xyshifts:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
 
         check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
         gen_info = mergedqa['GENERAL_INFO']

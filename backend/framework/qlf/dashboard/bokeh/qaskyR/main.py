@@ -5,7 +5,7 @@ from bokeh.models.widgets import Div
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 
 import logging
 from bokeh.resources import CDN
@@ -23,7 +23,7 @@ class SkyR:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
         gen_info = mergedqa['GENERAL_INFO']
 
         check_spectra = mergedqa['TASKS']['CHECK_SPECTRA']

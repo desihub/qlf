@@ -3,7 +3,7 @@ from bokeh.layouts import row
 
 from bokeh.models import HoverTool, ColumnDataSource, Range1d
 
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 
 import numpy as np
 import logging
@@ -51,7 +51,7 @@ class GlobalFiber:
         for spec in list(range(10)):
             cam = self.selected_arm+str(spec)
             if cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
+                mergedqa = QLFModels().get_output(
                     self.selected_process_id, cam)
                 countbins = mergedqa['TASKS']['CHECK_FIBERS']['METRICS']['GOOD_FIBERS']
                 y = y + countbins
