@@ -79,4 +79,4 @@ build
 nginx/nginx-proxy.conf
 global-env
 
-jupyter/.ipynb_checkpoints
+jupyter/notebooks/.ipynb_checkpoints
