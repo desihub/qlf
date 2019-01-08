@@ -7,6 +7,7 @@ from qlf_models import QLFModels
 from dashboard.bokeh.plots.descriptors.table import Table
 from dashboard.bokeh.plots.descriptors.title import Title
 from dashboard.bokeh.plots.plot2d.main import Plot2d
+from dashboard.bokeh.helper import sort_obj
 
 import numpy as np
 from bokeh.resources import CDN
