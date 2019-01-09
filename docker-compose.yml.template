@@ -14,9 +14,9 @@ services:
     env_file:
       - ./backend/global-env
     volumes:
-      - ./backend/:/app # maps host diretory to internal container directory
+      - ./backend/:/app
     working_dir: /app/
-    command: ./run.sh # script that runs on docker-compose up
+    command: ./run.sh
     depends_on:
       - redis
       - db
@@ -29,12 +29,7 @@ services:
     depends_on:
       - app
   jupyter:
-    image: felipelm/qlf:latest_backend
-    env_file:
-      - ./backend/global-env
-    volumes:
-      - ./:/app # maps host diretory to internal container directory
-    working_dir: /app/
-    command: ./jupyter/run.sh # script that runs on docker-compose up
+    build: ./jupyter
+    command: jupyter notebook --ip=0.0.0.0
     ports:
       - 8080:8888
