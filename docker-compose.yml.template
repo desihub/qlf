@@ -30,6 +30,6 @@ services:
       - app
   jupyter:
     build: ./jupyter
-    command: jupyter notebook --ip=0.0.0.0
+    command: /app/run.sh
     ports:
       - 8080:8888
