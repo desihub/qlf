@@ -1,23 +1,15 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column
 
 from bokeh.models.widgets import Div
-from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
-from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.qlf_plot import mtable, alert_table
+from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
+from dashboard.bokeh.plots.patch.main import Patch
 
-import numpy as np
+from qlf_models import QLFModels
 
-from dashboard.bokeh.helper import write_description, write_info,\
-    get_merged_qa_scalar_metrics
-from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import set_amp, plot_amp
-
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-logger = logging.getLogger(__name__)
 
 
 class RMS:
@@ -29,7 +21,7 @@ class RMS:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
         check_ccds = mergedqa['TASKS']['CHECK_CCDs']
         getrms = check_ccds['METRICS']
 
@@ -43,71 +35,43 @@ class RMS:
         refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['NOISE_AMP' +
                                                            program_prefix+'_REF']
 
-        cmap = get_palette('RdBu_r')
-
-
         # amp 1
-        dz = getrms['NOISE_AMP']
-        name = 'NOISE_AMP'
-
-        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
-            nan_color='darkgray')
-        
-        dzdiff = np.array(dz)-np.array(refexp)
-
-        ztext, cbarformat = set_amp(dz)
-        p = plot_amp(dz, refexp, mapper, name=name)
-
-        p.xaxis.axis_label = "NOISE per Amp (photon counts)"
-
-        formatter = PrintfTickFormatter(format=cbarformat)
-        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
-                             title_text_baseline="alphabetic",)
-        p.add_layout(color_bar, 'right')
-
-
+        p = Patch().plot_amp(
+            dz=getrms["NOISE_AMP"],
+            refexp=refexp,
+            name="NOISE_AMP",
+            description="NOISE per Amp (photon counts)",
+            wrg=wrg
+        )
 
         # amp 2
-        dz = getrms['NOISE_OVERSCAN_AMP']
-        name = 'NOISE_OVERSCAN_AMP'
+        p2 = Patch().plot_amp(
+            dz=getrms["NOISE_OVERSCAN_AMP"],
+            refexp=refexp,
+            name="NOISE_OVERSCAN_AMP",
+            description="NOISE Overscan per Amp (photon counts)",
+            wrg=wrg
+        )
 
-        mapper = LinearColorMapper(palette=cmap,  low=wrg[0], high=wrg[1],
-            nan_color='darkgray')
-
-        dzdiff = np.array(dz)-np.array(refexp)
-        ztext, cbarformat = set_amp( dz)
-        p2 = plot_amp(dz, refexp, mapper, name=name)
-
-        p2.xaxis.axis_label = "NOISE Overscan per Amp (photon counts)"
-
-        formatter = PrintfTickFormatter(format=cbarformat)
-        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
-                              title_text_baseline="alphabetic",)
-        p2.add_layout(color_bar, 'right')
-
-        info, nlines = write_info('getrms', check_ccds['PARAMS'])
-        info = """<div> 
-        <body><p  style="text-align:left; color:#262626; font-size:20px;">
-                    <b>Get RMS</b> <br>Used to calculate RMS of region of 2D image, including overscan.</body></div>"""
-        nlines = 2
-        txt = Div(text=info, width=p.plot_width)
-        info_col = Div(text=write_description('getrms'))
-
+        info_col = Title().write_description('getrms')
 
         # Prepare tables
-        metric_txt = mtable('getrms', mergedqa, )
+        current_exposures = check_ccds['METRICS']['NOISE_AMP']
+        gen_info = mergedqa['GENERAL_INFO']
+        flavor = mergedqa["FLAVOR"]
+        if flavor == 'science':
+            program = gen_info['PROGRAM'].upper()
+            reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_' +
+                                                       program + '_REF']
+        else:
+            reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_REF']
+        keynames = ["NOISE_AMP" for i in range(len(current_exposures))]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
 
-        metric_tb = Div(text=metric_txt)
+        alert = Table().alert_table(nrg, wrg)
 
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
-
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+        layout = column(info_col, Div(),
+                        metric, alert,
                         column(p, sizing_mode='scale_both'),
                         column(p2, sizing_mode='scale_both'),
                         css_classes=["display-grid"])

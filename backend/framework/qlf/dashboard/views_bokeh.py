@@ -7,7 +7,6 @@ from dashboard.bokeh.qacountbins.main import Countbins
 from dashboard.bokeh.qaskycont.main import Skycont
 from dashboard.bokeh.qaskypeak.main import Skypeak
 from dashboard.bokeh.qainteg.main import Integ
-from dashboard.bokeh.qaskyresid.main import Skyresid
 from dashboard.bokeh.qasnr.main import SNR
 from dashboard.bokeh.qacheckflat.main import Flat
 from dashboard.bokeh.qacheckarc.main import Arc
@@ -189,8 +188,6 @@ def load_qa(request):
             qa_html = Skypeak(process_id, arm, spectrograph).load_qa()
         elif qa == 'qainteg':
             qa_html = Integ(process_id, arm, spectrograph).load_qa()
-        elif qa == 'qaskyresid':
-            qa_html = Skyresid(process_id, arm, spectrograph).load_qa()
         elif qa == 'qasnr':
             qa_html = SNR(process_id, arm, spectrograph).load_qa()
         elif qa == 'globalfiber':

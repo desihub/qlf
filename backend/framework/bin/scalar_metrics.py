@@ -26,7 +26,7 @@ class LoadMetrics:
     silent = 'False'  # Defining a silent mode
     prfx = 'ql-'
     qa_name = ['countpix', 'getbias', 'getrms', 'xwsigma',
-               'countbins', 'integ', 'skycont', 'skypeak', 'skyresid', 'snr']
+               'countbins', 'integ', 'skycont', 'skypeak', 'snr']
 
     def __init__(self, process_id, cam, exp=None, night=None, flavor=None):
         self.cam = cam
@@ -35,9 +35,6 @@ class LoadMetrics:
         self.process_id = process_id
         # This is True if the pipeline didn't generate some json file
         self.error = dict(zip(self.qa_name, ['False']*len(self.qa_name)))
-
-        logger.info('check *rms_over *bias *SUMCOUNT_RMS shouldbe SUMCOUNT_MED_SKY'
-                    + 'Resigf  skyresid- residrms')
 
         self.models = QLFModels()
 

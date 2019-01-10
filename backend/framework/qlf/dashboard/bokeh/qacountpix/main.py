@@ -1,24 +1,15 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column
 
-from bokeh.models.widgets import PreText, Div
-from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
-from bokeh.models import LinearColorMapper, ColorBar
+from bokeh.models.widgets import Div
 
-import numpy as np
+from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
+from dashboard.bokeh.plots.patch.main import Patch
 
-from dashboard.bokeh.helper import write_description, write_info, \
-    get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 
-from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import alert_table, mtable, \
-    set_amp, plot_amp
-import numpy as np
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-
-logger = logging.getLogger(__name__)
 
 
 class Countpix:
@@ -30,9 +21,10 @@ class Countpix:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
-
-        countpix = mergedqa['TASKS']['CHECK_CCDs']['METRICS']
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
+        gen_info = mergedqa['GENERAL_INFO']
+        flavor = mergedqa["FLAVOR"]
+        check_ccds = mergedqa['TASKS']['CHECK_CCDs']
         tests = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']
 
         nrg = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP_NORMAL_RANGE']
@@ -45,54 +37,32 @@ class Countpix:
         refexp = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['LITFRAC_AMP' +
                                                            program_prefix+'_REF']
 
-        cmap = get_palette("RdBu_r")
-
-
-        name = 'LITFRAC_AMP'
-
-        dz = countpix["LITFRAC_AMP"]
-
-        mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
-            nan_color="darkgray")
-
-
-        dzdiff = np.array(dz)-np.array(refexp)
-
-        ztext, cbarformat = set_amp(dz)
-        p = plot_amp(dz, refexp, mapper, name=name)
-
-        p.xaxis.axis_label = "Fraction over 5 sigma read noise (per Amp)"
-
-        formatter = PrintfTickFormatter(format=cbarformat)
-        color_bar = ColorBar(color_mapper=mapper,  major_label_text_align='left',
-                             major_label_text_font_size='10pt', label_standoff=2, location=(0, 0),
-                             formatter=formatter, title="(Val-Ref)", title_standoff=15,
-                             title_text_baseline="alphabetic",)
-        p.add_layout(color_bar, 'right')
-
-
+        # PATCH
+        p = Patch().plot_amp(
+            dz=check_ccds['METRICS']["LITFRAC_AMP"],
+            refexp=refexp,
+            name="LITFRAC_AMP",
+            description="Average bias value per Amp (photon counts)",
+            wrg=wrg
+        )
 
         # infos
-        info, nlines = write_info('countpix', tests)
-        txt = PreText(text=info, height=nlines*20, width=2*p.plot_width)
-
-
-
-        info_col = Div(text=write_description('countpix'))
+        info_col = Title().write_description('countpix')
 
         # Prepare tables
-        metricname = 'LITFRAC_AMP'
-        keyname = 'countpix'
-        curexp = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['LITFRAC_AMP']
-        metric_txt = mtable('countpix', mergedqa)
+        current_exposures = check_ccds['METRICS']['LITFRAC_AMP']
+        if flavor == 'science':
+            program = gen_info['PROGRAM'].upper()
+            reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_' +
+                                                         program + '_REF']
+        else:
+            reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_REF']
+        keynames = ["LITFRAC_AMP" for i in range(len(current_exposures))]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
+        alert = Table().alert_table(nrg, wrg)
 
-        metric_tb = Div(text=metric_txt)
-
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
-
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+        layout = column(info_col, Div(),
+                        metric, alert,
                         column(p, sizing_mode='scale_both',
                                css_classes=["main-one"]),
                         css_classes=["display-grid"])

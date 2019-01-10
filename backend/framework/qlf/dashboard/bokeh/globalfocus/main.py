@@ -4,7 +4,7 @@ from bokeh.layouts import row, column
 from bokeh.models import HoverTool, ColumnDataSource, Range1d
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.helper import get_merged_qa_scalar_metrics
+from qlf_models import QLFModels
 from dashboard.bokeh.helper import get_palette
 
 import numpy as np
@@ -50,7 +50,7 @@ class GlobalFocus:
         for spec in list(range(10)):
             cam = self.selected_arm+str(spec)
             if cam in joblist:
-                mergedqa = get_merged_qa_scalar_metrics(
+                mergedqa = QLFModels().get_output(
                     self.selected_process_id, cam)
                 xwsig = mergedqa['TASKS']['CHECK_CCDs']['METRICS']['XWSIGMA_FIB']
                 y = y + xwsig[0]
@@ -114,7 +114,7 @@ class GlobalFocus:
             process_id=process_id)]
         if len(joblist) > 0:
             cam = joblist[0]
-            mergedqa = get_merged_qa_scalar_metrics(
+            mergedqa = QLFModels().get_output(
                 self.selected_process_id, cam)
             warn_range = mergedqa['TASKS']['CHECK_CCDs']['PARAMS']['XWSIGMA_WARN_RANGE']
             arg_kind = {'x': 0, 'w': 1}

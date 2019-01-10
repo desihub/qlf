@@ -1,24 +1,14 @@
-from bokeh.plotting import Figure
-from bokeh.layouts import column, widgetbox
+from bokeh.layouts import column
 
 from bokeh.models.widgets import Div
-from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
-from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.qlf_plot import mtable, alert_table
+from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
 
-import numpy as np
+from qlf_models import QLFModels
 
-from dashboard.bokeh.helper import write_description, write_info,\
-    get_merged_qa_scalar_metrics
-from dashboard.bokeh.helper import get_palette
-from dashboard.bokeh.qlf_plot import set_amp, plot_amp
-
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-logger = logging.getLogger(__name__)
-
 
 
 class Xyshifts:
@@ -30,24 +20,31 @@ class Xyshifts:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
 
-        xyshifts = mergedqa['TASKS']['CHECK_FIBERS']
+        check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
+        gen_info = mergedqa['GENERAL_INFO']
+        flavor = mergedqa['FLAVOR']
 
-        nrg = xyshifts['PARAMS']['XYSHIFTS_NORMAL_RANGE']
-        wrg = xyshifts['PARAMS']['XYSHIFTS_WARN_RANGE']
+        nrg = check_fibers['PARAMS']['XYSHIFTS_NORMAL_RANGE']
+        wrg = check_fibers['PARAMS']['XYSHIFTS_WARN_RANGE']
 
-        info_col = Div(text=write_description('xyshifts'))
+        info_col = Title().write_description('xyshifts')
 
         # Prepare tables
-        metric_txt = mtable('xyshifts', mergedqa)
-        metric_tb = Div(text=metric_txt)
+        current_exposures = check_fibers['METRICS']['XYSHIFTS']
+        program = gen_info['PROGRAM'].upper()
+        if flavor == 'science':
+            reference_exposures = check_fibers['PARAMS']['XYSHIFTS_' +
+                                                        program + '_REF']
+        else:
+            reference_exposures = []
+        keynames = ["X", "Y"]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
+        alert = Table().alert_table(nrg, wrg)
 
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
-
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+        layout = column(info_col, Div(),
+                        metric, alert,
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "XYSHIFTS")

@@ -1,23 +1,18 @@
-from bokeh.plotting import Figure
 from bokeh.layouts import column, widgetbox
 
-from bokeh.models import HoverTool, ColumnDataSource, Range1d, Label,\
-    FixedTicker
+from bokeh.models import HoverTool, ColumnDataSource, Range1d, Label
 from bokeh.models import LinearColorMapper, ColorBar
 
-from dashboard.bokeh.helper import write_description,\
-    get_merged_qa_scalar_metrics
-from dashboard.bokeh.qlf_plot import  sort_obj,\
-    mtable, alert_table
+from qlf_models import QLFModels
+from dashboard.bokeh.plots.descriptors.table import Table
+from dashboard.bokeh.plots.descriptors.title import Title
+from dashboard.bokeh.plots.plot2d.main import Plot2d
+from dashboard.bokeh.helper import sort_obj
 
 import numpy as np
-import logging
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 from bokeh.models.widgets import Div
-
-
-logger = logging.getLogger(__name__)
 
 
 class Countbins:
@@ -29,12 +24,12 @@ class Countbins:
     def load_qa(self):
         cam = self.selected_arm+str(self.selected_spectrograph)
 
-        mergedqa = get_merged_qa_scalar_metrics(self.selected_process_id, cam)
+        mergedqa = QLFModels().get_output(self.selected_process_id, cam)
         check_fibers = mergedqa['TASKS']['CHECK_FIBERS']
         gen_info = mergedqa['GENERAL_INFO']
+        flavor=mergedqa["FLAVOR"]
 
         countbins = check_fibers['METRICS']
-        flavor=mergedqa["FLAVOR"]
         nrg = check_fibers['PARAMS']['NGOODFIB_NORMAL_RANGE']
         wrg = check_fibers['PARAMS']['NGOODFIB_WARN_RANGE']
 
@@ -66,7 +61,6 @@ class Countbins:
         fibers = list(countbins['GOOD_FIBERS'])
         colors = ['#319b5c' if i == 1 else '#282828' for i in fibers]
         x = np.array(range(len(fibers)))
-        hist_hover = HoverTool(tooltips=hist_tooltip, mode='vline')
         hist_source = ColumnDataSource(
             data={'goodfiber': y,
                   'fiberid': x,
@@ -82,27 +76,17 @@ class Countbins:
                   'color': colors
                   })
 
-        p = Figure(tools=[hist_hover, "box_zoom, pan,wheel_zoom, lasso_select, reset, crosshair, tap"],
-                    y_range=Range1d(-.1, 1.1),
-                    x_axis_label='Fiber', y_axis_label=' Fiber Status',
-                    active_drag="box_zoom",
-                    plot_width=550,
-                    plot_height=300,
-                   )
-        from bokeh.models.glyphs import Segment
-
-        seg = Segment(x0='segx0', x1='segx1', y0='segy0',
-                      y1='segy1', line_width=2, line_color='#1e90ff')
-
-        p.add_glyph(hist_source, seg)
-        label = Label(x=330, y=0.7, x_units='data', y_units='data',
-                      text='NGOOD_FIBER: {}'.format(countbins['NGOODFIB']), render_mode='css',
-                      border_line_color='black', border_line_alpha=1.0,
-                      background_fill_color='white', background_fill_alpha=1.0)
-
-        p.yaxis.ticker = FixedTicker(ticks=[0, 1])
-        p.yaxis.major_label_overrides = {'0': 'bad', '1': 'good'}
-        p.add_layout(label)
+        p = Plot2d(
+            y_range=Range1d(-.1, 1.1),
+            x_label="Fiber",
+            y_label="Fiber Status",
+            tooltip=hist_tooltip,
+            title="WSIGMA",
+            width=550,
+            height=350,
+            yscale="auto",
+            hover_mode="vline",
+        ).segment(hist_source).plot
 
         # ----------------
         # Wedge
@@ -133,70 +117,52 @@ class Countbins:
                 </div>
             """
 
-            hover = HoverTool(tooltips=count_tooltip)
-
             radius = 0.0165  
             radius_hover = 0.02  
-            
             # centralize wedges in plots:
             ra_center=0.5*(max(ra)+min(ra))
             dec_center=0.5*(max(dec)+min(dec))
             xrange_wedge = Range1d(start=ra_center + .95, end=ra_center-.95)
             yrange_wedge = Range1d(start=dec_center+.82, end=dec_center-.82)
 
-            p2 = Figure(title='GOOD FIBERS',
-            plot_width=450,
-            plot_height=400,
-            active_drag="box_zoom",
-            x_axis_label='RA',
-            y_axis_label='DEC',
-            x_range=xrange_wedge,
-            y_range=yrange_wedge,
-            tools=[hover,
-            "box_zoom,pan,reset,lasso_select,crosshair,tap"],
-            toolbar_location="right")
-
-            # Color Map
-            p2.circle('x1','y1', source=hist_source, name="data", radius=radius,
-                      fill_color={'field': 'color'},
-                      line_color='black', line_width=0.3,
-                      hover_line_color='red')
-
-            # marking the Hover point
-            p2.circle('x1', 'y1', source=hist_source, name="data", radius=radius_hover,
-                      hover_fill_color={'field': 'color'}, fill_color=None,
-                      line_color=None, line_width=3, hover_line_color='red')
-
+            p2 = Plot2d(
+                x_range=xrange_wedge,
+                y_range=yrange_wedge,
+                x_label="RA",
+                y_label="DEC",
+                tooltip=count_tooltip,
+                title="WSIGMA",
+                width=400,
+                height=350,
+                yscale="auto"
+            ).wedge(
+                hist_source,
+                x='x1',
+                y='y1',
+                field='color',
+            ).plot
         else:
             p2 = Div()
 
         ngood = countbins['NGOODFIB']
         fracgood = ngood/500. - 1.
 
-        info_col = Div(text=write_description('countbins'))
-
-        font_size = "1.2vw"
-
-        if flavor == "science":
-            plist=[p, p2]
-        else:
-            plist=[p]
-        for plot in plist:
-            plot.xaxis.major_label_text_font_size = font_size
-            plot.yaxis.major_label_text_font_size = font_size
-            plot.xaxis.axis_label_text_font_size = font_size
-            plot.yaxis.axis_label_text_font_size = font_size
-            plot.legend.label_text_font_size = font_size
-            plot.title.text_font_size = font_size
+        info_col = Title().write_description('countbins')
 
        # Prepare tables
-        metric_txt = mtable('countbins', mergedqa)
-        metric_tb = Div(text=metric_txt)
-        alert_txt = alert_table(nrg, wrg)
-        alert_tb = Div(text=alert_txt)
+        current_exposures = [check_fibers['METRICS']['NGOODFIB']]
+        if flavor == 'science':
+            program = gen_info['PROGRAM'].upper()
+            reference_exposures = check_fibers['PARAMS']['NGOODFIB_' +
+                                                        program + '_REF']
+        else:
+            reference_exposures = check_fibers['PARAMS']['NGOODFIB_REF']
+        keynames = ["NGOODFIB"]
+        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
+        alert = Table().alert_table(nrg, wrg)
 
-        layout = column(widgetbox(info_col, css_classes=["header"]), Div(),
-                        widgetbox(metric_tb), widgetbox(alert_tb),
+        layout = column(info_col, Div(),
+                        metric, alert,
                         column(p, sizing_mode='scale_both'),
                         column(p2, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
