@@ -19,8 +19,9 @@ def sort_obj(gen_info):
     obj_type = ['']*500
     for key in ['LRG', 'ELG', 'QSO', 'STAR', 'SKY']:
         if gen_info.get(key+'_FIBERID', None):
+            print(key+'_FIBERID', len(gen_info[key+'_FIBERID']))
             for i in gen_info[key+'_FIBERID']:
-                obj_type[i] = key
+                obj_type[i%500] = key
         else:
             pass
     return obj_type

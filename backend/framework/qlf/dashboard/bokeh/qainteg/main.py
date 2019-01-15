@@ -34,7 +34,8 @@ class Integ:
         std_fiberid = mergedqa['GENERAL_INFO']['STAR_FIBERID']
         nrg = check_spectra['PARAMS']['DELTAMAG_TGT_NORMAL_RANGE']
         wrg = check_spectra['PARAMS']['DELTAMAG_TGT_WARN_RANGE']
-        fiber_mag = mergedqa['GENERAL_INFO']['FIBER_MAGS']
+        fiber_mag = np.array(mergedqa['GENERAL_INFO']['FIBER_MAGS'])
+        fiber_mag = fiber_mag.flatten()
 
         tooltip = """ 
             <div>
@@ -55,7 +56,7 @@ class Integ:
                 'x': np.arange(len(fiber_mag)),
             }
         )
-
+        print(len(fiber_mag))
         yrange = [0, 1.1*max(fiber_mag)]
 
         fiber_hist = Plot2d(
