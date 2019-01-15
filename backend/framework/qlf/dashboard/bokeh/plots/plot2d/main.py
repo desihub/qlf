@@ -1,4 +1,4 @@
-from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.models import HoverTool, ColumnDataSource, PrintfTickFormatter
 from bokeh.plotting import Figure
 from bokeh.models import ColorBar
 from bokeh.models.glyphs import Segment
@@ -122,12 +122,35 @@ class Plot2d:
         )
         return self
 
+    def set_colorbar(self,z_value):
+        ''' Setup for colorbar
+        '''
+        dz = z_value
+
+        # removing NaN in ranges
+        dz_valid = [x if x > -999 else np.nan for x in dz]
+        dzmax, dzmin = np.nanmax(dz_valid), np.nanmin(dz_valid)
+
+        if np.log10(dzmax) > 4 or np.log10(dzmin) < -3:
+            ztext = ['{:4.2e}'.format(i) for i in dz_valid]
+            cbarformat = "%2.1e"
+        elif np.log10(dzmin) > 0:
+            ztext = ['{:5.2f}'.format(i) for i in dz_valid]
+            cbarformat = "%4.2f"
+        else:
+            ztext = ['{:6.2f}'.format(i) for i in dz_valid]
+            cbarformat = "%5.2f"
+        return ztext, cbarformat
+
     def colorbar(self, mapper, title='counts'):
+        formatter = PrintfTickFormatter(format="%4.2f")
+
         color_bar = ColorBar(color_mapper=mapper, label_standoff=16,
-                                title=title,
+                                title= "(Val-Ref)", #title,
                                 major_label_text_font_style='bold', padding=26,
-                                major_label_text_align='right',
+                                major_label_text_align='left',
                                 major_label_text_font_size="10pt",
+                                formatter=formatter,
                                 location=(0, 0))
         self.plot.add_layout(color_bar, 'right')
         return self
