@@ -62,7 +62,7 @@ class Xwsigma:
         delta_rg = wrg[1] - wrg[0]
         hist_rg = (wrg[0] - 0.1*delta_rg, wrg[1]+0.1*delta_rg)
 
-        my_palette = get_palette("viridis")
+        my_palette = get_palette("RdBu_r")
 
         xfiber = np.arange(len(xsigma))
         wfiber = np.arange(len(wsigma))
@@ -75,6 +75,10 @@ class Xwsigma:
             'y1': dec, 
             'xsigma': xsigma,
             'wsigma': wsigma,
+            'delta_xsigma': np.array(xsigma) - xw_ref[0],
+            'delta_wsigma': np.array(wsigma) - xw_ref[1],
+            'xref':[xw_ref[0]]*len(xsigma),
+            'wref':[xw_ref[1]]*len(xsigma),            
             'xfiber': xfiber,
             'wfiber': wfiber,
             'OBJ_TYPE': obj_type,
@@ -89,6 +93,11 @@ class Xwsigma:
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">XSigma: </span>
                     <span style="font-size: 1vw; color: #515151">@xsigma</span>
                 </div>
+                <div>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Reference: </span>
+                    <span style="font-size: 1vw; color: #515151">@xref</span>
+                </div>
+
                 <div>
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
                     <span style="font-size: 1vw; color: #515151;">@OBJ_TYPE</span>
@@ -115,6 +124,10 @@ class Xwsigma:
                 <div>
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">WSigma: </span>
                     <span style="font-size: 1vw; color: #515151">@wsigma</span>
+                </div>
+                <div>
+                    <span style="font-size: 1vw; font-weight: bold; color: #303030;">Reference: </span>
+                    <span style="font-size: 1vw; color: #515151">@wref</span>
                 </div>
                 <div>
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">Obj Type: </span>
@@ -152,13 +165,14 @@ class Xwsigma:
             left, right = xmin - xfac, xmax+xfac
             bottom, top = ymin-yfac, ymax+yfac
 
+            low, high = wrg
             xmapper = LinearColorMapper(palette=my_palette,
-                                        low=0.98*np.min(xsigma),
-                                        high=1.02*np.max(xsigma))
+                                        low=low, #0.98*np.min(xsigma),
+                                        high=high, )#1.02*np.max(xsigma))
 
             wmapper = LinearColorMapper(palette=my_palette,
-                                        low=0.99*np.min(wsigma),
-                                        high=1.01*np.max(wsigma))
+                                        low= low, #0.99*np.min(wsigma),
+                                        high= high,) #1.01*np.max(wsigma))
 
             # ============
             # XSIGMA WEDGE
@@ -186,7 +200,7 @@ class Xwsigma:
                 source,
                 x='x1',
                 y='y1',
-                field='xsigma',
+                field='delta_xsigma',
                 mapper=xmapper,
                 colorbar_title='xsigma'
             ).plot
@@ -210,7 +224,7 @@ class Xwsigma:
                 source,
                 x='x1',
                 y='y1',
-                field='wsigma',
+                field='delta_wsigma',
                 mapper=wmapper,
                 colorbar_title='wsigma'
             ).plot
