@@ -79,4 +79,5 @@ build
 nginx/nginx-proxy.conf
 global-env
 
+jupyter/notebooks/.ipynb_checkpoints
 backend/framework/qlf/static
