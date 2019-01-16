@@ -27,7 +27,6 @@ INSTALLED_APPS = (
     'dashboard',
     'channels',
     'ui_channel',
-    # 'django_postgrespool',
     'corsheaders',
 )
 
