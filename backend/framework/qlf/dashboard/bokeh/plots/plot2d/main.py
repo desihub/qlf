@@ -116,7 +116,6 @@ class Plot2d:
             hover_color=hover_color,
             hover_alpha=hover_alpha,
             hover_line_color=hover_line_color,
-            #radius=radius,
             fill_color=fill_color,
             hover_fill_color=hover_fill_color,
         )
@@ -142,11 +141,11 @@ class Plot2d:
             cbarformat = "%5.2f"
         return ztext, cbarformat
 
-    def colorbar(self, mapper, title='counts'):
+    def colorbar(self, mapper, title='(Val - Ref)'):
         formatter = PrintfTickFormatter(format="%4.2f")
 
         color_bar = ColorBar(color_mapper=mapper, label_standoff=16,
-                                title= "(Val-Ref)", #title,
+                                title=title,
                                 major_label_text_font_style='bold', padding=26,
                                 major_label_text_align='left',
                                 major_label_text_font_size="10pt",
