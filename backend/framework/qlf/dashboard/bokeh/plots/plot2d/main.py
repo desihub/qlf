@@ -196,7 +196,7 @@ class Plot2d:
                 x=x,
                 radius=radius,
                 hover_fill_color='lightgrey',
-                fill_color='lightgrey',
+                fill_color='darkgrey',
                 line_color='black',
                 line_width=0.3,
             ).plot
