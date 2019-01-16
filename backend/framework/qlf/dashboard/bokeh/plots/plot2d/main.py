@@ -116,7 +116,7 @@ class Plot2d:
             hover_color=hover_color,
             hover_alpha=hover_alpha,
             hover_line_color=hover_line_color,
-            radius=radius,
+            #radius=radius,
             fill_color=fill_color,
             hover_fill_color=hover_fill_color,
         )
@@ -151,6 +151,7 @@ class Plot2d:
                                 major_label_text_align='left',
                                 major_label_text_font_size="10pt",
                                 formatter=formatter,
+                                title_text_baseline='alphabetic',
                                 location=(0, 0))
         self.plot.add_layout(color_bar, 'right')
         return self
