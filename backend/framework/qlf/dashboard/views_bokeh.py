@@ -44,39 +44,6 @@ logger = get_logger(
     os.path.join(qlf_root, "logs", "bokeh.log")
 )
 
-def embed_bokeh(request, bokeh_app):
-    """Render the requested app from the bokeh server"""
-
-    # http://bokeh.pydata.org/en/0.12.5/docs/reference/embed.html
-
-    # TODO: test if bokeh server is reachable
-
-    bokeh_script = server_document(arguments=request.GET, url="{}/{}".format(settings.QLF_BASE_URL,
-                                                                             bokeh_app))
-
-    template = loader.get_template('dashboard/embed_bokeh.html')
-
-    context = {'bokeh_script': bokeh_script,
-               'bokeh_app': bokeh_app}
-
-    status = qlf.get_status()
-
-    if status == True:
-        messages.success(request, "Running")
-    elif status == False:
-        messages.success(request, "Idle")
-    else:
-        messages.success(request, "- -")
-
-    response = HttpResponse(template.render(context, request))
-
-    # Save full url path in the HTTP response, so that the bokeh
-    # app can use this info
-
-    response.set_cookie('django_full_path', request.get_full_path())
-    return response
-
-
 def filter_processed_exposures(begin_date, end_date, program):
     if not program or program == 'all':
         exposures_radec = Process.objects.all().values('exposure__telra', 'exposure__teldec').distinct()
