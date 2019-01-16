@@ -167,12 +167,14 @@ class Xwsigma:
 
             low, high = wrg
             xmapper = LinearColorMapper(palette=my_palette,
-                                        low=low, #0.98*np.min(xsigma),
-                                        high=high, )#1.02*np.max(xsigma))
+                                        low=low, 
+                                        high=high,
+                                        nan_color="darkgrey")
 
             wmapper = LinearColorMapper(palette=my_palette,
-                                        low= low, #0.99*np.min(wsigma),
-                                        high= high,) #1.01*np.max(wsigma))
+                                        low= low,
+                                        high= high,
+                                        nan_color="darkgrey")
 
             # ============
             # XSIGMA WEDGE
