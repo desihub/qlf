@@ -62,7 +62,7 @@ class Xwsigma:
         delta_rg = wrg[1] - wrg[0]
         hist_rg = (wrg[0] - 0.1*delta_rg, wrg[1]+0.1*delta_rg)
 
-        my_palette = get_palette("RdBu_r")
+        my_palette = get_palette("RdYlBu_r")
 
         xfiber = np.arange(len(xsigma))
         wfiber = np.arange(len(wsigma))
