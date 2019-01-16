@@ -79,4 +79,4 @@ build
 nginx/nginx-proxy.conf
 global-env
 
-backend/framework/qlf/static/
+backend/framework/qlf/static
