@@ -10,6 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh './configure.sh ci'
+                sh './start.sh version'
                 dir('frontend') {
                     sh 'yarn install'
                 }
