@@ -14,9 +14,9 @@ services:
     env_file:
       - ./backend/global-env
     volumes:
-      - ./backend/:/app # maps host diretory to internal container directory
+      - ./backend/:/app
     working_dir: /app/
-    command: ./run.sh # script that runs on docker-compose up
+    command: ./run.sh
     depends_on:
       - redis
       - db
@@ -28,3 +28,8 @@ services:
       - ALL
     depends_on:
       - app
+  jupyter:
+    build: ./jupyter
+    command: /app/run.sh
+    ports:
+      - 8080:8888
