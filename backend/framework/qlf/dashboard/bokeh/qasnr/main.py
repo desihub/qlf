@@ -246,7 +246,7 @@ class SNR:
             y='y2',
         ).circle(
             source=elg,
-            radius=0.02,
+            size=8,
             y='y2',
             fill_color="blue",
         ).plot
@@ -267,7 +267,7 @@ class SNR:
             y='y2',
         ).circle(
             source=lrg,
-            radius=0.02,
+            size=8,
             y='y2',
             fill_color="red",
         ).plot
@@ -288,7 +288,7 @@ class SNR:
             y='y2',
         ).circle(
             source=qso,
-            radius=0.03,
+            size=8,
             y='y2',
             fill_color="green",
         ).plot
@@ -304,12 +304,18 @@ class SNR:
             width=500,
             height=380,
             yscale="log",
-        ).line(source=star_fit, y='y2').circle(
+        ).line(
+            source=star_fit,
+             y='y2'
+        ).circle(
             source=star,
-            radius=0.03,
+            size=8,
             y='y2',
             fill_color="yellow",
         ).plot
+
+        taptool = star_plot.select(type=TapTool)
+        taptool.callback = OpenURL(url=url)
 
         # infos
         info_col = Title().write_description('snr')
