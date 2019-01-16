@@ -53,8 +53,6 @@ urlpatterns = [
     url(r'^dashboard/footprint_object_type_count', views_bokeh.footprint_object_type_count, name='footprint_object_type_count'),
     url(r'^dashboard/load_qa', views_bokeh.load_qa, name='load_qa'),
     url(r'^dashboard/get_camera_log', views.get_camera_log, name='get_camera_log'),
-    url(r'^dashboard/(?P<bokeh_app>\w+)/$',
-        views_bokeh.embed_bokeh, name='embed-bokeh')
 ]
 
 if settings.DEBUG:

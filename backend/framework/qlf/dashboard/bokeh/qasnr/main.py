@@ -246,7 +246,7 @@ class SNR:
             y='y2',
         ).circle(
             source=elg,
-            radius=0.02,
+            radius=0.04,
             y='y2',
             fill_color="blue",
         ).plot
@@ -267,7 +267,7 @@ class SNR:
             y='y2',
         ).circle(
             source=lrg,
-            radius=0.02,
+            radius=0.04,
             y='y2',
             fill_color="red",
         ).plot
@@ -288,7 +288,7 @@ class SNR:
             y='y2',
         ).circle(
             source=qso,
-            radius=0.03,
+            radius=0.06,
             y='y2',
             fill_color="green",
         ).plot
@@ -306,7 +306,7 @@ class SNR:
             yscale="log",
         ).line(source=star_fit, y='y2').circle(
             source=star,
-            radius=0.03,
+            radius=0.04,
             y='y2',
             fill_color="yellow",
         ).plot
