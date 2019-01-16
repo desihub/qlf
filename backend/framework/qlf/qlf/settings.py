@@ -25,15 +25,12 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'dashboard',
-    # 'debug_toolbar',
     'channels',
     'ui_channel',
-    # 'django_postgrespool',
     'corsheaders',
 )
 
 MIDDLEWARE_CLASSES = (
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -48,7 +45,7 @@ MIDDLEWARE_CLASSES = (
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-INTERNAL_IPS = '127.0.0.1'
+INTERNAL_IPS = os.environ.get('INTERNAL_IPS', '127.0.0.1')
 ROOT_URLCONF = 'dashboard.urls'
 
 TEMPLATES = [
@@ -136,3 +133,11 @@ XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', None)
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', 25)
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+    INSTALLED_APPS += (
+        'debug_toolbar',
+    )

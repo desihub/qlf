@@ -246,6 +246,7 @@ class SNR:
             y='y2',
         ).circle(
             source=elg,
+
             size=8,
             y='y2',
             fill_color="blue",
