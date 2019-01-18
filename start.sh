@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ -z "$1" ]; then
   echo "Staring backend... http://localhost/dashboard/api/"
   echo "Building frontend... http://localhost"
