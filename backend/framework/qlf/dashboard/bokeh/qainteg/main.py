@@ -35,7 +35,15 @@ class Integ:
         nrg = check_spectra['PARAMS']['DELTAMAG_TGT_NORMAL_RANGE']
         wrg = check_spectra['PARAMS']['DELTAMAG_TGT_WARN_RANGE']
         fiber_mag = np.array(mergedqa['GENERAL_INFO']['FIBER_MAGS'])
-        fiber_mag = fiber_mag.flatten()
+
+        if 'b' in cam:
+            arm_id=0
+        elif 'r' in cam:
+            arm_id=1
+        else:
+            arm_id=2
+
+        fiber_mag = fiber_mag[arm_id]#.flatten()
 
         tooltip = """ 
             <div>
