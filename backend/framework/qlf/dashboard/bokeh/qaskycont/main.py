@@ -32,13 +32,17 @@ class Skycont:
         skycont = check_spectra['METRICS']
         sky = skycont['SKYCONT_FIBER']
         skyfibers = gen_info['SKY_FIBERID']
+
         nrg = check_spectra['PARAMS']['SKYCONT_NORMAL_RANGE']
         wrg = check_spectra['PARAMS']['SKYCONT_WARN_RANGE']
-
+        current_exposures = [check_spectra['METRICS']['SKYCONT']]
+        program = gen_info['PROGRAM'].upper()
+        reference_exposures = check_spectra['PARAMS']['SKYCONT_' + program + '_REF']
+    
         ra_sky = [ra[i] for i in skyfibers]
         dec_sky = [dec[i] for i in skyfibers]
 
-        my_palette = get_palette("viridis")
+        my_palette = get_palette("RdYlBu_r")
 
         skc_tooltips = """
             <div>
@@ -71,6 +75,7 @@ class Skycont:
 
         source = ColumnDataSource(data={
             'skycont': sky,
+            'delta_skycont': np.array(sky)-reference_exposures,
             'fiberid': skyfibers,
             'ra': ra_sky,
             'dec': dec_sky
@@ -81,11 +86,11 @@ class Skycont:
             'dec': dec_not,
             'skycont': ['']*len(dec_not)
         })
-
+        low, high = wrg
         mapper = LinearColorMapper(palette=my_palette,
-                                   low=np.min(sky),
-                                   high=np.max(sky),
-                                   nan_color='darkgray')
+                                   low=low, #np.min(sky),
+                                   high=high, #np.max(sky),
+                                   nan_color='darkgrey')
 
         radius = 0.0165  # 0.013
         radius_hover = 0.02  # 0.015
@@ -110,7 +115,7 @@ class Skycont:
             source,
             x='ra',
             y='dec',
-            field='skycont',
+            field='delta_skycont',
             mapper=mapper,
         ).wedge(
             source_not,
@@ -125,9 +130,6 @@ class Skycont:
         info_col = Title().write_description('skycont')
 
        # Prepare tables
-        current_exposures = [check_spectra['METRICS']['SKYCONT']]
-        program = gen_info['PROGRAM'].upper()
-        reference_exposures = check_spectra['PARAMS']['SKYCONT_' + program + '_REF']
         keynames = ["SKYCONT" for i in range(len(current_exposures))]
         metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
