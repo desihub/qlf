@@ -81,7 +81,7 @@ class Countbins:
             x_label="Fiber",
             y_label="Fiber Status",
             tooltip=hist_tooltip,
-            title="WSIGMA",
+            title="Status",
             width=550,
             height=350,
             yscale="auto",
@@ -131,7 +131,7 @@ class Countbins:
                 x_label="RA",
                 y_label="DEC",
                 tooltip=count_tooltip,
-                title="WSIGMA",
+                title="Fiber Status",
                 width=400,
                 height=350,
                 yscale="auto"

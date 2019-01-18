@@ -51,7 +51,7 @@ class Integ:
 
         source = ColumnDataSource(
             data={
-                'integ': fiber_mag,
+                'integ':  [i if i >-999 else np.nan for i in fiber_mag],
                 'x': np.arange(len(fiber_mag)),
             }
         )

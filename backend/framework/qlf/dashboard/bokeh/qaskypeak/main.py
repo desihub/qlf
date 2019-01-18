@@ -32,9 +32,16 @@ class Skypeak:
         ra = gen_info['RA']
         dec = gen_info['DEC']
 
+        nrg = check_spectra['PARAMS']['PEAKCOUNT_NORMAL_RANGE']
+        wrg = check_spectra['PARAMS']['PEAKCOUNT_WARN_RANGE']
+        current_exposures = [check_spectra['METRICS']['PEAKCOUNT']]
+        program = gen_info['PROGRAM'].upper()
+        reference_exposures = check_spectra['PARAMS']['PEAKCOUNT_' +
+                                                      program + '_REF']
+
         obj_type = sort_obj(gen_info)
 
-        my_palette = get_palette("viridis")
+        my_palette = get_palette("RdYlBu_r")
 
         peak_tooltip = """
             <div>
@@ -68,15 +75,16 @@ class Skypeak:
             'x1': ra, 
             'y1': dec,
             'peakcount_fib': peakcount_fib,
+            'delta_peakcount_fib': np.array(peakcount_fib)-reference_exposures,
             'QLF_FIBERID': qlf_fiberid,
             'OBJ_TYPE': obj_type,
 
         })
-
+        low, high = wrg
         mapper = LinearColorMapper(palette=my_palette,
-                                   low=0.98*np.min(peakcount_fib),
-                                   high=1.02*np.max(peakcount_fib))
-
+                                   low=low, #0.98*np.min(peakcount_fib),
+                                   high=high, #1.02*np.max(peakcount_fib))
+                                   nan_color='darkgrey') 
         radius = 0.0165  
         radius_hover = 0.02
 
@@ -106,7 +114,7 @@ class Skypeak:
             source,
             x='x1',
             y='y1',
-            field='peakcount_fib',
+            field='delta_peakcount_fib',
             mapper=mapper,
         ).plot
 
@@ -156,14 +164,8 @@ class Skypeak:
             line_width=1,
         )
 
-        nrg = check_spectra['PARAMS']['PEAKCOUNT_NORMAL_RANGE']
-        wrg = check_spectra['PARAMS']['PEAKCOUNT_WARN_RANGE']
 
        # Prepare tables
-        current_exposures = [check_spectra['METRICS']['PEAKCOUNT']]
-        program = gen_info['PROGRAM'].upper()
-        reference_exposures = check_spectra['PARAMS']['PEAKCOUNT_' +
-                                                      program + '_REF']
         keynames = ["PEAKCOUNT" for i in range(len(current_exposures))]
         metric = Table().reference_table(keynames, current_exposures, reference_exposures)
         alert = Table().alert_table(nrg, wrg)
