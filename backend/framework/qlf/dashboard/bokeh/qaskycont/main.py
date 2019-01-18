@@ -35,12 +35,13 @@ class Skycont:
 
         nrg = check_spectra['PARAMS']['SKYCONT_NORMAL_RANGE']
         wrg = check_spectra['PARAMS']['SKYCONT_WARN_RANGE']
+
         current_exposures = [check_spectra['METRICS']['SKYCONT']]
         program = gen_info['PROGRAM'].upper()
         reference_exposures = check_spectra['PARAMS']['SKYCONT_' + program + '_REF']
     
-        ra_sky = [ra[i] for i in skyfibers]
-        dec_sky = [dec[i] for i in skyfibers]
+        ra_sky = [ra[i%500] for i in skyfibers]
+        dec_sky = [dec[i%500] for i in skyfibers]
 
         my_palette = get_palette("RdYlBu_r")
 
@@ -68,8 +69,11 @@ class Skycont:
         #  'n' is number of sky fibers
 
         ra_not, dec_not = [], []
+        fiber_mod= []
+        for fiber in skyfibers:
+            fiber_mod.append(fiber%500)
         for i in range(500):
-            if i not in skyfibers:
+            if i not in fiber_mod:
                 ra_not.append(ra[i])
                 dec_not.append(dec[i])
 

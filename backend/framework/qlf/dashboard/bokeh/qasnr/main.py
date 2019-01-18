@@ -146,8 +146,8 @@ class SNR:
             elg.data['y'] = np.array(elg_snr[0])
             elg.data['y2'] = np.array(elg_snr[0])**2
             elg.data['fiber_id'] = gen_info['ELG_FIBERID']
-            elg.data['ra'] = [ra[i] for i in gen_info['ELG_FIBERID']]
-            elg.data['dec'] = [dec[i] for i in gen_info['ELG_FIBERID']]
+            elg.data['ra'] = [ra[i%500] for i in gen_info['ELG_FIBERID']]
+            elg.data['dec'] = [dec[i%500] for i in gen_info['ELG_FIBERID']]
 
             xfit, yfit = fit_func(elg_snr[1],
                                   snr['FITCOEFF_TGT'][obj_idx['ELG']])
@@ -163,8 +163,8 @@ class SNR:
             lrg.data['y'] = np.array(lrg_snr[0])
             lrg.data['y2'] = np.array(lrg_snr[0])**2
             lrg.data['fiber_id'] = gen_info['LRG_FIBERID']
-            lrg.data['ra'] = [ra[i] for i in gen_info['LRG_FIBERID']]
-            lrg.data['dec'] = [dec[i] for i in gen_info['LRG_FIBERID']]
+            lrg.data['ra'] = [ra[i%500] for i in gen_info['LRG_FIBERID']]
+            lrg.data['dec'] = [dec[i%500] for i in gen_info['LRG_FIBERID']]
 
             xfit, yfit = fit_func(lrg_snr[1],
                                   snr['FITCOEFF_TGT'][obj_idx['LRG']])
@@ -179,8 +179,8 @@ class SNR:
             qso.data['y'] = np.array(qso_snr[0])
             qso.data['y2'] = np.array(qso_snr[0])**2
             qso.data['fiber_id'] = gen_info['QSO_FIBERID']
-            qso.data['ra'] = [ra[i] for i in gen_info['QSO_FIBERID']]
-            qso.data['dec'] = [dec[i] for i in gen_info['QSO_FIBERID']]
+            qso.data['ra'] = [ra[i%500] for i in gen_info['QSO_FIBERID']]
+            qso.data['dec'] = [dec[i%500] for i in gen_info['QSO_FIBERID']]
 
             xfit, yfit = fit_func(qso_snr[1],
                                   snr['FITCOEFF_TGT'][obj_idx['QSO']])
@@ -195,8 +195,8 @@ class SNR:
             star.data['y'] = np.array(star_snr[0])
             star.data['y2'] = np.array(star_snr[0])**2
             star.data['fiber_id'] = gen_info['STAR_FIBERID']
-            star.data['ra'] = [ra[i] for i in gen_info['STAR_FIBERID']]
-            star.data['dec'] = [dec[i] for i in gen_info['STAR_FIBERID']]
+            star.data['ra'] = [ra[i%500] for i in gen_info['STAR_FIBERID']]
+            star.data['dec'] = [dec[i%500] for i in gen_info['STAR_FIBERID']]
 
             xfit, yfit = fit_func(star_snr[1],
                                   snr['FITCOEFF_TGT'][obj_idx['STAR']])
@@ -366,11 +366,11 @@ class SNR:
             fibersnr = fibersnr + fibersnr_tgt[i]
 
         source = ColumnDataSource(data={
-            'x1': [ra[i] for i in fibersnr],
-            'y1': [dec[i] for i in fibersnr],
+            'x1': [ra[i%500] for i in fibersnr],
+            'y1': [dec[i%500] for i in fibersnr],
             'resid_snr': resid,
             'QLF_FIBERID': fibersnr,
-            'OBJ_TYPE': [obj_fiber[i] for i in fibersnr],
+            'OBJ_TYPE': [obj_fiber[i%500] for i in fibersnr],
             'median': median
         })
 
@@ -378,9 +378,12 @@ class SNR:
         dec_not = []
         obj_not = []
         fiber_not = []
+        fiber_mod= []
+        for fiber in fibersnr:
+            fiber_mod.append(fiber%500)
 
         for i in range(500):
-            if i not in fibersnr:
+            if i not in fiber_mod:
                 ra_not.append(ra[i])
                 dec_not.append(dec[i])
                 fiber_not.append(i)

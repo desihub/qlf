@@ -155,7 +155,7 @@ class QLFProcess(object):
             '-c', camera.get('name'),
             '-e', str(data.get('exposure_id')),
             '--rawdata_dir', data.get('desi_spectro_data'),
-            '--specprod_dir', desi_spectro_redux
+            '--specprod_dir', desi_spectro_redux,
         ]
 
         logname = io.open(os.path.join(

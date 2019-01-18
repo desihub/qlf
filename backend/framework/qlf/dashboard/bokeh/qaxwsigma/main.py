@@ -33,10 +33,9 @@ class Xwsigma:
         gen_info = mergedqa['GENERAL_INFO']
         flavor= mergedqa['FLAVOR']
 
-
-
-        ra = gen_info['RA']
-        dec = gen_info['DEC']
+        if flavor=="science":
+            ra = gen_info['RA']
+            dec = gen_info['DEC']
 
         check_ccds = mergedqa['TASKS']['CHECK_CCDs']
 

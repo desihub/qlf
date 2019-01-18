@@ -38,8 +38,8 @@ class Arc:
         # Prepare tables
         current_exposures = check_arc['METRICS']['CHECKARC']
         reference_exposures = check_arc['PARAMS']['CHECKARC_REF']
-        keynames = ["CHECKARC" + " ( P%d)" % i for i in range(3)]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
+        keynames = ["CHECKARC"]
+        metric = Table().reference_table(keynames, [current_exposures], reference_exposures)
         alert = Table().alert_table(nrg, wrg)
 
         layout = column(info_col, Div(),
