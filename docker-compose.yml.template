@@ -26,6 +26,8 @@ services:
       - 80:8080
     cap_drop:
       - ALL
+    depends_on:
+      - app
 #  jupyter:
 #    build: ./jupyter
 #    command: /app/run.sh
