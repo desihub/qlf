@@ -95,6 +95,7 @@ class QLFState:
         qlf = get_exposure_monitoring()
 
         if self.pipeline_running is 1 and qlf.is_running():
+            self.camera_logs = dict()
             self.camera_status_generator.reset_camera_status()
 
         self.pipeline_running = 0 if not qlf.get_status() else 2
