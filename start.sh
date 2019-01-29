@@ -20,6 +20,6 @@ if [ $1 = "logs" ]; then
   exit 1
 fi
 
-if [ $1 = "daemon" ]; then
-  docker exec -it $(docker ps -f "name=qlf" --format "{{.Names}}") ./startDaemon.sh
+if [ $1 = "python" ]; then
+  docker exec -it $(docker ps -f "name=app" --format "{{.Names}}") ./startPython.sh
 fi

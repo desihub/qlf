@@ -204,14 +204,23 @@ def simulate(night_base, num_days=3, num_exp=40):
             generate_jobs_by_process(process)
 
 
+    def migrate_job_outputs():
+        qlf_models.migrate_outputs()
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("night", help="Simulation start date. ex: 20180101")
     parser.add_argument("--days", help="Number of simulated nights", type=int, default=3)
     parser.add_argument("--exps", help="Number of exposures per night", type=int, default=40)
+    parser.add_argument("--migrate", help="Number of exposures per night", type=bool, default=False)
 
     args = parser.parse_args()
+
+    if args.migrate:
+        migrate_job_outputs()
+        sys.exit()
 
     basenight = args.night
     num_days = args.days  
