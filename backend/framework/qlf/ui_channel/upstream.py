@@ -35,6 +35,7 @@ class Upstream:
     def __init__(self, qlf_state):
         self.startedUpStreamJob = False
         self.qlf_state = qlf_state
+        self.updating = False
 
     def start_daemon(self):
         qlf.start()
@@ -51,12 +52,15 @@ class Upstream:
         logger_pipeline.info(message)
 
     def monitor_job(self):
-        state = self.qlf_state.get_monitor_state()
+        if not self.updating:
+            self.updating = True
+            state = self.qlf_state.get_monitor_state()
 
-        if state is not None:
-            Group("monitor").send({
-                "text": state
-            })
+            if state is not None:
+                Group("monitor").send({
+                    "text": state
+                })
+            self.updating = False
 
     def disk_space_job(self):
         Group("monitor").send({
