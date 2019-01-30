@@ -14,6 +14,10 @@ import os
 from qlf_models import QLFModels
 from datetime import datetime, timedelta
 
+import datashader as ds
+import datashader.transfer_functions as tf
+from datashader.bokeh_ext import InteractiveImage
+
 qlf_root = os.environ.get('QLF_ROOT')
 
 logger = get_logger(
@@ -40,17 +44,13 @@ class Regression():
             metrics = json.load(f)
         y_data = metrics[self.yaxis]
         x_data = metrics[self.xaxis]
-        exposures = outputs_x.values_list('exposure_id', flat=True)
-        cameras = outputs_x.values_list('camera', flat=True)
-        df_x = pd.DataFrame(list(outputs_x.values('value')))
-        metric_x = list(df_x['value'].apply(lambda x: x[0]))
-        df_y = pd.DataFrame(list(outputs_y.values('value')))
-        metric_y = list(df_y['value'].apply(lambda x: x[0]))
+        df_x = pd.DataFrame(list(outputs_x))
+        df_y = pd.DataFrame(list(outputs_y))
         source = ColumnDataSource(data=dict(
-            x=metric_x,
-            y=metric_y,
-            exposure=exposures,
-            camera=cameras
+            x=df_x['value'].apply(lambda x: x[0]),
+            y=df_y['value'].apply(lambda x: x[0]),
+            exposure=df_x['exposure_id'],
+            camera=df_x['camera']
         ))
 
         TOOLTIPS = """

@@ -40,21 +40,16 @@ class TimeSeries():
             'orange'
         ]
         legends=list()
+        df = pd.DataFrame(list(outputs))
         if self.amp != None:
-            mjds = outputs.values_list('mjd', flat=True)
-            exposure_id = outputs.values_list('exposure_id', flat=True)
-            cameras = outputs.values_list('camera', flat=True)
-            dateobs = outputs.values_list('datef', flat=True)
-            df = pd.DataFrame(list(outputs.values('value')))
             for amp in self.amp.split(','):
                 idx = int(amp)-1
-                metric = list(df['value'].apply(lambda x: x[idx]))
                 source = ColumnDataSource(data=dict(
-                    x=mjds,
-                    y=metric,
-                    exposure=exposure_id,
-                    camera=cameras,
-                    dateobs=dateobs
+                    x=df['mjd'],
+                    y=df['value'].apply(lambda x: x[idx]),
+                    exposure=df['exposure_id'],
+                    camera=df['camera'],
+                    dateobs=df['datef']
                 ))
                 line=self.p.line('x', 'y', source=source, line_color=colors[idx])
                 circle=self.p.circle('x', 'y', source=source, size=6, line_color=None, fill_color=colors[idx])
@@ -62,18 +57,12 @@ class TimeSeries():
             legend = Legend(items=legends, location=(0, 0))
             self.p.add_layout(legend, 'below')
         else:
-            mjds = outputs.values_list('mjd', flat=True)
-            exposure_id = outputs.values_list('exposure_id', flat=True)
-            cameras = outputs.values_list('camera', flat=True)
-            dateobs = outputs.values_list('datef', flat=True)
-            df = pd.DataFrame(list(outputs.values('value')))
-            metric = list(df['value'].apply(lambda x: x[0]))
             source = ColumnDataSource(data=dict(
-                x=mjds,
-                y=metric,
-                exposure=exposure_id,
-                camera=cameras,
-                dateobs=dateobs
+                x=df['mjd'],
+                y=df['value'].apply(lambda x: x[0]),
+                exposure=df['exposure_id'],
+                camera=df['camera'],
+                dateobs=df['datef']
             ))
         
             self.p.line('x', 'y', source=source)
@@ -121,8 +110,6 @@ class TimeSeries():
             tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
         )
 
-        self.make_plot(outputs)
-
         font_size = "1.2vw"
         self.p.xaxis.major_label_text_font_size = font_size
         self.p.yaxis.major_label_text_font_size = font_size
@@ -131,4 +118,5 @@ class TimeSeries():
         self.p.legend.label_text_font_size = font_size
         self.p.title.text_font_size = font_size
 
+        self.make_plot(outputs)
         return file_html(self.p, CDN, "Time Series")
