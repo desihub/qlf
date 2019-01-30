@@ -1,28 +1,18 @@
 from qlf_models import QLFModels
 import sys
+import os
+import json
 
 qlf_models = QLFModels()
-
-metrics = {
-    'skybrightness': {
-        'display': 'SKY BRIGHTNESS',
-        'path': 'TASKS->CHECK_SPECTRA->METRICS->PEAKCOUNT'
-    },
-    'airmass': {
-        'display': 'AIRMASS',
-        'path': 'GENERAL_INFO->AIRMASS'
-    },
-    'bias': {
-        'display': 'BIAS',
-        'path': 'TASKS->CHECK_CCDs->METRICS->BIAS_AMP'
-    },
-    'noise': {
-        'display': 'NOISE',
-        'path': 'TASKS->CHECK_CCDs->METRICS->NOISE_AMP'
-    },
-}
+qlf_root = os.environ.get('QLF_ROOT')
 
 def migrate_job_outputs():
+    metrics_path = os.path.join(
+        qlf_root, "framework", "ql_mapping",
+        "metrics.json")
+
+    with open(metrics_path) as f:
+        metrics = json.load(f)
     qlf_models.migrate_outputs(metrics)
 
 

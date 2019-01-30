@@ -151,7 +151,7 @@ class TrendAnalysis extends React.Component {
       endDate: '',
       datePeriod: 'all',
       selectArm: '',
-      selectAmp: '',
+      selectAmp: [],
       selectXaxis: '',
       selectYaxis: '',
       selectStartDate: '',
@@ -246,7 +246,8 @@ class TrendAnalysis extends React.Component {
   handleSubmit = () => {
     if (
       this.state.selectArm !== this.state.arm ||
-      this.state.selectAmp !== this.state.amp ||
+      this.state.selectAmp.length !== this.state.amp.length ||
+      this.state.selectAmp[0] !== this.state.amp[0] ||
       this.state.selectXaxis !== this.state.xaxis ||
       this.state.selectYaxis !== this.state.yaxis ||
       this.state.selectSpectrograph.length !== this.state.spectrograph.length ||
@@ -322,7 +323,7 @@ class TrendAnalysis extends React.Component {
   isValid = () => {
     if (this.state.tab === 'Time Series') {
       return (
-        this.state.amp !== '' &&
+        this.state.amp.length !== 0 &&
         this.state.arm !== '' &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
@@ -333,7 +334,7 @@ class TrendAnalysis extends React.Component {
 
     if (this.state.tab === 'Regression') {
       return (
-        this.state.amp !== '' &&
+        this.state.amp.length !== 0 &&
         this.state.arm !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&

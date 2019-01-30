@@ -1,0 +1,18 @@
+{
+  "skybrightness": {
+    "display": "SKY BRIGHTNESS",
+    "path": "TASKS->CHECK_SPECTRA->METRICS->PEAKCOUNT"
+  },
+  "airmass": {
+    "display": "AIRMASS",
+    "path": "GENERAL_INFO->AIRMASS"
+  },
+  "bias": {
+    "display": "BIAS",
+    "path": "TASKS->CHECK_CCDs->METRICS->BIAS_AMP"
+  },
+  "noise": {
+    "display": "NOISE",
+    "path": "TASKS->CHECK_CCDs->METRICS->NOISE_AMP"
+  }
+}

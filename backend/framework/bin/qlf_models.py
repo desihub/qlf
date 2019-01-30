@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 import django
 import numpy
 
+qlf_root = os.environ.get('QLF_ROOT')
+
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
 )
@@ -196,11 +198,51 @@ class QLFModels(object):
                 status=status
             )
 
+            self.create_products(job_id)
+
             logger.info('Job {} updated.'.format(job_id))
         except Exception as err:
             logger.error('Job {} failed.'.format(job_id))
             logger.error(err)
 
+    def create_products(self, job_id):
+        metrics_path = os.path.join(
+            qlf_root, "framework", "ql_mapping",
+            "metrics.json")
+
+        with open(metrics_path) as f:
+            metrics = json.load(f)
+
+        query = Job.objects.filter(id=job_id)
+        values = {}
+        for key in metrics:
+            output_path = 'output'
+            path_keys = metrics[key]['path']
+            for path_key in path_keys.split('->'):
+                output_path += "->'{}'".format(path_key)
+            values[key] = output_path
+
+        job = query.extra(
+            select=values
+        ).annotate(
+            dateobs=F("process__exposure__dateobs")
+        ).values(*list(values), "dateobs", 'id').last()
+
+        for key in metrics:
+            date_time = (job['dateobs']).strftime('%Y-%m-%d %H:%M:%S')
+            value = []
+            if isinstance(job[key], list):
+                value = job[key]
+            else:
+                value = [job[key]]
+            mjd = Time(date_time, format='iso', scale='utc').mjd
+            p = Product(
+                job_id=job_id,
+                value=value,
+                key=key,
+                mjd=mjd
+            )
+            p.save()
 
     def get_last_configuration(self):
         return Configuration.objects.latest('pk')
@@ -404,6 +446,7 @@ class QLFModels(object):
         jobs = query[start:end]
 
         while len(jobs) is not 0:
+            print('Ingesting: {} - {}'.format(start, end))
             for job in jobs:
                 for key in metrics:
                     date_time=(job['dateobs']).strftime('%Y-%m-%d %H:%M:%S')
@@ -420,7 +463,6 @@ class QLFModels(object):
                         mjd=mjd
                     )
                     p.save()
-            print('Ingesting: {} - {}'.format(start, end))
             start = start + step
             end = end + step
             jobs = query[start:end]

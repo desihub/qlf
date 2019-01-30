@@ -21,16 +21,6 @@ logger = get_logger(
     os.path.join(qlf_root, "logs", "bokeh.log")
 )
 
-plots = {
-    'skybrightness': {
-        'display': 'SKY BRIGHTNESS',
-        'path': 'TASKS->CHECK_SPECTRA->METRICS->PEAKCOUNT'
-    },
-    'airmass': {
-        'display': 'AIRMASS',
-        'path': 'GENERAL_INFO->AIRMASS'
-    },
-}
 
 class Regression():
     def __init__(self, xaxis, yaxis, start, end, camera):
@@ -41,12 +31,24 @@ class Regression():
         self.camera = camera
         self.models = QLFModels()
 
-    def render_plot(self, exposures, x_values, y_values, cameras):
-        y_data = plots[self.yaxis]
-        x_data = plots[self.xaxis]
+    def render_plot(self, outputs_x, outputs_y):
+        metrics_path = os.path.join(
+            qlf_root, "framework", "ql_mapping",
+            "metrics.json")
+
+        with open(metrics_path) as f:
+            metrics = json.load(f)
+        y_data = metrics[self.yaxis]
+        x_data = metrics[self.xaxis]
+        exposures = outputs_x.values_list('exposure_id', flat=True)
+        cameras = outputs_x.values_list('camera', flat=True)
+        df_x = pd.DataFrame(list(outputs_x.values('value')))
+        metric_x = list(df_x['value'].apply(lambda x: x[0]))
+        df_y = pd.DataFrame(list(outputs_y.values('value')))
+        metric_y = list(df_y['value'].apply(lambda x: x[0]))
         source = ColumnDataSource(data=dict(
-            x=x_values,
-            y=y_values,
+            x=metric_x,
+            y=metric_y,
             exposure=exposures,
             camera=cameras
         ))
@@ -95,27 +97,11 @@ class Regression():
         self.layout = plot
 
     def render(self):
-        y_data = plots[self.yaxis]
-        outputs_y = self.models.get_outputs_json_chunk_by_camera(
-            y_data['path'], self.camera, begin_date=self.start, end_date=self.end)
-        x_data = plots[self.xaxis]
-        outputs_x = self.models.get_outputs_json_chunk_by_camera(
-            x_data['path'], self.camera, begin_date=self.start, end_date=self.end)
+        outputs_y = self.models.get_product_metrics_by_camera(
+            self.yaxis, self.camera, begin_date=self.start, end_date=self.end)
+        outputs_x = self.models.get_product_metrics_by_camera(
+            self.xaxis, self.camera, begin_date=self.start, end_date=self.end)
 
-        cameras = list()
-        x_values = list()
-        y_values = list()
-        exposures = list()
-        for idx, val in enumerate(outputs_y):
-            if val['value']:
-                exposures.append(val['exposure_id'])
-                cameras.append(self.camera)
-                y_values.append(val['value'])
-
-        for idx, val in enumerate(outputs_x):
-            if val['value']:
-                x_values.append(val['value'])
-
-        self.render_plot(exposures, x_values, y_values, cameras)
+        self.render_plot(outputs_x, outputs_y)
 
         return file_html(self.layout, CDN, "Regression")

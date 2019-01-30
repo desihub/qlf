@@ -23,3 +23,7 @@ fi
 if [ $1 = "python" ]; then
   docker exec -it $(docker ps -f "name=app" --format "{{.Names}}") ./startPython.sh
 fi
+
+if [ $1 = "daemon" ]; then
+  docker exec -it $(docker ps -f "name=app" --format "{{.Names}}") ./startDaemon.sh
+fi

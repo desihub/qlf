@@ -22,37 +22,6 @@ logger = get_logger(
     os.path.join(qlf_root, "logs", "bokeh.log")
 )
 
-plots = {
-    'snr': {
-        'display': 'SNR',
-        'path': 'TASKS->CHECK_SPECTRA->METRICS->FIDSNR_TGT'
-    },
-    'skybrightness': {
-        'display': 'SKY BRIGHTNESS',
-        'path': 'TASKS->CHECK_SPECTRA->METRICS->PEAKCOUNT'
-    },
-    'traceshifts': {
-        'display': 'TRACE SHIFTS',
-        'path': 'TASKS->CHECK_FIBERS->METRICS->XYSHIFTS'
-    },
-    'psf': {
-        'display': 'PSF FWHM',
-        'path': 'TASKS->CHECK_CCDs->METRICS->XWSIGMA'
-    },
-    'airmass': {
-        'display': 'AIRMASS',
-        'path': 'GENERAL_INFO->AIRMASS'
-    },
-    'bias': {
-        'display': 'BIAS',
-        'path': 'TASKS->CHECK_CCDs->METRICS->BIAS_AMP'
-    },
-    'noise': {
-        'display': 'NOISE',
-        'path': 'TASKS->CHECK_CCDs->METRICS->NOISE_AMP'
-    },
-}
-
 
 class TimeSeries():
     def __init__(self, yaxis, start, end, camera, amp=None):
@@ -62,18 +31,6 @@ class TimeSeries():
         self.camera = camera
         self.models = QLFModels()
         self.amp = amp
-
-    def single_value(self, dates, values, exposures, cameras, dateobs):
-        source = ColumnDataSource(data=dict(
-            x=dates,
-            y=values,
-            exposure=exposures,
-            camera=cameras,
-            dateobs=dateobs
-        ))
-        
-        self.p.line('x', 'y', source=source)
-        self.p.circle('x', 'y', source=source, size=5)
 
     def make_plot(self, outputs, objtype=None):
         colors = [
@@ -123,16 +80,15 @@ class TimeSeries():
             self.p.circle('x', 'y', source=source, size=5)
 
     def render(self):
-        axis_data = plots[self.yaxis]
+        metrics_path = os.path.join(
+            qlf_root, "framework", "ql_mapping",
+            "metrics.json")
+
+        with open(metrics_path) as f:
+            metrics = json.load(f)
+        axis_data = metrics[self.yaxis]
         outputs = self.models.get_product_metrics_by_camera(
             self.yaxis, self.camera, begin_date=self.start, end_date=self.end)
-
-        dates = list()
-        cameras = list()
-        values = list()
-        exposures = list()
-        dateobs = list()
-        mjds=list()
 
         TOOLTIPS = """
             <div>
@@ -164,7 +120,6 @@ class TimeSeries():
             active_drag="box_zoom",
             tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
         )
-        start_time = datetime.now()
 
         self.make_plot(outputs)
 
