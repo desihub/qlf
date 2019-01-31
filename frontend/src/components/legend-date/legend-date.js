@@ -8,7 +8,7 @@ const styles = {
   ico: {
     position: 'absolute',
     top: '-0.07vh',
-    left: 0,
+    right: 0,
   },
   icoInfo: {
     cursor: 'pointer',
