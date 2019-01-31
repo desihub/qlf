@@ -8,6 +8,7 @@ import json
 import logging
 from log import get_logger
 import datetime
+import time
 
 desi_spectro_redux = os.environ.get('DESI_SPECTRO_REDUX')
 qlf_root = os.environ.get('QLF_ROOT')
@@ -33,7 +34,8 @@ class QLFState:
         flavors = ['science', 'arc', 'flat']
         self.flavor_stages = dict()
         for flavor in flavors:
-            flavor_path = os.path.join(qlf_root, "framework", "ql_mapping", "{}.json".format(flavor))
+            flavor_path = os.path.join(
+                qlf_root, "framework", "ql_mapping", "{}.json".format(flavor))
             try:
                 stages_json = open(flavor_path).read()
                 self.flavor_stages[flavor] = json.loads(stages_json)
@@ -96,6 +98,7 @@ class QLFState:
 
         if self.pipeline_running is 1 and qlf.is_running():
             self.camera_logs = dict()
+            time.sleep(0.5)
             self.camera_status_generator.reset_camera_status()
 
         self.pipeline_running = 0 if not qlf.get_status() else 2
@@ -236,4 +239,5 @@ class QLFState:
                 desi_spectro_redux,
                 job.logname
             )
-            self.camera_logs[camera.camera] = self.get_camera_log(camera_log_path)
+            self.camera_logs[camera.camera] = self.get_camera_log(
+                camera_log_path)
