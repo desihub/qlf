@@ -28,8 +28,6 @@ RUN apt-get install -y curl grep sed dpkg && \
     rm tini.deb && \
     apt-get clean
 
-RUN chmod -R a+rwX /conda
-
 ENV PATH /conda/bin:$PATH
 
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
