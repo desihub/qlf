@@ -212,7 +212,6 @@ if __name__ == "__main__":
     parser.add_argument("night", help="Simulation start date. ex: 20180101")
     parser.add_argument("--days", help="Number of simulated nights", type=int, default=3)
     parser.add_argument("--exps", help="Number of exposures per night", type=int, default=40)
-    parser.add_argument("--migrate", help="Number of exposures per night", type=bool, default=False)
 
     args = parser.parse_args()
 
