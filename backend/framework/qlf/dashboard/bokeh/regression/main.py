@@ -14,10 +14,6 @@ import os
 from qlf_models import QLFModels
 from datetime import datetime, timedelta
 
-import datashader as ds
-import datashader.transfer_functions as tf
-from datashader.bokeh_ext import InteractiveImage
-
 qlf_root = os.environ.get('QLF_ROOT')
 
 logger = get_logger(
