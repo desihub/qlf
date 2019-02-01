@@ -22,7 +22,7 @@ const styles = {
     borderLeft: 'solid 4px green',
     flex: '1',
     marginRight: '1vw',
-    marginBottom: 10,
+    marginBottom: '10px',
   },
   arm: {
     color: '#9E9E9E',
@@ -95,6 +95,7 @@ class Stages extends Component {
   };
 
   renderTableHeader = flavor => {
+    if (this.props.arm !== 'b') return;
     return (
       <TableHead>
         <TableRow style={{ height: this.state.columnHeight }}>
@@ -192,7 +193,7 @@ class Stages extends Component {
                                 key={stg}
                                 style={{
                                   fontSize: 0,
-                                  height: 0,
+                                  height: '0.3vh',
                                   padding: 0,
                                   ...this.getColor(row[stg]),
                                 }}

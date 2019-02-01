@@ -17,6 +17,7 @@ const styles = {
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: '1vw',
     fontFamily: 'Source Code Pro',
+    fontWeight: 'bold',
   },
 };
 
