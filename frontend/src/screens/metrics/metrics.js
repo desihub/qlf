@@ -217,7 +217,7 @@ export default class Metrics extends Component {
         <div style={{ ...styles.controlsContainerLeft }}>
           <MetricSelect
             camera={camera}
-            selectedQA={this.props.qa}
+            selectedQA={this.state.qa}
             qaTests={this.props.qaTests}
             selectQA={this.selectQA}
             step={this.state.steps[this.state.step]}

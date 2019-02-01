@@ -22,8 +22,6 @@ import LegendDate from '../../components/legend-date/legend-date';
 
 const styles = {
   controlsContainer: {
-    display: 'grid',
-    alignItems: 'center',
     width: '12vw',
     borderRight: '1px solid darkgrey',
     overflow: 'auto',
@@ -43,7 +41,7 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: '12vw calc(100vw - 64px - 12vw)',
     width: 'calc(100vw - 64px)',
-    height: 'calc(100vh - 130px - 1.2vw - 4.8vh)',
+    height: 'calc(100vh - 127px - 1.2vw - 4.8vh)',
   },
   viewer: {
     width: 'calc(100vw - 64px - 12vw)',
@@ -76,7 +74,7 @@ const styles = {
   button: {
     float: 'right',
     margin: '10px 0',
-    fontSize: '1.2vw',
+    fontSize: '1vw',
   },
   buttonGreen: {
     backgroundColor: 'green',
@@ -97,6 +95,7 @@ const styles = {
   },
   title: {
     fontSize: '1.2vw',
+    textAlign: 'left',
   },
   text: {
     fontSize: '1vw',
@@ -106,6 +105,7 @@ const styles = {
   },
   tabsH: {
     minHeight: '4.8vh',
+    marginBottom: '20px',
   },
   tabWH: {
     minWidth: '11vw',
@@ -331,9 +331,9 @@ class ObservingConditions extends React.Component {
             style={styles.space}
             classes={{ root: classes.title }}
           >
-            <LegendDate />
             Date Period
           </InputLabel>
+          <LegendDate />
           <Select
             value={this.state.datePeriod}
             onChange={this.handleChangeDatePeriod}

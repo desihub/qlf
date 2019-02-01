@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
@@ -7,8 +8,9 @@ import Typography from '@material-ui/core/Typography';
 const styles = {
   card: {
     borderLeft: 'solid 4px #424242',
-    margin: '0.5vh 0.5vw',
-    // height: '15vh',
+    margin: '0.5vh 0.5vw 0.5vh 7.5vw',
+    overflow: 'visible',
+    position: 'relative',
   },
   headerMetrics: {
     display: 'grid',
@@ -23,11 +25,11 @@ const styles = {
   title: {
     fontSize: '1.2vw',
     color: 'rgba(0, 0, 0, 0.54)',
+    lineHeight: '2',
   },
   buttons: {
     display: 'grid',
     gridTemplateAreas: "'button button' 'button button'",
-    // gridTemplateRows: '3vh 3vh 3vh',
     justifyContent: 'space-around',
     fontSize: '1.2vw',
   },
@@ -58,10 +60,14 @@ const styles = {
   back: {
     color: 'red',
     fontSize: '1.2vw',
+    position: 'absolute',
+    top: '50%',
+    left: '-7.2vw',
+    marginTop: '-2.5vh',
   },
 };
 
-export default class MetricSelect extends Component {
+class MetricSelect extends Component {
   static propTypes = {
     step: PropTypes.string.isRequired,
     selectedQA: PropTypes.string,
@@ -70,6 +76,7 @@ export default class MetricSelect extends Component {
     back: PropTypes.func.isRequired,
     qaTests: PropTypes.array.isRequired,
     stepsQa: PropTypes.object,
+    classes: PropTypes.object,
   };
 
   renderButtons = step => {
@@ -95,7 +102,7 @@ export default class MetricSelect extends Component {
       const qaDisplay = qa[qaName];
       const selected =
         this.props.selectedQA && this.props.selectedQA.includes(qaName)
-          ? styles.selected
+          ? this.props.classes.selected
           : null;
       if (buttonsStatus && buttonsStatus[index]) {
         const labelColor =
@@ -112,7 +119,7 @@ export default class MetricSelect extends Component {
         return (
           <Button
             key={index}
-            labelstyle={{ ...selected, ...styles.metricLabel }}
+            classes={{ root: selected }}
             onClick={() => this.props.selectQA('qa' + qaName)}
             fullWidth
             style={labelColor}
@@ -124,7 +131,7 @@ export default class MetricSelect extends Component {
         return (
           <Button
             key={index}
-            labelstyle={{ ...selected, ...styles.metricLabel }}
+            classes={{ root: selected }}
             onClick={() => this.props.selectQA('qa' + qaName)}
             fullWidth
             style={styles.failure}
@@ -150,7 +157,7 @@ export default class MetricSelect extends Component {
           Metrics
         </Typography>
         <Button style={styles.back} onClick={this.props.back}>
-          Back
+          &laquo; Back
         </Button>
       </div>
     );
@@ -165,3 +172,5 @@ export default class MetricSelect extends Component {
     );
   }
 }
+
+export default withStyles(styles)(MetricSelect);

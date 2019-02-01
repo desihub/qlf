@@ -24,8 +24,6 @@ import LegendDate from '../../components/legend-date/legend-date';
 
 const styles = {
   controlsContainer: {
-    display: 'grid',
-    alignItems: 'center',
     width: '12vw',
     borderRight: '1px solid darkgrey',
     overflowY: 'auto',
@@ -35,6 +33,7 @@ const styles = {
   controlsContainerInner: {
     display: 'flex',
     flexDirection: 'row',
+    paddingBottom: '2.5vh',
   },
   column: {
     display: 'flex',
@@ -68,7 +67,6 @@ const styles = {
   },
   selectionRadio: {
     width: '50%',
-    paddingBottom: '2.5vh',
   },
   formControl: {
     width: '100%',
@@ -79,7 +77,7 @@ const styles = {
   button: {
     float: 'right',
     margin: '10px 0',
-    fontSize: '1.2vw',
+    fontSize: '1vw',
   },
   buttonGreen: {
     backgroundColor: 'green',
@@ -100,6 +98,7 @@ const styles = {
   },
   title: {
     fontSize: '1.2vw',
+    textAlign: 'left',
   },
   text: {
     fontSize: '1vw',
@@ -368,9 +367,9 @@ class TrendAnalysis extends React.Component {
             style={styles.space}
             classes={{ root: classes.title }}
           >
-            <LegendDate />
             Date Period
           </InputLabel>
+          <LegendDate />
           <Select
             value={this.state.datePeriod}
             onChange={this.handleChangeDatePeriod}
