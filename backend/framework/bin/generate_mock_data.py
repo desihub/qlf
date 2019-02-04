@@ -1,4 +1,5 @@
 from qlf_models import QLFModels
+from migrate_jobs_outputs import migrate_job_outputs
 from copy import copy
 import collections
 import numpy
@@ -202,6 +203,7 @@ def simulate(night_base, num_days=3, num_exp=40):
             new_exposure = generate_new_exposure(flavor.pop(), nbase)
             process = generate_processes_by_exposure(new_exposure)
             generate_jobs_by_process(process)
+    migrate_job_outputs()
 
 
 if __name__ == "__main__":

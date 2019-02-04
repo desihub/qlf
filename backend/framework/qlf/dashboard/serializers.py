@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap
+from .models import Job, Exposure, Camera, Process, Configuration, ProcessComment, Fibermap, Product
 from clients import get_exposure_monitoring
 from astropy.time import Time
 
@@ -67,6 +67,25 @@ class ProcessSerializer(DynamicFieldsModelSerializer):
         request = self.context['request']
         return {
             'self': reverse('process-detail', kwargs={'pk': obj.pk},
+                            request=request),
+        }
+
+
+class ProductSerializer(DynamicFieldsModelSerializer):
+
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = (
+            'pk', 'value', 'key', 'mjd',
+            'links'
+        )
+
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('product-detail', kwargs={'pk': obj.pk},
                             request=request),
         }
 

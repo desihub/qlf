@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 import django
 import numpy
 
+qlf_root = os.environ.get('QLF_ROOT')
+
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
 )
@@ -20,9 +22,10 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'qlf.settings'
 django.setup()
 
 from dashboard.models import (
-    Camera, Configuration, Exposure, Job, Process, Fibermap
+    Camera, Configuration, Exposure, Job, Process, Fibermap, Product
 )
 from django.db.models import F
+from astropy.time import Time
 
 logger = logging.getLogger()
 
@@ -195,11 +198,51 @@ class QLFModels(object):
                 status=status
             )
 
+            self.create_products(job_id)
+
             logger.info('Job {} updated.'.format(job_id))
         except Exception as err:
             logger.error('Job {} failed.'.format(job_id))
             logger.error(err)
 
+    def create_products(self, job_id):
+        metrics_path = os.path.join(
+            qlf_root, "framework", "ql_mapping",
+            "metrics.json")
+
+        with open(metrics_path) as f:
+            metrics = json.load(f)
+
+        query = Job.objects.filter(id=job_id)
+        values = {}
+        for key in metrics:
+            output_path = 'output'
+            path_keys = metrics[key]['path']
+            for path_key in path_keys.split('->'):
+                output_path += "->'{}'".format(path_key)
+            values[key] = output_path
+
+        job = query.extra(
+            select=values
+        ).annotate(
+            dateobs=F("process__exposure__dateobs")
+        ).values(*list(values), "dateobs", 'id').last()
+
+        for key in metrics:
+            date_time = (job['dateobs']).strftime('%Y-%m-%d %H:%M:%S')
+            value = []
+            if isinstance(job[key], list):
+                value = job[key]
+            else:
+                value = [job[key]]
+            mjd = Time(date_time, format='iso', scale='utc').mjd
+            p = Product(
+                job_id=job_id,
+                value=value,
+                key=key,
+                mjd=mjd
+            )
+            p.save()
 
     def get_last_configuration(self):
         return Configuration.objects.latest('pk')
@@ -379,6 +422,72 @@ class QLFModels(object):
         ).distinct().order_by('dateobs')
 
         return outputs
+
+    def migrate_outputs(self, metrics):
+        Product.objects.all().delete()
+        query=Job.objects.all()
+        values = {}
+        for key in metrics:
+            output_path = 'output'
+            path_keys = metrics[key]['path']
+            for path_key in path_keys.split('->'):
+                output_path += "->'{}'".format(path_key)
+            values[key] = output_path
+
+        query = query.extra(
+            select=values
+        ).annotate(
+            dateobs=F("process__exposure__dateobs")
+        ).values(*list(values), "dateobs", 'id')
+
+        step=500
+        start=0
+        end=step
+        jobs = query[start:end]
+
+        while len(jobs) is not 0:
+            print('Ingesting: {} - {}'.format(start, end))
+            for job in jobs:
+                for key in metrics:
+                    date_time=(job['dateobs']).strftime('%Y-%m-%d %H:%M:%S')
+                    value = []
+                    if isinstance(job[key], list):
+                        value = job[key]
+                    else:
+                        value = [job[key]]
+                    mjd=Time(date_time, format='iso', scale='utc').mjd
+                    p = Product(
+                        job_id=job['id'],
+                        value=value,
+                        key=key,
+                        mjd=mjd
+                    )
+                    p.save()
+            start = start + step
+            end = end + step
+            jobs = query[start:end]
+
+
+    def get_product_metrics_by_camera(self, key, camera, begin_date=None, end_date=None):
+        vals = Product.objects.filter(job__camera=camera, key=key)
+        if begin_date:
+            begin_date = datetime.strptime(begin_date, "%Y-%m-%d")
+            vals = vals.filter(job__process__exposure__dateobs__gte=begin_date)
+            
+        if end_date:
+            end_date = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
+            vals = vals.filter(job__process__exposure__dateobs__lte=end_date)
+
+        output = vals.extra(
+            select={
+                'datef':"to_char(dateobs, 'YYYY-MM-DD HH24:MI:SS')"
+            }
+        ).annotate(
+            camera=F("job__camera"),
+            exposure_id=F("job__process__exposure__exposure_id"),
+            dateobs=F("job__process__exposure__dateobs")
+        ).values("camera", "exposure_id", "dateobs", "value", "datef", "mjd").distinct().order_by('dateobs')
+        return output
 
     def delete_all_processes(self):
         """ Delete all processes """

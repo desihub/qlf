@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -37,6 +39,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     paddingTop: '10px',
+    marginTop: '2vh',
   },
   gridRow: {
     display: 'grid',
@@ -108,7 +111,6 @@ const styles = {
   },
   radioGroup: {
     fontSize: '1vw',
-    marginTop: '2vh',
   },
   lineH: {
     height: '4.87vh',
@@ -139,7 +141,7 @@ class TrendAnalysis extends React.Component {
       tab: 'Time Series',
       spectrograph: [],
       arm: '',
-      amp: '',
+      amp: [],
       loading: false,
       firstLoad: false,
       xaxis: '',
@@ -148,7 +150,7 @@ class TrendAnalysis extends React.Component {
       endDate: '',
       datePeriod: 'all',
       selectArm: '',
-      selectAmp: '',
+      selectAmp: [],
       selectXaxis: '',
       selectYaxis: '',
       selectStartDate: '',
@@ -215,8 +217,17 @@ class TrendAnalysis extends React.Component {
     this.setState({ arm: evt.target.value, preview: false });
   };
 
-  handleChangeAmp = evt => {
-    this.setState({ amp: evt.target.value, preview: false });
+  handleChangeAmp = value => () => {
+    if (value === 'all') {
+      this.state.amp.includes(value)
+        ? this.setState({ amp: [], preview: false })
+        : this.setState({ amp: ['all', '1', '2', '3', '4'], preview: false });
+    } else {
+      const amps = this.state.amp.includes(value)
+        ? this.state.amp.filter(v => v !== value)
+        : this.state.amp.concat(value);
+      this.setState({ amp: amps, preview: false });
+    }
   };
 
   handleChangeXaxis = evt => {
@@ -234,7 +245,8 @@ class TrendAnalysis extends React.Component {
   handleSubmit = () => {
     if (
       this.state.selectArm !== this.state.arm ||
-      this.state.selectAmp !== this.state.amp ||
+      this.state.selectAmp.length !== this.state.amp.length ||
+      this.state.selectAmp[0] !== this.state.amp[0] ||
       this.state.selectXaxis !== this.state.xaxis ||
       this.state.selectYaxis !== this.state.yaxis ||
       this.state.selectSpectrograph.length !== this.state.spectrograph.length ||
@@ -279,14 +291,14 @@ class TrendAnalysis extends React.Component {
 
     if (
       (this.state.tab === 'Time Series' &&
-        this.state.amp !== '' &&
+        this.state.amp.length !== 0 &&
         this.state.arm !== '' &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
         this.state.endDate !== '' &&
         this.state.spectrograph.length !== 0) ||
       (this.state.tab === 'Regression' &&
-        this.state.amp !== '' &&
+        this.state.amp.length !== 0 &&
         this.state.arm !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
@@ -310,7 +322,7 @@ class TrendAnalysis extends React.Component {
   isValid = () => {
     if (this.state.tab === 'Time Series') {
       return (
-        this.state.amp !== '' &&
+        this.state.amp.length !== 0 &&
         this.state.arm !== '' &&
         this.state.yaxis !== '' &&
         this.state.startDate !== '' &&
@@ -321,7 +333,7 @@ class TrendAnalysis extends React.Component {
 
     if (this.state.tab === 'Regression') {
       return (
-        this.state.amp !== '' &&
+        this.state.amp.length !== 0 &&
         this.state.arm !== '' &&
         this.state.yaxis !== '' &&
         this.state.xaxis !== '' &&
@@ -421,43 +433,25 @@ class TrendAnalysis extends React.Component {
           <InputLabel shrink classes={{ root: classes.title }}>
             Amp
           </InputLabel>
-          <RadioGroup
-            className={this.props.classes.column}
-            value={this.state.amp}
-            onChange={this.handleChangeAmp}
-            classes={{ root: classes.radioGroup }}
-          >
-            <FormControlLabel
-              value="all"
-              control={<Radio classes={{ root: classes.wh }} />}
-              label="All"
-              classes={{ label: classes.text, root: classes.lineH }}
-            />
-            <FormControlLabel
-              value="0"
-              control={<Radio classes={{ root: classes.wh }} />}
-              label="0"
-              classes={{ label: classes.text, root: classes.lineH }}
-            />
-            <FormControlLabel
-              value="1"
-              control={<Radio classes={{ root: classes.wh }} />}
-              label="1"
-              classes={{ label: classes.text, root: classes.lineH }}
-            />
-            <FormControlLabel
-              value="2"
-              control={<Radio classes={{ root: classes.wh }} />}
-              label="2"
-              classes={{ label: classes.text, root: classes.lineH }}
-            />
-            <FormControlLabel
-              value="3"
-              control={<Radio classes={{ root: classes.wh }} />}
-              label="3"
-              classes={{ label: classes.text, root: classes.lineH }}
-            />
-          </RadioGroup>
+          <FormGroup className={this.props.classes.column}>
+            {['all', '1', '2', '3', '4'].map(val => {
+              return (
+                <FormControlLabel
+                  key={val}
+                  value={val}
+                  control={
+                    <Checkbox
+                      checked={this.state.amp.includes(val)}
+                      onChange={this.handleChangeAmp(val)}
+                      classes={{ root: classes.wh }}
+                    />
+                  }
+                  label={val}
+                  classes={{ label: classes.text, root: classes.lineH }}
+                />
+              );
+            })}
+          </FormGroup>
         </FormControl>
       </div>
     );
@@ -591,7 +585,7 @@ class TrendAnalysis extends React.Component {
       return (
         <TrendViewer
           plot={plot}
-          amp={this.state.selectAmp}
+          amp={this.state.amp.filter(v => v !== 'all')}
           arm={this.state.selectArm}
           loadEnd={this.loadEnd}
           startDate={this.state.selectStartDate}

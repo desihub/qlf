@@ -22,37 +22,6 @@ logger = get_logger(
     os.path.join(qlf_root, "logs", "bokeh.log")
 )
 
-plots = {
-    'snr': {
-        'display': 'SNR',
-        'path': 'TASKS->CHECK_SPECTRA->METRICS->FIDSNR_TGT'
-    },
-    'skybrightness': {
-        'display': 'SKY BRIGHTNESS',
-        'path': 'TASKS->CHECK_SPECTRA->METRICS->PEAKCOUNT'
-    },
-    'traceshifts': {
-        'display': 'TRACE SHIFTS',
-        'path': 'TASKS->CHECK_FIBERS->METRICS->XYSHIFTS'
-    },
-    'psf': {
-        'display': 'PSF FWHM',
-        'path': 'TASKS->CHECK_CCDs->METRICS->XWSIGMA'
-    },
-    'airmass': {
-        'display': 'AIRMASS',
-        'path': 'GENERAL_INFO->AIRMASS'
-    },
-    'bias': {
-        'display': 'BIAS',
-        'path': 'TASKS->CHECK_CCDs->METRICS->BIAS_AMP'
-    },
-    'noise': {
-        'display': 'NOISE',
-        'path': 'TASKS->CHECK_CCDs->METRICS->NOISE_AMP'
-    },
-}
-
 
 class TimeSeries():
     def __init__(self, yaxis, start, end, camera, amp=None):
@@ -63,53 +32,7 @@ class TimeSeries():
         self.models = QLFModels()
         self.amp = amp
 
-    def single_value(self, dates, values, exposures, cameras, dateobs):
-        source = ColumnDataSource(data=dict(
-            x=dates,
-            y=values,
-            exposure=exposures,
-            camera=cameras,
-            dateobs=dateobs
-        ))
-        
-        self.p.line('x', 'y', source=source)
-        self.p.circle('x', 'y', source=source, size=5)
-
-    def double_value(self, dates, values, exposures, cameras, dateobs):
-        pair = [[],[]]
-
-        for value in values:
-            pair[0].append(value[0])
-            pair[1].append(value[1])
-
-        colors = [
-            ['spatial width averaged over fitted lines', 'blue'],
-            ['median taken over all fibers per amp', 'green']
-        ]
-        legends=list()
-        for idx, color in enumerate(colors):
-            source = ColumnDataSource(data=dict(
-                x=dates,
-                y=pair[idx],
-                exposure=exposures,
-                camera=cameras,
-                dateobs=dateobs
-            ))
-            line = self.p.line('x', 'y', source=source, line_color=color[1])
-            circle = self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color[1])
-            legends.append(('Lower {}'.format(color[0]), [line, circle]))
-        legend = Legend(items=legends, location=(0, 0))
-
-        self.p.add_layout(legend, 'below')
-
-    def quadruple_values(self, dates, values, exposures, cameras, dateobs, objtype=None):
-        amps = [[],[],[],[]]
-        for value in values:
-            amps[0].append(value[0])
-            amps[1].append(value[1])
-            amps[2].append(value[2])
-            amps[3].append(value[3])
-
+    def make_plot(self, outputs, objtype=None):
         colors = [
             'red',
             'blue',
@@ -117,65 +40,44 @@ class TimeSeries():
             'orange'
         ]
         legends=list()
-        if objtype is not None:
-            for idx, color in enumerate(colors):
+        df = pd.DataFrame(list(outputs))
+        if self.amp != None:
+            for amp in self.amp.split(','):
+                idx = int(amp)-1
                 source = ColumnDataSource(data=dict(
-                    x=dates,
-                    y=amps[idx],
-                    exposure=exposures,
-                    camera=cameras,
-                    dateobs=dateobs
+                    x=df['mjd'],
+                    y=df['value'].apply(lambda x: x[idx]),
+                    exposure=df['exposure_id'],
+                    camera=df['camera'],
+                    dateobs=df['datef']
                 ))
-                line=self.p.line('x', 'y', source=source, line_color=color)
-                circle=self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=color)
-                legends.append(('OBJ {}'.format(idx), [line, circle]))
-        elif self.amp == 'all':
-            for idx, color in enumerate(colors):
-                source = ColumnDataSource(data=dict(
-                    x=dates,
-                    y=amps[idx],
-                    exposure=exposures,
-                    camera=cameras,
-                    dateobs=dateobs
-                ))
-                line=self.p.line('x', 'y', source=source, line_color=color)
-                circle=self.p.circle('x', 'y', source=source, size=6, line_color=None, fill_color=color)
-                legends.append(('AMP {}'.format(idx), [line, circle]))
+                line=self.p.line('x', 'y', source=source, line_color=colors[idx])
+                circle=self.p.circle('x', 'y', source=source, size=6, line_color=None, fill_color=colors[idx])
+                legends.append(('AMP {}'.format(idx+1), [line, circle]))
+            legend = Legend(items=legends, location=(0, 0))
+            self.p.add_layout(legend, 'below')
         else:
             source = ColumnDataSource(data=dict(
-                x=dates,
-                y=amps[int(self.amp)],
-                exposure=exposures,
-                camera=cameras,
-                dateobs=dateobs
+                x=df['mjd'],
+                y=df['value'].apply(lambda x: x[0]),
+                exposure=df['exposure_id'],
+                camera=df['camera'],
+                dateobs=df['datef']
             ))
-            line=self.p.line('x', 'y', source=source, line_color=colors[int(self.amp)])
-            circle=self.p.circle('x', 'y', source=source, size=5, line_color=None, fill_color=colors[int(self.amp)])
-            legends.append(('AMP {}'.format(self.amp), [line, circle]))
-        legend = Legend(items=legends, location=(0, 0))
-
-        self.p.add_layout(legend, 'below')
+        
+            self.p.line('x', 'y', source=source)
+            self.p.circle('x', 'y', source=source, size=5)
 
     def render(self):
-        axis_data = plots[self.yaxis]
-        outputs = self.models.get_outputs_json_chunk_by_camera(
-            axis_data['path'], self.camera, begin_date=self.start, end_date=self.end)
+        metrics_path = os.path.join(
+            qlf_root, "framework", "ql_mapping",
+            "metrics.json")
 
-        dates = list()
-        cameras = list()
-        values = list()
-        exposures = list()
-        dateobs = list()
-        mjds=list()
-        for idx,val in enumerate(outputs):
-            if val['value']:
-                dates.append(val['dateobs'])
-                dateobs.append(val['dateobs'].strftime('%Y-%m-%d'))
-                exposures.append(val['exposure_id'])
-                cameras.append(self.camera)
-                values.append(val['value'])
-                date_time=(val['dateobs']).strftime('%Y-%m-%d %H:%M:%S')
-                mjds.append(Time(date_time, format='iso', scale='utc').mjd)
+        with open(metrics_path) as f:
+            metrics = json.load(f)
+        axis_data = metrics[self.yaxis]
+        outputs = self.models.get_product_metrics_by_camera(
+            self.yaxis, self.camera, begin_date=self.start, end_date=self.end)
 
         TOOLTIPS = """
             <div>
@@ -208,15 +110,6 @@ class TimeSeries():
             tools=[hover, 'box_zoom,wheel_zoom,pan,reset']
         )
 
-        if self.yaxis in ['skybrightness', 'airmass']:
-            self.single_value(mjds, values, exposures, cameras, dateobs)
-        elif self.yaxis in ['traceshifts', 'psf']:
-            self.double_value(mjds, values, exposures, cameras, dateobs)
-        elif self.yaxis in ['noise', 'bias']:
-            self.quadruple_values(mjds, values, exposures, cameras, dateobs)
-        elif self.yaxis in ['snr']:
-            self.quadruple_values(mjds, values, exposures, cameras, dateobs, ['TGT', 'SKY'])
-
         font_size = "1.2vw"
         self.p.xaxis.major_label_text_font_size = font_size
         self.p.yaxis.major_label_text_font_size = font_size
@@ -225,8 +118,5 @@ class TimeSeries():
         self.p.legend.label_text_font_size = font_size
         self.p.title.text_font_size = font_size
 
+        self.make_plot(outputs)
         return file_html(self.p, CDN, "Time Series")
-
-if __name__ == "__main__":
-    ts = TimeSeries("test", "20191001", "20191001", "b0")
-    ts.render()

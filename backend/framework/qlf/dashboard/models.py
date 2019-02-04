@@ -182,6 +182,17 @@ class Job(models.Model):
     def __str__(self):
         return str(self.name)
 
+class Product(models.Model):
+    job = models.ForeignKey(Job, related_name='product_job')
+    value = ArrayField(models.FloatField())
+    key = models.CharField(
+        max_length=30,
+        help_text='Metric Key'
+    )
+    mjd = models.FloatField(
+        help_text='MJD',
+        null=True
+    )
 
 class Fibermap(models.Model):
     """Fibermap information"""

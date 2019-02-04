@@ -11,9 +11,6 @@ export LC_ALL=en_US.UTF-8
 export QLF_PROJECT=$(pwd)/framework/qlf
 export QLF_ROOT=$(pwd)
 
-export DESI_ROOT=$QLF_ROOT
-export DESI_PRODUCT_ROOT=$QLF_ROOT
-
 for package in desispec desiutil desimodel desisim desitarget specter speclite; do
   echo "Setting $package..."
   export PATH=$QLF_ROOT/$package/bin:$PATH

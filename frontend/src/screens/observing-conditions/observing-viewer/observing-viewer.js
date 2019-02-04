@@ -73,11 +73,9 @@ class ObservingViewer extends React.Component {
     )
       url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&yaxis=${
         this.props.yaxis
-      }&amp=${this.props.amp}&start=${this.formatDate(
-        this.props.startDate
-      )}&end=${this.formatDate(this.props.endDate)}&camera=${this.props.arm}${
-        this.props.spectrograph[0]
-      }`;
+      }&start=${this.formatDate(this.props.startDate)}&end=${this.formatDate(
+        this.props.endDate
+      )}&camera=${this.props.arm}${this.props.spectrograph[0]}`;
     else {
       if (
         this.props.plot === 'regression' &&

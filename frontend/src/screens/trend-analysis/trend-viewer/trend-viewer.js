@@ -34,7 +34,7 @@ class TrendViewer extends React.Component {
   static propTypes = {
     arm: PropTypes.string,
     spectrograph: PropTypes.array,
-    amp: PropTypes.string,
+    amp: PropTypes.array,
     plot: PropTypes.string,
     xaxis: PropTypes.string,
     yaxis: PropTypes.string,
@@ -66,7 +66,7 @@ class TrendViewer extends React.Component {
     if (
       this.props.plot === 'timeseries' &&
       this.props.yaxis !== '' &&
-      this.props.amp !== '' &&
+      this.props.amp.length !== 0 &&
       this.props.arm !== '' &&
       this.props.spectrograph.length !== 0 &&
       this.props.startDate !== '' &&
@@ -74,7 +74,7 @@ class TrendViewer extends React.Component {
     )
       url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&yaxis=${
         this.props.yaxis
-      }&amp=${this.props.amp}&start=${this.formatDate(
+      }&amp=${this.props.amp.join(',')}&start=${this.formatDate(
         this.props.startDate
       )}&end=${this.formatDate(this.props.endDate)}&camera=${this.props.arm}${
         this.props.spectrograph[0]
