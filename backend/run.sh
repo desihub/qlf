@@ -55,7 +55,9 @@ echo "Initializing QLF Backend..."
 echo -e "----------------------------------------------------------------------\n\n\n"
 
 if [ $LOGS_DIRECTORY = "True" ]; then
+  bokeh serve --allow-websocket-origin $BOKEH_HOST --num-procs 0 framework/qlf/dashboard/bokeh/timeseries/timeseries.py framework/qlf/dashboard/bokeh/regression/regression.py &> $QLF_ROOT/logs/bokeh.log &
   python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT &> $QLF_ROOT/logs/runserver.log
 else
+  bokeh serve --allow-websocket-origin $BOKEH_HOST --num-procs 0 framework/qlf/dashboard/bokeh/timeseries/timeseries.py framework/qlf/dashboard/bokeh/regression/regression.py &
   python -u $QLF_PROJECT/manage.py runserver 0.0.0.0:$QLF_PORT
-fi 
+fi

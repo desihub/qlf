@@ -72,3 +72,4 @@ PIPELINE_LOGLEVEL=INFO
 PIPELINE_MAX_WORKERS=1
 # maximum workers running at the same time (0 for unlimited)
 PIPELINE_DELAY=20
+BOKEH_HOST=localhost

@@ -19,6 +19,8 @@ import Radio from '@material-ui/core/Radio';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import LegendDate from '../../components/legend-date/legend-date';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
 
 const styles = {
   controlsContainer: {
@@ -58,12 +60,10 @@ const styles = {
   },
   selection: {
     textAlign: 'center',
-    paddingBottom: '2.5vh',
     position: 'relative',
   },
   selectionRadio: {
     width: '50%',
-    paddingBottom: '2.5vh',
   },
   formControl: {
     width: '100%',
@@ -166,6 +166,8 @@ class ObservingConditions extends React.Component {
       selectArm: '',
       selectSpectrograph: [],
       tab: 'Time Series',
+      selectDatashader: '',
+      datashader: false,
     };
   }
 
@@ -186,6 +188,10 @@ class ObservingConditions extends React.Component {
         endDate: nextProps.endDate,
       });
   }
+
+  handleChangeDatashader = () => {
+    this.setState({ datashader: !this.state.datashader, preview: false });
+  };
 
   handleChangeDatePeriod = evt => {
     let start = null;
@@ -246,6 +252,7 @@ class ObservingConditions extends React.Component {
       this.state.selectStartDate !== this.state.startDate ||
       this.state.selectEndDate !== this.state.endDate ||
       this.state.selectSpectrograph !== this.state.spectrograph ||
+      this.state.selectDatashader !== this.state.datashader ||
       this.state.selectArm !== this.state.arm
     ) {
       this.setState({
@@ -254,6 +261,7 @@ class ObservingConditions extends React.Component {
         selectStartDate: this.state.startDate,
         selectEndDate: this.state.endDate,
         selectSpectrograph: this.state.spectrograph,
+        selectDatashader: this.state.datashader,
         selectArm: this.state.arm,
       });
       this.loadStart();
@@ -520,6 +528,32 @@ class ObservingConditions extends React.Component {
     </Button>
   );
 
+  renderDatashadeSelection = () => {
+    const { classes } = this.props;
+    if (this.state.tab === 'Time Series') {
+      return (
+        <div className={this.props.classes.selectionRadio}>
+          <FormControl className={this.props.classes.formControl}>
+            <FormGroup className={this.props.classes.column}>
+              <FormControlLabel
+                value={this.state.datashader}
+                control={
+                  <Checkbox
+                    checked={this.state.datashader}
+                    onChange={this.handleChangeDatashader}
+                    classes={{ root: classes.wh }}
+                  />
+                }
+                label={'Datashader'}
+                classes={{ label: classes.text, root: classes.lineH }}
+              />
+            </FormGroup>
+          </FormControl>
+        </div>
+      );
+    }
+  };
+
   renderSelectDate = () => {
     if (this.state.startDate !== '' && this.state.endDate !== '')
       return (
@@ -549,6 +583,7 @@ class ObservingConditions extends React.Component {
         {this.renderYaxisSelection()}
         {this.renderSpectrographSelection()}
         {this.renderArmSelection()}
+        {this.renderDatashadeSelection()}
         <div className={classes.buttons}>
           {this.renderSubmit()}
           {this.renderClear()}
@@ -567,6 +602,7 @@ class ObservingConditions extends React.Component {
           endDate={this.state.selectEndDate}
           yaxis={this.state.selectYaxis}
           xaxis={this.state.selectXaxis}
+          datashader={this.state.selectDatashader}
           datePeriod={this.state.datePeriod}
           arm={this.state.selectArm}
           spectrograph={this.state.selectSpectrograph}

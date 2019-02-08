@@ -42,6 +42,7 @@ class TrendViewer extends React.Component {
     endDate: PropTypes.string,
     classes: PropTypes.object,
     loadEnd: PropTypes.func.isRequired,
+    datashader: PropTypes.bool,
   };
 
   componentDidMount() {
@@ -62,6 +63,9 @@ class TrendViewer extends React.Component {
   renderImage = () => {
     const { classes } = this.props;
     let url = '';
+    const endpoint = this.props.datashader
+      ? `${this.props.plot}/?`
+      : `dashboard/load_series/?plot=${this.props.plot}&`;
 
     if (
       this.props.plot === 'timeseries' &&
@@ -72,13 +76,13 @@ class TrendViewer extends React.Component {
       this.props.startDate !== '' &&
       this.props.endDate !== ''
     )
-      url = `${apiUrl}dashboard/load_series/?plot=${this.props.plot}&yaxis=${
+      url = `${apiUrl}${endpoint}yaxis=${
         this.props.yaxis
       }&amp=${this.props.amp.join(',')}&start=${this.formatDate(
         this.props.startDate
       )}&end=${this.formatDate(this.props.endDate)}&camera=${this.props.arm}${
         this.props.spectrograph[0]
-      }`;
+      }&datashade=${String(this.props.datashader)}`;
     // else if (
     //   this.props.plot === 'regression' &&
     //   this.props.xaxis !== '' &&

@@ -44,7 +44,7 @@ class LargeLimitOffsetPagination(LimitOffsetPagination):
 
 class StandartLimitOffsetPagination(LimitOffsetPagination):
     default_limit = 50
-    max_limit = 100
+    max_limit = 10000
 
 
 class SmallLimitOffsetPagination(LimitOffsetPagination):

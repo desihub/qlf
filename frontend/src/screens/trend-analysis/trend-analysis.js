@@ -33,13 +33,11 @@ const styles = {
   controlsContainerInner: {
     display: 'flex',
     flexDirection: 'row',
-    paddingBottom: '2.5vh',
   },
   column: {
     display: 'flex',
     flexDirection: 'column',
     paddingTop: '10px',
-    marginTop: '2vh',
   },
   gridRow: {
     display: 'grid',
@@ -156,6 +154,8 @@ class TrendAnalysis extends React.Component {
       selectStartDate: '',
       selectEndDate: '',
       selectSpectrograph: [],
+      selectDatashader: '',
+      datashader: false,
     };
   }
 
@@ -213,6 +213,10 @@ class TrendAnalysis extends React.Component {
     });
   };
 
+  handleChangeDatashader = () => {
+    this.setState({ datashader: !this.state.datashader, preview: false });
+  };
+
   handleChangeArm = evt => {
     this.setState({ arm: evt.target.value, preview: false });
   };
@@ -251,6 +255,7 @@ class TrendAnalysis extends React.Component {
       this.state.selectYaxis !== this.state.yaxis ||
       this.state.selectSpectrograph.length !== this.state.spectrograph.length ||
       this.state.selectSpectrograph[0] !== this.state.spectrograph[0] ||
+      this.state.selectDatashader !== this.state.datashader ||
       this.state.selectStartDate !== this.state.startDate ||
       this.state.selectEndDate !== this.state.endDate
     ) {
@@ -259,6 +264,7 @@ class TrendAnalysis extends React.Component {
         selectAmp: this.state.amp,
         selectXaxis: this.state.xaxis,
         selectYaxis: this.state.yaxis,
+        selectDatashader: this.state.datashader,
         selectSpectrograph: this.state.spectrograph,
         selectStartDate: this.state.startDate,
         selectEndDate: this.state.endDate,
@@ -457,6 +463,30 @@ class TrendAnalysis extends React.Component {
     );
   };
 
+  renderDatashadeSelection = () => {
+    const { classes } = this.props;
+    return (
+      <div className={this.props.classes.selectionRadio}>
+        <FormControl className={this.props.classes.formControl}>
+          <FormGroup className={this.props.classes.column}>
+            <FormControlLabel
+              value={String(this.state.datashader)}
+              control={
+                <Checkbox
+                  checked={this.state.datashader}
+                  onChange={this.handleChangeDatashader}
+                  classes={{ root: classes.wh }}
+                />
+              }
+              label={'Datashader'}
+              classes={{ label: classes.text, root: classes.lineH }}
+            />
+          </FormGroup>
+        </FormControl>
+      </div>
+    );
+  };
+
   renderArmSelection = () => {
     const { classes } = this.props;
     return (
@@ -572,6 +602,7 @@ class TrendAnalysis extends React.Component {
           {this.renderAmpSelection()}
           {this.renderArmSelection()}
         </div>
+        {this.renderDatashadeSelection()}
         <div className={classes.buttons}>
           {this.renderSubmit()}
           {this.renderClear()}
@@ -592,6 +623,7 @@ class TrendAnalysis extends React.Component {
           endDate={this.state.selectEndDate}
           xaxis={this.state.selectXaxis}
           yaxis={this.state.selectYaxis}
+          datashader={this.state.datashader}
           spectrograph={this.state.selectSpectrograph}
           datePeriod={this.state.datePeriod}
         />
