@@ -27,7 +27,6 @@ try:
     end_date = get_arg_string('end')
     end_date = datetime.strptime(end_date, '%Y%m%d').strftime('%Y-%m-%d')
     camera = get_arg_string('camera')
-    DATASHADE = get_arg_string('datashade')
 
     outputs_y = models.get_product_metrics_by_camera(
         yaxis, camera, begin_date=start_date, end_date=end_date)
@@ -42,8 +41,6 @@ try:
     df_x[xaxis] = df_x['value'].apply(lambda x: x[0])
     plot = hv.Points(df_x, [xaxis, yaxis], ['exposure_id', 'camera',
                             'datef', 'dateobs'])
-    # if DATASHADE == 'true':
-    #     plot = datashade(plot)
     layout = plot.redim.label(x=xaxis, y=yaxis).opts(
         sizing_mode='scale_width', height=150, padding=0.1, fontsize='1.2vw', toolbar='above', active_tools=["box_zoom"], title='Camera: {}'.format(camera))
     doc = renderer.server_doc(layout)
