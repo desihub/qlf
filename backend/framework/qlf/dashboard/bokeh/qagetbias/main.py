@@ -44,6 +44,15 @@ class Bias:
             wrg=wrg
         )
 
+        p_status = Patch().plot_amp_status(
+            dz=getbias["BIAS_AMP"],
+            refexp=refexp,
+            name="BIAS_AMP",
+            description="Average bias value per Amp (STATUS)",
+            wrg=wrg,
+            nrg=nrg,
+        )
+
         # INFO TABLES:
         info_col = Title().write_description('getbias')
 
@@ -63,7 +72,8 @@ class Bias:
 
         layout = column(info_col, Div(),
                         metric, alert,
-                        column(p, sizing_mode='scale_both', css_classes=["main-one"]),
+                        column(p, sizing_mode='scale_both'), #css_classes=["main-one"]),
+                        column(p_status, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 
 
