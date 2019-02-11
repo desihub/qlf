@@ -44,6 +44,14 @@ class RMS:
             wrg=wrg
         )
 
+        p_stat = Patch().plot_amp_status(
+            dz=getrms["NOISE_AMP"],
+            refexp=refexp,
+            name="NOISE_AMP (STATUS)",
+            description="NOISE per Amp (photon counts)",
+            wrg=wrg,
+            nrg=nrg,
+        )
         # amp 2
         p2 = Patch().plot_amp(
             dz=getrms["NOISE_OVERSCAN_AMP"],
@@ -51,6 +59,15 @@ class RMS:
             name="NOISE_OVERSCAN_AMP",
             description="NOISE Overscan per Amp (photon counts)",
             wrg=wrg
+        )
+
+        p2_stat = Patch().plot_amp_status(
+            dz=getrms["NOISE_OVERSCAN_AMP"],
+            refexp=refexp,
+            name="NOISE_OVERSCAN_AMP (STATUS)",
+            description="NOISE Overscan per Amp (photon counts)",
+            wrg=wrg,
+            nrg=nrg,
         )
 
         info_col = Title().write_description('getrms')
@@ -72,8 +89,10 @@ class RMS:
 
         layout = column(info_col, Div(),
                         metric, alert,
-                        column(p, sizing_mode='scale_both'),
+                        column(p,  sizing_mode='scale_both'),
                         column(p2, sizing_mode='scale_both'),
+                        column(p_stat,  sizing_mode='scale_both'),
+                        column(p2_stat,  sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "GETRMS")
