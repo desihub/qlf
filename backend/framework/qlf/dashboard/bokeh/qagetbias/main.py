@@ -47,8 +47,8 @@ class Bias:
         p_status = Patch().plot_amp_status(
             dz=getbias["BIAS_AMP"],
             refexp=refexp,
-            name="BIAS_AMP",
-            description="Average bias value per Amp (STATUS)",
+            name="BIAS_AMP (STATUS)",
+            description="Average bias value per Amp (photon counts)",
             wrg=wrg,
             nrg=nrg,
         )

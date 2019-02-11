@@ -438,6 +438,15 @@ class Xwsigma:
             wrg=wrg
         )
 
+        xamp_status = Patch().plot_amp_status(
+            dz=xw_amp[0],
+            refexp=[xw_ref[0]]*4,
+            name="XSIGMA AMP (STATUS)",
+            description="X standard deviation per Amp (number of pixels)",
+            wrg=wrg,
+            nrg=nrg,
+        )
+
         # amp 2
         wamp = Patch().plot_amp(
             dz=xw_amp[1],
@@ -445,6 +454,15 @@ class Xwsigma:
             name="WSIGMA AMP",
             description="W standard deviation per Amp (number of pixels)",
             wrg=wrg
+        )
+
+        wamp_status = Patch().plot_amp_status(
+            dz=xw_amp[1],
+            refexp=[xw_ref[1]]*4,
+            name="WSIGMA AMP (STATUS)",
+            description="W standard deviation per Amp (number of pixels)",
+            wrg=wrg,
+            nrg=nrg,
         )
 
         # -------------------------------------------------------------------------
@@ -481,6 +499,8 @@ class Xwsigma:
                 column(p_hist_w, sizing_mode='scale_both'),
                 column(xamp, sizing_mode='scale_both'),
                 column(wamp, sizing_mode='scale_both'),
+                column(xamp_status, sizing_mode='scale_both'),
+                column(wamp_status, sizing_mode='scale_both'),
                 css_classes=["display-grid"], sizing_mode='scale_width')
         else:
             reference_exposures = check_ccds['PARAMS']['XWSIGMA_REF']
@@ -505,6 +525,9 @@ class Xwsigma:
                 column(p_hist_w, sizing_mode='scale_both'),
                 column(xamp, sizing_mode='scale_both'),
                 column(wamp, sizing_mode='scale_both'),
+                column(xamp_status, sizing_mode='scale_both'),
+                column(wamp_status, sizing_mode='scale_both'),
+               
                 css_classes=["display-grid"], sizing_mode='scale_width')
            
         return file_html(layout, CDN, "XWSIGMA")
