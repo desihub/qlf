@@ -29,15 +29,15 @@ class Patch:
 
     def val_status(self, val, nrg=[], wrg=[]):
         if val is None:
-            return 'nan'
+            return 'NaN'
         if val <=-999 or val == np.nan:
-            return 'nan'
+            return 'NaN'
         elif  val > nrg[0] and val < nrg[1]:
-            return 'norm'
+            return 'NORMAL'
         elif val < wrg[0] or val > wrg[1]:
-            return 'alarm'
+            return 'ALARM'
         else:
-            return 'warn'
+            return 'WARNING'
 
 
     def plot_amp(self, dz, refexp, name="", font_size="1.2vw", description="", wrg=[]):
@@ -153,7 +153,7 @@ class Patch:
                 </div>
                 <div>
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">counts: </span>
-                    <span style="font-size: 1vw; color: #515151">@ztext</span>
+                    <span style="font-size: 1vw; color: #515151">@status</span>
                 </div>
                 <div>
                     <span style="font-size: 1vw; font-weight: bold; color: #303030;">Reference: </span>
@@ -171,15 +171,9 @@ class Patch:
         p.xaxis.axis_label_text_font_size = font_size
         p.legend.label_text_font_size = font_size
         p.title.text_font_size = font_size
-
         p.xaxis.axis_label= description
 
-        # cmap = get_palette("RdBu_r")
-        # mapper = LinearColorMapper(palette=cmap, low=wrg[0], high=wrg[1],
-        #     nan_color="darkgrey")
-
-        # NAN COLORS@!!!
-        # if not diff == np.nan:
+        
         color_status = ['green','darkgrey','yellow','red']
 
         # formatter = PrintfTickFormatter(format=cbarformat)
@@ -205,11 +199,14 @@ class Patch:
 
         zvalid = [x if x > -999 else np.nan for x in dz]
 
-        color = {'nan' :'darkgrey',
-                'norm' :'green',
-                'warn' : 'yellow',
-                'alarm': 'red',
+        color = {'NaN'    :'darkgrey',
+                'NORMAL'  :'green',
+                'WARNING' :'yellow',
+                'ALARM'   :'red',
                 }
+        status = [ self.val_status(x, nrg=nrg, wrg=wrg) for 
+                                x in np.array(zvalid) - np.array(refexp) ]
+ 
         color_status = [ color[self.val_status(x, nrg=nrg, wrg=wrg)] for 
                                 x in np.array(zvalid) - np.array(refexp) ]
 
@@ -227,6 +224,7 @@ class Patch:
                 amp_number=['%s' % i for i in range(1, 5)],
                 ztext=ztext,
                 color_status=color_status,
+                status=status,
             )
         )
 
