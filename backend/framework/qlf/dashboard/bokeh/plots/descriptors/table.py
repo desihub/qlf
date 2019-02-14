@@ -130,7 +130,7 @@ class Table:
         for i, keyname in enumerate(keynames):
             tblines = tblines +\
                 """<tr>
-                            <td>{}</td> <td>{}</td> <td>[  {},  {} ]</td>
+                            <td>{}</td> <td>{}</td> <td>  {},  {} </td>
                             </tr>
                             """.format(keyname, round(current_exposures[i], 2), 
                                 round(nrg[0], 2), round(nrg[1], 2))
