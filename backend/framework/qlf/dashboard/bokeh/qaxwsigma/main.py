@@ -434,17 +434,18 @@ class Xwsigma:
             dz=xw_amp[0],
             refexp=[xw_ref[0]]*4,
             name="XSIGMA AMP",
-            description="X standard deviation per Amp (number of pixels)",
+            description="X standard deviation (number of pixels)",
             wrg=wrg
         )
 
-        xamp_status = Patch().plot_amp_status(
+        xamp_status = Patch().plot_amp(
             dz=xw_amp[0],
             refexp=[xw_ref[0]]*4,
             name="XSIGMA AMP (STATUS)",
-            description="X standard deviation per Amp (number of pixels)",
+            description="X standard deviation (number of pixels)",
             wrg=wrg,
             nrg=nrg,
+            status_plot=True,
         )
 
         # amp 2
@@ -452,17 +453,18 @@ class Xwsigma:
             dz=xw_amp[1],
             refexp=[xw_ref[1]]*4,
             name="WSIGMA AMP",
-            description="W standard deviation per Amp (number of pixels)",
+            description="W standard deviation (number of pixels)",
             wrg=wrg
         )
 
-        wamp_status = Patch().plot_amp_status(
+        wamp_status = Patch().plot_amp(
             dz=xw_amp[1],
             refexp=[xw_ref[1]]*4,
             name="WSIGMA AMP (STATUS)",
-            description="W standard deviation per Amp (number of pixels)",
+            description="W standard deviation (number of pixels)",
             wrg=wrg,
             nrg=nrg,
+            status_plot=True,
         )
 
         # -------------------------------------------------------------------------

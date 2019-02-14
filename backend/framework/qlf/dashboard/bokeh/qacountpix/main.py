@@ -42,17 +42,18 @@ class Countpix:
             dz=check_ccds['METRICS']["LITFRAC_AMP"],
             refexp=refexp,
             name="LITFRAC_AMP",
-            description="Average bias value per Amp (photon counts)",
+            description="Average bias value (photon counts)",
             wrg=wrg
         )
 
-        p_status = Patch().plot_amp_status(
+        p_status = Patch().plot_amp(
             dz=check_ccds['METRICS']["LITFRAC_AMP"],
             refexp=refexp,
             name="LITFRAC_AMP (STATUS)",
-            description="Average bias value per Amp (photon counts)",
+            description="Average bias value (photon counts)",
             wrg=wrg,
             nrg=nrg,
+            status_plot=True
         )
 
         # infos
