@@ -28,8 +28,3 @@ services:
       - ALL
     depends_on:
       - app
-#  jupyter:
-#    build: ./jupyter
-#    command: /app/run.sh
-#    ports:
-#      - 8080:8888
