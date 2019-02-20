@@ -92,3 +92,51 @@ class Table:
 
         table = style + header + tblines + end
         return widgetbox(Div(text=table))
+
+
+    def single_table(self, keynames, current_exposures, reference_exposures, nrg, wrg ):
+        self.validate_array_size(current_exposures, len(keynames))
+        self.validate_array_size(reference_exposures, len(keynames))
+        style = """    <style>        table {
+                font-family: arial, sans-serif;
+                font-size: 1.3vw;
+                border-collapse: collapse;
+                width: 100%;
+                }
+
+            td, th {
+                border: 1px solid #dddddd;
+                text-align: center;
+                }
+            tr:nth-child(even) {
+            background-color: #dcdcdc;
+                    text-align:center;
+            }
+            tr:{text-align:center;}
+            </style>"""
+
+        header = """
+            <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+            <table>
+                <col width="120">
+                <col width="90">
+                <col width="90">
+            </tr>
+            <tr>
+                <th>keyname</th> <th>Current</th> <th>Normal</th>
+            </tr>"""
+
+        tblines=""
+        for i, keyname in enumerate(keynames):
+            tblines = tblines +\
+                """<tr>
+                            <td>{}</td> <td>{}</td> <td>  {},  {} </td>
+                            </tr>
+                            """.format(keyname, round(current_exposures[i], 2), 
+                                round(nrg[0], 2), round(nrg[1], 2))
+
+        end = """</table> </div> """
+
+        table = style + header + tblines + end
+        return widgetbox(Div(text=table))
+

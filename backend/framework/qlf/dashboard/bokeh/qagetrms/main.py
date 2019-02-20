@@ -40,17 +40,36 @@ class RMS:
             dz=getrms["NOISE_AMP"],
             refexp=refexp,
             name="NOISE_AMP",
-            description="NOISE per Amp (photon counts)",
+            description="NOISE(photon counts)",
             wrg=wrg
         )
 
+        p_stat = Patch().plot_amp(
+            dz=getrms["NOISE_AMP"],
+            refexp=refexp,
+            name="NOISE_AMP (STATUS)",
+            description="NOISE (photon counts)",
+            wrg=wrg,
+            nrg=nrg,
+            status_plot=True
+        )
         # amp 2
         p2 = Patch().plot_amp(
             dz=getrms["NOISE_OVERSCAN_AMP"],
             refexp=refexp,
             name="NOISE_OVERSCAN_AMP",
-            description="NOISE Overscan per Amp (photon counts)",
+            description="NOISE Overscan (photon counts)",
             wrg=wrg
+        )
+
+        p2_stat = Patch().plot_amp(
+            dz=getrms["NOISE_OVERSCAN_AMP"],
+            refexp=refexp,
+            name="NOISE_OVERSCAN_AMP (STATUS)",
+            description="NOISE Overscan (photon counts)",
+            wrg=wrg,
+            nrg=nrg,
+            status_plot=True
         )
 
         info_col = Title().write_description('getrms')
@@ -69,11 +88,14 @@ class RMS:
         metric = Table().reference_table(keynames, current_exposures, reference_exposures)
 
         alert = Table().alert_table(nrg, wrg)
+        table = Table().single_table(keynames, current_exposures, reference_exposures, nrg, wrg)
 
         layout = column(info_col, Div(),
-                        metric, alert,
-                        column(p, sizing_mode='scale_both'),
+                        table, Div(),
+                        column(p,  sizing_mode='scale_both'),
                         column(p2, sizing_mode='scale_both'),
+                        column(p_stat,  sizing_mode='scale_both'),
+                        column(p2_stat,  sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "GETRMS")

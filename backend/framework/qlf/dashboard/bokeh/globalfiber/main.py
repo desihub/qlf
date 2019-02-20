@@ -1,9 +1,10 @@
 from bokeh.plotting import figure
-from bokeh.layouts import row
+from bokeh.layouts import row, column
 
 from bokeh.models import HoverTool, ColumnDataSource, Range1d
 
 from qlf_models import QLFModels
+from dashboard.bokeh.plots.descriptors.title import Title
 
 import numpy as np
 import logging
@@ -117,7 +118,7 @@ class GlobalFiber:
         xrange = Range1d(start=max(source.data['ra'])-plot_space, end=min(source.data['ra'])+plot_space)
         yrange = Range1d(start=max(source.data['dec'])-plot_space, end=min(source.data['dec'])+plot_space)
 
-        p = figure(title='FIBERS (ARM %s)' % (wedge_arm),
+        p = figure(title='FIBERS - ARM %s' % (wedge_arm),
         x_axis_label='RA',
         y_axis_label='DEC',
         tools=[hover,"box_zoom,pan,wheel_zoom,reset,lasso_select,crosshair"],
@@ -147,7 +148,9 @@ class GlobalFiber:
         src = self.data_source(fmap)
 
         p = self.wedge_plot(self.selected_arm, fmap, common_source=src)
-        layout = row(p, sizing_mode='scale_width')
+        info_col = Title().write_description('globalfiber')
+
+        layout = column([info_col, p], sizing_mode='scale_width')
 
         return file_html(layout, CDN, "Global Fiber")
 

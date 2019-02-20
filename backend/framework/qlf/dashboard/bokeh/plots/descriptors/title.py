@@ -20,6 +20,8 @@ class Title:
                                 +""" best-fit are outside 2 sigmas from the median of each"""],#"Number of fibers with Wsigma fit parameters (P0, P1, and P2) outside of 2 times RMS around medians"],
                         'xyshifts': ["XYSHIFTS","List of two averaged values (in pixel unit) for the fiber traces in X, Y directions"],
                         'skyR': ["SKYRBAND","Average value of sky background in R-band"],
+                        'globalfiber': ["Good Fiber", 'Fibers with a nonzero number of bins above highest threshold'],
+
                 }
         
         text="""<body><p  style="text-align:left; color:#262626; font-size:1.5vw;">

@@ -42,8 +42,18 @@ class Countpix:
             dz=check_ccds['METRICS']["LITFRAC_AMP"],
             refexp=refexp,
             name="LITFRAC_AMP",
-            description="Average bias value per Amp (photon counts)",
+            description="Average bias value (photon counts)",
             wrg=wrg
+        )
+
+        p_status = Patch().plot_amp(
+            dz=check_ccds['METRICS']["LITFRAC_AMP"],
+            refexp=refexp,
+            name="LITFRAC_AMP (STATUS)",
+            description="Average bias value (photon counts)",
+            wrg=wrg,
+            nrg=nrg,
+            status_plot=True
         )
 
         # infos
@@ -63,8 +73,8 @@ class Countpix:
 
         layout = column(info_col, Div(),
                         metric, alert,
-                        column(p, sizing_mode='scale_both',
-                               css_classes=["main-one"]),
+                        column(p, sizing_mode='scale_both'),#css_classes=["main-one"]),
+                        column(p_status, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "Countpix")

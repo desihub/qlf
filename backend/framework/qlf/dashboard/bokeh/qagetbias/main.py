@@ -40,8 +40,18 @@ class Bias:
             dz=getbias["BIAS_AMP"],
             refexp=refexp,
             name="BIAS_AMP",
-            description="Average bias value per Amp (photon counts)",
+            description="Average bias value (photon counts)",
             wrg=wrg
+        )
+
+        p_status = Patch().plot_amp(
+            dz=getbias["BIAS_AMP"],
+            refexp=refexp,
+            name="BIAS_AMP (STATUS)",
+            description="Average bias value (photon counts)",
+            wrg=wrg,
+            nrg=nrg,
+            status_plot=True,
         )
 
         # INFO TABLES:
@@ -63,7 +73,8 @@ class Bias:
 
         layout = column(info_col, Div(),
                         metric, alert,
-                        column(p, sizing_mode='scale_both', css_classes=["main-one"]),
+                        column(p, sizing_mode='scale_both'), #css_classes=["main-one"]),
+                        column(p_status, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
 
 
