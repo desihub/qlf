@@ -116,24 +116,27 @@ class Table:
             </style>"""
 
         header = """
-            <div  style="text-align:center;padding-left:20px;padding-top:10px;">
+            <div  style="text-align:center;padding-left:10px;padding-top:10px;">
             <table>
                 <col width="120">
-                <col width="90">
-                <col width="90">
+                <col width="80">
+                <col width="80">
+                <col width="80">
             </tr>
             <tr>
-                <th>keyname</th> <th>Current</th> <th>Normal</th>
+                <th>Keyname</th> <th>Current</th> <th>Normal</th> <th>Warning</th>
             </tr>"""
 
         tblines=""
         for i, keyname in enumerate(keynames):
             tblines = tblines +\
                 """<tr>
-                            <td>{}</td> <td>{}</td> <td>  {},  {} </td>
-                            </tr>
-                            """.format(keyname, round(current_exposures[i], 2), 
-                                round(nrg[0], 2), round(nrg[1], 2))
+                    <td>{}</td> <td>{}</td> <td>  {} &ndash;  {} </td> <td>  {} &ndash;  {} </td>
+                    </tr>
+                        """.format(keyname, 
+                            round(current_exposures[i], 2), 
+                            round(nrg[0]+ reference_exposures[i], 2), round(nrg[1]+ reference_exposures[i], 2), 
+                            round(wrg[0]+ reference_exposures[i], 2), round(wrg[1]+ reference_exposures[i], 2), )
 
         end = """</table> </div> """
 
