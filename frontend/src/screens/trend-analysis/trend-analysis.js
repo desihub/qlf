@@ -246,7 +246,7 @@ class TrendAnalysis extends React.Component {
     this.setState({ spectrograph: [spectrograph], preview: false });
   };
 
-  handleSubmit = () => {
+  handleSubmit = e=> {
     if (
       this.state.selectArm !== this.state.arm ||
       this.state.selectAmp.length !== this.state.amp.length ||
@@ -549,7 +549,7 @@ class TrendAnalysis extends React.Component {
   renderClear = () => (
     <Button
       onClick={this.clearSelection}
-      variant="raised"
+      variant="contained"
       size="small"
       className={this.props.classes.button}
       disabled={!this.isValid()}
@@ -561,10 +561,10 @@ class TrendAnalysis extends React.Component {
   renderSubmit = () => (
     <Button
       onClick={this.handleSubmit}
-      variant="raised"
+      variant="contained"
       size="small"
       className={this.props.classes.button}
-      classes={{ raised: this.props.classes.buttonGreen }}
+      classes={{ contained: this.props.classes.buttonGreen }}
       disabled={!this.isValid()}
     >
       Submit

@@ -66,8 +66,8 @@ class Controls extends Component {
     return this.props.daemonRunning ? (
       <Button
         className={classes.button}
-        classes={{ raised: classes.red }}
-        variant="raised"
+        classes={{ contained: classes.red }}
+        variant="contained"
         onMouseDown={this.stopPipeline}
       >
         Stop
@@ -75,8 +75,8 @@ class Controls extends Component {
     ) : (
       <Button
         className={classes.button}
-        classes={{ raised: classes.green }}
-        variant="raised"
+        classes={{ contained: classes.green }}
+        variant="contained"
         onMouseDown={this.startPipeline}
       >
         Start
@@ -87,7 +87,7 @@ class Controls extends Component {
   renderReset = () => (
     <Button
       className={this.props.classes.button}
-      variant="raised"
+      variant="contained"
       onMouseDown={this.props.resetMonitor}
       disabled={this.props.daemonRunning}
     >
@@ -98,7 +98,7 @@ class Controls extends Component {
   renderClear = () => (
     <Button
       className={this.props.classes.button}
-      variant="raised"
+      variant="contained"
       onMouseDown={this.handleClick}
     >
       Clear Disk
@@ -209,7 +209,7 @@ class Controls extends Component {
               className={classes.clearButton}
               onMouseDown={this.confirmDeleteFiles}
               fullWidth
-              variant="raised"
+              variant="contained"
               disabled={this.state.selectedClearDisk.length === 0}
             >
               submit

@@ -296,7 +296,7 @@ class SelectionViewer extends React.Component {
   renderClear = () => (
     <Button
       onClick={this.clearSelection}
-      variant="raised"
+      variant="contained"
       size="small"
       className={this.props.classes.button}
     >
@@ -307,10 +307,10 @@ class SelectionViewer extends React.Component {
   renderSubmit = () => (
     <Button
       onClick={this.handleSubmit}
-      variant="raised"
+      variant="contained"
       size="small"
       className={this.props.classes.button}
-      classes={{ raised: this.props.classes.buttonGreen }}
+      classes={{ contained: this.props.classes.buttonGreen }}
       disabled={!this.isValid()}
     >
       Submit

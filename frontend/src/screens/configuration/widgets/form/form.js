@@ -339,7 +339,7 @@ class Form extends React.Component {
         <Button
           onClick={this.saveConfiguration}
           disabled={true}
-          variant="raised"
+          variant="contained"
           color="default"
           style={styles.button}
         >
@@ -348,7 +348,7 @@ class Form extends React.Component {
         <Button
           onClick={this.getDefaultConfiguration}
           disabled={true}
-          variant="raised"
+          variant="contained"
           color="default"
           style={styles.button}
         >

@@ -64,8 +64,8 @@ class Control extends Component {
           <Button
             style={styles.button}
             onClick={() => this.props.change('prev')}
-            classes={{ raised: classes.text }}
-            variant="raised"
+            classes={{ contained: classes.text }}
+            variant="contained"
           >
             &lt;
           </Button>
@@ -73,8 +73,8 @@ class Control extends Component {
           <Button
             style={styles.button}
             onClick={() => this.props.change('next')}
-            classes={{ raised: classes.text }}
-            variant="raised"
+            classes={{ contained: classes.text }}
+            variant="contained"
           >
             &gt;
           </Button>
