@@ -504,11 +504,10 @@ class SNR:
         reference_exposures = check_spectra['PARAMS']['FIDSNR_TGT_' +
                                                       program + '_REF']
         keynames = ["FIDSNR_TGT" + " ({})".format(i) for i in objlist]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
-        alert = Table().alert_table(nrg, wrg)
+        table = Table().single_table(keynames, current_exposures, reference_exposures, nrg, wrg)
 
         layout = column(info_col, Div(),
-                        metric, alert,
+                        table, Div(),
                         column(elg_plot, sizing_mode='scale_both'),
                         column(lrg_plot, sizing_mode='scale_both'),
                         column(qso_plot, sizing_mode='scale_both'),

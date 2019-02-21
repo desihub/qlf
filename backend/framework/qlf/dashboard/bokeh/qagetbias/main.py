@@ -68,11 +68,10 @@ class Bias:
         else:
             reference_exposures = check_ccds['PARAMS']['BIAS_AMP_REF']
         keynames = ["BIAS_AMP" for i in range(len(current_exposures))]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
-        alert = Table().alert_table(nrg,wrg)
+        table = Table().single_table(keynames, current_exposures, reference_exposures, nrg, wrg)
 
         layout = column(info_col, Div(),
-                        metric, alert,
+                        table, Div(),
                         column(p, sizing_mode='scale_both'), #css_classes=["main-one"]),
                         column(p_status, sizing_mode='scale_both'),
                         css_classes=["display-grid"])

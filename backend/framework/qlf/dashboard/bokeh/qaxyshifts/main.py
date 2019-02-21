@@ -40,11 +40,10 @@ class Xyshifts:
         else:
             reference_exposures = []
         keynames = ["X", "Y"]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
-        alert = Table().alert_table(nrg, wrg)
+        table = Table().single_table(keynames, current_exposures, reference_exposures, nrg, wrg)
 
         layout = column(info_col, Div(),
-                        metric, alert,
+                        table, Div(),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "XYSHIFTS")
