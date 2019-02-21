@@ -85,17 +85,8 @@ class Integ:
         info_col = Title().write_description('integ')
 
         # Reading obj_type
-        process_id = self.selected_process_id
-        process = Process.objects.get(pk=process_id)
-        joblist = [entry.camera.camera for entry in Job.objects.filter(
-            process_id=process_id)]
-        exposure = process.exposure
-        fmap = Fibermap.objects.filter(exposure=exposure).last()
-        otype_tile = fmap.objtype
-
-        objlist = sorted(set(otype_tile))
         objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
-        
+
         if 'SKY' in objlist:
             objlist.remove('SKY')
 
