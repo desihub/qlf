@@ -99,7 +99,7 @@ class Table:
         self.validate_array_size(reference_exposures, len(keynames))
         style = """    <style>        table {
                 font-family: arial, sans-serif;
-                font-size: 1.3vw;
+                font-size: 1.2vw;
                 border-collapse: collapse;
                 width: 100%;
                 }
