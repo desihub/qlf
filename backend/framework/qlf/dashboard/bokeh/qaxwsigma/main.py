@@ -400,7 +400,7 @@ class Xwsigma:
             my_label = Label(x=ialert+xw_ref[0], 
                             y= yrange[-1]/2.2,
                             y_units='data',
-                            text='Normal Range',
+                            text='Normal',
                             text_color='green', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
 
@@ -409,7 +409,7 @@ class Xwsigma:
                          line_dash='dotdash', line_width=2)
             p_hist_x.add_layout(spans)
             my_label = Label(x=ialert+xw_ref[0], y=yrange[-1]/2.2, y_units='data',
-                             text='Warning Range', text_color='tomato', angle=np.pi/2.)
+                             text='Warning', text_color='tomato', angle=np.pi/2.)
             p_hist_x.add_layout(my_label)
 
         for ialert in nrg:  # par[bname+'_NORMAL_RANGE']:
@@ -417,7 +417,7 @@ class Xwsigma:
                          line_dash='dashed', line_width=2)
             p_hist_w.add_layout(spans)
             my_label = Label(x=ialert+xw_ref[1], y=yrangew[-1]/2.2, y_units='data',
-                             text='Normal Range', text_color='green', angle=np.pi/2.)
+                             text='Normal', text_color='green', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
         for ialert in wrg:  # par[bname+'_WARN_RANGE']:
@@ -425,7 +425,7 @@ class Xwsigma:
                          line_dash='dotdash', line_width=2)
             p_hist_w.add_layout(spans)
             my_label = Label(x=ialert+xw_ref[1], y=yrangew[-1]/2.2, y_units='data',
-                             text='Warning Range', text_color='tomato', angle=np.pi/2.)
+                             text='Warning', text_color='tomato', angle=np.pi/2.)
             p_hist_w.add_layout(my_label)
 
 
@@ -472,27 +472,23 @@ class Xwsigma:
 
         current_exposures = check_ccds['METRICS']['XWSIGMA']
 
-        alert_x = Table().alert_table(nrg, wrg)
-        alert_w = Table().alert_table(nrg, wrg)
-
         if flavor == 'science':
             program = gen_info['PROGRAM'].upper()
             reference_exposures = check_ccds['PARAMS']['XWSIGMA_' + program + '_REF']
             keynames = ["XSIGMA"]
-            x_metric = Table().reference_table(
-                keynames, [current_exposures[0]], [reference_exposures[0]])
+            table_x = Table().single_table(keynames, [current_exposures[0]], 
+                [reference_exposures[0]], nrg, wrg)
             keynames = ["WSIGMA"]
-            w_metric = Table().reference_table(
-                keynames, [current_exposures[1]], [reference_exposures[1]])
+            table_w = Table().single_table(keynames,  [current_exposures[1]], 
+                [reference_exposures[1]], nrg, wrg)
+
             layout = column(
                 info_col,
                 widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  XSIGMA </h2>')),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
-                x_metric,
-                w_metric,
-                alert_x,
-                alert_w,
+                table_x,
+                table_w,
                 column(wedge_plot_x, sizing_mode='scale_both'),
                 column(wedge_plot_w, sizing_mode='scale_both'),
                 column(xhist, sizing_mode='scale_both'),
@@ -507,20 +503,19 @@ class Xwsigma:
         else:
             reference_exposures = check_ccds['PARAMS']['XWSIGMA_REF']
             keynames = ["XSIGMA"]
-            x_metric = Table().reference_table(
-                keynames, [current_exposures[0]], [reference_exposures[0]])
+            table_x = Table().single_table(keynames, current_exposures, 
+                reference_exposures, nrg, wrg)
             keynames = ["WSIGMA"]
-            w_metric = Table().reference_table(
-                keynames, [current_exposures[1]], [reference_exposures[1]])
+            table_w = Table().single_table(keynames, current_exposures, 
+                reference_exposures, nrg, wrg)
+
             layout = column(
                 info_col,
                 widgetbox(Div(), css_classes=["tableranges"]),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  XSIGMA </h2>')),
                 widgetbox(Div(text='<h2 align=center style="text-align:center;">  WSIGMA </h2>')),
-                x_metric,
-                w_metric,
-                alert_x,
-                alert_w,
+                table_x,
+                table_w,
                 column(xhist, sizing_mode='scale_both'),
                 column(whist, sizing_mode='scale_both'),
                 column(p_hist_x, sizing_mode='scale_both'),

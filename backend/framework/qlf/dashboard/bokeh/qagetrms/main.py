@@ -85,9 +85,6 @@ class RMS:
         else:
             reference_exposures = check_ccds['PARAMS']['LITFRAC_AMP_REF']
         keynames = ["NOISE_AMP" for i in range(len(current_exposures))]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
-
-        alert = Table().alert_table(nrg, wrg)
         table = Table().single_table(keynames, current_exposures, reference_exposures, nrg, wrg)
 
         layout = column(info_col, Div(),

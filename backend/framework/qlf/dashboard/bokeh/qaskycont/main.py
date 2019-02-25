@@ -135,11 +135,10 @@ class Skycont:
 
        # Prepare tables
         keynames = ["SKYCONT" for i in range(len(current_exposures))]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
-        alert = Table().alert_table(nrg, wrg)
+        table = Table().single_table(keynames, current_exposures, reference_exposures, nrg, wrg)
 
         layout = column(info_col, Div(),
-                        metric, alert,
+                        table, Div(),
                         column(wedge_plot, sizing_mode='scale_both',
                                css_classes=["main-one"]),
                         css_classes=["display-grid"])

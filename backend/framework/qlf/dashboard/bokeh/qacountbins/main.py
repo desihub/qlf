@@ -158,11 +158,10 @@ class Countbins:
         else:
             reference_exposures = check_fibers['PARAMS']['NGOODFIB_REF']
         keynames = ["NGOODFIB"]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
-        alert = Table().alert_table(nrg, wrg)
-
+        table = Table().single_table(keynames, current_exposures, reference_exposures,
+         list(map(int, nrg)), list(map(int, wrg)))
         layout = column(info_col, Div(),
-                        metric, alert,
+                        table, Div(),
                         column(p, sizing_mode='scale_both'),
                         column(p2, sizing_mode='scale_both'),
                         css_classes=["display-grid"])

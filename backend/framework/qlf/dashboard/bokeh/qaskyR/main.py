@@ -39,11 +39,10 @@ class SkyR:
         reference_exposures = check_spectra['PARAMS']['SKYRBAND_' +
                                                       program + '_REF']
         keynames = ["SKYRBAND" for i in range(len(current_exposures))]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
-        alert = Table().alert_table(nrg, wrg)
+        table = Table().single_table(keynames, current_exposures, reference_exposures, nrg, wrg)
 
         layout = column(info_col, Div(),
-                        metric, alert,
+                        table, Div(),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "SKYR")

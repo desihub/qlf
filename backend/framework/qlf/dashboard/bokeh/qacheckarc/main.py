@@ -39,11 +39,11 @@ class Arc:
         current_exposures = check_arc['METRICS']['CHECKARC']
         reference_exposures = check_arc['PARAMS']['CHECKARC_REF']
         keynames = ["CHECKARC"]
-        metric = Table().reference_table(keynames, [current_exposures], reference_exposures)
-        alert = Table().alert_table(nrg, wrg)
+        table = Table().single_table(keynames, [current_exposures], reference_exposures, 
+            list(map(int,nrg)), list(map(int,wrg)))
 
         layout = column(info_col, Div(),
-                        metric, alert,
+                        table, Div(),
                         css_classes=["display-grid"])
 
         return file_html(layout, CDN, "ARC")

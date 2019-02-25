@@ -85,15 +85,8 @@ class Integ:
         info_col = Title().write_description('integ')
 
         # Reading obj_type
-        process_id = self.selected_process_id
-        process = Process.objects.get(pk=process_id)
-        joblist = [entry.camera.camera for entry in Job.objects.filter(
-            process_id=process_id)]
-        exposure = process.exposure
-        fmap = Fibermap.objects.filter(exposure=exposure).last()
-        otype_tile = fmap.objtype
+        objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
 
-        objlist = sorted(set(otype_tile))
         if 'SKY' in objlist:
             objlist.remove('SKY')
 
@@ -103,12 +96,10 @@ class Integ:
         program = gen_info['PROGRAM'].upper()
         reference_exposures = check_spectra['PARAMS']['DELTAMAG_TGT_' + program  + '_REF']
         keynames = ["DELTAMAG_TGT" + " ({})".format(i) for i in objlist]
-        metric = Table().reference_table(keynames, current_exposures, reference_exposures)
-        alert = Table().alert_table(nrg, wrg)
+        table = Table().single_table(keynames, current_exposures, reference_exposures, nrg, wrg)
 
         layout = column(info_col, Div(),
-                        metric,
-                        alert,
+                        table, Div(),
                         column(fiber_hist, sizing_mode='scale_both', css_classes=["main-one"]),
                         css_classes=["display-grid"])
 
