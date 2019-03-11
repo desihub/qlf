@@ -11,6 +11,62 @@ We use Docker as a container to install QLF. Install `docker` and `docker-compos
 
 Make sure ``docker --version``, ``docker-compose --version``, and ``docker ps`` runs without error.
 
+This is not a comprehensive guide on how to use docker and all of it's features but will give you common used commands.
+
+Using Docker and docker-compose
+--------------------------------
+
+1. Listing running containers
+
+::
+
+    $ docker ps
+    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+2. Build containers:
+
+::
+
+    docker-compose build
+
+*To build a specific container*
+
+::
+
+    docker-compose build NAME
+
+*e.g.* ``docker-compose build nginx``
+
+3. Start a container
+
+::
+
+    $ docker-compose up
+
+*Start in background*: ``docker-compose up -d``
+
+4. Stop all containers
+
+::
+
+    docker-compose stop
+
+5. Stop and delete containers
+
+This will delete the container but not the built images. This is usually used for puging database entries.
+
+::
+
+    docker-compose down
+
+6. Delete all images from machine
+
+This will delete all images, containers, volumes and networks created. Usually used to clean environment.
+
+::
+
+    docker system prune -a
+
 FAQ
 ------------------------------
 
