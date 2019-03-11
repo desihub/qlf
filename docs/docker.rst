@@ -1,9 +1,9 @@
-Using Docker and docker-compose
+Using docker and docker-compose
 ================================
 
 This is not a comprehensive guide on how to use docker and all of it's features but will give you common used commands.
 
-Listing running containers
+List Running Containers
 --------------------------------
 ::
 
@@ -33,6 +33,7 @@ Start a container
     $ docker-compose up
 
 *Start in background*: ``docker-compose up -d``
+*Start specific container*: ``docker-compose up -d NAME``
 
 Stop all containers
 --------------------------------

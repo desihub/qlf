@@ -29,6 +29,11 @@ After the changes are made run ``./restartBackend`` to restart the containers wi
     Recreating qlf_app_1                ... done
     Recreating qlf_nginx_1              ... done
 
+.. _map-code-inside-container:
+
+Map Code Inside Container
+--------------------------
+
 Make sure the volumes are mapped inside the container to make the changes.
 
 *docker-compose.yml* example:
