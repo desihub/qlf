@@ -4,6 +4,8 @@ Overview
 Frontend
 ---------
 
+ReactJS App connect to the backend via websockets and REST API.
+
 Monitor
 ^^^^^^^^
 Real-time app that controls and presents current system data
@@ -122,9 +124,14 @@ Features
 Backend
 ---------
 
+Django and PYRO deamon used to wrap `desispec`_ pipelines, monitor it's execution notifying the frontend and plotting bokeh visualizations.
+
+.. _desispec: https://github.com/desihub/desispec
+
 QLF Pipeline
 ^^^^^^^^^^^^^^
-Daemon running QL.
+
+PYRO Daemon running QL.
 
 Features
 ~~~~~~~~~
@@ -136,7 +143,7 @@ Features
 Django API
 ^^^^^^^^^^^^
 
-Administrative back-end managing Frontend and Pipeline connections
+Administrative back-end managing Frontend, Pipeline connections and bokeh plots
 
 Features
 ~~~~~~~~~

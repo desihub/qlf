@@ -16,12 +16,3 @@ QLF current version allows to follow the execution of QL pipeline, which process
 
    overview.rst
    installation.rst
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
