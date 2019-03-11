@@ -17,7 +17,7 @@ QLF current version allows to follow the execution of QL pipeline, which process
    overview.rst
    installation.rst
    desispec-version.rst
-
+   docker.rst
 
 
 Indices and tables
