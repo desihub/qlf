@@ -11,7 +11,7 @@ The Quick Look Framework (QLF) is part of the DES Instrument Control System (ICS
 QLF current version allows to follow the execution of QL pipeline, which process multiple cameras/arms in parallel. The interfaces for QA display are now in a mature stage of development using React and Bokeh plots.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    overview.rst

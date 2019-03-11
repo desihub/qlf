@@ -169,7 +169,15 @@ Running ``docker ps`` you should see 4 containers:
 
 You can access QLF interface by going to 
 
+::
+
     http://localhost/
+
+In case you need to access the backend
+
+::
+
+    http://localhost/dashboard/api/
 
 Stoping QLF
 ^^^^^^^^^^^^^
