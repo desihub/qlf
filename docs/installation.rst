@@ -120,6 +120,8 @@ QLF
 Clone Quick Look Framework Project
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+::
+
     git clone https://github.com/desihub/qlf.git
     
 *Everything you need is contained in this repository. Even* ``desimodel``, ``desisim``, ``desitarget``, ``desispec`` and ``desiutil`` *as sub-repositories.*
