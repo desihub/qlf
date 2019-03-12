@@ -19,11 +19,3 @@ QLF current version allows to follow the execution of QL pipeline, which process
    desispec-version.rst
    plots.rst
    docker.rst
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

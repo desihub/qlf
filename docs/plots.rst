@@ -33,6 +33,10 @@ All `QA plots`_ are located at:
 
 * Changes saved will trigger a bokeh reloaded automatically if the code is correctly mapped inse the container (:ref:`map-code-inside-container`).
 
+* `Jupyter examples`_
+
+.. _`Jupyter examples`: https://github.com/desihub/qlf/tree/master/jupyter
+
 In order to understand how the plots end up in the frontend there are also `3 files`_ divided by ``Flavor`` mapping each python QA to the appropriate frontend stage and name.
 
 .. _`3 files`: https://github.com/desihub/qlf/tree/master/backend/framework/ql_mapping
