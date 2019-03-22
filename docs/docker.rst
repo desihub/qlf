@@ -77,6 +77,22 @@ You can work from inside the container. This is useful to check if the correct v
     ~/qlf/docs$ docker exec -it qlf_app_1 bash
     root@29ff55378420:/app#
 
+.. _restart-backend:
+
+Restart Backend
+----------------
+
+After the changes are made in the backend run ``./restartBackend`` to restart the containers with the latest code if it doesn't do it automatically.
+
+::
+
+    ~/qlf$ ./restartBackend.sh
+    Stopping qlf_app_1 ... done
+    Recreating 9c38c1b6436a_qlf_db_1    ... done
+    Recreating ac0c3d755824_qlf_redis_1 ... done
+    Recreating qlf_app_1                ... done
+    Recreating qlf_nginx_1              ... done
+
 FAQ
 -------
 
