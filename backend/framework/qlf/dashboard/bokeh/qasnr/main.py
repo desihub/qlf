@@ -12,7 +12,7 @@ from dashboard.bokeh.helper import sort_obj
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import numpy as np
-from dashboard.models import Job, Process, Fibermap
+#from dashboard.models import Job, Process, Fibermap
 
 
 class SNR:
@@ -62,7 +62,7 @@ class SNR:
             exptime = 1000
             name_warn = ' (exptime fixed)'
 
-        # Sort objects for QLF:
+        # Sorting objects for QLF:
         obj_idx = {}
         for o in qlf_obj:
             try:
@@ -80,15 +80,17 @@ class SNR:
             # Filtering values with good mag AND snr
             return list(idx[(mag_2 > -999) & (snr_2 > 0)])
 
-        # Treating bad snr and mag
+        # Removing bad snr and mag
         mag_snr = {}
+        fiberid_obj = {}
         for o in avobj:
             snr_ql, mag_ql = snr['SNR_MAG_TGT'][obj_idx[o]]
             idx = good_idx(mag_ql, snr_ql)
             x = [mag_ql[i] for i in idx]
             y = [snr_ql[i] for i in idx]
-
             mag_snr.update({o: [y, x]})
+            fiberid_obj.update({o: [gen_info['%s_FIBERID'%o][i] for i in idx ]})
+
 
         # Preparing xy_plot data:
         if obj_idx['ELG'] is not None:
@@ -111,101 +113,126 @@ class SNR:
             x = np.linspace(min(xdata), max(xdata), 1000)
             Flux = 10**(-0.4*(x - 22.5))
             y = a*Flux*exptime/np.sqrt(a*Flux*exptime + b*exptime+r1**2)
-            return x, y
+            return np.array(x), np.array(y)
 
-        data_model = {
-            'x': [],
-            'y': [],
-            'y2': [],
-            'fiber_id': [],
-            'ra': [],
-            'dec': [],
-        }
+#         data_model = { 
+#         ...
+#         star_fit = ColumnDataSource(data=data_fit.copy())
+        cds = {}
+        cdsfit = {}
+        for on in ['ELG', 'LRG', 'QSO', 'STAR']:
+            if obj_idx[on] is not None:
+                cds.update({on : 
+                    ColumnDataSource(dict(
+                    x  = elg_snr[1],
+                    y  = np.array(elg_snr[0]),
+                    y2 = np.array(elg_snr[0])**2,
+                    ra = [ra[i%500] for i in gen_info['ELG_FIBERID']],
+                    dec = [dec[i%500] for i in gen_info['ELG_FIBERID']],
+                    fiber_id = gen_info['ELG_FIBERID']
+                ))})
 
-        elg = ColumnDataSource(data=data_model.copy())
-        lrg = ColumnDataSource(data=data_model.copy())
-        qso = ColumnDataSource(data=data_model.copy())
-        star = ColumnDataSource(data=data_model.copy())
+                xfit, yfit = fit_func(elg_snr[1],
+                                      snr['FITCOEFF_TGT'][obj_idx['ELG']])
 
-        data_fit = {
-            'x': [],
-            'y': [],
-            'y2': [],
-            'fiber_id': [],
-            'ra': [],
-            'dec': []
-        }
+                fit = dict(
+                    x = xfit,
+                    y = yfit,
+                    y2 =yfit**2            
+                )
+                for key in ['fiber_id', 'ra', 'dec']:
+                    fit.update({key : ['']*len(yfit)})
+                cdsfit.update({on: ColumnDataSource(fit)})
 
-        elg_fit = ColumnDataSource(data=data_fit.copy())
-        lrg_fit = ColumnDataSource(data=data_fit.copy())
-        qso_fit = ColumnDataSource(data=data_fit.copy())
-        star_fit = ColumnDataSource(data=data_fit.copy())
-
+                
         if obj_idx['ELG'] is not None:
-            elg.data['x'] = elg_snr[1]
-            elg.data['y'] = np.array(elg_snr[0])
-            elg.data['y2'] = np.array(elg_snr[0])**2
-            elg.data['fiber_id'] = gen_info['ELG_FIBERID']
-            elg.data['ra'] = [ra[i%500] for i in gen_info['ELG_FIBERID']]
-            elg.data['dec'] = [dec[i%500] for i in gen_info['ELG_FIBERID']]
+            elg = ColumnDataSource(dict(
+                x  = elg_snr[1],
+                y  = np.array(elg_snr[0]),
+                y2 = np.array(elg_snr[0])**2,
+                ra = [ra[i%500] for i in gen_info['ELG_FIBERID']],
+                dec = [dec[i%500] for i in gen_info['ELG_FIBERID']],
+                fiber_id = gen_info['ELG_FIBERID']
+            ))
 
             xfit, yfit = fit_func(elg_snr[1],
                                   snr['FITCOEFF_TGT'][obj_idx['ELG']])
-            elg_fit.data['x'] = xfit
-            elg_fit.data['y'] = np.array(yfit)
-            elg_fit.data['y2'] = np.array(yfit)**2
-
+    
+            fit = dict(
+                x = xfit,
+                y = yfit,
+                y2 =yfit**2            
+            )
             for key in ['fiber_id', 'ra', 'dec']:
-                elg_fit.data[key] = ['']*len(yfit)
+                fit.update({key : ['']*len(yfit)})
+            elg_fit=ColumnDataSource(fit)
+        
 
         if obj_idx['LRG'] is not None:
-            lrg.data['x'] = lrg_snr[1]
-            lrg.data['y'] = np.array(lrg_snr[0])
-            lrg.data['y2'] = np.array(lrg_snr[0])**2
-            lrg.data['fiber_id'] = gen_info['LRG_FIBERID']
-            lrg.data['ra'] = [ra[i%500] for i in gen_info['LRG_FIBERID']]
-            lrg.data['dec'] = [dec[i%500] for i in gen_info['LRG_FIBERID']]
+            lrg = ColumnDataSource(dict(
+                x  = lrg_snr[1],
+                y  = np.array(lrg_snr[0]),
+                y2 = np.array(lrg_snr[0])**2,
+                ra = [ra[i%500] for i in fiberid_obj['LRG']],
+                dec = [dec[i%500] for i in fiberid_obj['LRG']],
+                fiber_id = fiberid_obj['LRG']#gen_info['LRG_FIBERID']
+            ))
+            
 
             xfit, yfit = fit_func(lrg_snr[1],
                                   snr['FITCOEFF_TGT'][obj_idx['LRG']])
-            lrg_fit.data['x'] = xfit
-            lrg_fit.data['y'] = np.array(yfit)
-            lrg_fit.data['y2'] = np.array(yfit)**2
+            fit = dict(
+                x = xfit,
+                y = yfit,
+                y2 =yfit**2            
+            )
             for key in ['fiber_id', 'ra', 'dec']:
-                lrg_fit.data[key] = ['']*len(yfit)
+                fit.update({key : ['']*len(yfit)})
+            lrg_fit=ColumnDataSource(fit)
 
         if obj_idx['QSO'] is not None:
-            qso.data['x'] = qso_snr[1]
-            qso.data['y'] = np.array(qso_snr[0])
-            qso.data['y2'] = np.array(qso_snr[0])**2
-            qso.data['fiber_id'] = gen_info['QSO_FIBERID']
-            qso.data['ra'] = [ra[i%500] for i in gen_info['QSO_FIBERID']]
-            qso.data['dec'] = [dec[i%500] for i in gen_info['QSO_FIBERID']]
+            qso = ColumnDataSource(dict(
+                x  = qso_snr[1],
+                y  = np.array(qso_snr[0]),
+                y2 = np.array(qso_snr[0])**2,
+                ra = [ra[i%500] for i in gen_info['QSO_FIBERID']],
+                dec = [dec[i%500] for i in gen_info['QSO_FIBERID']],
+                fiber_id = gen_info['QSO_FIBERID']
+            ))
 
             xfit, yfit = fit_func(qso_snr[1],
                                   snr['FITCOEFF_TGT'][obj_idx['QSO']])
-            qso_fit.data['x'] = xfit
-            qso_fit.data['y'] = np.array(yfit)
-            qso_fit.data['y2'] = np.array(yfit)**2
+            fit = dict(
+                x = xfit,
+                y = yfit,
+                y2 =yfit**2            
+            )
             for key in ['fiber_id', 'ra', 'dec']:
-                qso_fit.data[key] = ['']*len(yfit)
+                fit.update({key : ['']*len(yfit)})
+            qso_fit = ColumnDataSource(fit)
 
         if obj_idx['STAR'] is not None:
-            star.data['x'] = star_snr[1]
-            star.data['y'] = np.array(star_snr[0])
-            star.data['y2'] = np.array(star_snr[0])**2
-            star.data['fiber_id'] = gen_info['STAR_FIBERID']
-            star.data['ra'] = [ra[i%500] for i in gen_info['STAR_FIBERID']]
-            star.data['dec'] = [dec[i%500] for i in gen_info['STAR_FIBERID']]
+            star = ColumnDataSource(dict(
+                x  = star_snr[1],
+                y  = np.array(star_snr[0]),
+                y2 = np.array(star_snr[0])**2,
+                ra = [ra[i%500] for i in gen_info['STAR_FIBERID']],
+                dec = [dec[i%500] for i in gen_info['STAR_FIBERID']],
+                fiber_id = gen_info['STAR_FIBERID']
+            ))
 
             xfit, yfit = fit_func(star_snr[1],
                                   snr['FITCOEFF_TGT'][obj_idx['STAR']])
-            star_fit.data['x'] = xfit
-            star_fit.data['y'] = np.array(yfit)
-            star_fit.data['y2'] = np.array(yfit)**2
+            fit = dict(
+                x = xfit,
+                y = yfit,
+                y2 =yfit**2            
+            )
             for key in ['fiber_id', 'ra', 'dec']:
-                star_fit.data[key] = ['']*len(yfit)
+                fit.update({key : ['']*len(yfit)})
+            star_fit = ColumnDataSource(fit)
 
+            
         html_tooltip = """
             <div>
                 <div>
@@ -352,7 +379,10 @@ class SNR:
         """
 
         median = snr['MEDIAN_SNR']
-        resid = snr['SNR_RESID']
+        resid = snr['SNR_RESID'] # Need to remove some inf & -inf 
+
+        # Treating dataBase Nan as np.NaN
+        resid = np.array([ np.nan if ( i<=-999. or i == np.inf or i== -np.inf ) else i for i in resid])
 
         qlf_fiberid = range(0, 500)
         my_palette = get_palette('bwr')
@@ -365,13 +395,16 @@ class SNR:
         for i in list(range(len(fibersnr_tgt))):
             fibersnr = fibersnr + fibersnr_tgt[i]
 
+        # Median of non sky fibers in the consistent order
+        median_nonsky = [median[i] for  i in fibersnr]
+
         source = ColumnDataSource(data={
             'x1': [ra[i%500] for i in fibersnr],
             'y1': [dec[i%500] for i in fibersnr],
             'resid_snr': resid,
             'QLF_FIBERID': fibersnr,
             'OBJ_TYPE': [obj_fiber[i%500] for i in fibersnr],
-            'median': median
+            'median': median_nonsky
         })
 
         ra_not = []
@@ -397,10 +430,11 @@ class SNR:
             'OBJ_TYPE': obj_not
         })
 
+        # Prevents to break in only NaN case
         rmax, rmin = np.nanmax(resid), np.nanmin(resid)
 
         if np.isnan(rmax) or np.isnan(rmin):
-            fill_color = 'lightgray'
+            fill_color = ['lightgray']*500
         else:
             dy = (rmax - rmin)*0.1
             mapper = LinearColorMapper(palette=my_palette, nan_color='darkgray',
@@ -482,7 +516,7 @@ class SNR:
             </div>
         """
 
-        mediam_plot = Plot2d(
+        median_plot = Plot2d(
             x_label="Fiber",
             y_label='Median SNR',
             tooltip=median_tooltip,
@@ -512,7 +546,7 @@ class SNR:
                         column(lrg_plot, sizing_mode='scale_both'),
                         column(qso_plot, sizing_mode='scale_both'),
                         column(star_plot, sizing_mode='scale_both'),
-                        column(mediam_plot, sizing_mode='scale_both'),
+                        column(median_plot, sizing_mode='scale_both'),
                         column(wedge_plot, sizing_mode='scale_both'),
                         css_classes=["display-grid"])
         return file_html(layout, CDN, "MEDIAN SNR")
