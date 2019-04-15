@@ -26,7 +26,7 @@ class GlobalSnr:
         self.selected_arm = arm
 
     def data_source_arm(self, fmap, arm):
-        """ Creating data source for plots
+        """ Creating data source for plots per arm
         """
         data_model = {
             'resids': [],
@@ -35,6 +35,7 @@ class GlobalSnr:
             'ra':  [],
             'dec': [],
             'cam': [],
+            'fiber_id':[],
         }
 
         process_id = self.selected_process_id
@@ -44,17 +45,14 @@ class GlobalSnr:
 
         ra_tile = fmap.fiber_ra
         dec_tile = fmap.fiber_dec
-        otype_tile = fmap.objtype
 
-        objlist = sorted(set(otype_tile))
-        if 'SKY' in objlist:
-            objlist.remove('SKY')
-
-        ra_snr = []
+        ra_snr  = []
         dec_snr = []
-        resids_snr = []
-        ot_snr = []
+        ot_snr  = []
         cam_snr = []
+        resids_snr = []
+        otype_tile = ['']*5000
+        fiber_id = []
 
         for spect in list(range(10)):
             cam = arm+str(spect)
@@ -64,68 +62,94 @@ class GlobalSnr:
             resids_petal = []
             ot_petal = []
             cam_petal = []
+
             if cam in joblist:
+                # For each Processed petal
                 mergedqa = QLFModels().get_output(
                     self.selected_process_id, cam)
 
-                med_snr = np.array(
-                    mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']["MEDIAN_SNR"])
+                # select objlist from the given petal
+                objlist = mergedqa["TASKS"]["CHECK_SPECTRA"]["METRICS"]["OBJLIST"]
+                if 'SKY' in objlist:
+                    objlist.remove('SKY')
 
-                # color values:
                 resids_petal = (
                     mergedqa['TASKS']['CHECK_SPECTRA']['METRICS']['SNR_RESID'])
+                print('size_resids', len(resids_petal))
+
+                # complete resid_petal with NaN`s
+                resids_petal = resids_petal + [np.nan]*(500-len(resids_petal))
 
                 ra_petal = []
                 dec_petal = []
                 fibers_snr = []
 
-                obj = np.arange(len(objlist))
-
-                for t in range(len(obj)):
-                    otype = list(objlist)[t]
-                    oid = np.where(np.array(list(objlist)) == otype)[0][0]
+                #Nobj = np.arange(len(objlist))
+                
+                # Collecting TGTs information
+                for t, otype in enumerate(objlist):
                     if otype == 'STD':
-                        fibers = mergedqa['GENERAL_INFO']['STD_FIBERID']
-                    elif otype == 'TGT':
-                        fibers = mergedqa['GENERAL_INFO']['STAR_FIBERID']
+                        ofibers = mergedqa['GENERAL_INFO']['STD_FIBERID']
+                    else:
+                        ofibers = mergedqa['GENERAL_INFO']['%s_FIBERID'%otype]
 
-                        # fibers = mergedqa['GENERAL_INFO']['%s_FIBERID'%otype]
+                    fibers_snr = fibers_snr + ofibers 
+                
+                    ot_petal= ot_petal+ [otype]*len(ofibers)
 
-                    fibers_snr = fibers_snr + fibers
+                ra_petal = [mergedqa['GENERAL_INFO']['RA'][i] for i in fibers_snr]
+                dec_petal = [mergedqa['GENERAL_INFO']['DEC'][i] for i in fibers_snr]
 
-                    for j in range(len(fibers)):
-                        ras = mergedqa['GENERAL_INFO']['RA'][fibers[j]]
-                        decs = mergedqa['GENERAL_INFO']['DEC'][fibers[j]]
-                        ra_petal.append(ras)
-                        dec_petal.append(decs)
-                        ot_petal.append(otype)
+                print("len ra_petal:", len(ra_petal))
+
+                # Complete with sky/nonTGT information:
+                sky_fiberid = mergedqa['GENERAL_INFO']['SKY_FIBERID']
+                print("len sky:", len(sky_fiberid))
+
+                ra_petal = ra_petal+[mergedqa['GENERAL_INFO']['RA'][i] for i in sky_fiberid]
+                dec_petal = dec_petal+[mergedqa['GENERAL_INFO']['DEC'][i] for i in sky_fiberid]
+                ot_petal= ot_petal + ['SKY']*len(sky_fiberid)
+                print("len ra_petal:", len(ra_petal))
+                print("len dec_petal:", len(dec_petal))
+                print("len ot_petal:", len(ot_petal))
+                resids_petal = [np.nan if i <= -999. or i == np.inf or i ==-np.inf 
+                        else i for i in resids_petal] 
+                print('len resid petal:', len(resids_petal))
 
                 ra_snr = ra_snr+ra_petal
                 dec_snr = dec_snr+dec_petal
-                resids_snr = resids_snr + \
-                    [i if i > -999 else np.nan for i in resids_petal]
+                resids_snr = resids_snr + resids_petal
+                    
                 ot_snr = ot_snr + ot_petal
-                cam_snr = cam_snr + [cam]*len(ra_petal)
+                fiber_id = [i+(500*spect) for i in (fibers_snr + sky_fiberid)]
+
 
             else:
+                # for cams NOT processed:
                 ra_snr = ra_snr + list(ra_tile[500*spect: 500*(spect + 1)])
                 dec_snr = dec_snr + list(dec_tile[500*spect: 500*(spect + 1)])
                 resids_snr = resids_snr + 500*[np.nan]
                 ot_snr = ot_snr + list(otype_tile[500*spect: 500*(spect + 1)])
-                cam_snr = cam_snr + [str(cam)]*500
+                fiber_id = fiber_id + ['']*500
 
-        data_model['ra'] = ra_snr  # ra_tile
-        data_model['dec'] = dec_snr  # dec_tile
+            cam_snr = cam_snr + [str(cam)]*500
+
+
+        data_model['ra'] = ra_snr   
+        data_model['dec'] = dec_snr 
         data_model['resids'] = resids_snr
         data_model['hover'] = ['%4.3f' % (ires) for ires in resids_snr]
         data_model['OBJ_TYPE'] = ot_snr
         data_model['cam'] = cam_snr
+        data_model['fiber_id'] = fiber_id
 
         source = ColumnDataSource(data=data_model)
+
         return source
 
+
     def data_source(self, fmap):
-        """ Creating data source for plots
+        """ Creating data source for multiple plots
         """
         data_model = {
             'x_b': [],
@@ -247,15 +271,20 @@ class GlobalSnr:
                     <span style="font-size: 12px; font-weight: bold; color: #303030;">CAM: </span>
                     <span style="font-size: 13px; color: #515151;">@cam</span>
                 </div>
+                <div>
+                    <span style="font-size: 12px; font-weight: bold; color: #303030;">Fiber ID: </span>
+                    <span style="font-size: 13px; color: #515151;">@fiber_id</span>
+                </div>
         """
         fiber_tooltip = fiber_tooltip.replace('@y', '@hover')
 
         hover = HoverTool(tooltips=fiber_tooltip)
 
-        my_palette = get_palette("bwr")  # "seismic")#"RdYlBu_r")#"viridis")
+        my_palette = get_palette("bwr")
         source = common_source
 
-        sigma = source.data['resids']  # ['{}_'.format(sigma_kind) +wedge_arm]
+        sigma = source.data['resids'] 
+
         rng_min, rng_max = np.nanmin(sigma), np.nanmax(sigma)
         rng = rng_max-rng_min
 
@@ -274,19 +303,27 @@ class GlobalSnr:
         xrange = Range1d(start=ra_center + 2, end=ra_center-2)
         yrange = Range1d(start=dec_center+1.8, end=dec_center-1.8)
 
-        p = Figure(title='SNR (ARM {})'.format(wedge_arm), x_axis_label='RA', y_axis_label='DEC', plot_width=600, plot_height=600, tools=[hover, "pan,wheel_zoom,reset,box_zoom,crosshair"], active_drag="box_zoom", x_range=xrange, y_range=yrange
+        p = Figure(title='SNR (ARM {})'.format(wedge_arm),
+                    x_axis_label='RA', y_axis_label='DEC', 
+                    plot_width=600, plot_height=600, 
+                    tools=[hover, "pan,wheel_zoom,reset,box_zoom,crosshair"],
+                    active_drag="box_zoom",
+                    x_range=xrange, y_range=yrange
                    )
 
         p.title.align = 'center'
-        p.circle('ra', 'dec', source=source, name="data", radius=radius,
-                 fill_color=fill_color,
+        p.circle('ra', 'dec', source=source, #name="data", 
+                 radius=radius,
+                 fill_color=fill_color, #fill_color,
                  line_color='black', line_width=0.4,
                  hover_line_color='red')
 
-        p.circle('ra', 'dec', source=source, name="data", radius=radius_hover,
+        p.circle('ra', 'dec', source=source, name="data",
+                 radius=radius_hover,
                  hover_fill_color=fill_color,
                  fill_color=None,
                  line_color=None, line_width=3, hover_line_color='orange')
+
 
         if 'mapper' in locals():
             cbar = Figure(height=p.plot_height,
@@ -314,11 +351,10 @@ class GlobalSnr:
         process_id = self.selected_process_id
         process = Process.objects.get(pk=process_id)
         exposure = process.exposure
-        fmap = Fibermap.objects.filter(exposure=exposure).last('pk')
+        fmap = Fibermap.objects.filter(exposure=exposure)[0]
 
         src_arm = self.data_source_arm(fmap, self.selected_arm)
 
-        # , common_source=source)
         p = self.wedge_plot(self.selected_arm, fmap, common_source=src_arm)
         layout = row(column(row(p)))
 
