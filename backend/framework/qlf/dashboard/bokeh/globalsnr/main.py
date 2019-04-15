@@ -83,8 +83,6 @@ class GlobalSnr:
                 ra_petal = []
                 dec_petal = []
                 fibers_snr = []
-
-                #Nobj = np.arange(len(objlist))
                 
                 # Collecting TGTs information
                 for t, otype in enumerate(objlist):
